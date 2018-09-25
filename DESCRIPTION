@@ -12,3 +12,4 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/nuno-agostinho/l1000
 BugReports: https://github.com/nuno-agostinho/l1000/issues
+Suggests: testthat
