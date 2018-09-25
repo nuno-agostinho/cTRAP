@@ -1,0 +1,14 @@
+Package: l1000
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: c(person("Nuno", "Agostinho", 
+        email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
+        person(c("Nuno", "Luís"), "Barbosa-Morais", role=c("aut", "led")),
+        person("Bernardo", "de Almeida", role="aut"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.5.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/nuno-agostinho/l1000
+BugReports: https://github.com/nuno-agostinho/l1000/issues
