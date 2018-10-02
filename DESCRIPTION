@@ -14,3 +14,9 @@ URL: https://github.com/nuno-agostinho/l1000
 BugReports: https://github.com/nuno-agostinho/l1000/issues
 Suggests: testthat
 RoxygenNote: 6.1.0
+Imports: data.table,
+    limma,
+    stats,
+    fgsea,
+    pbapply,
+    plyr
