@@ -1,0 +1,189 @@
+---
+title: 'l1000: tutorial'
+author:
+    - Bernardo P. de Almeida
+    - Nuno Saraiva-Agostinho
+date: "`r Sys.Date()`"
+output: 
+    rmarkdown::html_vignette:
+        toc: true
+vignette: >
+    \usepackage[utf8]{inputenc}
+    %\VignetteIndexEntry{Case study: command-line interface (CLI)}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+---
+
+# Introduction
+
+`l1000` is an R package designed to compare differential gene
+expression results with those from known cellular perturbations (such as gene 
+knock-down, overexpression or small molecules) derived from the 
+[Connectivity Map][clue.io] (Subramanian et al., Cell 2017). Such analyses allow
+not only to infer the molecular causes of the observed difference in gene
+expression but also to identify small molecules that could drive or revert
+specific transcriptomic alterations.
+
+To illustrate the package functionalities, we will use an example based on a 
+gene knock-down dataset from the [ENCODE project][ENCODE] for which there is 
+available RNA-seq data. After performing differential expression analyses to the 
+macthed-control sample, we will compare the respective transcriptomic changes 
+with the ones caused by all Connectivity Map's gene knock-down perturbations to
+identify which ones have similar or inverse transcriptomic changes to the 
+observed ones. As a positive control, we expect to find the knock-down of the 
+gene depleted in the ENCODE experiment as one of the most similar transcriptomic
+perturbations.
+
+# Getting started
+
+To load the `l1000` package into your R envirnoment type:
+
+```{r eval=FALSE}
+library(l1000)
+```
+
+# Load ENCODE RNA-seq data and perform differential gene expression analysis
+
+In this example, we will use the EIF4G1 shRNA knockdown followed by RNA-seq experiment in HepG2 cell line from the ENCODE project as the dataset of 
+interest. The RNA-seq processed data (gene quantifications from RSEM method) for
+the EIF4G1 knock-down and respective controls (two replicates each) can be
+downloaded by typing:
+
+```{r}
+gene <- "EIF4G1"
+cellLine <- "HepG2"
+
+ENCODEfile  <- "~/Documents/L1000_drug_signature/L1000_Rpackage/ENCODE/ENCODE_knockdown_controls.tsv"
+
+ENCODEmetadata <- loadENCODEmetadata(ENCODEfile, cellLine=cellLine, gene=gene,
+                                     lab="ENCODE Processing Pipeline",
+                                     outputType="gene quantifications")
+table(ENCODEmetadata$`Experiment target`)
+length(unique(ENCODEmetadata$`Experiment target`))
+
+counts <- loadENCODEgeneExpression(ENCODEmetadata)
+```
+
+Gene expression data (read counts) were quantile-normalized using [`voom`][voom] 
+and differential expression analysis was performed using the [`limma`][limma] R
+package.
+
+```{r}
+# Remove low coverage (at least 10 counts shared across two samples)
+minReads   <- 10
+minSamples <- 2
+filter <- rowSums(counts[ , 3:6] >= minReads) >= minSamples
+counts <- counts[filter, ]
+
+# Load gene annotation file
+geneAnnot <- data.table::fread(
+    "/genedata/Resources/Annotations/GeneAnnotation.Human.Ensembl81.txt",
+    na.strings=c("NA", "na", "n.a.", ""))
+
+# Perform differential gene expression analysis
+diffExpr <- performDifferentialExpression(counts, geneAnnot)
+```
+
+As our metric of differential expression after EIF4G1 shRNA knock-down, we will 
+use the respective t-statistic.
+
+```{r}
+# Get t-statistics of differential expression with respective gene names
+diffExprStat <- diffExpr$t
+names(diffExprStat) <- diffExpr$Gene_symbol
+```
+
+# Load Connectivity Map perturbation data
+
+We will compare our differential gene expression metric with all Connectivity
+Map's gene knock-down perturbations in the same cell line (HepG2). Note that 
+this comparison can also be done to perturbations in a different cell line or in
+all cell lines, using in the last case the average result from comparisons wih 
+all cell lines. Differential gene expression for each Connectivity Map's
+perturbations are available in z-score normalised values (see Subramanian et 
+al., Cell 2017 for more details).
+
+```{r}
+# Check available conditions for L1000 perturbations
+getL1000Conditions("L1000metadata.txt")
+
+# Code for loading CMap gene KD HepG2 data
+l1000perturbations <- loadL1000perturbations(
+    "L1000metadata.txt", "L1000zscores.gctx", "L1000geneInfo.txt",
+    cellLine="HepG2",
+    perturbationType="Consensus signature from shRNAs targeting the same gene")
+```
+
+If the interest would be in small molecules, one could download the differential
+gene expression z-scores for each small molecule perturbation in HepG2 (given a
+specific concentration and time point of RNA extraction) through the following
+command:
+
+```{r}
+l1000perturbations <- loadL1000perturbations(
+    "L1000metadata.txt", "L1000zscores.gctx", "L1000geneInfo.txt",
+    cellLine="HepG2", timepoint="96 h", dosage="60 µM",
+    perturbationType="Compound")
+```
+
+# Comparison with Connectivity Map's perturbations
+
+This is the main function of the package. Here we compare the statistic for
+differential expression (the t-statistic, in this case) with the z-scores for 
+the perturbations we have loaded using the three different methods available
+(Spearman's correlation, Pearson's correlation and Gene Set Enrichment Analysis
+(GSEA)). For GSEA, the default option is to use the top and bottom 150 genes
+(ranked by the user's t-statistic) as gene sets, but this can be changed by the
+user.
+
+(code for comparing with gene KD perturbations using the three methods, just to teach people how to use it, if you agree)
+
+```{r}
+
+```
+
+In case of small molecules:
+
+(code for comparing with small molecules perturbations using the three methods, just to teach people how to use the different methods, if you agree)
+
+For each method used, this function will return a table with the results of the
+comparison with each perturbation tested, including the test statistics 
+(depending on the method used: Spearman's correlation coefficient, Pearson's
+correlation coefficient or GSEA Enrichment Score), the respective p-value and 
+the Benjamini-Hochberg-adjusted p-value.
+
+(code for head of output gene KD table for all methods)
+
+# Plot
+
+To analyse the relationship between the user's differential expression with the
+one caused by a specific perturbation, we provide the option to create a scatter
+plot (For Spearman or Pearson analyses) or a GSEA plot.
+
+Below you can see how to plot the relationship between the ENCODE's EIF4G1 shRNA
+knockdown with the perturbations with the most similar or inverse associations.
+
+(code for the three (spearman, pearson and GSEA) plots for top positive (I think
+it is the EIF4G1) and top negative gene association)
+
+# Feedback
+
+All feedback on the program, documentation and associated material (including
+this tutorial) is welcome. Please send any suggestions and comments to:
+
+> Bernardo P. de Almeida (bernardo.almeida@imp.ac.at)
+>
+> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
+>
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
+
+# References
+
+[iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
+[ENCODE]: https://www.encodeproject.org/
+[clue.io]: https://clue.io/
+[limma]: https://www.ncbi.nlm.nih.gov/pubmed/25605792
+[voom]: https://www.ncbi.nlm.nih.gov/pubmed/24485249

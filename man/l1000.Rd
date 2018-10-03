@@ -7,8 +7,8 @@
 \title{L1000 package}
 \description{
 Compare differential gene expression results with those from big datasets
-(e.g. L1000), allowing to infer the type of perturbations that explain the
-observed difference.
+(e.g. L1000), allowing to infer which types of perturbations may explain the
+observed difference in gene expression.
 }
 \details{
 \strong{Input:} To use this package, a named vector of differentially

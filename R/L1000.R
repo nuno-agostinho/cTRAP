@@ -1,122 +1,72 @@
-#' Load ENCODE metadata
+
+
+#' Load L1000 metadata
+#'
+#' The data will be downloaded if not available
+#'
+#' @param l1000metadataFile Character: filepath to L1000 metadata
 #'
 #' @importFrom data.table fread
-loadENCODEmetadata <- function(file, cellLine=NULL, lab=NULL, outputType=NULL) {
-    data <- fread(file)
+#'
+#' @return Metadata as a data table
+#' @examples
+#' loadL1000metadata("L1000metadata.txt")
+loadL1000metadata <- function(l1000metadataFile) {
+    # Download metadata (if not available)
+    downloadIfNeeded(l1000metadataFile, paste0(
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+        "format=file&file=GSE92742%5FBroad%5FLINCS%5Fsig%5Finfo%2Etxt%2Egz"))
 
-    control <- data$`Experiment target` == "Non-specific target control-human"
-    data$`Experiment target` <- gsub("\\-.*", "", data$`Experiment target`)
-    data$`Experiment target`[control] <- "Non-specific target control-human"
+    cat("Loading L1000 metadata...", fill=TRUE)
+    metadata <- fread(l1000metadataFile, sep="\t",
+                      na.strings=c("NA", "na", "-666"))
+    return(metadata)
+}
 
-    if (!is.null(cellLine))
-        data <- data[data$`Biosample term name` %in% cellLine]
+#' List available conditions in L1000 datasets
+#'
+#' @inheritParams loadL1000metadata
+#'
+#' @export
+#' @return List of conditions in L1000 datasets
+getL1000Conditions <- function(l1000metadataFile) {
+    info <- loadL1000metadata(l1000metadataFile)
 
-    if (!is.null(lab))
-        data <- data[data$Lab %in% lab]
+    pertTypes <- getL1000PerturbationTypes()
+    pertTypes <- names(pertTypes)[pertTypes %in% unique(info$pert_type)]
 
-    if (!is.null(outputType))
-        data <- data[data$`Output type` %in% outputType]
-
-    return(data)
+    list("Perturbation type"=pertTypes,
+         "Cell line"=unique(info$cell_id),
+         "Dosage"=unique(info$pert_idose),
+         "Time points"=unique(info$pert_itime))
 }
 
 #' Load data from L1000 files
 #'
+#' @param cellLine Character: cell line
+#' @param timepoint Character: time point
+#' @param folder Character: folder where L1000 files are stored
+#'
 #' @importFrom data.table fread setnames
-loadL1000file <- function(cell_line, timepoint, folder) {
+#'
+#' @return L1000 file as a data table
+loadL1000file <- function(cellLine, timepoint, folder) {
     file <- file.path(folder, sprintf(
-        "L1000_condition_%sh_%s_zscores_Diff_expr.txt", timepoint, cell_line))
+        "L1000_condition_%sh_%s_zscores_Diff_expr.txt", timepoint, cellLine))
     header <- read.table(file, header = TRUE, nrow = 1)
     perturbationList <- fread(file, skip=1, header=FALSE)
     setnames(perturbationList, c("Gene", colnames(header)))
     return(perturbationList)
 }
 
-#' @importFrom data.table fread
-loadENCODEsample <- function (data, gene, replicate, control=FALSE) {
-    rep    <- data$`Biological replicate(s)` == replicate
-    target <- data$`Experiment target` %in% gene
-
-    data <- data[rep & target]
-    if (control) {
-        sample <- sapply(strsplit(data$`Control Experiments`, ", "),
-                         `[`, replicate)
-    } else {
-        sample <- data$`File accession`
-    }
-    sample <- paste0(sample)
-
-    outfile <- paste0(sample, ".tsv")
-    if (!file.exists(paste0(sample, ".tsv"))) {
-        file <- sprintf(
-            "https://www.encodeproject.org/files/%s/@@download/%s.tsv",
-            sample, sample)
-        download.file(file, outfile)
-    }
-
-    fread(outfile)
-}
-
-#' Load an ENCODE experiment for a given gene
-loadENCODEexperiment <- function(data, gene) {
-    table_rep1     <- loadENCODEsample(data, gene, replicate=1)
-    table_rep2     <- loadENCODEsample(data, gene, replicate=2)
-    table_control1 <- loadENCODEsample(data, gene, replicate=1, control=TRUE)
-    table_control2 <- loadENCODEsample(data, gene, replicate=2, control=TRUE)
-
-    # Check if transcripts are identical across samples
-    sameTranscriptsAcrossSamples <- all(sapply(lapply(
-        list(table_rep1, table_rep2, table_control1, table_control2),
-        "[[", "transcript_id(s)"), identical, table_rep1$`transcript_id(s)`))
-    if (!all(sameTranscriptsAcrossSamples))
-        stop("Not all samples share the same transcript identifiers")
-
-    # Merge gene counts from the different samples to a single table
-    countTable <- cbind(table_rep1[ , c(1:2, 5)], table_rep2[ , 5],
-                        table_control1[ , 5], table_control2[ , 5])
-    names(countTable)[3:6] <- c("shRNA1", "shRNA2", "control1", "control2")
-    rownames(countTable) <- countTable$gene_id
-    return(countTable)
-}
-
-#' Perform differential gene expression
-#'
-#' @importFrom stats model.matrix aggregate
-#' @importFrom limma voom lmFit eBayes topTable
-performDifferentialExpression <- function(counts, geneAnnot) {
-    counts <- data.frame(counts)
-    rownames(counts) <- counts$gene_id
-
-    # Design matrix
-    Sample_info <- data.frame(
-        sample = c("shRNA1", "shRNA2", "control1", "control2"),
-        condition = c("shRNA", "shRNA", "control", "control"))
-    design <- model.matrix(~ condition, Sample_info)
-    rownames(design) <- Sample_info$sample
-
-    # Check: identical(names(counts[ , 3:6]), rownames(design_matrix))
-    voom <- voom(counts[ , 3:6], design=design, plot=FALSE,
-                 normalize.method="quantile")
-
-    # Fit linear model
-    fit     <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)],
-                     design=design)
-    ebayes  <- eBayes(fit)
-    results <- topTable(ebayes, coef = 2, number = nrow(ebayes),
-                        sort.by = "logFC", resort.by = "p")
-
-    # Convert to gene symbol
-    results$Gene_symbol <- geneAnnot$`Associated Gene Name`[
-        match(sapply(strsplit(rownames(results), "\\."), `[`, 1),
-              geneAnnot$`Ensembl Gene ID`)]
-
-    # Mean-aggregation per gene symbol to compare unique gene knockdowns
-    results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,
-                          by=list(Gene_symbol=results$Gene_symbol))
-    return(results2)
-}
-
 #' Calculate statistics
+#'
+#' @param perturbations
+#' @param cellLine
+#' @param gene
+#' @param coef
+#'
+#' @return List of statistics
 calculateStatistics <- function(perturbations, cellLine, gene, coef) {
     coef <- paste0(cellLine, coef)
 
@@ -133,6 +83,12 @@ calculateStatistics <- function(perturbations, cellLine, gene, coef) {
 }
 
 #' Correlate differential expression scores per cell line
+#'
+#' @param cellLine Character: cell line
+#' @param diffExprGenes Numeric vector: statistic for differentially expressed
+#' genes
+#' @param perturbations
+#' @param method Character: correlation method
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom data.table data.table
@@ -172,6 +128,9 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #' @importFrom data.table data.table
 #' @importFrom pbapply pblapply
 #' @importFrom plyr rbind.fill
+#'
+#' @return Data frame containing gene set enrichment analysis (GSEA) results per
+#' cell line
 performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
     perturbation  <- perturbations[[cellLine]]
 
@@ -213,6 +172,10 @@ performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
 
 #' Compare against L1000 datasets
 #'
+#' @param diffExprGenes Numeric: named vector of differentially expressed genes
+#' where the name of the vector are gene names and the values are a statistic
+#' that represents significance and magnitude of differentially expressed genes
+#' (e.g. t-statistics)
 #' @param geneSize Number: top and bottom differentially expressed genes to use
 #' for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
 #' argument does nothing
@@ -223,6 +186,8 @@ performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
 #' @export
 #' @examples
 #' cellLines <- c("PC3", "VCAP", "A375")
+#' timepoint <- c("96 h")
+#' loadL1000perturbations("L1000", cellLines, timepoint)
 #'
 #' # Compare against L1000 using Spearman correlation
 #' compareAgainstL1000(diffExprGenes, perturbations, cellLines,
@@ -283,4 +248,89 @@ calculate <- function(perturbations, cellLines, gene) {
                                 coef=colnameSuffix)
     names(outputPerCellLine) <- cols
     return(cbind(Gene=gene, as.data.frame(outputPerCellLine)))
+}
+
+#' Load L1000 perturbation data
+#'
+#' @inheritParams loadL1000metadata
+#' @param l1000zscoresFile Character: path to GCTX z-scores file
+#' @param cellLine Character: cell line (if \code{NULL}, all values are loaded)
+#' @param timepoint Character: timepoint (if \code{NULL}, all values are loaded)
+#' @param dosage Character: dosage (if \code{NULL}, all values are loaded)
+#' @param perturbationType Character: type of perturbation (if \code{NULL}, all
+#' perturbation types are loaded)
+#'
+#' @importFrom R.utils gunzip
+#' @importFrom methods new
+#'
+#' @export
+#' @return Perturbation data from L1000 as a data table
+loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
+                                   l1000geneFile, cellLine=NULL, timepoint=NULL,
+                                   dosage=NULL, perturbationType=NULL) {
+    metadata <- loadL1000metadata(l1000metadataFile)
+
+    # Filter elements of interest
+    if (!is.null(cellLine))
+        metadata <- metadata[tolower(metadata$cell_id) %in% tolower(cellLine), ]
+
+    if (!is.null(timepoint))
+        metadata <- metadata[metadata$pert_itime %in% timepoint, ]
+
+    if (!is.null(dosage))
+        metadata <- metadata[metadata$pert_idose %in% dosage, ]
+
+    if (!is.null(perturbationType)) {
+        tmp <- getL1000PerturbationTypes()[perturbationType]
+        if (!is.na(tmp)) perturbationType <- tmp
+        metadata <- metadata[metadata$pert_type %in% perturbationType, ]
+    }
+
+    # Get data from GCTX files based on the corresponding sig_ids
+    sig_ids <- metadata$sig_id
+
+    downloadIfNeeded(
+        l1000zscoresFile,
+        paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+               "format=file&file=GSE92742%5FBroad%5FLINCS%5FLevel5%5FCOMPZ%2",
+               "EMODZ%5Fn473647x12328%2Egctx%2Egz"))
+    selected_ds <- new("GCT", rid=NULL, cid=sig_ids, set_annot_rownames=FALSE,
+                       matrix_only=FALSE)
+
+    # Change colnames per drug
+    colnames(selected_ds) <- metadata$pert_iname[
+        match(colnames(selected_ds), metadata$sig_id)]
+
+    # Change rownames
+    downloadIfNeeded(
+        l1000geneFile,
+        paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+               "format=file&",
+               "file=GSE92742%5FBroad%5FLINCS%5Fgene%5Finfo%2Etxt%2Egz"))
+    geneInfo <- fread(l1000geneFile, sep="\t", na.strings=c("NA", "na", "-666"))
+
+    rownames(selected_ds) <- geneInfo$pr_gene_symbol[
+        match(rownames(selected_ds), geneInfo$pr_gene_id)]
+
+    return(selected_ds)
+}
+
+#' Get perturbation types
+#'
+#' @return Perturbation types and respective codes as used by L1000 datasets
+getL1000PerturbationTypes <- function () {
+    c("Compound"="trt_cp",
+      "Peptides and other biological agents (e.g. cytokine)"="trt_lig",
+      "shRNA for loss of function (LoF) of gene"="trt_sh",
+      "Consensus signature from shRNAs targeting the same gene"="trt_sh.cgs",
+      "cDNA for overexpression of wild-type gene"="trt_oe",
+      "cDNA for overexpression of mutated gene"="trt_oe.mut",
+      "CRISPR for LLoF"="trt_xpr",
+      "Controls - vehicle for compound treatment (e.g DMSO)"="ctl_vehicle",
+      "Controls - vector for genetic perturbation (e.g empty vector, GFP)"="ctl_vector",
+      "Controls - consensus signature from shRNAs that share a common seed sequence"="trt_sh.css",
+      "Controls - consensus signature of vehicles"="ctl_vehicle.cns",
+      "Controls - consensus signature of vectors"="ctl_vector.cns",
+      "Controls - consensus signature of many untreated wells"="ctl_untrt.cns",
+      "Controls - Untreated cells"="ctl_untrt")
 }
