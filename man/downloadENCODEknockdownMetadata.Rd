@@ -2,10 +2,18 @@
 % Please edit documentation in R/ENCODE.R
 \name{downloadENCODEknockdownMetadata}
 \alias{downloadENCODEknockdownMetadata}
-\title{Load metadata for ENCODE knockdown experiments}
+\title{Download metadata for ENCODE knockdown experiments}
 \usage{
 downloadENCODEknockdownMetadata(cellLine = NULL, gene = NULL)
 }
+\arguments{
+\item{cellLine}{Character: cell line}
+
+\item{gene}{Character: target gene}
+}
+\value{
+Data frame containing ENCODE knockdown experiment metadata
+}
 \description{
-Load metadata for ENCODE knockdown experiments
+Download metadata for ENCODE knockdown experiments
 }

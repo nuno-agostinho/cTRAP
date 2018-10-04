@@ -8,6 +8,8 @@ getENCODEcontrols(control, table)
 }
 \arguments{
 \item{control}{Character: control identifier}
+
+\item{table}{Data frame}
 }
 \value{
 Character vector with respective experiment identifiers

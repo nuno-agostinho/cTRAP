@@ -4,12 +4,10 @@
 \alias{performDifferentialExpression}
 \title{Perform differential gene expression based on ENCODE data}
 \usage{
-performDifferentialExpression(counts, geneAnnot)
+performDifferentialExpression(counts)
 }
 \arguments{
 \item{counts}{Data frame: gene expression}
-
-\item{geneAnnot}{Data frame: gene annotation}
 }
 \value{
 Data frame with differential gene expression results between

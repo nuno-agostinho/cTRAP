@@ -12,8 +12,7 @@ loadENCODEgeneExpression(metadata)
 \item{gene}{Character: gene}
 }
 \value{
-Data frame containing gene read counts for which ENCODE knockdown
-experiment of a given gene
+Data frame containing gene read counts
 }
 \description{
 Load an ENCODE gene expression data for a given gene

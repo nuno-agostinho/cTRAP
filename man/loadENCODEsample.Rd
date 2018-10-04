@@ -13,6 +13,9 @@ loadENCODEsample(metadata, replicate, control = FALSE)
 
 \item{control}{Boolean: load control experiment?}
 }
+\value{
+Data table with ENCODE sample data
+}
 \description{
 Load ENCODE sample
 }

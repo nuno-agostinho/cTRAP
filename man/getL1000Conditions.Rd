@@ -13,5 +13,8 @@ getL1000Conditions(l1000metadataFile)
 List of conditions in L1000 datasets
 }
 \description{
-List available conditions in L1000 datasets
+Downloads metadata if not available
+}
+\examples{
+getL1000Conditions("L1000metadata.txt")
 }
