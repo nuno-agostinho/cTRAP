@@ -39,10 +39,8 @@ str(col_meta_first10)
 
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{append.dim}},
-  \code{\link{fix.datatypes}}, \code{\link{parse.gctx}},
-  \code{\link{process_ids}}, \code{\link{read.gctx.ids}},
-  \code{\link{write.gctx.meta}}, \code{\link{write.gctx}},
-  \code{\link{write.gct}}
+Other GCTX parsing functions: \code{\link{fix.datatypes}},
+  \code{\link{parse.gctx}}, \code{\link{process_ids}},
+  \code{\link{read.gctx.ids}}
 }
 \concept{GCTX parsing functions}
