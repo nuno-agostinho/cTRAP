@@ -5,6 +5,8 @@
 #'
 #' @importFrom stats model.matrix aggregate
 #' @importFrom limma voom lmFit eBayes topTable
+#' @importFrom AnnotationDbi select keys
+#' @importFrom org.Hs.eg.db org.Hs.eg.db org.Hs.egENSEMBL2EG
 #'
 #' @export
 #' @return Data frame with differential gene expression results between
@@ -32,9 +34,11 @@ performDifferentialExpression <- function(counts, geneAnnot) {
                         sort.by = "logFC", resort.by = "p")
 
     # Convert to gene symbol
-    results$Gene_symbol <- geneAnnot$`Associated Gene Name`[
-        match(sapply(strsplit(rownames(results), "\\."), `[`, 1),
-              geneAnnot$`Ensembl Gene ID`)]
+    geneConversion <- suppressMessages(
+        select(org.Hs.eg.db, keys=keys(org.Hs.egENSEMBL2EG),
+               columns=c("ENSEMBL", "SYMBOL"), keytype="ENSEMBL"))
+    results$Gene_symbol <- geneConversion$SYMBOL[
+        match(gsub("\\..*", "", rownames(results)), geneConversion$ENSEMBL)]
 
     # Mean-aggregation per gene symbol to compare unique gene knockdowns
     results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,
