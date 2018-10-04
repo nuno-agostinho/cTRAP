@@ -1,4 +1,5 @@
-# Based on cmapR package at https://github.com/cmap/cmapR
+# Functions to parse GCTX files based on cmapR (R package that is not available
+# on CRAN nor Bioconductor): https://github.com/cmap/cmapR
 
 # io.R -------------------------------------------------------------------------
 
@@ -16,14 +17,15 @@
 #'   \code{rdesc} and \code{cdesc} slots contain data frames with
 #'   annotations about the rows and columns, respectively
 #'
-#' @seealso \code{\link{parse.gctx}}, \code{\link{write.gctx}}, \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
+#' @seealso \code{\link{parse.gctx}}, \code{\link{write.gctx}},
+#' \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
 #' @seealso \link{http://clue.io/help} for more information on the GCT format
-methods::setClass("GCT", methods::representation(
+setClass("GCT", representation(
     mat = "matrix", rid = "character", cid = "character", rdesc = "data.frame",
     cdesc = "data.frame", version = "character", src = "character"))
 
 # set up methods for checking GCT validity
-methods::setValidity("GCT", function(object) {
+setValidity("GCT", function(object) {
     # check whether dimensions of various
     # slots are in sync
     nrows <- nrow(object@mat)
@@ -41,42 +43,16 @@ methods::setValidity("GCT", function(object) {
         return("rid must be unique")
     }
     if (nrow(object@cdesc) != ncols & nrow(object@cdesc) != 0) {
-        return("cdesc must either have 0 rows or the same number of rows as matrix has columns")
+        return(paste("cdesc must either have 0 rows or the same number of rows",
+                     "as matrix has columns"))
     }
     if (nrow(object@rdesc) != nrows & nrow(object@rdesc) != 0) {
-        return("rdesc must either have 0 rows or the same number of rows as matrix has rows")
+        return(paste("rdesc must either have 0 rows or the same number of rows",
+                     "as matrix has rows"))
     } else {
         return(TRUE)
     }
 })
-
-suppressMessages({
-    # set method for displaying a GCT object
-    # just use the 'str' function to show its structure
-    setMethod("show", methods::signature("GCT"), function(object) {
-        utils::str(object)
-    })
-
-    # dim, nrow and ncol to display the # of rows and columns
-    # for a GCT object's matrix
-    setMethod("ncol", methods::signature("GCT"), function(x) ncol(x@mat))
-    setMethod("nrow", methods::signature("GCT"), function(x) nrow(x@mat))
-    setMethod("dim", methods::signature("GCT"), function(x) dim(x@mat))
-    setMethod("range", methods::signature("GCT"), function(x, na.rm=F,
-                                                           finite=F) {
-        range(x@mat, na.rm=na.rm, finite=finite)
-    })
-    setMethod("max", methods::signature("GCT"), function(x, na.rm=F) {
-        max(x@mat, na.rm=na.rm)
-    })
-    setMethod("min", methods::signature("GCT"), function(x, na.rm=F) {
-        min(x@mat, na.rm=na.rm)
-    })
-    setMethod("diag", methods::signature("GCT"), function(x) diag(x@mat))
-})
-
-
-#### define some helper methods for parsing gctx files ###
 
 #' Adjust the data types for columns of a meta data frame
 #'
@@ -148,6 +124,8 @@ fix.datatypes <- function(meta) {
 #'   \code{rownames} addtribute of the returned \code{data.frame} to
 #'   the corresponding row/column ids.
 #'
+#' @importFrom rhdf5 h5read
+#'
 #' @return a \code{data.frame} of metadata
 #'
 #' @examples
@@ -159,12 +137,14 @@ fix.datatypes <- function(meta) {
 #' col_meta <- read.gctx.meta(gct_file, dimension="column")
 #' str(col_meta)
 #' # now for only the first 10 ids
-#' col_meta_first10 <- read.gctx.meta(gct_file, dimension="column", ids=col_meta$id[1:10])
+#' col_meta_first10 <- read.gctx.meta(gct_file, dimension="column",
+#'                                    ids=col_meta$id[1:10])
 #' str(col_meta_first10)
 #'
 #' @family GCTX parsing functions
 #' @export
-read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL, set_annot_rownames=T) {
+read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
+                           set_annot_rownames=TRUE) {
     if (!file.exists(gctx_path)) {
         stop(paste(gctx_path, "does not exist"))
     }
@@ -177,10 +157,11 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL, set_annot_rowna
     } else {
         name <- "0/META/COL"
     }
-    raw_annots <- rhdf5::h5read(gctx_path, name=name) # returns a list
+    raw_annots <- h5read(gctx_path, name=name) # returns a list
     fields <- names(raw_annots)
     # define an empty data frame of the correct dimensions
-    annots <-  data.frame(matrix(nrow=length(raw_annots[[fields[1]]]), ncol=length(fields)))
+    annots <-  data.frame(matrix(nrow=length(raw_annots[[fields[1]]]),
+                                 ncol=length(fields)))
     names(annots) <-  fields
     # loop through each field and fill the annots data.frame
     for (i in 1:length(fields)) {
@@ -238,7 +219,7 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
         name <- "0/META/COL/id"
     }
     # remove any spaces
-    ids <- gsub("\\s*$", "", rhdf5::h5read(gctx_path, name=name), perl=T)
+    ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=T)
     # cast as character
     ids <- as.character(ids)
     return(ids)
@@ -275,23 +256,28 @@ process_ids <- function(ids, all_ids, type="rid") {
             is_invalid_idx <- (idx > length(all_ids)) | (idx <= 0)
             invalid_idx <- idx[is_invalid_idx]
             if (all(is_invalid_idx)) {
-                stop(paste("none of the requested", type, "indices were found in the dataset"))
+                stop(paste("none of the requested", type,
+                           "indices were found in the dataset"))
             }
             if (any(is_invalid_idx)) {
                 # requested indices are outside of the possible range
-                warning(paste("the following ", type, " were are outside possible range and will be ignored:\n",
-                              paste(invalid_idx, collapse="\n"), sep=""))
+                warning(paste(
+                    "the following ", type,
+                    " were are outside possible range and will be ignored:\n",
+                    paste(invalid_idx, collapse="\n"), sep=""))
             }
             idx <- idx[!is_invalid_idx]
         } else {
             # assume its a character
             idx <- match(ids, all_ids)
             if (all(is.na(idx))) {
-                stop(paste("none of the requested", type, "were found in the dataset"))
+                stop(paste("none of the requested", type,
+                           "were found in the dataset"))
             }
             if (any(is.na(idx))) {
                 ids_not_found <- ids[is.na(idx)]
-                warning(paste("the following ", type, " were not found and will be ignored:\n",
+                warning(paste("the following ", type,
+                              " were not found and will be ignored:\n",
                               paste(ids_not_found, collapse="\n"), sep=""))
             }
             idx <- idx[!is.na(idx)]
@@ -307,27 +293,24 @@ process_ids <- function(ids, all_ids, type="rid") {
 }
 
 # define the initialization method for the GCT class
-methods::setMethod("initialize", signature = "GCT", definition = function(
+setMethod("initialize", signature = "GCT", definition = function(
     .Object, mat=NULL, rdesc=NULL, cdesc=NULL, src=NULL, rid=NULL, cid=NULL,
     set_annot_rownames=F, matrix_only=F) {
     # if we were supplied a matrix and annotations, use them
     if (!is.null(mat)) {
         .Object@mat <- mat
         # if given rid and cid, use those as well
-        if (!is.null(rid)) {
+        if (!is.null(rid))
             .Object@rid <- rid
-        } else {
+        else
             .Object@rid <- rownames(mat)
-        }
-        if (!is.null(cid)) {
+
+        if (!is.null(cid))
             .Object@cid <- cid
-        } else {
+        else
             .Object@cid <- colnames(mat)
-        }
     }
-    if (!is.null(rdesc)) {
-        .Object@rdesc <- rdesc
-    }
+    if (!is.null(rdesc)) .Object@rdesc <- rdesc
     if (!is.null(cdesc)) {
         .Object@cdesc <- cdesc
     } else if (!is.null(src)) {
@@ -394,10 +377,8 @@ methods::setMethod("initialize", signature = "GCT", definition = function(
                 cdesc = header[,-(nrhd+1):-1]
                 # need to transpose in the case where there's only one column
                 # annotation
-                if ( nchd == 1 )
-                    cdesc = t(cdesc)
-            }
-            else {
+                if ( nchd == 1 ) cdesc = t(cdesc)
+            } else {
                 chd = NULL
                 cdesc = data.frame()
             }
@@ -464,9 +445,9 @@ methods::setMethod("initialize", signature = "GCT", definition = function(
             processed_rids <- process_ids(rid, all_rid, type="rid")
             processed_cids <- process_ids(cid, all_cid, type="cid")
             # read the data matrix
-            .Object@mat <- rhdf5::h5read(src, name="0/DATA/0/matrix",
-                                         index=list(processed_rids$idx,
-                                                    processed_cids$idx))
+            .Object@mat <- h5read(src, name="0/DATA/0/matrix",
+                                  index=list(processed_rids$idx,
+                                             processed_cids$idx))
             # set the row and column ids, casting as characters
             .Object@rid <- processed_rids$ids
             .Object@cid <- processed_cids$ids
@@ -480,26 +461,32 @@ methods::setMethod("initialize", signature = "GCT", definition = function(
                 .Object@cdesc <- read.gctx.meta(
                     src, dimension="col", ids=processed_cids$ids,
                     set_annot_rownames=set_annot_rownames)
-            }
-            else {
+            } else {
                 .Object@rdesc <- data.frame(id=.Object@rid,
                                             stringsAsFactors = F)
                 .Object@cdesc <- data.frame(id=.Object@cid,
                                             stringsAsFactors = F)
             }
             # close any open handles and return the object
-            if(utils::packageVersion('rhdf5') < "2.23.0") {
-                rhdf5::H5close()
-            } else {
-                rhdf5::h5closeAll()
-            }
+            closeOpenHandles()
             message("done")
         }
     }
     # finally, make sure object is valid before returning
-    ok <- methods::validObject(.Object)
+    ok <- validObject(.Object)
     return(.Object)
 })
+
+#' Close open handles
+#'
+#' @importFrom utils packageVersion
+#' @importFrom rhdf5 H5close h5closeAll
+closeOpenHandles <- function() {
+    if(packageVersion('rhdf5') < "2.23.0")
+        H5close()
+    else
+        h5closeAll()
+}
 
 #' Parse a GCTX file into the workspace as a GCT object
 #'
@@ -518,6 +505,8 @@ methods::setMethod("initialize", signature = "GCT", definition = function(
 #' @param matrix_only boolean indicating whether to parse only
 #'   the matrix (ignoring row and column annotations)
 #'
+#' @importFrom methods new
+#'
 #' @details \code{parse.gctx} also supports parsing of plain text
 #'   GCT files, so this function can be used as a general GCT parser.
 #'
@@ -533,17 +522,17 @@ methods::setMethod("initialize", signature = "GCT", definition = function(
 #'
 #' @family GCTX parsing functions
 #' @export
-parse.gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=F,
-                       matrix_only=F) {
-    ds <- methods::new("GCT", src = fname, rid = rid, cid = cid,
-                       set_annot_rownames = set_annot_rownames,
-                       matrix_only = matrix_only)
+parse.gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=FALSE,
+                       matrix_only=FALSE) {
+    ds <- new("GCT", src = fname, rid = rid, cid = cid,
+              set_annot_rownames = set_annot_rownames,
+              matrix_only = matrix_only)
     return(ds)
 }
 
 # utils.R ----------------------------------------------------------------------
 
-#' Check whether \code{test_names} are columns in the \code{\link{data.frame}} df
+#' Check whether \code{test_names} are columns in the \code{\link{data.frame}}
 #' @param test_names a vector of column names to test
 #' @param df the \code{\link{data.frame}} to test against
 #' @param throw_error boolean indicating whether to throw an error if
@@ -552,7 +541,7 @@ parse.gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=F,
 #'   columns of \code{df}
 #' @examples
 #' check_colnames(c("pert_id", "pert_iname"), cdesc_char)            # TRUE
-#' check_colnames(c("pert_id", "foobar"), cdesc_char, throw_error=FALSE) # FALSE, suppress error
+#' check_colnames(c("pert_id", "foobar"), cdesc_char, throw_error=FALSE) # FALSE
 #' @export
 check_colnames <- function(test_names, df, throw_error=T) {
     # check whether test_names are valid names in df
@@ -560,13 +549,14 @@ check_colnames <- function(test_names, df, throw_error=T) {
     diffs <- setdiff(test_names, names(df))
     if (length(diffs) > 0) {
         if (throw_error) {
-            stop(paste("the following column names are not found in", deparse(substitute(df)), ":",
+            stop(paste("the following column names are not found in",
+                       deparse(substitute(df)), ":",
                        paste(diffs, collapse=" "), "\n"))
         } else {
-            return(F)
+            return(FALSE)
         }
     } else {
-        return(T)
+        return(TRUE)
     }
 }
 
