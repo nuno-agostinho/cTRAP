@@ -55,20 +55,7 @@ downloaded by typing:
 gene <- "EIF4G1"
 cellLine <- "HepG2"
 
-library(ENCODExplorer)
-data(encode_df, package = "ENCODExplorer")
-query_results <- queryEncode(
-    df=encode_df, organism="Homo sapiens", lab="ENCODE Processing Pipeline",
-    biosample_name=cellLine, target=gene, 
-    assay=c("shRNA RNA-seq", "siRNA RNA-seq"), fixed=TRUE)
-query_results <- query_results[
-    query_results$output_type == "gene quantifications", ]
-
-ENCODEfile <- "~/Documents/L1000_drug_signature/L1000_Rpackage/ENCODE/ENCODE_knockdown_controls.tsv"
-
-ENCODEmetadata <- loadENCODEmetadata(ENCODEfile, cellLine=cellLine, gene=gene,
-                                     lab="ENCODE Processing Pipeline",
-                                     outputType="gene quantifications")
+ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 table(ENCODEmetadata$`Experiment target`)
 length(unique(ENCODEmetadata$`Experiment target`))
 
