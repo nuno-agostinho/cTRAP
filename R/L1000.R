@@ -100,6 +100,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
     res <- data.table(names(cor), cor, pval, qval)
     names(res) <- c("genes", sprintf("%s_t_%s_%s", cellLine, method,
                                      c("coef", "pvalue", "qvalue")))
+    attr(res, "perturbation") <- ref
     return(res)
 }
 
@@ -200,6 +201,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
         cellLineRes <- lapply(cellLines, performGSAperCellLine, countTable,
                               perturbations, gsc)
         colnameSuffix <- "_WTCS"
+        pathways <- gsc$gsc
     }
     names(cellLineRes) <- cellLines
 
@@ -216,6 +218,9 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
 
     rownames(data) <- data$genes
     attr(data, "method") <- method
+    attr(data, "diffExprGenes") <- diffExprGenes
+    attr(data, "perturbations") <- perturbations
+    if (method == "gsea") attr(data, "pathways") <- pathways
     class(data) <- c("L1000comparison", class(data))
     return(data)
 }
