@@ -480,12 +480,13 @@ setMethod("initialize", signature = "GCT", definition = function(
 #' Close open handles
 #'
 #' @importFrom utils packageVersion
-#' @importFrom rhdf5 H5close h5closeAll
+#'
+#' @return Closes all open identifiers
 closeOpenHandles <- function() {
     if(packageVersion('rhdf5') < "2.23.0")
-        H5close()
+        rhdf5::H5close()
     else
-        h5closeAll()
+        rhdf5::h5closeAll()
 }
 
 #' Parse a GCTX file into the workspace as a GCT object

@@ -4,8 +4,8 @@
 \alias{parse.gctx}
 \title{Parse a GCTX file into the workspace as a GCT object}
 \usage{
-parse.gctx(fname, rid = NULL, cid = NULL, set_annot_rownames = F,
-  matrix_only = F)
+parse.gctx(fname, rid = NULL, cid = NULL, set_annot_rownames = FALSE,
+  matrix_only = FALSE)
 }
 \arguments{
 \item{fname}{path to the GCTX file on disk}

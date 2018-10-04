@@ -4,7 +4,7 @@
 \alias{plot.L1000comparison}
 \title{Plot L1000 data comparison}
 \usage{
-plot.L1000comparison(object, perturbationID, topGenes = TRUE)
+\method{plot}{L1000comparison}(object, perturbationID, topGenes = TRUE)
 }
 \arguments{
 \item{object}{\code{L1000 comparison} object}

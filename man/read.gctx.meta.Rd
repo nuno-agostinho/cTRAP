@@ -5,7 +5,7 @@
 \title{Parse row or column metadata from GCTX files}
 \usage{
 read.gctx.meta(gctx_path, dimension = "row", ids = NULL,
-  set_annot_rownames = T)
+  set_annot_rownames = TRUE)
 }
 \arguments{
 \item{gctx_path}{the path to the GCTX file}
@@ -34,7 +34,8 @@ str(row_meta)
 col_meta <- read.gctx.meta(gct_file, dimension="column")
 str(col_meta)
 # now for only the first 10 ids
-col_meta_first10 <- read.gctx.meta(gct_file, dimension="column", ids=col_meta$id[1:10])
+col_meta_first10 <- read.gctx.meta(gct_file, dimension="column",
+                                   ids=col_meta$id[1:10])
 str(col_meta_first10)
 
 }
