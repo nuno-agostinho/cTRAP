@@ -23,10 +23,14 @@ loadL1000metadata <- function(l1000metadataFile) {
 
 #' List available conditions in L1000 datasets
 #'
+#' Downloads metadata if not available
+#'
 #' @inheritParams loadL1000metadata
 #'
 #' @export
 #' @return List of conditions in L1000 datasets
+#' @examples
+#' getL1000Conditions("L1000metadata.txt")
 getL1000Conditions <- function(l1000metadataFile) {
     info <- loadL1000metadata(l1000metadataFile)
 
@@ -72,6 +76,8 @@ calculateStatistics <- function(perturbations, cellLine, gene, coef) {
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom data.table data.table
+#'
+#' @return Data frame with correlations statistics, p-value and q-value
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
                                  method) {
     cat(paste("Comparing with cell line", cellLine), fill=TRUE)
@@ -206,7 +212,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
     names(cellLineRes) <- cellLines
 
     # Merge results per cell line
-    merged <- data.table(genes=unique(geneAnnot$`Associated Gene Name`))
+    merged <- data.table(genes=unique(names(diffExprGenes)))
     for (i in seq(cellLines))
         merged <- merge(merged, cellLineRes[[i]], all=TRUE, on="genes")
 

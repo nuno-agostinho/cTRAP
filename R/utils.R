@@ -1,17 +1,15 @@
 #' Perform differential gene expression based on ENCODE data
 #'
 #' @param counts Data frame: gene expression
-#' @param geneAnnot Data frame: gene annotation
 #'
 #' @importFrom stats model.matrix aggregate
 #' @importFrom limma voom lmFit eBayes topTable
-#' @importFrom AnnotationDbi select keys
-#' @importFrom org.Hs.eg.db org.Hs.eg.db org.Hs.egENSEMBL2EG
+#' @importFrom biomaRt useDataset getBM useMart
 #'
 #' @export
 #' @return Data frame with differential gene expression results between
 #' knockdown and control
-performDifferentialExpression <- function(counts, geneAnnot) {
+performDifferentialExpression <- function(counts) {
     counts <- data.frame(counts)
     rownames(counts) <- counts$gene_id
 
@@ -34,11 +32,12 @@ performDifferentialExpression <- function(counts, geneAnnot) {
                         sort.by = "logFC", resort.by = "p")
 
     # Convert to gene symbol
-    geneConversion <- suppressMessages(
-        select(org.Hs.eg.db, keys=keys(org.Hs.egENSEMBL2EG),
-               columns=c("ENSEMBL", "SYMBOL"), keytype="ENSEMBL"))
-    results$Gene_symbol <- geneConversion$SYMBOL[
-        match(gsub("\\..*", "", rownames(results)), geneConversion$ENSEMBL)]
+    mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+    genes <- sapply(strsplit(rownames(results), "\\."), `[`, 1)
+    geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
+                            attributes=c("ensembl_gene_id", "hgnc_symbol"))
+    results$Gene_symbol <- geneConversion$hgnc_symbol[
+        match(genes, geneConversion$ensembl_gene_id)]
 
     # Mean-aggregation per gene symbol to compare unique gene knockdowns
     results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,

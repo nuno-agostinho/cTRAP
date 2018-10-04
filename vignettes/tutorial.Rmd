@@ -73,13 +73,8 @@ minSamples <- 2
 filter <- rowSums(counts[ , 3:6] >= minReads) >= minSamples
 counts <- counts[filter, ]
 
-# Load gene annotation
-geneAnnot <- data.table::fread(
-    "/genedata/Resources/Annotations/GeneAnnotation.Human.Ensembl81.txt",
-    na.strings=c("NA", "na", "n.a.", ""))
-
 # Perform differential gene expression analysis
-diffExpr <- performDifferentialExpression(counts, geneAnnot)
+diffExpr <- performDifferentialExpression(counts)
 ```
 
 As our metric of differential expression after EIF4G1 shRNA knock-down, we will 
@@ -189,7 +184,7 @@ compareKnockdown$gsea_ordered <- compareKnockdown$gsea[
     order(compareKnockdown$gsea$HepG2_WTCS, decreasing=FALSE)]
 
 # Most positively associated perturbations (note that EIF4G1 knockdown is the 
-# 6th, 1st and 1st most positively associated perturbation based on Spearman
+# 6th, 1st and 2nd most positively associated perturbation based on Spearman
 # correlation, Pearson correlation and GSEA, respectively)
 head(compareKnockdown$spearman_ordered)
 head(compareKnockdown$pearson_ordered)
