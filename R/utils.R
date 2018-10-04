@@ -1,4 +1,4 @@
-#' Perform differential gene expression
+#' Perform differential gene expression based on ENCODE data
 #'
 #' @param counts Data frame: gene expression
 #' @param geneAnnot Data frame: gene annotation
@@ -6,6 +6,7 @@
 #' @importFrom stats model.matrix aggregate
 #' @importFrom limma voom lmFit eBayes topTable
 #'
+#' @export
 #' @return Data frame with differential gene expression results between
 #' knockdown and control
 performDifferentialExpression <- function(counts, geneAnnot) {

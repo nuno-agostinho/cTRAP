@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{performDifferentialExpression}
 \alias{performDifferentialExpression}
-\title{Perform differential gene expression}
+\title{Perform differential gene expression based on ENCODE data}
 \usage{
 performDifferentialExpression(counts, geneAnnot)
 }
@@ -16,5 +16,5 @@ Data frame with differential gene expression results between
 knockdown and control
 }
 \description{
-Perform differential gene expression
+Perform differential gene expression based on ENCODE data
 }

@@ -281,7 +281,8 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
         paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                "format=file&file=GSE92742%5FBroad%5FLINCS%5FLevel5%5FCOMPZ%2",
                "EMODZ%5Fn473647x12328%2Egctx%2Egz"))
-    selected_ds <- cmapR::parse.gctx(l1000zscoresFile, cid=sig_ids)@mat
+    selected_ds <- new("GCT", src=l1000zscoresFile, rid=NULL, cid=sig_ids,
+        set_annot_rownames=FALSE, matrix_only=FALSE)@mat
 
     if (sanitizeCompoundNames) {
         # Change colnames per drug
