@@ -52,7 +52,7 @@ interest. The RNA-seq processed data (gene quantifications from RSEM method) for
 the EIF4G1 knock-down and respective controls (two replicates each) can be
 downloaded by typing:
 
-```{r}
+```{r, eval=F}
 gene <- "EIF4G1"
 cellLine <- "HepG2"
 
@@ -71,7 +71,7 @@ Gene expression data (read counts) were quantile-normalized using [`voom`][voom]
 and differential expression analysis was performed using the [`limma`][limma] R
 package.
 
-```{r}
+```{r, eval=F}
 # Remove low coverage (at least 10 counts shared across two samples)
 minReads   <- 10
 minSamples <- 2
@@ -90,7 +90,7 @@ diffExpr <- performDifferentialExpression(counts, geneAnnot)
 As our metric of differential expression after EIF4G1 shRNA knock-down, we will 
 use the respective t-statistic.
 
-```{r}
+```{r, eval=F}
 # Get t-statistics of differential expression with respective gene names
 diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
@@ -106,7 +106,7 @@ all cell lines. Differential gene expression for each Connectivity Map's
 perturbations are available in z-score normalised values (see Subramanian et 
 al., Cell 2017 for more details).
 
-```{r}
+```{r, eval=F}
 # Check available conditions for L1000 perturbations
 getL1000Conditions("L1000metadata.txt")
 
@@ -122,7 +122,7 @@ gene expression z-scores for each small molecule perturbation in HepG2 (given a
 specific concentration and time point of RNA extraction) through the following
 command:
 
-```{r}
+```{r, eval=F}
 # View(loadL1000metadata("L1000metadata.txt"))
 
 l1000perturbationsSmallMolecules <- loadL1000perturbations(
@@ -142,7 +142,7 @@ the perturbations we have loaded using the three different methods available
 (ranked by the user's t-statistic) as gene sets, but this can be changed by the
 user.
 
-```{r}
+```{r, eval=F}
 compareKnockdown <- list()
 
 # Compare against L1000 using Spearman correlation
@@ -161,7 +161,7 @@ compareKnockdown$gsea <- compareAgainstL1000(
 
 In case of small molecules:
 
-```{r}
+```{r, eval=F}
 compareSmallMolecule <- list()
 # Compare against L1000 using Spearman correlation
 compareSmallMolecule$spearman <- compareAgainstL1000(
@@ -184,7 +184,7 @@ comparison with each perturbation tested, including the test statistics
 correlation coefficient or GSEA Enrichment Score), the respective p-value and 
 the Benjamini-Hochberg-adjusted p-value.
 
-```{r}
+```{r, eval=F}
 # Order knockdown perturbations according to similarity
 compareKnockdown$spearman_ordered <- compareKnockdown$spearman[
     order(compareKnockdown$spearman$HepG2_t_spearman_coef, decreasing=TRUE)]
@@ -208,7 +208,7 @@ tail(compareKnockdown$gsea_ordered)
 
 Now for the small molecules:
 
-```{r}
+```{r, eval=F}
 # Order small molecule perturbations according to similarity
 compareSmallMolecule$spearman_ordered <- compareSmallMolecule$spearman[
     order(compareSmallMolecule_spearman$HepG2_t_spearman_coef, decreasing=TRUE)]
@@ -237,7 +237,7 @@ plot (in case of Spearman and Pearson analyses) or a GSEA plot.
 Below you can see how to plot the relationship between the ENCODE's EIF4G1 shRNA
 knockdown with the perturbations of interest.
 
-```{r}
+```{r, eval=F}
 # Plot relationship with EIFG4G1 knockdown
 EIF4G1knockdown <- compareKnockdown$gsea_ordered[1]$genes
 plot(compareKnockdown$spearman, EIF4G1knockdown)
@@ -255,7 +255,7 @@ plot(compareKnockdown$gsea,
 
 In case of small molecules:
 
-```{r}
+```{r, eval=F}
 # Plot relationship with most similar perturbation
 plot(compareSmallMolecule$spearman,
      head(compareSmallMolecule$spearman_ordered, 1)$genes)
@@ -283,8 +283,6 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
 >
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
-
-# References
 
 [iMM]: http://imm.medicina.ulisboa.pt/group/distrans/
 [ENCODE]: https://www.encodeproject.org/
