@@ -6,7 +6,7 @@
 \usage{
 loadL1000perturbations(l1000metadataFile, l1000zscoresFile, l1000geneFile,
   cellLine = NULL, timepoint = NULL, dosage = NULL,
-  perturbationType = NULL)
+  perturbationType = NULL, sanitizeCompoundNames = FALSE)
 }
 \arguments{
 \item{l1000metadataFile}{Character: filepath to L1000 metadata}
@@ -21,6 +21,8 @@ loadL1000perturbations(l1000metadataFile, l1000zscoresFile, l1000geneFile,
 
 \item{perturbationType}{Character: type of perturbation (if \code{NULL}, all
 perturbation types are loaded)}
+
+\item{sanitizeCompoundNames}{Boolean: replace identifiers with compound names}
 }
 \value{
 Perturbation data from L1000 as a data table

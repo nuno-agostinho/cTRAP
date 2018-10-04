@@ -1,5 +1,3 @@
-
-
 #' Load L1000 metadata
 #'
 #' The data will be downloaded if not available
@@ -41,24 +39,6 @@ getL1000Conditions <- function(l1000metadataFile) {
          "Time points"=unique(info$pert_itime))
 }
 
-#' Load data from L1000 files
-#'
-#' @param cellLine Character: cell line
-#' @param timepoint Character: time point
-#' @param folder Character: folder where L1000 files are stored
-#'
-#' @importFrom data.table fread setnames
-#'
-#' @return L1000 file as a data table
-loadL1000file <- function(cellLine, timepoint, folder) {
-    file <- file.path(folder, sprintf(
-        "L1000_condition_%sh_%s_zscores_Diff_expr.txt", timepoint, cellLine))
-    header <- read.table(file, header = TRUE, nrow = 1)
-    perturbationList <- fread(file, skip=1, header=FALSE)
-    setnames(perturbationList, c("Gene", colnames(header)))
-    return(perturbationList)
-}
-
 #' Calculate statistics
 #'
 #' @param perturbations
@@ -95,30 +75,31 @@ calculateStatistics <- function(perturbations, cellLine, gene, coef) {
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
                                  method) {
     cat(paste("Comparing with cell line", cellLine), fill=TRUE)
-    perturbation <- perturbations[[cellLine]]
+    perturbation <- perturbations[
+        , tolower(attr(perturbations, "cellLines")) == tolower(cellLine)]
 
     # Select intersecting genes
-    genes <- intersect(names(diffExprGenes), perturbation$Gene)
+    genes <- intersect(names(diffExprGenes), rownames(perturbation))
     diffExprGenes <- diffExprGenes[genes]
 
-    setkeyv(perturbation, "Gene")
-    ref  <- perturbation[genes, ]
+    # setkeyv(perturbation, "Gene")
+    # genesKey <- match(rownames(perturbation), genes)
+    # genesKey <- genesKey[!is.na(genesKey)]
+    ref <- perturbation[genes, ]
 
     # Suppress warnings to avoid "Cannot compute exact p-value with ties"
     cors <- suppressWarnings(
-        pblapply(seq(ncol(ref))[-1],
-                 function(k) cor.test(ref[[k]], diffExprGenes, method=method)))
+        pblapply(seq(ncol(ref)),
+                 function(k) cor.test(ref[ , k], diffExprGenes, method=method)))
 
     cor <- sapply(cors, "[[", "estimate")
-    names(cor) <- colnames(perturbation)[-c(1)]
-
     pval <- sapply(cors, "[[", "p.value")
-    names(pval) <- colnames(perturbation)[-c(1)]
+    qval <- p.adjust(pval)
+    names(cor) <- names(pval) <- names(qval) <- colnames(perturbation)
 
-    res <- data.table(names(cor), cor, pval)
-    names(res) <- c("genes",
-                    sprintf("%s_t_%s_coef",   cellLine, method),
-                    sprintf("%s_t_%s_pvalue", cellLine, method))
+    res <- data.table(names(cor), cor, pval, qval)
+    names(res) <- c("genes", sprintf("%s_t_%s_%s", cellLine, method,
+                                     c("coef", "pvalue", "qvalue")))
     return(res)
 }
 
@@ -132,39 +113,40 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' cell line
 performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
-    perturbation  <- perturbations[[cellLine]]
+    perturbation <- perturbations[
+        , tolower(attr(perturbations, "cellLines")) == tolower(cellLine)]
 
     # Run GSA with top 150 genes
     performGSAwithPerturbationSignature <- function(k, perturbation, gsc) {
-        signature <- perturbation[[k]]
-        names(signature) <- perturbation$Gene
-        fgsea(pathways = gsc$gsc, stats = sort(signature),
-              minSize = 15, maxSize = 500, nperm = 1)
+        signature <- perturbation[ , k]
+        names(signature) <- rownames(perturbation)
+        fgsea(pathways=gsc$gsc, stats=sort(signature),
+              minSize=15, maxSize=500, nperm=1)
     }
 
     cat("Performing GSA using perturbation signatures...", fill=TRUE)
-    gsaRes <- pblapply(2:ncol(perturbation),
-                       performGSAwithPerturbationSignature, perturbation, gsc)
-    # gsaRes <- plyr::compact(gsaRes) # in case of NULL elements
-    names(gsaRes) <- names(perturbation)[2:ncol(perturbation)]
+    gsa <- pblapply(seq(ncol(perturbation)),
+                    performGSAwithPerturbationSignature, perturbation, gsc)
+    # gsa <- plyr::compact(gsa) # in case of NULL elements
+    names(gsa) <- colnames(perturbation)[seq(ncol(perturbation))]
 
-    gsaRes_result <- cbind(genes=rep(names(gsaRes), each=2), rbind.fill(gsaRes))
+    gsaRes <- cbind(genes=rep(names(gsa), each=2), rbind.fill(gsa))
 
     # based on L1000 paper (page e8) - weighted connectivity score (WTCS)
     ES_list <- c()
-    for (geneID in unique(gsaRes_result$genes)) {
-        geneID_GSA  <- gsaRes_result[gsaRes_result$genes %in% geneID, ]
+    for (geneID in unique(gsaRes$genes)) {
+        geneID_GSA  <- gsaRes[gsaRes$genes %in% geneID, ]
         topGenes    <- geneID_GSA$ES[grepl("top", geneID_GSA$pathway)]
         bottomGenes <- geneID_GSA$ES[grepl("bottom", geneID_GSA$pathway)]
 
         if (sign(topGenes) == sign(bottomGenes))
-            ES_final=0
+            ES_final <- 0
         else if (sign(topGenes) != sign(bottomGenes))
-            ES_final = (topGenes - bottomGenes) / 2
+            ES_final <- (topGenes - bottomGenes) / 2
         ES_list <- c(ES_list, ES_final)
     }
 
-    names(ES_list) <- unique(gsaRes_result[["genes"]])
+    names(ES_list) <- unique(gsaRes[["genes"]])
     results <- data.table(names(ES_list), ES_list)
     names(results)[1:2] <- c("genes", paste0(cellLine, "_WTCS"))
     return(results)
@@ -226,12 +208,15 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
     for (i in seq(cellLines))
         merged <- merge(merged, cellLineRes[[i]], all=TRUE, on="genes")
 
-    browser()
     data <- merged[rowSums(is.na(merged)) != ncol(merged) - 1, ]
 
     # Add mean calculated across cell lines
     data[ , paste0("Average", colnameSuffix)] <- rowMeans(
         data[ , grep(colnameSuffix, names(data)), with=FALSE], na.rm=TRUE)
+
+    rownames(data) <- data$genes
+    attr(data, "method") <- method
+    class(data) <- c("L1000comparison", class(data))
     return(data)
 }
 
@@ -259,6 +244,7 @@ calculate <- function(perturbations, cellLines, gene) {
 #' @param dosage Character: dosage (if \code{NULL}, all values are loaded)
 #' @param perturbationType Character: type of perturbation (if \code{NULL}, all
 #' perturbation types are loaded)
+#' @param sanitizeCompoundNames Boolean: replace identifiers with compound names
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -267,7 +253,8 @@ calculate <- function(perturbations, cellLines, gene) {
 #' @return Perturbation data from L1000 as a data table
 loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
                                    l1000geneFile, cellLine=NULL, timepoint=NULL,
-                                   dosage=NULL, perturbationType=NULL) {
+                                   dosage=NULL, perturbationType=NULL,
+                                   sanitizeCompoundNames=FALSE) {
     metadata <- loadL1000metadata(l1000metadataFile)
 
     # Filter elements of interest
@@ -294,12 +281,13 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
         paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                "format=file&file=GSE92742%5FBroad%5FLINCS%5FLevel5%5FCOMPZ%2",
                "EMODZ%5Fn473647x12328%2Egctx%2Egz"))
-    selected_ds <- new("GCT", rid=NULL, cid=sig_ids, set_annot_rownames=FALSE,
-                       matrix_only=FALSE)
+    selected_ds <- cmapR::parse.gctx(l1000zscoresFile, cid=sig_ids)@mat
 
-    # Change colnames per drug
-    colnames(selected_ds) <- metadata$pert_iname[
-        match(colnames(selected_ds), metadata$sig_id)]
+    if (sanitizeCompoundNames) {
+        # Change colnames per drug
+        colnames(selected_ds) <- metadata$pert_iname[
+            match(colnames(selected_ds), metadata$sig_id)]
+    }
 
     # Change rownames
     downloadIfNeeded(
@@ -312,6 +300,8 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
     rownames(selected_ds) <- geneInfo$pr_gene_symbol[
         match(rownames(selected_ds), geneInfo$pr_gene_id)]
 
+    # Add attribute containing cell lines
+    attr(selected_ds, "cellLines") <- metadata$cell_id
     return(selected_ds)
 }
 
