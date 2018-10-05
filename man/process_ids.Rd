@@ -5,7 +5,7 @@
 \title{Return a subset of requested GCTX row/colum ids
 out of the universe of all ids}
 \source{
-
+https://github.com/cmap/cmapR
 }
 \usage{
 process_ids(ids, all_ids, type = "rid")
@@ -34,13 +34,13 @@ This is a low-level helper function
 \examples{
 gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
 ids <- read.gctx.ids(gct_file)
-processed_ids <- cmapR:::process_ids(ids[1:10], ids)
+processed_ids <- l1000:::process_ids(ids[1:10], ids)
 str(processed_ids)
 
 }
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{parse.gctx}}, \code{\link{read.gctx.ids}},
+  \code{\link{parse_gctx}}, \code{\link{read.gctx.ids}},
   \code{\link{read.gctx.meta}}
 }
 \concept{GCTX parsing functions}

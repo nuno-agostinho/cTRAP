@@ -4,7 +4,15 @@
 \alias{performGSAperCellLine}
 \title{Perform gene set enrichment (GSA) per cell line}
 \usage{
-performGSAperCellLine(cellLine, countTable, perturbations, gsc)
+performGSAperCellLine(cellLine, perturbations, pathways)
+}
+\arguments{
+\item{cellLine}{Character: cell line(s)}
+
+\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+perturbations (check \code{\link{loadL1000perturbations}})}
+
+\item{pathways}{List of gene sets to check.}
 }
 \value{
 Data frame containing gene set enrichment analysis (GSEA) results per

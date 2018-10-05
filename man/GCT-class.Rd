@@ -30,8 +30,8 @@ The GCT class serves to represent annotated
 }}
 
 \seealso{
-\code{\link{parse.gctx}}, \code{\link{write.gctx}},
+\code{\link{parse_gctx}},
 \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
 
-\link{http://clue.io/help} for more information on the GCT format
+\url{http://clue.io/help} for more information on the GCT format
 }

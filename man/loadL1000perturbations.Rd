@@ -13,6 +13,8 @@ loadL1000perturbations(l1000metadataFile, l1000zscoresFile, l1000geneFile,
 
 \item{l1000zscoresFile}{Character: path to GCTX z-scores file}
 
+\item{l1000geneFile}{Character: path to L1000 gene file}
+
 \item{cellLine}{Character: cell line (if \code{NULL}, all values are loaded)}
 
 \item{timepoint}{Character: timepoint (if \code{NULL}, all values are loaded)}

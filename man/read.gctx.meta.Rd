@@ -44,7 +44,7 @@ str(col_meta_first10)
 }
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{parse.gctx}}, \code{\link{process_ids}},
+  \code{\link{parse_gctx}}, \code{\link{process_ids}},
   \code{\link{read.gctx.ids}}
 }
 \concept{GCTX parsing functions}

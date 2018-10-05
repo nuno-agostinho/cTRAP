@@ -37,6 +37,9 @@ Available perturbation conditions for L1000 include:
     \item{Time points.}
 }
 
+Values for each perturbation type can be listed with
+\code{getL1000PerturbationTypes()}
+
 \strong{Output:} The output includes a data frame of ranked perturbations
 based on the associated statistical values and respective p-values.
 }

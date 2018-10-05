@@ -30,13 +30,13 @@ This is a low-level helper function
 \examples{
 # meta data table with all character types
 str(cdesc_char)
-fixed <- cmapR:::fix.datatypes(cdesc_char)
+fixed <- l1000:::fix.datatypes(cdesc_char)
 # note how some column classes have changed
 str(fixed)
 
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{parse.gctx}},
+Other GCTX parsing functions: \code{\link{parse_gctx}},
   \code{\link{process_ids}}, \code{\link{read.gctx.ids}},
   \code{\link{read.gctx.meta}}
 }

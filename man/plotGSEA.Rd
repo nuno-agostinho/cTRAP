@@ -4,9 +4,14 @@
 \alias{plotGSEA}
 \title{Plot gene set enrichment analysis (GSEA)}
 \usage{
-plotGSEA(pathway, stats, gseaParam = 1, ticksSize = 0.4,
-  axis_title_size = 12, axis_text_size = 10, plot_title_size = 14,
-  title = "GSEA plot", point_size = 0.1)
+plotGSEA(pathways, stats, title = "GSEA plot")
+}
+\arguments{
+\item{pathways}{List of gene sets to check.}
+
+\item{stats}{Named vector of gene-level stats. Names should be the same as in 'pathways'}
+
+\item{title}{Character: plot title}
 }
 \value{
 Grid of plots illustrating a GSEA plot

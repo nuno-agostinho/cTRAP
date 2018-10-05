@@ -7,10 +7,15 @@
 correlatePerCellLine(cellLine, diffExprGenes, perturbations, method)
 }
 \arguments{
-\item{cellLine}{Character: cell line}
+\item{cellLine}{Character: cell line(s)}
 
-\item{diffExprGenes}{Numeric vector: statistic for differentially expressed
-genes}
+\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
+where the name of the vector are gene names and the values are a statistic
+that represents significance and magnitude of differentially expressed
+genes (e.g. t-statistics)}
+
+\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+perturbations (check \code{\link{loadL1000perturbations}})}
 
 \item{method}{Character: correlation method}
 }

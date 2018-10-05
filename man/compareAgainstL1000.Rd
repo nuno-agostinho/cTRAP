@@ -4,14 +4,22 @@
 \alias{compareAgainstL1000}
 \title{Compare against L1000 datasets}
 \usage{
-compareAgainstL1000(diffExprGenes, perturbations, cellLines,
+compareAgainstL1000(diffExprGenes, perturbations, cellLine,
   method = c("spearman", "pearson", "gsea"), geneSize = 150)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
 where the name of the vector are gene names and the values are a statistic
-that represents significance and magnitude of differentially expressed genes
-(e.g. t-statistics)}
+that represents significance and magnitude of differentially expressed
+genes (e.g. t-statistics)}
+
+\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+perturbations (check \code{\link{loadL1000perturbations}})}
+
+\item{cellLine}{Character: cell line(s)}
+
+\item{method}{Character: comparison method (\code{spearman}, \code{pearson}
+or \code{gsea})}
 
 \item{geneSize}{Number: top and bottom differentially expressed genes to use
 for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this

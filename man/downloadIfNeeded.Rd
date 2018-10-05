@@ -13,6 +13,9 @@ downloadIfNeeded(file, link, gz = TRUE)
 
 \item{gz}{Boolean: is downloaded file compressed?}
 }
+\value{
+Download file if a file does not exist
+}
 \description{
 Download data if a file does not exist
 }

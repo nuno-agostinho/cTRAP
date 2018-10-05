@@ -8,8 +8,6 @@ loadENCODEgeneExpression(metadata)
 }
 \arguments{
 \item{metadata}{Character: ENCODE metadata}
-
-\item{gene}{Character: gene}
 }
 \value{
 Data frame containing gene read counts
