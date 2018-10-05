@@ -43,39 +43,14 @@ getL1000Conditions <- function(l1000metadataFile) {
          "Time points"=unique(info$pert_itime))
 }
 
-#' Calculate statistics
-#'
-#' @param perturbations
-#' @param cellLine
-#' @param gene
-#' @param coef
-#'
-#' @return List of statistics
-calculateStatistics <- function(perturbations, cellLine, gene, coef) {
-    coef <- paste0(cellLine, coef)
-
-    percentile_vector <- ecdf(unlist(perturbations[, coef, with=FALSE]))
-    perc <- percentile_vector(perturbations[
-        perturbations$genes %in% gene, coef, with=FALSE])
-
-    res <- list(tStat_mean=mean(perturbations[[coef]], na.rm=TRUE),
-                tStat_gene=as.numeric(
-                    perturbations[perturbations$genes %in% gene, coef,
-                                  with=FALSE]),
-                tStat_percentile=perc[[cellLine]])
-    return(res)
-}
-
 #' Correlate differential expression scores per cell line
 #'
-#' @param cellLine Character: cell line
-#' @param diffExprGenes Numeric vector: statistic for differentially expressed
-#' genes
-#' @param perturbations
+#' @inheritParams compareAgainstL1000
 #' @param method Character: correlation method
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom data.table data.table
+#' @importFrom stats cor.test p.adjust
 #'
 #' @return Data frame with correlations statistics, p-value and q-value
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
@@ -112,6 +87,9 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 
 #' Perform gene set enrichment (GSA) per cell line
 #'
+#' @inheritParams compareAgainstL1000
+#' @inheritParams fgsea::fgsea
+#'
 #' @importFrom fgsea fgsea
 #' @importFrom data.table data.table
 #' @importFrom pbapply pblapply
@@ -119,21 +97,21 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #'
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' cell line
-performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
+performGSAperCellLine <- function(cellLine, perturbations, pathways) {
     perturbation <- perturbations[
         , tolower(attr(perturbations, "cellLines")) == tolower(cellLine)]
 
     # Run GSA with top 150 genes
-    performGSAwithPerturbationSignature <- function(k, perturbation, gsc) {
+    performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
         signature <- perturbation[ , k]
         names(signature) <- rownames(perturbation)
-        fgsea(pathways=gsc$gsc, stats=sort(signature),
+        fgsea(pathways=pathways$gsc, stats=sort(signature),
               minSize=15, maxSize=500, nperm=1)
     }
 
     cat("Performing GSA using perturbation signatures...", fill=TRUE)
     gsa <- pblapply(seq(ncol(perturbation)),
-                    performGSAwithPerturbationSignature, perturbation, gsc)
+                    performGSAwithPerturbationSignature, perturbation, pathways)
     # gsa <- plyr::compact(gsa) # in case of NULL elements
     names(gsa) <- colnames(perturbation)[seq(ncol(perturbation))]
 
@@ -162,15 +140,21 @@ performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
 #' Compare against L1000 datasets
 #'
 #' @param diffExprGenes Numeric: named vector of differentially expressed genes
-#' where the name of the vector are gene names and the values are a statistic
-#' that represents significance and magnitude of differentially expressed genes
-#' (e.g. t-statistics)
+#'   where the name of the vector are gene names and the values are a statistic
+#'   that represents significance and magnitude of differentially expressed
+#'   genes (e.g. t-statistics)
 #' @param geneSize Number: top and bottom differentially expressed genes to use
-#' for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
-#' argument does nothing
+#'   for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
+#'   argument does nothing
+#' @param perturbations \code{L1000perturbations} object: file with L1000 loaded
+#'   perturbations (check \code{\link{loadL1000perturbations}})
+#' @param cellLine Character: cell line(s)
+#' @param method Character: comparison method (\code{spearman}, \code{pearson}
+#'   or \code{gsea})
 #'
 #' @importFrom data.table setkeyv
 #' @importFrom piano loadGSC
+#' @importFrom utils head tail
 #'
 #' @export
 #' @examples
@@ -188,12 +172,12 @@ performGSAperCellLine <- function(cellLine, countTable, perturbations, gsc) {
 #'
 #' # Compare against L1000 using gene set enrichment analysis (GSEA)
 #' compareAgainstL1000(diffExprGenes, perturbations, cellLines, method="gsea")
-compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
+compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                                 method=c("spearman", "pearson", "gsea"),
                                 geneSize=150) {
     method <- match.arg(method)
     if (method %in% c("spearman", "pearson")) {
-        cellLineRes <- lapply(cellLines, correlatePerCellLine,
+        cellLineRes <- lapply(cellLine, correlatePerCellLine,
                               diffExprGenes, perturbations, method)
         colnameSuffix <- sprintf("_t_%s_coef", method)
     } else if (method == "gsea") {
@@ -204,16 +188,16 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
             c(topGenes, bottomGenes),
             c(rep(paste0("top", geneSize), geneSize),
               rep(paste0("bottom", geneSize), geneSize))), ncol=2))
-        cellLineRes <- lapply(cellLines, performGSAperCellLine, countTable,
-                              perturbations, gsc)
+        cellLineRes <- lapply(cellLine, performGSAperCellLine, perturbations,
+                              gsc)
         colnameSuffix <- "_WTCS"
         pathways <- gsc$gsc
     }
-    names(cellLineRes) <- cellLines
+    names(cellLineRes) <- cellLine
 
     # Merge results per cell line
     merged <- data.table(genes=unique(names(diffExprGenes)))
-    for (i in seq(cellLines))
+    for (i in seq(cellLine))
         merged <- merge(merged, cellLineRes[[i]], all=TRUE, on="genes")
 
     data <- merged[rowSums(is.na(merged)) != ncol(merged) - 1, ]
@@ -231,25 +215,11 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLines,
     return(data)
 }
 
-calculate <- function(perturbations, cellLines, gene) {
-    if (method %in% c("spearman", "pearson")) {
-        colnameSuffix <- sprintf("_t_%s_coef", method)
-    } else if (method == "gsea") {
-        colnameSuffix <- "_WTCS"
-    }
-
-    cols <- c(cellLines, "Average")
-    outputPerCellLine <- lapply(cols, calculateStatistics,
-                                perturbations=perturbations, gene=gene,
-                                coef=colnameSuffix)
-    names(outputPerCellLine) <- cols
-    return(cbind(Gene=gene, as.data.frame(outputPerCellLine)))
-}
-
 #' Load L1000 perturbation data
 #'
 #' @inheritParams loadL1000metadata
 #' @param l1000zscoresFile Character: path to GCTX z-scores file
+#' @param l1000geneFile Character: path to L1000 gene file
 #' @param cellLine Character: cell line (if \code{NULL}, all values are loaded)
 #' @param timepoint Character: timepoint (if \code{NULL}, all values are loaded)
 #' @param dosage Character: dosage (if \code{NULL}, all values are loaded)
@@ -314,6 +284,7 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
 
     # Add attribute containing cell lines
     attr(selected_ds, "cellLines") <- metadata$cell_id
+    class(selected_ds) <- c("L1000perturbations", class(selected_ds))
     return(selected_ds)
 }
 

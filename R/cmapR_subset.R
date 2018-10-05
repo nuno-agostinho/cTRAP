@@ -17,44 +17,14 @@
 #'   \code{rdesc} and \code{cdesc} slots contain data frames with
 #'   annotations about the rows and columns, respectively
 #'
-#' @seealso \code{\link{parse.gctx}}, \code{\link{write.gctx}},
+#' @seealso \code{\link{parse_gctx}},
 #' \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
-#' @seealso \link{http://clue.io/help} for more information on the GCT format
+#' @seealso \url{http://clue.io/help} for more information on the GCT format
 #'
 #' @source https://github.com/cmap/cmapR
 setClass("GCT", representation(
     mat = "matrix", rid = "character", cid = "character", rdesc = "data.frame",
     cdesc = "data.frame", version = "character", src = "character"))
-
-# set up methods for checking GCT validity
-setValidity("GCT", function(object) {
-    # check whether dimensions of various
-    # slots are in sync
-    nrows <- nrow(object@mat)
-    ncols <- ncol(object@mat)
-    if (nrows != length(object@rid)) {
-        return("rid must be the same length as number of matrix rows")
-    }
-    if (ncols != length(object@cid)) {
-        return("cid must be the same length as number of matrix columns")
-    }
-    if (length(object@cid) > length(unique(object@cid))) {
-        return("cid must be unique")
-    }
-    if (length(object@rid) > length(unique(object@rid))) {
-        return("rid must be unique")
-    }
-    if (nrow(object@cdesc) != ncols & nrow(object@cdesc) != 0) {
-        return(paste("cdesc must either have 0 rows or the same number of rows",
-                     "as matrix has columns"))
-    }
-    if (nrow(object@rdesc) != nrows & nrow(object@rdesc) != 0) {
-        return(paste("rdesc must either have 0 rows or the same number of rows",
-                     "as matrix has rows"))
-    } else {
-        return(TRUE)
-    }
-})
 
 #' Adjust the data types for columns of a meta data frame
 #'
@@ -75,7 +45,7 @@ setValidity("GCT", function(object) {
 #' @examples
 #' # meta data table with all character types
 #' str(cdesc_char)
-#' fixed <- cmapR:::fix.datatypes(cdesc_char)
+#' fixed <- l1000:::fix.datatypes(cdesc_char)
 #' # note how some column classes have changed
 #' str(fixed)
 #'
@@ -148,7 +118,6 @@ fix.datatypes <- function(meta) {
 #' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
-#' @export
 read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
                            set_annot_rownames=TRUE) {
     if (!file.exists(gctx_path)) stop(paste(gctx_path, "does not exist"))
@@ -208,7 +177,6 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
 #' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
-#' @export
 read.gctx.ids <- function(gctx_path, dimension="row") {
     if (!file.exists(gctx_path)) {
         stop(paste(gctx_path, "does not exist"))
@@ -247,10 +215,10 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
 #' @examples
 #' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
 #' ids <- read.gctx.ids(gct_file)
-#' processed_ids <- cmapR:::process_ids(ids[1:10], ids)
+#' processed_ids <- l1000:::process_ids(ids[1:10], ids)
 #' str(processed_ids)
 #'
-#' @source
+#' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
 #' @keywords internal
@@ -433,11 +401,6 @@ setMethod("initialize", signature = "GCT", definition = function(
             # parse the .gctx
             message(paste("reading", src))
             .Object@src = src
-            # if the rid's or column id's are .grp files, read them in
-            if ( length(rid) == 1 && grepl(".grp$", rid) )
-                rid <- parse.grp(rid)
-            if ( length(cid) == 1 && grepl(".grp$", cid) )
-                cid <- parse.grp(cid)
             # get all the row and column ids
             all_rid <- read.gctx.ids(src, dimension="row")
             all_cid <- read.gctx.ids(src, dimension="col")
@@ -475,7 +438,6 @@ setMethod("initialize", signature = "GCT", definition = function(
         }
     }
     # finally, make sure object is valid before returning
-    ok <- validObject(.Object)
     return(.Object)
 })
 
@@ -501,22 +463,21 @@ closeOpenHandles <- function() {
 #'
 #' @importFrom methods new
 #'
-#' @details \code{parse.gctx} also supports parsing of plain text
+#' @details \code{parse_gctx} also supports parsing of plain text
 #'   GCT files, so this function can be used as a general GCT parser.
 #'
 #' @examples
 #' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-#' (ds <- parse.gctx(gct_file))
+#' (ds <- parse_gctx(gct_file))
 #'
 #' # matrix only
-#' (ds <- parse.gctx(gct_file, matrix_only=TRUE))
+#' (ds <- parse_gctx(gct_file, matrix_only=TRUE))
 #'
 #' # only the first 10 rows and columns
-#' (ds <- parse.gctx(gct_file, rid=1:10, cid=1:10))
+#' (ds <- parse_gctx(gct_file, rid=1:10, cid=1:10))
 #'
 #' @family GCTX parsing functions
-#' @export
-parse.gctx <- function(fname, cid=NULL)
+parse_gctx <- function(fname, cid=NULL)
     new("GCT", src = fname, cid = cid)
 
 # utils.R ----------------------------------------------------------------------
@@ -530,11 +491,6 @@ parse.gctx <- function(fname, cid=NULL)
 #'   columns of \code{df}
 #'
 #' @source https://github.com/cmap/cmapR
-#'
-#' @examples
-#' check_colnames(c("pert_id", "pert_iname"), cdesc_char)            # TRUE
-#' check_colnames(c("pert_id", "foobar"), cdesc_char, throw_error=FALSE) # FALSE
-#' @export
 check_colnames <- function(test_names, df, throw_error=T) {
     # check whether test_names are valid names in df
     # throw error if specified

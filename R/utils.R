@@ -50,6 +50,10 @@ performDifferentialExpression <- function(counts) {
 #' @param file Character: filepath
 #' @param link Character: link to download file
 #' @param gz Boolean: is downloaded file compressed?
+#'
+#' @importFrom utils download.file
+#'
+#' @return Download file if a file does not exist
 downloadIfNeeded <- function(file, link, gz=TRUE) {
     if (!file.exists(file)) {
         if (gz) file <- paste0(file, ".gz")

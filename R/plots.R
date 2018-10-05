@@ -1,5 +1,8 @@
 #' Plot gene set enrichment analysis (GSEA)
 #'
+#' @inheritParams fgsea::fgsea
+#' @param title Character: plot title
+#'
 #' @importFrom fgsea calcGseaStat
 #' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line
 #' scale_y_continuous scale_x_continuous theme element_rect element_blank
@@ -9,9 +12,14 @@
 #' @importFrom stats na.omit
 #'
 #' @return Grid of plots illustrating a GSEA plot
-plotGSEA <- function(pathway, stats, gseaParam=1, ticksSize=0.4,
-                     axis_title_size=12, axis_text_size=10, plot_title_size=14,
-                     title="GSEA plot", point_size=0.1) {
+plotGSEA <- function(pathways, stats, title="GSEA plot") {
+    # Custom
+    axis_title_size <- 12
+    axis_text_size  <- 10
+    plot_title_size <- 14
+    point_size      <- 0.1
+    gseaParam       <- 1
+
     rnk <- rank(-stats)
     ord <- order(rnk)
 
@@ -61,7 +69,7 @@ plotGSEA <- function(pathway, stats, gseaParam=1, ticksSize=0.4,
         geom_segment(data=data.frame(x=pathway),
                      mapping=aes(x=x, y=min(bottoms),
                                  xend=x, yend=max(tops)),
-                     size=ticksSize) +
+                     size=0.4) +
         scale_y_continuous(expand=c(0,0)) +
         scale_x_continuous(expand=c(0,0), breaks = seq(0,50000,2500)) +
         theme(panel.border=element_rect(colour="black"),
@@ -110,6 +118,14 @@ plotGSEA <- function(pathway, stats, gseaParam=1, ticksSize=0.4,
 #'
 #' @return Plot illustrating the comparison with L1000 data
 #' @export
+#'
+#' @examples
+#' compareKnockdown <- l1000:::compareKnockdown
+#' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
+#'                         value=TRUE)
+#' plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
+#' plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
+#' plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown)
 plotL1000comparison <- function(object, perturbationID, topGenes=TRUE) {
     method <- attr(object, "method")
     perturbation <- attr(object, "perturbations")[ , perturbationID]

@@ -109,7 +109,6 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #' Load an ENCODE gene expression data for a given gene
 #'
 #' @param metadata Character: ENCODE metadata
-#' @param gene Character: gene
 #'
 #' @export
 #' @return Data frame containing gene read counts
