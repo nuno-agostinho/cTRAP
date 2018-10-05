@@ -116,6 +116,8 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #' @export
 #'
 #' @examples
+#' cellLine <- "HepG2"
+#' gene <- "EIF4G1"
 #' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #' loadENCODEgeneExpression(ENCODEmetadata)
 loadENCODEgeneExpression <- function(metadata) {

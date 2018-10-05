@@ -16,6 +16,8 @@ Data frame containing gene read counts
 Load an ENCODE gene expression data for a given gene
 }
 \examples{
+cellLine <- "HepG2"
+gene <- "EIF4G1"
 ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 loadENCODEgeneExpression(ENCODEmetadata)
 }

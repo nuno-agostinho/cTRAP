@@ -119,7 +119,8 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
         field <- fields[i]
         # remove any trailing spaces
         # and cast as vector
-        annots[,i] <- as.vector(gsub("\\s*$", "", raw_annots[[field]], perl=T))
+        annots[,i] <- as.vector(gsub("\\s*$", "", raw_annots[[field]],
+                                     perl=TRUE))
     }
     annots <- fix.datatypes(annots)
     # subset to the provided set of ids, if given
@@ -160,7 +161,7 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
         name <- "0/META/COL/id"
     }
     # remove any spaces
-    ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=T)
+    ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=TRUE)
     # cast as character
     ids <- as.character(ids)
     return(ids)
@@ -232,7 +233,7 @@ process_ids <- function(ids, all_ids, type="rid") {
 # define the initialization method for the GCT class
 setMethod("initialize", signature = "GCT", definition = function(
     .Object, mat=NULL, rdesc=NULL, cdesc=NULL, src=NULL, rid=NULL, cid=NULL,
-    set_annot_rownames=F, matrix_only=F) {
+    set_annot_rownames=FALSE, matrix_only=FALSE) {
     # if we were supplied a matrix and annotations, use them
     if (!is.null(mat)) {
         .Object@mat <- mat
@@ -289,7 +290,7 @@ setMethod("initialize", signature = "GCT", definition = function(
                 col_offset <- 1
             }
             else {
-                if (any(grepl("description", header, ignore.case=T))) {
+                if (any(grepl("description", header, ignore.case=TRUE))) {
                     # check for presence of description column in v1.2 files
                     col_offset <- 2
                 } else {
