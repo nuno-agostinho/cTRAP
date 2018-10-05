@@ -3,6 +3,9 @@
 \name{fix.datatypes}
 \alias{fix.datatypes}
 \title{Adjust the data types for columns of a meta data frame}
+\source{
+https://github.com/cmap/cmapR
+}
 \usage{
 fix.datatypes(meta)
 }

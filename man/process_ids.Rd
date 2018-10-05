@@ -4,6 +4,9 @@
 \alias{process_ids}
 \title{Return a subset of requested GCTX row/colum ids
 out of the universe of all ids}
+\source{
+
+}
 \usage{
 process_ids(ids, all_ids, type = "rid")
 }

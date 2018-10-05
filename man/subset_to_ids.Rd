@@ -3,6 +3,9 @@
 \name{subset_to_ids}
 \alias{subset_to_ids}
 \title{Do a robust \code{\link{data.frame}} subset to a set of ids}
+\source{
+https://github.com/cmap/cmapR
+}
 \usage{
 subset_to_ids(df, ids)
 }

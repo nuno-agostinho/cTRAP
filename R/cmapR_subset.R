@@ -20,6 +20,8 @@
 #' @seealso \code{\link{parse.gctx}}, \code{\link{write.gctx}},
 #' \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
 #' @seealso \link{http://clue.io/help} for more information on the GCT format
+#'
+#' @source https://github.com/cmap/cmapR
 setClass("GCT", representation(
     mat = "matrix", rid = "character", cid = "character", rdesc = "data.frame",
     cdesc = "data.frame", version = "character", src = "character"))
@@ -79,6 +81,8 @@ setValidity("GCT", function(object) {
 #'
 #' @family GCTX parsing functions
 #' @keywords internal
+#'
+#' @source https://github.com/cmap/cmapR
 fix.datatypes <- function(meta) {
     for (field.name in names(meta)) {
         # get the field values
@@ -141,22 +145,22 @@ fix.datatypes <- function(meta) {
 #'                                    ids=col_meta$id[1:10])
 #' str(col_meta_first10)
 #'
+#' @source https://github.com/cmap/cmapR
+#'
 #' @family GCTX parsing functions
 #' @export
 read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
                            set_annot_rownames=TRUE) {
-    if (!file.exists(gctx_path)) {
-        stop(paste(gctx_path, "does not exist"))
-    }
+    if (!file.exists(gctx_path)) stop(paste(gctx_path, "does not exist"))
     if (dimension=="column") dimension <- "col"
-    if (!(dimension %in% c("row", "col"))) {
+    if (!(dimension %in% c("row", "col")))
         stop("dimension can be either row or col")
-    }
-    if (dimension == "row") {
+
+    if (dimension == "row")
         name <- "0/META/ROW"
-    } else {
+    else
         name <- "0/META/COL"
-    }
+
     raw_annots <- h5read(gctx_path, name=name) # returns a list
     fields <- names(raw_annots)
     # define an empty data frame of the correct dimensions
@@ -172,18 +176,16 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
     }
     annots <- fix.datatypes(annots)
     # subset to the provided set of ids, if given
-    if (is.null(ids)) {
+    if (is.null(ids))
         ids <- as.character(annots$id)
-    } else {
+    else
         ids <- ids
-    }
+
     # make sure annots row ordering matches that of ids
     annots <- subset_to_ids(annots, ids)
     annots$id <- as.character(annots$id)
     # use the id field to set the rownames
-    if (set_annot_rownames) {
-        rownames(annots) <- annots$id
-    }
+    if (set_annot_rownames) rownames(annots) <- annots$id
     return(annots)
 }
 
@@ -202,6 +204,8 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
 #' # column ids
 #' cid <- read.gctx.ids(gct_file, dimension="column")
 #' head(cid)
+#'
+#' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
 #' @export
@@ -245,6 +249,8 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
 #' ids <- read.gctx.ids(gct_file)
 #' processed_ids <- cmapR:::process_ids(ids[1:10], ids)
 #' str(processed_ids)
+#'
+#' @source
 #'
 #' @family GCTX parsing functions
 #' @keywords internal
@@ -299,11 +305,7 @@ setMethod("initialize", signature = "GCT", definition = function(
     # if we were supplied a matrix and annotations, use them
     if (!is.null(mat)) {
         .Object@mat <- mat
-        # if given rid and cid, use those as well
-        if (!is.null(rid))
-            .Object@rid <- rid
-        else
-            .Object@rid <- rownames(mat)
+        .Object@rid <- rownames(mat)
 
         if (!is.null(cid))
             .Object@cid <- cid
@@ -492,19 +494,10 @@ closeOpenHandles <- function() {
 #' Parse a GCTX file into the workspace as a GCT object
 #'
 #' @param fname path to the GCTX file on disk
-#' @param rid either a vector of character or integer
-#'   row indices or a path to a grp file containing character
-#'   row indices. Only these indicies will be parsed from the
-#'   file.
 #' @param cid either a vector of character or integer
 #'   column indices or a path to a grp file containing character
 #'   column indices. Only these indicies will be parsed from the
 #'   file.
-#' @param set_annot_rownames boolean indicating whether to set the
-#'   rownames on the row/column metadata data.frames. Set this to
-#'   false if the GCTX file has duplicate row/column ids.
-#' @param matrix_only boolean indicating whether to parse only
-#'   the matrix (ignoring row and column annotations)
 #'
 #' @importFrom methods new
 #'
@@ -523,13 +516,8 @@ closeOpenHandles <- function() {
 #'
 #' @family GCTX parsing functions
 #' @export
-parse.gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=FALSE,
-                       matrix_only=FALSE) {
-    ds <- new("GCT", src = fname, rid = rid, cid = cid,
-              set_annot_rownames = set_annot_rownames,
-              matrix_only = matrix_only)
-    return(ds)
-}
+parse.gctx <- function(fname, cid=NULL)
+    new("GCT", src = fname, cid = cid)
 
 # utils.R ----------------------------------------------------------------------
 
@@ -540,6 +528,9 @@ parse.gctx <- function(fname, rid=NULL, cid=NULL, set_annot_rownames=FALSE,
 #'   any \code{test_names} are not found in \code{df}
 #' @return boolean indicating whether or not all \code{test_names} are
 #'   columns of \code{df}
+#'
+#' @source https://github.com/cmap/cmapR
+#'
 #' @examples
 #' check_colnames(c("pert_id", "pert_iname"), cdesc_char)            # TRUE
 #' check_colnames(c("pert_id", "foobar"), cdesc_char, throw_error=FALSE) # FALSE
@@ -565,6 +556,9 @@ check_colnames <- function(test_names, df, throw_error=T) {
 #' @param df \code{\link{data.frame}} to subset
 #' @param ids the ids to subset to
 #' @return a subset version of \code{df}
+#'
+#' @source https://github.com/cmap/cmapR
+#'
 #' @keywords internal
 subset_to_ids <- function(df, ids) {
     # helper function to do a robust df subset

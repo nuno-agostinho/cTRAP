@@ -3,6 +3,9 @@
 \name{read.gctx.meta}
 \alias{read.gctx.meta}
 \title{Parse row or column metadata from GCTX files}
+\source{
+https://github.com/cmap/cmapR
+}
 \usage{
 read.gctx.meta(gctx_path, dimension = "row", ids = NULL,
   set_annot_rownames = TRUE)

@@ -4,6 +4,9 @@
 \name{GCT-class}
 \alias{GCT-class}
 \title{An S4 class to represent a GCT object}
+\source{
+https://github.com/cmap/cmapR
+}
 \description{
 The GCT class serves to represent annotated
   matrices. The \code{mat} slot contains said data and the

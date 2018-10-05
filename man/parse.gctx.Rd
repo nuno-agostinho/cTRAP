@@ -4,28 +4,15 @@
 \alias{parse.gctx}
 \title{Parse a GCTX file into the workspace as a GCT object}
 \usage{
-parse.gctx(fname, rid = NULL, cid = NULL, set_annot_rownames = FALSE,
-  matrix_only = FALSE)
+parse.gctx(fname, cid = NULL)
 }
 \arguments{
 \item{fname}{path to the GCTX file on disk}
-
-\item{rid}{either a vector of character or integer
-row indices or a path to a grp file containing character
-row indices. Only these indicies will be parsed from the
-file.}
 
 \item{cid}{either a vector of character or integer
 column indices or a path to a grp file containing character
 column indices. Only these indicies will be parsed from the
 file.}
-
-\item{set_annot_rownames}{boolean indicating whether to set the
-rownames on the row/column metadata data.frames. Set this to
-false if the GCTX file has duplicate row/column ids.}
-
-\item{matrix_only}{boolean indicating whether to parse only
-the matrix (ignoring row and column annotations)}
 }
 \description{
 Parse a GCTX file into the workspace as a GCT object
