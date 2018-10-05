@@ -12,3 +12,6 @@ Perturbation types and respective codes as used by L1000 datasets
 \description{
 Get perturbation types
 }
+\examples{
+getL1000PerturbationTypes()
+}

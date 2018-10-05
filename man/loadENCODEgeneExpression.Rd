@@ -15,3 +15,7 @@ Data frame containing gene read counts
 \description{
 Load an ENCODE gene expression data for a given gene
 }
+\examples{
+ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+loadENCODEgeneExpression(ENCODEmetadata)
+}

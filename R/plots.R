@@ -27,7 +27,7 @@ plotGSEA <- function(pathways, stats, title="GSEA plot") {
     statsAdj <- sign(statsAdj) * (abs(statsAdj) ^ gseaParam)
     statsAdj <- statsAdj / max(abs(statsAdj))
 
-    pathway <- unname(as.vector(na.omit(match(pathway, names(statsAdj)))))
+    pathway <- unname(as.vector(na.omit(match(pathways, names(statsAdj)))))
     pathway <- sort(pathway)
 
     gseaRes <- calcGseaStat(statsAdj, selectedStats = pathway,

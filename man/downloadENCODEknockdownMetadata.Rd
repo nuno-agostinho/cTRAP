@@ -17,3 +17,6 @@ Data frame containing ENCODE knockdown experiment metadata
 \description{
 Download metadata for ENCODE knockdown experiments
 }
+\examples{
+downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
+}

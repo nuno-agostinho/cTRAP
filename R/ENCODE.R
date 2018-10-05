@@ -21,6 +21,8 @@ getENCODEcontrols <- function(control, table) {
 #'
 #' @return Data frame containing ENCODE knockdown experiment metadata
 #' @export
+#' @examples
+#' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
     cat("Downloading metadata for ENCODE knockdown experiments...", fill=TRUE)
@@ -110,8 +112,12 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #'
 #' @param metadata Character: ENCODE metadata
 #'
-#' @export
 #' @return Data frame containing gene read counts
+#' @export
+#'
+#' @examples
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' loadENCODEgeneExpression(ENCODEmetadata)
 loadENCODEgeneExpression <- function(metadata) {
     table_rep1     <- loadENCODEsample(metadata, replicate=1)
     table_rep2     <- loadENCODEsample(metadata, replicate=2)

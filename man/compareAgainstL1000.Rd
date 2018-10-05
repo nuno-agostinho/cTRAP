@@ -25,22 +25,26 @@ or \code{gsea})}
 for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
 argument does nothing}
 }
+\value{
+Data table with correlation or GSEA results comparing differential
+gene expression values with those associated with L1000 perturbations
+}
 \description{
 Compare against L1000 datasets
 }
 \examples{
-cellLines <- c("PC3", "VCAP", "A375")
-timepoint <- c("96 h")
-loadL1000perturbations("L1000", cellLines, timepoint)
+cellLine <- "HepG2"
+perturbations <- l1000:::l1000perturbationsSmallMolecules
+diffExprGenes <- l1000:::diffExprStat
 
 # Compare against L1000 using Spearman correlation
-compareAgainstL1000(diffExprGenes, perturbations, cellLines,
+compareAgainstL1000(diffExprGenes, perturbations, cellLine,
                     method="spearman")
 
 # Compare against L1000 using Pearson correlation
-compareAgainstL1000(diffExprGenes, perturbations, cellLines,
+compareAgainstL1000(diffExprGenes, perturbations, cellLine,
                     method="pearson")
 
 # Compare against L1000 using gene set enrichment analysis (GSEA)
-compareAgainstL1000(diffExprGenes, perturbations, cellLines, method="gsea")
+compareAgainstL1000(diffExprGenes, perturbations, cellLine, method="gsea")
 }

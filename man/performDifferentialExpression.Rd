@@ -16,3 +16,19 @@ knockdown and control
 \description{
 Perform differential gene expression based on ENCODE data
 }
+\examples{
+gene <- "EIF4G1"
+cellLine <- "HepG2"
+
+ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+counts <- loadENCODEgeneExpression(ENCODEmetadata)
+
+# Remove low coverage (at least 10 counts shared across two samples)
+minReads   <- 10
+minSamples <- 2
+filter <- rowSums(counts[ , 3:6] >= minReads) >= minSamples
+counts <- counts[filter, ]
+
+# Perform differential gene expression analysis
+diffExpr <- performDifferentialExpression(counts)
+}

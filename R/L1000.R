@@ -27,8 +27,9 @@ loadL1000metadata <- function(l1000metadataFile) {
 #'
 #' @inheritParams loadL1000metadata
 #'
-#' @export
 #' @return List of conditions in L1000 datasets
+#' @export
+#'
 #' @examples
 #' getL1000Conditions("L1000metadata.txt")
 getL1000Conditions <- function(l1000metadataFile) {
@@ -156,22 +157,25 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #' @importFrom piano loadGSC
 #' @importFrom utils head tail
 #'
+#' @return Data table with correlation or GSEA results comparing differential
+#' gene expression values with those associated with L1000 perturbations
 #' @export
+#'
 #' @examples
-#' cellLines <- c("PC3", "VCAP", "A375")
-#' timepoint <- c("96 h")
-#' loadL1000perturbations("L1000", cellLines, timepoint)
+#' cellLine <- "HepG2"
+#' perturbations <- l1000:::l1000perturbationsSmallMolecules
+#' diffExprGenes <- l1000:::diffExprStat
 #'
 #' # Compare against L1000 using Spearman correlation
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLines,
+#' compareAgainstL1000(diffExprGenes, perturbations, cellLine,
 #'                     method="spearman")
 #'
 #' # Compare against L1000 using Pearson correlation
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLines,
+#' compareAgainstL1000(diffExprGenes, perturbations, cellLine,
 #'                     method="pearson")
 #'
 #' # Compare against L1000 using gene set enrichment analysis (GSEA)
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLines, method="gsea")
+#' compareAgainstL1000(diffExprGenes, perturbations, cellLine, method="gsea")
 compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                                 method=c("spearman", "pearson", "gsea"),
                                 geneSize=150) {
@@ -230,8 +234,8 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
 #'
-#' @export
 #' @return Perturbation data from L1000 as a data table
+#' @export
 loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
                                    l1000geneFile, cellLine=NULL, timepoint=NULL,
                                    dosage=NULL, perturbationType=NULL,
@@ -291,6 +295,8 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
 #' Get perturbation types
 #'
 #' @return Perturbation types and respective codes as used by L1000 datasets
+#' @examples
+#' getL1000PerturbationTypes()
 getL1000PerturbationTypes <- function () {
     c("Compound"="trt_cp",
       "Peptides and other biological agents (e.g. cytokine)"="trt_lig",
