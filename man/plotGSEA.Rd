@@ -8,6 +8,9 @@ plotGSEA(pathway, stats, gseaParam = 1, ticksSize = 0.4,
   axis_title_size = 12, axis_text_size = 10, plot_title_size = 14,
   title = "GSEA plot", point_size = 0.1)
 }
+\value{
+Grid of plots illustrating a GSEA plot
+}
 \description{
 Plot gene set enrichment analysis (GSEA)
 }

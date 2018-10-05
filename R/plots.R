@@ -6,6 +6,9 @@
 #' element_text labs ggtitle theme_bw geom_segment geom_bar
 #' scale_colour_gradient2 guides element_line unit
 #' @importFrom cowplot plot_grid
+#' @importFrom stats na.omit
+#'
+#' @return Grid of plots illustrating a GSEA plot
 plotGSEA <- function(pathway, stats, gseaParam=1, ticksSize=0.4,
                      axis_title_size=12, axis_text_size=10, plot_title_size=14,
                      title="GSEA plot", point_size=0.1) {
@@ -98,14 +101,16 @@ plotGSEA <- function(pathway, stats, gseaParam=1, ticksSize=0.4,
 #' Plot L1000 data comparison
 #'
 #' @param object \code{L1000 comparison} object
-#' @param cellLine Character: cell line
 #' @param perturbationID Character: perturbation identifier
 #' @param topGenes Boolean: plot top (\code{topGenes = TRUE}) or bottom genes
 #' (\code{topGenes = FALSE}) in case of plotting gene set enrichment analysis
 #' (GSEA)
 #'
+#' @importFrom graphics plot
+#'
 #' @return Plot illustrating the comparison with L1000 data
-plot.L1000comparison <- function(object, perturbationID, topGenes=TRUE) {
+#' @export
+plotL1000comparison <- function(object, perturbationID, topGenes=TRUE) {
     method <- attr(object, "method")
     perturbation <- attr(object, "perturbations")[ , perturbationID]
     if (method %in% c("spearman", "pearson")) {
