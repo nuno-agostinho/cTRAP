@@ -7,7 +7,7 @@
 https://github.com/cmap/cmapR
 }
 \usage{
-check_colnames(test_names, df, throw_error = T)
+check_colnames(test_names, df, throw_error = TRUE)
 }
 \arguments{
 \item{test_names}{a vector of column names to test}

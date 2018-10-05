@@ -98,7 +98,7 @@ plotGSEA <- function(pathways, stats, title="GSEA plot") {
         labs(y="Ranked metric", x="Rank") +
         scale_colour_gradient2(low = "dodgerblue", mid = "white",
                                high = "orangered", midpoint = 0) +
-        guides(color=F)
+        guides(color=FALSE)
 
     plot_grid(g1 + theme(plot.margin = unit(c(5.5, 5.5, 0, 5.5), "pt")),
               g2 + theme(plot.margin = unit(c(0, 5.5, 0, 5.5), "pt")),

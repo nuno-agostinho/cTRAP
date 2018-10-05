@@ -7,8 +7,6 @@
 #' @importFrom data.table fread
 #'
 #' @return Metadata as a data table
-#' @examples
-#' loadL1000metadata("L1000metadata.txt")
 loadL1000metadata <- function(l1000metadataFile) {
     # Download metadata (if not available)
     downloadIfNeeded(l1000metadataFile, paste0(
@@ -295,6 +293,8 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
 #' Get perturbation types
 #'
 #' @return Perturbation types and respective codes as used by L1000 datasets
+#' @export
+#'
 #' @examples
 #' getL1000PerturbationTypes()
 getL1000PerturbationTypes <- function () {

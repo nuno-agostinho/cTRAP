@@ -27,18 +27,9 @@ GCT(X) parsing initially returns data frames
 This is a low-level helper function
   which most users will not need to access directly
 }
-\examples{
-# meta data table with all character types
-str(cdesc_char)
-fixed <- l1000:::fix.datatypes(cdesc_char)
-# note how some column classes have changed
-str(fixed)
-
-}
 \seealso{
-Other GCTX parsing functions: \code{\link{parse_gctx}},
-  \code{\link{process_ids}}, \code{\link{read.gctx.ids}},
-  \code{\link{read.gctx.meta}}
+Other GCTX parsing functions: \code{\link{process_ids}},
+  \code{\link{read.gctx.ids}}, \code{\link{read.gctx.meta}}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

@@ -20,19 +20,8 @@ a character vector of row or column ids from the provided file
 \description{
 Read GCTX row or column ids
 }
-\examples{
-gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-# row ids
-rid <- read.gctx.ids(gct_file)
-head(rid)
-# column ids
-cid <- read.gctx.ids(gct_file, dimension="column")
-head(cid)
-
-}
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{parse_gctx}}, \code{\link{process_ids}},
-  \code{\link{read.gctx.meta}}
+  \code{\link{process_ids}}, \code{\link{read.gctx.meta}}
 }
 \concept{GCTX parsing functions}

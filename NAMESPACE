@@ -3,6 +3,7 @@
 export(compareAgainstL1000)
 export(downloadENCODEknockdownMetadata)
 export(getL1000Conditions)
+export(getL1000PerturbationTypes)
 export(loadENCODEgeneExpression)
 export(loadL1000perturbations)
 export(performDifferentialExpression)

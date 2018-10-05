@@ -1,6 +1,6 @@
 Package: l1000
 Title: Identification of potential transcriptome perturbations
-Version: 0.0.0.9000
+Version: 0.99.1
 Authors@R: c(person("Nuno", "Agostinho", 
         email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
         person("Bernardo", "de Almeida", role="aut"),
@@ -35,4 +35,5 @@ Imports: data.table,
     httr,
     methods,
     piano,
-    readr
+    readr,
+    utils,

@@ -17,8 +17,6 @@
 #'   \code{rdesc} and \code{cdesc} slots contain data frames with
 #'   annotations about the rows and columns, respectively
 #'
-#' @seealso \code{\link{parse_gctx}},
-#' \code{\link{read.gctx.meta}}, \code{\link{read.gctx.ids}}
 #' @seealso \url{http://clue.io/help} for more information on the GCT format
 #'
 #' @source https://github.com/cmap/cmapR
@@ -41,13 +39,6 @@ setClass("GCT", representation(
 #'
 #' @return meta the same data frame with (potentially) adjusted
 #'   column types.
-#'
-#' @examples
-#' # meta data table with all character types
-#' str(cdesc_char)
-#' fixed <- l1000:::fix.datatypes(cdesc_char)
-#' # note how some column classes have changed
-#' str(fixed)
 #'
 #' @family GCTX parsing functions
 #' @keywords internal
@@ -164,15 +155,6 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
 #' @param dimension which ids to read (row or column)
 #'
 #' @return a character vector of row or column ids from the provided file
-#'
-#' @examples
-#' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-#' # row ids
-#' rid <- read.gctx.ids(gct_file)
-#' head(rid)
-#' # column ids
-#' cid <- read.gctx.ids(gct_file, dimension="column")
-#' head(cid)
 #'
 #' @source https://github.com/cmap/cmapR
 #'
@@ -428,9 +410,9 @@ setMethod("initialize", signature = "GCT", definition = function(
                     set_annot_rownames=set_annot_rownames)
             } else {
                 .Object@rdesc <- data.frame(id=.Object@rid,
-                                            stringsAsFactors = F)
+                                            stringsAsFactors = FALSE)
                 .Object@cdesc <- data.frame(id=.Object@cid,
-                                            stringsAsFactors = F)
+                                            stringsAsFactors = FALSE)
             }
             # close any open handles and return the object
             closeOpenHandles()
@@ -453,33 +435,6 @@ closeOpenHandles <- function() {
         rhdf5::h5closeAll()
 }
 
-#' Parse a GCTX file into the workspace as a GCT object
-#'
-#' @param fname path to the GCTX file on disk
-#' @param cid either a vector of character or integer
-#'   column indices or a path to a grp file containing character
-#'   column indices. Only these indicies will be parsed from the
-#'   file.
-#'
-#' @importFrom methods new
-#'
-#' @details \code{parse_gctx} also supports parsing of plain text
-#'   GCT files, so this function can be used as a general GCT parser.
-#'
-#' @examples
-#' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-#' (ds <- parse_gctx(gct_file))
-#'
-#' # matrix only
-#' (ds <- parse_gctx(gct_file, matrix_only=TRUE))
-#'
-#' # only the first 10 rows and columns
-#' (ds <- parse_gctx(gct_file, rid=1:10, cid=1:10))
-#'
-#' @family GCTX parsing functions
-parse_gctx <- function(fname, cid=NULL)
-    new("GCT", src = fname, cid = cid)
-
 # utils.R ----------------------------------------------------------------------
 
 #' Check whether \code{test_names} are columns in the \code{\link{data.frame}}
@@ -491,7 +446,7 @@ parse_gctx <- function(fname, cid=NULL)
 #'   columns of \code{df}
 #'
 #' @source https://github.com/cmap/cmapR
-check_colnames <- function(test_names, df, throw_error=T) {
+check_colnames <- function(test_names, df, throw_error=TRUE) {
     # check whether test_names are valid names in df
     # throw error if specified
     diffs <- setdiff(test_names, names(df))

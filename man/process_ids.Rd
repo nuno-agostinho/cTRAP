@@ -40,8 +40,7 @@ str(processed_ids)
 }
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{parse_gctx}}, \code{\link{read.gctx.ids}},
-  \code{\link{read.gctx.meta}}
+  \code{\link{read.gctx.ids}}, \code{\link{read.gctx.meta}}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

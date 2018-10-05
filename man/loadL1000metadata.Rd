@@ -15,6 +15,3 @@ Metadata as a data table
 \description{
 The data will be downloaded if not available
 }
-\examples{
-loadL1000metadata("L1000metadata.txt")
-}
