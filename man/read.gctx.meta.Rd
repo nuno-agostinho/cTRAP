@@ -28,20 +28,6 @@ a \code{data.frame} of metadata
 \description{
 Parse row or column metadata from GCTX files
 }
-\examples{
-gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-# row meta
-row_meta <- read.gctx.meta(gct_file)
-str(row_meta)
-# column meta
-col_meta <- read.gctx.meta(gct_file, dimension="column")
-str(col_meta)
-# now for only the first 10 ids
-col_meta_first10 <- read.gctx.meta(gct_file, dimension="column",
-                                   ids=col_meta$id[1:10])
-str(col_meta_first10)
-
-}
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
   \code{\link{process_ids}}, \code{\link{read.gctx.ids}}

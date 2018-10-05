@@ -31,13 +31,6 @@ out of the universe of all ids
 This is a low-level helper function
   which most users will not need to access directly
 }
-\examples{
-gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-ids <- read.gctx.ids(gct_file)
-processed_ids <- l1000:::process_ids(ids[1:10], ids)
-str(processed_ids)
-
-}
 \seealso{
 Other GCTX parsing functions: \code{\link{fix.datatypes}},
   \code{\link{read.gctx.ids}}, \code{\link{read.gctx.meta}}

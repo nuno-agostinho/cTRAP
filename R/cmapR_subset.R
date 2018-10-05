@@ -93,19 +93,6 @@ fix.datatypes <- function(meta) {
 #'
 #' @return a \code{data.frame} of metadata
 #'
-#' @examples
-#' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-#' # row meta
-#' row_meta <- read.gctx.meta(gct_file)
-#' str(row_meta)
-#' # column meta
-#' col_meta <- read.gctx.meta(gct_file, dimension="column")
-#' str(col_meta)
-#' # now for only the first 10 ids
-#' col_meta_first10 <- read.gctx.meta(gct_file, dimension="column",
-#'                                    ids=col_meta$id[1:10])
-#' str(col_meta_first10)
-#'
 #' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
@@ -193,12 +180,6 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
 #' @return a list with the following elements
 #'  \code{ids}: a character vector of the processed ids
 #'  \code{idx}: an integer list of their corresponding indices in \code{all_ids}
-#'
-#' @examples
-#' gct_file <- system.file("extdata", "modzs_n272x978.gctx", package="cmapR")
-#' ids <- read.gctx.ids(gct_file)
-#' processed_ids <- l1000:::process_ids(ids[1:10], ids)
-#' str(processed_ids)
 #'
 #' @source https://github.com/cmap/cmapR
 #'
