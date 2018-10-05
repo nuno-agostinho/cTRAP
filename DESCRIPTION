@@ -1,11 +1,16 @@
 Package: l1000
-Title: What the Package Does (one line, title case)
+Title: Identification of potential transcriptome perturbations
 Version: 0.0.0.9000
 Authors@R: c(person("Nuno", "Agostinho", 
         email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
-        person(c("Nuno", "Luís"), "Barbosa-Morais", role=c("aut", "led")),
-        person("Bernardo", "de Almeida", role="aut"))
-Description: What the package does (one paragraph).
+        person("Bernardo", "de Almeida", role="aut"),
+        person(c("Nuno", "Luís"), "Barbosa-Morais", role=c("aut", "led")))
+Description: Compare differential gene expression results with those from known
+    cellular perturbations (such as gene knock-down, overexpression or small 
+    molecules) derived from the Connectivity Map. Such analyses allow not only 
+    to infer the molecular causes of the observed difference in gene expression 
+    but also to identify small molecules that could drive or revert specific 
+    transcriptomic alterations.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -19,4 +24,13 @@ Imports: data.table,
     stats,
     fgsea,
     pbapply,
-    plyr
+    plyr,
+    biomaRt,
+    cowplot,
+    ggplot2,
+    rhdf5,
+    R.utils,
+    httr,
+    methods,
+    piano,
+    readr
