@@ -38,3 +38,4 @@ Imports: data.table,
     readr,
     utils,
     graphics
+VignetteBuilder: knitr
