@@ -1,5 +1,5 @@
 ---
-title: 'l1000: tutorial'
+title: 'cTRAP: tutorial'
 author: Bernardo P. de Almeida & Nuno Saraiva-Agostinho
 date: "`r Sys.Date()`"
 output: 
@@ -7,7 +7,7 @@ output:
         toc: true
 vignette: >
     \usepackage[utf8]{inputenc}
-    %\VignetteIndexEntry{l1000 tutorial}
+    %\VignetteIndexEntry{cTRAP tutorial}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
@@ -17,7 +17,7 @@ editor_options:
 
 # Introduction
 
-`l1000` is an R package designed to compare differential gene
+`cTRAP` is an R package designed to compare differential gene
 expression results with those from known cellular perturbations (such as gene
 knock-down, overexpression or small molecules) derived from the
 [Connectivity Map][clue.io]
@@ -38,10 +38,10 @@ perturbations.
 
 # Getting started
 
-To load the `l1000` package into your R environment type:
+To load the `cTRAP` package into your R environment type:
 
 ```{r load package}
-library(l1000)
+library(cTRAP)
 ```
 
 # Load ENCODE RNA-seq data and perform differential gene expression analysis
@@ -169,8 +169,8 @@ compareSmallMolecule$gsea <- compareAgainstL1000(
 ```
 
 ```{r load data, include=FALSE}
-compareKnockdown     <- l1000:::compareKnockdown
-compareSmallMolecule <- l1000:::compareSmallMolecule
+compareKnockdown     <- cTRAP:::compareKnockdown
+compareSmallMolecule <- cTRAP:::compareSmallMolecule
 ```
 
 For each method used, this function will return a table with the results of the

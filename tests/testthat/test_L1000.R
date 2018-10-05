@@ -1,8 +1,8 @@
 context("Working with L1000 data")
 
 cellLine <- "HepG2"
-perturbations <- l1000:::l1000perturbationsSmallMolecules
-diffExprGenes <- l1000:::diffExprStat
+perturbations <- cTRAP:::l1000perturbationsSmallMolecules
+diffExprGenes <- cTRAP:::diffExprStat
 
 test_that("L1000 metadata and conditions are loaded", {
     metadata <- loadL1000metadata("L1000metadata.txt")

@@ -1,4 +1,4 @@
 library(testthat)
-library(l1000)
+library(cTRAP)
 
-test_check("l1000")
+test_check("cTRAP")

@@ -1,6 +1,6 @@
-# l1000
+# cTRAP
 
-`l1000` is an R package designed to compare differential gene
+`cTRAP` is an R package designed to compare differential gene
 expression results with those from known cellular perturbations (such as gene 
 knock-down, overexpression or small molecules) derived from the 
 [Connectivity Map][clue.io] (Subramanian et al., Cell 2017). Such analyses allow
@@ -10,11 +10,11 @@ specific transcriptomic alterations.
 
 ## Installation
 
-You can install l1000 from GitHub with:
+You can install cTRAP from GitHub with:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("nuno-agostinho/l1000")
+devtools::install_github("nuno-agostinho/cTRAP")
 ```
 
 [clue.io]: https://clue.io/

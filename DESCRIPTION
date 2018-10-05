@@ -1,4 +1,4 @@
-Package: l1000
+Package: cTRAP
 Title: Identification of potential transcriptome perturbations
 Version: 0.99.1
 Authors@R: c(person("Nuno", "Agostinho", 
@@ -17,8 +17,8 @@ Encoding: UTF-8
 LazyData: true
 biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
     Pathways
-URL: https://github.com/nuno-agostinho/l1000
-BugReports: https://github.com/nuno-agostinho/l1000/issues
+URL: https://github.com/nuno-agostinho/cTRAP
+BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat
 RoxygenNote: 6.1.0
 Imports: data.table,
@@ -37,3 +37,4 @@ Imports: data.table,
     piano,
     readr,
     utils,
+    graphics

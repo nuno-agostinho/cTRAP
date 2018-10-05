@@ -1,6 +1,6 @@
 context("Plot results")
 
-compareKnockdown <- l1000:::compareKnockdown
+compareKnockdown <- cTRAP:::compareKnockdown
 EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
                         value=TRUE)
 
