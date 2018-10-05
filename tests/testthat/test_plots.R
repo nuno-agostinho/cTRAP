@@ -10,7 +10,7 @@ test_that("Plot Spearman correlation", {
 })
 
 test_that("Plot Pearson correlation", {
-    plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
+    plot <- plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
     expect_is(plot, "NULL")
 })
 

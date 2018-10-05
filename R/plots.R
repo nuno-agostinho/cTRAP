@@ -151,7 +151,7 @@ plotL1000comparison <- function(object, perturbationID, topGenes=TRUE) {
         }
 
         pathway <- pathways[[grep(end, names(pathways))]]
-        plotGSEA(pathway, perturbation,
-                 title=sprintf(title, perturbationID, length(pathways[[1]])))
+        suppressWarnings(plotGSEA(pathway, perturbation,
+                 title=sprintf(title, perturbationID, length(pathways[[1]]))))
     }
 }
