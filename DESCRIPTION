@@ -1,6 +1,6 @@
 Package: cTRAP
 Title: Identification of potential transcriptome perturbations
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: c(person("Nuno", "Agostinho", 
         email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
         person("Bernardo", "de Almeida", role="aut"),
@@ -19,7 +19,8 @@ biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
     Pathways
 URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
-Suggests: testthat
+Suggests: testthat,
+    knitr
 RoxygenNote: 6.1.0
 Imports: data.table,
     limma,

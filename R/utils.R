@@ -77,3 +77,33 @@ downloadIfNeeded <- function(file, link, gz=TRUE) {
         if (gz) gunzip(file)
     }
 }
+
+#' Load internal data for use in vignettes and examples
+#' 
+#' @param x Character: name of object to load
+#' 
+#' @importFrom utils getFromNamespace
+#' 
+#' @return Object
+#' @export
+#' 
+#' @examples 
+#' loadInternalData("l1000perturbationsKnockdown")
+loadInternalData <- function(x) {
+    res <- getFromNamespace(x, pos="package:cTRAP")
+    
+    if (x == "compareKnockdown")
+        l1000perturbationsVar <- "l1000perturbationsKnockdown"
+    else if (x == "compareSmallMolecule")
+        l1000perturbationsVar <- "l1000perturbationsSmallMolecules"
+    
+    if (x %in% paste0("compare", c("Knockdown", "SmallMolecule"))) {
+        perturbations <- getFromNamespace(l1000perturbationsVar, 
+                                          pos="package:cTRAP")
+        attr(res$spearman, "perturbations") <- perturbations
+        attr(res$pearson,  "perturbations") <- perturbations
+        attr(res$gsea,     "perturbations") <- perturbations
+    }
+    
+    return(res)
+}

@@ -169,8 +169,8 @@ compareSmallMolecule$gsea <- compareAgainstL1000(
 ```
 
 ```{r load data, include=FALSE}
-compareKnockdown     <- cTRAP:::compareKnockdown
-compareSmallMolecule <- cTRAP:::compareSmallMolecule
+compareKnockdown     <- loadInternalData("compareKnockdown")
+compareSmallMolecule <- loadInternalData("compareSmallMolecule")
 ```
 
 For each method used, this function will return a table with the results of the

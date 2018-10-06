@@ -22,7 +22,7 @@ Plot illustrating the comparison with L1000 data
 Plot L1000 data comparison
 }
 \examples{
-compareKnockdown <- cTRAP:::compareKnockdown
+compareKnockdown <- loadInternalData("compareKnockdown")
 EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
                         value=TRUE)
 plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)

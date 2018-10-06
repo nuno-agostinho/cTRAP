@@ -161,8 +161,8 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #'
 #' @examples
 #' cellLine <- "HepG2"
-#' perturbations <- cTRAP:::l1000perturbationsSmallMolecules
-#' diffExprGenes <- cTRAP:::diffExprStat
+#' perturbations <- loadInternalData("l1000perturbationsSmallMolecules")
+#' diffExprGenes <- loadInternalData("diffExprStat")
 #'
 #' # Compare against L1000 using Spearman correlation
 #' compareAgainstL1000(diffExprGenes, perturbations, cellLine,
