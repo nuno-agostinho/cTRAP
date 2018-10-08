@@ -1,8 +1,7 @@
 context("Plot results")
 
 compareKnockdown <- loadInternalData("compareKnockdown")
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
-                        value=TRUE)
+EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
 
 test_that("Plot Spearman correlation", {
     plot <- plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)

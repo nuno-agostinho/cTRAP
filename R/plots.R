@@ -121,8 +121,7 @@ plotGSEA <- function(pathways, stats, title="GSEA plot") {
 #'
 #' @examples
 #' compareKnockdown <- loadInternalData("compareKnockdown")
-#' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
-#'                         value=TRUE)
+#' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
 #' plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
 #' plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
 #' plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown)

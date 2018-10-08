@@ -104,8 +104,8 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
     performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
         signature <- perturbation[ , k]
         names(signature) <- rownames(perturbation)
-        fgsea(pathways=pathways$gsc, stats=sort(signature),
-              minSize=15, maxSize=500, nperm=1)
+        suppressWarnings(fgsea(pathways=pathways$gsc, stats=sort(signature),
+                               minSize=15, maxSize=500, nperm=1))
     }
 
     cat("Performing GSA using perturbation signatures...", fill=TRUE)
