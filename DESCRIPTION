@@ -20,7 +20,8 @@ biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
 URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat,
-    knitr
+    knitr,
+    covr
 RoxygenNote: 6.1.0
 Imports: data.table,
     limma,
