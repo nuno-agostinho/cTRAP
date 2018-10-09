@@ -72,7 +72,12 @@ performDifferentialExpression <- function(counts) {
 #' @return Download file if a file does not exist
 downloadIfNeeded <- function(file, link, gz=TRUE) {
     if (!file.exists(file)) {
-        if (gz) file <- paste0(file, ".gz")
+        if (gz) {
+            file <- paste0(file, ".gz")
+            mode <- "wb"
+        } else {
+            mode <- "w"
+        }
         download.file(link, file, mode="wb")
         if (gz) gunzip(file)
     }
