@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' gene <- "EIF4G1"
 #' cellLine <- "HepG2"
 #'

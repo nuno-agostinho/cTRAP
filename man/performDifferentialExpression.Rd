@@ -17,7 +17,7 @@ knockdown and control
 Perform differential gene expression based on ENCODE data
 }
 \examples{
-\donttest{
+\dontrun{
 gene <- "EIF4G1"
 cellLine <- "HepG2"
 

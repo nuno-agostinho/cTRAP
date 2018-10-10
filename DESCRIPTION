@@ -1,6 +1,6 @@
 Package: cTRAP
 Title: Identification of potential transcriptome perturbations
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: c(person("Nuno", "Agostinho", 
         email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
         person("Bernardo", "de Almeida", role="aut"),
