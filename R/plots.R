@@ -120,7 +120,24 @@ plotGSEA <- function(pathways, stats, title="GSEA plot") {
 #' @export
 #'
 #' @examples
-#' compareKnockdown <- loadInternalData("compareKnockdown")
+#' data("l1000perturbationsKnockdown")
+#' cellLine <- "HepG2"
+#' compareKnockdown <- list()
+#'
+#' # Compare against L1000 using Spearman correlation
+#' compareKnockdown$spearman <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
+#'
+#' # Compare against L1000 using Pearson correlation
+#' compareKnockdown$pearson <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
+#'
+#' # Compare against L1000 using gene set enrichment analysis (GSEA) with the top
+#' # and bottom 150 genes
+#' compareKnockdown$gsea <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
+#'     geneSize=150)
+#'
 #' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
 #' plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
 #' plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)

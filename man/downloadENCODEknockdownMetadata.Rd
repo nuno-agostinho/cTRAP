@@ -18,5 +18,7 @@ Data frame containing ENCODE knockdown experiment metadata
 Download metadata for ENCODE knockdown experiments
 }
 \examples{
+\dontrun{
 downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
+}
 }

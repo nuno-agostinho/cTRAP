@@ -17,20 +17,23 @@ knockdown and control
 Perform differential gene expression based on ENCODE data
 }
 \examples{
-\dontrun{
-gene <- "EIF4G1"
-cellLine <- "HepG2"
+## Download ENCODE metadata for a specific cell line and gene
+# cellLine <- "HepG2"
+# gene <- "EIF4G1"
+# ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 
-ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-counts <- loadENCODEgeneExpression(ENCODEmetadata)
+## Download samples based on filtered ENCODE metadata
+# ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+
+# counts <- prepareENCODEgeneExpression(ENCODEsamples)
+data("counts")
 
 # Remove low coverage (at least 10 counts shared across two samples)
 minReads   <- 10
 minSamples <- 2
-filter <- rowSums(counts[ , 3:6] >= minReads) >= minSamples
+filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 counts <- counts[filter, ]
 
 # Perform differential gene expression analysis
 diffExpr <- performDifferentialExpression(counts)
-}
 }

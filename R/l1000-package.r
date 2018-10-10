@@ -31,11 +31,186 @@
 #' }
 #'
 #' Values for each perturbation type can be listed with
-#' \code{getL1000PerturbationTypes()}
+#' \code{getL1000perturbationTypes()}
 #'
 #' \strong{Output:} The output includes a data frame of ranked perturbations
 #' based on the associated statistical values and respective p-values.
 #'
 #' @name l1000
 #' @docType package
+NULL
+
+#' Gene expression data sample
+#'
+#' @description
+#' Gene expression data sample obtained by running the following code:
+#'
+#' \preformatted{
+#' gene <- "EIF4G1"
+#' cellLine <- "HepG2"
+#'
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' table(ENCODEmetadata$`Experiment target`)
+#' length(unique(ENCODEmetadata$`Experiment target`))
+#'
+#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#'
+#' # Remove low coverage (at least 10 counts shared across two samples)
+#' minReads   <- 10
+#' minSamples <- 2
+#' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
+#' counts <- counts[filter, ]
+#' }
+#'
+#' @name counts
+#' @docType data
+NULL
+
+#' Differential expression's t-statistics sample
+#'
+#' @description
+#' Differential expression's t-statistics sample obtained by running the
+#' following code:
+#'
+#' \preformatted{
+#' gene <- "EIF4G1"
+#' cellLine <- "HepG2"
+#'
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' table(ENCODEmetadata$`Experiment target`)
+#' length(unique(ENCODEmetadata$`Experiment target`))
+#'
+#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#'
+#' # Remove low coverage (at least 10 counts shared across two samples)
+#' minReads   <- 10
+#' minSamples <- 2
+#' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
+#' counts <- counts[filter, ]
+#'
+#' # Perform differential gene expression analysis
+#' diffExpr <- performDifferentialExpression(counts)
+#'
+#' # Get t-statistics of differential expression with respective gene names
+#' diffExprStat <- diffExpr$t
+#' names(diffExprStat) <- diffExpr$Gene_symbol
+#' }
+#'
+#' @name diffExprStat
+#' @docType data
+NULL
+
+#' ENCODE metadata sample
+#'
+#' @description
+#' ENCODE metadata sample obtained by running the following code:
+#'
+#' \preformatted{
+#' gene <- "EIF4G1"
+#' cellLine <- "HepG2"
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' }
+#'
+#' @name ENCODEmetadata
+#' @docType data
+NULL
+
+#' L1000 metadata
+#'
+#' @description
+#' L1000 metadata obtained by running the following code:
+#'
+#' \preformatted{
+#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
+#'                                      timepoint = "2 h")
+#' }
+#'
+#' @name l1000metadata
+#' @docType data
+NULL
+
+#' L1000 perturbations sample for knockdown experiments
+#'
+#' @description
+#' L1000 perturbations sample for knockdown experiments obtained by running the
+#' following code:
+#'
+#' \preformatted{
+#' # Code for loading CMap gene KD HepG2 data
+#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadataKnockdown <- filterL1000metadata(
+#'   l1000metadata, cellLine="HepG2",
+#'   perturbationType="Consensus signature from shRNAs targeting the same gene")
+#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
+#'                                    l1000metadataKnockdown$sig_id)
+#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+#'
+#' l1000perturbationsKnockdown <- loadL1000perturbations(
+#'   l1000metadataKnockdown, l1000zscores, l1000geneInfo)
+#'
+#' # Select only some perturbations (to reduce file size)
+#' data("diffExprStat")
+#'
+#' compareKnockdown <- list()
+#' compareKnockdown$spearman <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
+#' compareKnockdown$pearson <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
+#' compareKnockdown$gsea <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
+#'     geneSize=150)
+#'
+#' genes  <- lapply(compareKnockdown, "[[", "genes")
+#' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
+#' l1000perturbationsKnockdown <- l1000perturbationsKnockdown[ , filter]
+#' }
+#'
+#' @name l1000perturbationsKnockdown
+#' @docType data
+NULL
+
+#' L1000 perturbations sample for small molecules
+#'
+#' @description
+#' L1000 perturbations sample for small molecules obtained by running the
+#' following code:
+#'
+#' \preformatted{
+#' l1000metadataSmallMolecules <- filterL1000metadata(
+#'     l1000metadata, cellLine="HepG2", timepoint="24 h",
+#'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
+#'     perturbationType="Compound")
+#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
+#'                                    l1000metadataSmallMolecules$sig_id)
+#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
+#'
+#' l1000perturbationsSmallMolecules <- loadL1000perturbations(
+#'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo,
+#'     sanitizeCompoundNames=TRUE)
+#'
+#' # Select only some perturbations (to reduce file size)
+#' data("diffExprStat")
+#'
+#' compareSmallMolecule <- list()
+#' compareSmallMolecule$spearman <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
+#'     method="spearman")
+#' compareSmallMolecule$pearson <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
+#'     method="pearson")
+#' compareSmallMolecule$gsea <- compareAgainstL1000(
+#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="gsea",
+#'     geneSize=150)
+#'
+#' genes  <- lapply(compareSmallMolecule, "[[", "genes")
+#' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
+#' l1000perturbationsSmallMolecules <- l1000perturbationsSmallMolecules[
+#'     , filter]
+#' }
+#'
+#' @name l1000perturbationsSmallMolecules
+#' @docType data
 NULL

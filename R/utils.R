@@ -11,22 +11,25 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' gene <- "EIF4G1"
-#' cellLine <- "HepG2"
+#' ## Download ENCODE metadata for a specific cell line and gene
+#' # cellLine <- "HepG2"
+#' # gene <- "EIF4G1"
+#' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#' counts <- loadENCODEgeneExpression(ENCODEmetadata)
+#' ## Download samples based on filtered ENCODE metadata
+#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'
+#' # counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#' data("counts")
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
 #' minReads   <- 10
 #' minSamples <- 2
-#' filter <- rowSums(counts[ , 3:6] >= minReads) >= minSamples
+#' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 #' counts <- counts[filter, ]
 #'
 #' # Perform differential gene expression analysis
 #' diffExpr <- performDifferentialExpression(counts)
-#' }
 performDifferentialExpression <- function(counts) {
     counts <- data.frame(counts)
     rownames(counts) <- counts$gene_id
@@ -39,7 +42,7 @@ performDifferentialExpression <- function(counts) {
     rownames(design) <- Sample_info$sample
 
     # Check: identical(names(counts[ , 3:6]), rownames(design_matrix))
-    voom <- voom(counts[ , 3:6], design=design, plot=FALSE,
+    voom <- voom(counts[ , -c(1, 2)], design=design, plot=FALSE,
                  normalize.method="quantile")
 
     # Fit linear model
@@ -60,6 +63,9 @@ performDifferentialExpression <- function(counts) {
     # Mean-aggregation per gene symbol to compare unique gene knockdowns
     results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,
                           by=list(Gene_symbol=results$Gene_symbol))
+
+    # Remove non-matching genes
+    results2 <- results2[results2$Gene_symbol != "", ]
     return(results2)
 }
 
@@ -83,34 +89,4 @@ downloadIfNeeded <- function(file, link, gz=TRUE) {
         download.file(link, file, mode="wb")
         if (gz) gunzip(file)
     }
-}
-
-#' Load internal data for use in vignettes and examples
-#'
-#' @param x Character: name of object to load
-#'
-#' @importFrom utils getFromNamespace
-#'
-#' @return Object
-#' @export
-#'
-#' @examples
-#' loadInternalData("l1000perturbationsKnockdown")
-loadInternalData <- function(x) {
-    res <- getFromNamespace(x, pos="package:cTRAP")
-
-    if (x == "compareKnockdown")
-        l1000perturbationsVar <- "l1000perturbationsKnockdown"
-    else if (x == "compareSmallMolecule")
-        l1000perturbationsVar <- "l1000perturbationsSmallMolecules"
-
-    if (x %in% paste0("compare", c("Knockdown", "SmallMolecule"))) {
-        perturbations <- getFromNamespace(l1000perturbationsVar,
-                                          pos="package:cTRAP")
-        attr(res$spearman, "perturbations") <- perturbations
-        attr(res$pearson,  "perturbations") <- perturbations
-        attr(res$gsea,     "perturbations") <- perturbations
-    }
-
-    return(res)
 }

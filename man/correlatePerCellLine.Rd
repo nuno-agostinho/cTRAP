@@ -14,7 +14,7 @@ where the name of the vector are gene names and the values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
-\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+\item{perturbations}{\code{l1000perturbations} object: file with L1000 loaded
 perturbations (check \code{\link{loadL1000perturbations}})}
 
 \item{method}{Character: correlation method}

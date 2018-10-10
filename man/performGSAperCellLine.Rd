@@ -9,7 +9,7 @@ performGSAperCellLine(cellLine, perturbations, pathways)
 \arguments{
 \item{cellLine}{Character: cell line(s)}
 
-\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+\item{perturbations}{\code{l1000perturbations} object: file with L1000 loaded
 perturbations (check \code{\link{loadL1000perturbations}})}
 
 \item{pathways}{List of gene sets to check.}

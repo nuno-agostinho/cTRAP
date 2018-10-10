@@ -13,7 +13,7 @@ where the name of the vector are gene names and the values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
-\item{perturbations}{\code{L1000perturbations} object: file with L1000 loaded
+\item{perturbations}{\code{l1000perturbations} object: file with L1000 loaded
 perturbations (check \code{\link{loadL1000perturbations}})}
 
 \item{cellLine}{Character: cell line(s)}
@@ -34,17 +34,18 @@ Compare against L1000 datasets
 }
 \examples{
 cellLine <- "HepG2"
-perturbations <- loadInternalData("l1000perturbationsSmallMolecules")
-diffExprGenes <- loadInternalData("diffExprStat")
+data("l1000perturbationsSmallMolecules")
+perturbations <- l1000perturbationsSmallMolecules
+data("diffExprStat")
 
 # Compare against L1000 using Spearman correlation
-compareAgainstL1000(diffExprGenes, perturbations, cellLine,
+compareAgainstL1000(diffExprStat, perturbations, cellLine,
                     method="spearman")
 
 # Compare against L1000 using Pearson correlation
-compareAgainstL1000(diffExprGenes, perturbations, cellLine,
+compareAgainstL1000(diffExprStat, perturbations, cellLine,
                     method="pearson")
 
 # Compare against L1000 using gene set enrichment analysis (GSEA)
-compareAgainstL1000(diffExprGenes, perturbations, cellLine, method="gsea")
+compareAgainstL1000(diffExprStat, perturbations, cellLine, method="gsea")
 }

@@ -1,45 +1,83 @@
-#' Load L1000 metadata
+#' Download L1000 data
 #'
 #' The data will be downloaded if not available
 #'
-#' @param l1000metadataFile Character: filepath to L1000 metadata
+#' @param file Character: filepath
+#' @param type Character: type of data to load
+#' @param zscoresId Character: identifiers to partially load z-scores file
+#' (for performance reasons)
 #'
 #' @importFrom data.table fread
 #'
 #' @return Metadata as a data table
-loadL1000metadata <- function(l1000metadataFile) {
-    # Download metadata (if not available)
-    downloadIfNeeded(l1000metadataFile, paste0(
-        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-        "format=file&file=GSE92742%5FBroad%5FLINCS%5Fsig%5Finfo%2Etxt%2Egz"))
+#' @export
+#'
+#' @examples
+#' # Download L1000 metadata
+#' 1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#'
+#' # Download L1000 gene info
+#' downloadL1000data("l1000geneInfo.txt", "geneInfo")
+#'
+#' # Download L1000 zscores based on filtered metadata
+#' l1000metadataKnockdown <- filterL1000metadata(
+#'   l1000metadata, cellLine="HepG2",
+#'   perturbationType="Consensus signature from shRNAs targeting the same gene")
+#' \dontrun{
+#' downloadL1000data("l1000zscores.gctx.gz", "zscores",
+#'                   l1000metadataKnockdown$sig_id)
+#' }
+downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
+                              zscoresId=NULL) {
+    type <- match.arg(type)
+    if (type == "metadata") {
+        downloadIfNeeded(file, paste0(
+            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+            "format=file&",
+            "file=GSE92742_Broad_LINCS_sig_info.txt.gz"))
 
-    cat("Loading L1000 metadata...", fill=TRUE)
-    metadata <- fread(l1000metadataFile, sep="\t",
-                      na.strings=c("NA", "na", "-666"))
-    return(metadata)
+        message("Loading L1000 metadata...")
+        data <- fread(file, sep="\t", na.strings=c("NA", "na", "-666"))
+    } else if (type == "geneInfo") {
+        downloadIfNeeded(
+            file,
+            paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+                   "format=file&",
+                   "file=GSE92742_Broad_LINCS_gene_info.txt.gz"))
+        data <- fread(file, sep="\t", na.strings=c("NA", "na", "-666"))
+    } else if (type == "zscores") {
+        downloadIfNeeded(
+            file, paste0(
+                "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+                "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
+                "MODZ_n473647x12328.gctx.gz"))
+        data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
+                    set_annot_rownames=FALSE, matrix_only=FALSE)@mat
+    }
+    return(data)
 }
 
 #' List available conditions in L1000 datasets
 #'
 #' Downloads metadata if not available
 #'
-#' @inheritParams loadL1000metadata
+#' @param metadata frame: L1000 metadata
 #'
 #' @return List of conditions in L1000 datasets
 #' @export
 #'
 #' @examples
-#' getL1000Conditions("L1000metadata.txt")
-getL1000Conditions <- function(l1000metadataFile) {
-    info <- loadL1000metadata(l1000metadataFile)
-
-    pertTypes <- getL1000PerturbationTypes()
-    pertTypes <- names(pertTypes)[pertTypes %in% unique(info$pert_type)]
+#' data("l1000metadata")
+#' # l1000metadata <- downloadL1000metadata("l1000metadata.txt")
+#' getL1000conditions(l1000metadata)
+getL1000conditions <- function(metadata) {
+    pertTypes <- getL1000perturbationTypes()
+    pertTypes <- names(pertTypes)[pertTypes %in% unique(metadata$pert_type)]
 
     list("Perturbation type"=pertTypes,
-         "Cell line"=unique(info$cell_id),
-         "Dosage"=unique(info$pert_idose),
-         "Time points"=unique(info$pert_itime))
+         "Cell line"=unique(metadata$cell_id),
+         "Dosage"=unique(metadata$pert_idose),
+         "Time points"=unique(metadata$pert_itime))
 }
 
 #' Correlate differential expression scores per cell line
@@ -145,7 +183,7 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #' @param geneSize Number: top and bottom differentially expressed genes to use
 #'   for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
 #'   argument does nothing
-#' @param perturbations \code{L1000perturbations} object: file with L1000 loaded
+#' @param perturbations \code{l1000perturbations} object: file with L1000 loaded
 #'   perturbations (check \code{\link{loadL1000perturbations}})
 #' @param cellLine Character: cell line(s)
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
@@ -161,19 +199,20 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #'
 #' @examples
 #' cellLine <- "HepG2"
-#' perturbations <- loadInternalData("l1000perturbationsSmallMolecules")
-#' diffExprGenes <- loadInternalData("diffExprStat")
+#' data("l1000perturbationsSmallMolecules")
+#' perturbations <- l1000perturbationsSmallMolecules
+#' data("diffExprStat")
 #'
 #' # Compare against L1000 using Spearman correlation
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLine,
+#' compareAgainstL1000(diffExprStat, perturbations, cellLine,
 #'                     method="spearman")
 #'
 #' # Compare against L1000 using Pearson correlation
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLine,
+#' compareAgainstL1000(diffExprStat, perturbations, cellLine,
 #'                     method="pearson")
 #'
 #' # Compare against L1000 using gene set enrichment analysis (GSEA)
-#' compareAgainstL1000(diffExprGenes, perturbations, cellLine, method="gsea")
+#' compareAgainstL1000(diffExprStat, perturbations, cellLine, method="gsea")
 compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                                 method=c("spearman", "pearson", "gsea"),
                                 geneSize=150) {
@@ -213,34 +252,29 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
     attr(data, "diffExprGenes") <- diffExprGenes
     attr(data, "perturbations") <- perturbations
     if (method == "gsea") attr(data, "pathways") <- pathways
-    class(data) <- c("L1000comparison", class(data))
+    class(data) <- c("l1000comparison", class(data))
     return(data)
 }
 
-#' Load L1000 perturbation data
+#' Filter L1000 metadata
 #'
-#' @inheritParams loadL1000metadata
-#' @param l1000zscoresFile Character: path to GCTX z-scores file
-#' @param l1000geneFile Character: path to L1000 gene file
+#' @param metadata Data frame: metadata
 #' @param cellLine Character: cell line (if \code{NULL}, all values are loaded)
 #' @param timepoint Character: timepoint (if \code{NULL}, all values are loaded)
 #' @param dosage Character: dosage (if \code{NULL}, all values are loaded)
 #' @param perturbationType Character: type of perturbation (if \code{NULL}, all
 #' perturbation types are loaded)
-#' @param sanitizeCompoundNames Boolean: replace identifiers with compound names
 #'
-#' @importFrom R.utils gunzip
-#' @importFrom methods new
+#' @return Filtered L1000 metadata
 #'
-#' @return Perturbation data from L1000 as a data table
 #' @export
-loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
-                                   l1000geneFile, cellLine=NULL, timepoint=NULL,
-                                   dosage=NULL, perturbationType=NULL,
-                                   sanitizeCompoundNames=FALSE) {
-    metadata <- loadL1000metadata(l1000metadataFile)
-
-    # Filter elements of interest
+#' @examples
+#' data("l1000metadata")
+#' # l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' filterL1000metadata(l1000metadata, cellLine="HEPG2", timepoint="2 h",
+#'                     dosage="25 ng/mL")
+filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
+                                dosage=NULL, perturbationType=NULL) {
     if (!is.null(cellLine))
         metadata <- metadata[tolower(metadata$cell_id) %in% tolower(cellLine), ]
 
@@ -251,43 +285,51 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
         metadata <- metadata[metadata$pert_idose %in% dosage, ]
 
     if (!is.null(perturbationType)) {
-        tmp <- getL1000PerturbationTypes()[perturbationType]
+        tmp <- getL1000perturbationTypes()[perturbationType]
         if (!is.na(tmp)) perturbationType <- tmp
         metadata <- metadata[metadata$pert_type %in% perturbationType, ]
     }
 
-    # Get data from GCTX files based on the corresponding sig_ids
-    sig_ids <- metadata$sig_id
+    return(metadata)
+}
 
-    downloadIfNeeded(
-        l1000zscoresFile,
-        paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-               "format=file&file=GSE92742%5FBroad%5FLINCS%5FLevel5%5FCOMPZ%2",
-               "EMODZ%5Fn473647x12328%2Egctx%2Egz"))
-    selected_ds <- new("GCT", src=l1000zscoresFile, rid=NULL, cid=sig_ids,
-        set_annot_rownames=FALSE, matrix_only=FALSE)@mat
-
+#' Load L1000 perturbation data
+#'
+#' @inheritParams downloadL1000metadata
+#' @param metadata Data frame: L1000 Metadata
+#' @param zscores Data frame: GCTX z-scores
+#' @param geneInfo Data frame: L1000 gene info
+#' @param sanitizeCompoundNames Boolean: replace identifiers with compound names
+#'
+#' @importFrom R.utils gunzip
+#' @importFrom methods new
+#'
+#' @return Perturbation data from L1000 as a data table
+#' @export
+#' @examples
+#' \dontrun{
+#' metadata <- downloadL1000metadata("l1000metadata.txt")
+#' metadata <- filterL1000metadata(metadata, cellLine="HepG2")
+#' zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
+#' geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+#' loadL1000perturbations(metadata, zscores, geneInfo)
+#' }
+loadL1000perturbations <- function(metadata, zscores, geneInfo,
+                                   sanitizeCompoundNames=FALSE) {
     if (sanitizeCompoundNames) {
         # Change colnames per drug
-        colnames(selected_ds) <- metadata$pert_iname[
-            match(colnames(selected_ds), metadata$sig_id)]
+        colnames(zscores) <- metadata$pert_iname[
+            match(colnames(zscores), metadata$sig_id)]
     }
 
     # Change rownames
-    downloadIfNeeded(
-        l1000geneFile,
-        paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-               "format=file&",
-               "file=GSE92742%5FBroad%5FLINCS%5Fgene%5Finfo%2Etxt%2Egz"))
-    geneInfo <- fread(l1000geneFile, sep="\t", na.strings=c("NA", "na", "-666"))
-
-    rownames(selected_ds) <- geneInfo$pr_gene_symbol[
-        match(rownames(selected_ds), geneInfo$pr_gene_id)]
+    rownames(zscores) <- geneInfo$pr_gene_symbol[
+        match(rownames(zscores), geneInfo$pr_gene_id)]
 
     # Add attribute containing cell lines
-    attr(selected_ds, "cellLines") <- metadata$cell_id
-    class(selected_ds) <- c("L1000perturbations", class(selected_ds))
-    return(selected_ds)
+    attr(zscores, "cellLines") <- metadata$cell_id
+    class(zscores) <- c("l1000perturbations", class(zscores))
+    return(zscores)
 }
 
 #' Get perturbation types
@@ -296,8 +338,8 @@ loadL1000perturbations <- function(l1000metadataFile, l1000zscoresFile,
 #' @export
 #'
 #' @examples
-#' getL1000PerturbationTypes()
-getL1000PerturbationTypes <- function () {
+#' getL1000perturbationTypes()
+getL1000perturbationTypes <- function () {
     c("Compound"="trt_cp",
       "Peptides and other biological agents (e.g. cytokine)"="trt_lig",
       "shRNA for loss of function (LoF) of gene"="trt_sh",

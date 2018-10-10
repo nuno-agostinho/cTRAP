@@ -22,7 +22,9 @@ getENCODEcontrols <- function(control, table) {
 #' @return Data frame containing ENCODE knockdown experiment metadata
 #' @export
 #' @examples
+#' \dontrun{
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
+#' }
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
     cat("Downloading metadata for ENCODE knockdown experiments...", fill=TRUE)
@@ -108,34 +110,60 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     fread(outfile)
 }
 
-#' Load an ENCODE gene expression data for a given gene
+#' Download ENCODE samples
 #'
 #' @param metadata Character: ENCODE metadata
+#'
+#' @return List of loaded ENCODE samples
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Download ENCODE metadata for a specific cell line and gene
+#' cellLine <- "HepG2"
+#' gene <- "EIF4G1"
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#'
+#' # Download samples based on filtered ENCODE metadata
+#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' }
+downloadENCODEsamples <- function(metadata) {
+    list(rep1=loadENCODEsample(metadata, replicate=1),
+         rep2=loadENCODEsample(metadata, replicate=2),
+         control1=loadENCODEsample(metadata, replicate=1, control=TRUE),
+         control2=loadENCODEsample(metadata, replicate=2, control=TRUE))
+}
+
+#' Load an ENCODE gene expression data
+#'
+#' @param samples List of loaded ENCODE samples
 #'
 #' @return Data frame containing gene read counts
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' # Download ENCODE metadata for a specific cell line and gene
 #' cellLine <- "HepG2"
 #' gene <- "EIF4G1"
 #' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#' loadENCODEgeneExpression(ENCODEmetadata)
-loadENCODEgeneExpression <- function(metadata) {
-    table_rep1     <- loadENCODEsample(metadata, replicate=1)
-    table_rep2     <- loadENCODEsample(metadata, replicate=2)
-    table_control1 <- loadENCODEsample(metadata, replicate=1, control=TRUE)
-    table_control2 <- loadENCODEsample(metadata, replicate=2, control=TRUE)
-
+#'
+#' # Download samples based on filtered ENCODE metadata
+#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'
+#' prepareENCODEgeneExpression(ENCODEsamples)
+#' }
+prepareENCODEgeneExpression <- function(samples) {
     # Check if transcripts are identical across samples
     sameTranscriptsAcrossSamples <- all(sapply(lapply(
-        list(table_rep1, table_rep2, table_control1, table_control2),
-        "[[", "transcript_id(s)"), identical, table_rep1$`transcript_id(s)`))
+        samples, "[[", "transcript_id(s)"),
+        identical, samples$rep1$`transcript_id(s)`))
     if (!all(sameTranscriptsAcrossSamples))
         stop("Not all samples share the same transcript identifiers")
 
     # Merge gene counts from the different samples to a single table
-    countTable <- cbind(table_rep1[ , c(1:2, 5)], table_rep2[ , 5],
-                        table_control1[ , 5], table_control2[ , 5])
+    countTable <- cbind(samples$rep1[ , c(1:2, 5)], samples$rep2[ , 5],
+                        samples$control1[ , 5], samples$control2[ , 5])
     names(countTable)[3:6] <- c("shRNA1", "shRNA2", "control1", "control2")
     rownames(countTable) <- countTable$gene_id
     return(countTable)

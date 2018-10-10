@@ -4,25 +4,15 @@
 \alias{loadL1000perturbations}
 \title{Load L1000 perturbation data}
 \usage{
-loadL1000perturbations(l1000metadataFile, l1000zscoresFile, l1000geneFile,
-  cellLine = NULL, timepoint = NULL, dosage = NULL,
-  perturbationType = NULL, sanitizeCompoundNames = FALSE)
+loadL1000perturbations(metadata, zscores, geneInfo,
+  sanitizeCompoundNames = FALSE)
 }
 \arguments{
-\item{l1000metadataFile}{Character: filepath to L1000 metadata}
+\item{metadata}{Data frame: L1000 Metadata}
 
-\item{l1000zscoresFile}{Character: path to GCTX z-scores file}
+\item{zscores}{Data frame: GCTX z-scores}
 
-\item{l1000geneFile}{Character: path to L1000 gene file}
-
-\item{cellLine}{Character: cell line (if \code{NULL}, all values are loaded)}
-
-\item{timepoint}{Character: timepoint (if \code{NULL}, all values are loaded)}
-
-\item{dosage}{Character: dosage (if \code{NULL}, all values are loaded)}
-
-\item{perturbationType}{Character: type of perturbation (if \code{NULL}, all
-perturbation types are loaded)}
+\item{geneInfo}{Data frame: L1000 gene info}
 
 \item{sanitizeCompoundNames}{Boolean: replace identifiers with compound names}
 }
@@ -31,4 +21,13 @@ Perturbation data from L1000 as a data table
 }
 \description{
 Load L1000 perturbation data
+}
+\examples{
+\dontrun{
+metadata <- downloadL1000metadata("l1000metadata.txt")
+metadata <- filterL1000metadata(metadata, cellLine="HepG2")
+zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
+geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+loadL1000perturbations(metadata, zscores, geneInfo)
+}
 }

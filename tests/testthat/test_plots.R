@@ -1,25 +1,34 @@
 context("Plot results")
 
-compareKnockdown <- loadInternalData("compareKnockdown")
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
+# data(compareKnockdown)
+data("l1000perturbationsSmallMolecules")
+perturbations <- l1000perturbationsSmallMolecules
+data("diffExprStat")
+cellLine <- "HEPG2"
+
+compareKnockdown <- list()
+compareKnockdown$pearson  <- compareAgainstL1000(diffExprStat, perturbations,
+                                                 cellLine, method="pearson")
+compareKnockdown$spearman <- compareAgainstL1000(diffExprStat, perturbations,
+                                                 cellLine, method="spearman")
+compareKnockdown$gsea     <- compareAgainstL1000(diffExprStat, perturbations,
+                                                 cellLine, method="gsea")
+condition <- compareKnockdown$gsea$genes[[1]]
 
 test_that("Plot Spearman correlation", {
-    plot <- plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
+    plot <- plotL1000comparison(compareKnockdown$spearman, condition)
     expect_is(plot, "NULL")
 })
 
 test_that("Plot Pearson correlation", {
-    plot <- plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
+    plot <- plotL1000comparison(compareKnockdown$pearson, condition)
     expect_is(plot, "NULL")
 })
 
 test_that("Plot GSEA", {
-    plot <- plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown,
-                                topGenes=150)
+    plot <- plotL1000comparison(compareKnockdown$gsea, condition, topGenes=150)
     expect_is(plot, "ggplot")
 
-    plot <- plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown,
-                                topGenes=20)
+    plot <- plotL1000comparison(compareKnockdown$gsea, condition, topGenes=20)
     expect_is(plot, "ggplot")
 })
-
