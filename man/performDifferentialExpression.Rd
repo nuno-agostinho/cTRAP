@@ -17,6 +17,7 @@ knockdown and control
 Perform differential gene expression based on ENCODE data
 }
 \examples{
+\donttest{
 gene <- "EIF4G1"
 cellLine <- "HepG2"
 
@@ -31,4 +32,5 @@ counts <- counts[filter, ]
 
 # Perform differential gene expression analysis
 diffExpr <- performDifferentialExpression(counts)
+}
 }
