@@ -11,6 +11,7 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' gene <- "EIF4G1"
 #' cellLine <- "HepG2"
 #'
@@ -25,6 +26,7 @@
 #'
 #' # Perform differential gene expression analysis
 #' diffExpr <- performDifferentialExpression(counts)
+#' }
 performDifferentialExpression <- function(counts) {
     counts <- data.frame(counts)
     rownames(counts) <- counts$gene_id
