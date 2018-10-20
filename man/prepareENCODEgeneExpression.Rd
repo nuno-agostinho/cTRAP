@@ -16,15 +16,14 @@ Data frame containing gene read counts
 Load an ENCODE gene expression data
 }
 \examples{
-\dontrun{
-# Download ENCODE metadata for a specific cell line and gene
-cellLine <- "HepG2"
-gene <- "EIF4G1"
-ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+data("ENCODEsamples")
+## Download ENCODE metadata for a specific cell line and gene
+# cellLine <- "HepG2"
+# gene <- "EIF4G1"
+# ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 
-# Download samples based on filtered ENCODE metadata
-ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+## Download samples based on filtered ENCODE metadata
+# ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
 
 prepareENCODEgeneExpression(ENCODEsamples)
-}
 }
