@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' # Download L1000 metadata
-#' 1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #'
 #' # Download L1000 gene info
 #' downloadL1000data("l1000geneInfo.txt", "geneInfo")
