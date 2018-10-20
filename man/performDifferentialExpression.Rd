@@ -25,8 +25,8 @@ Perform differential gene expression based on ENCODE data
 ## Download samples based on filtered ENCODE metadata
 # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
 
-# counts <- prepareENCODEgeneExpression(ENCODEsamples)
-data("counts")
+data("ENCODEsamples")
+counts <- prepareENCODEgeneExpression(ENCODEsamples)
 
 # Remove low coverage (at least 10 counts shared across two samples)
 minReads   <- 10

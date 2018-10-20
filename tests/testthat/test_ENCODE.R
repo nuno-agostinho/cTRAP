@@ -13,6 +13,9 @@ test_that("Load ENCODE gene expression for EIF4G1", {
 })
 
 test_that("Perform differential gene expression", {
+    data("ENCODEsamples")
+    counts <- prepareENCODEgeneExpression(ENCODEsamples)
+
     diffExpr <- performDifferentialExpression(counts)
     expect_is(diffExpr, "data.frame")
     expect_identical(colnames(diffExpr), c("Gene_symbol", "logFC", "AveExpr",
