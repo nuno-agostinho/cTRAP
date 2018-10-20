@@ -23,12 +23,12 @@ The data will be downloaded if not available
 }
 \examples{
 # Download L1000 metadata
-1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 
 # Download L1000 gene info
 downloadL1000data("l1000geneInfo.txt", "geneInfo")
 
-# Download L1000 zscores
+# Download L1000 zscores based on filtered metadata
 l1000metadataKnockdown <- filterL1000metadata(
   l1000metadata, cellLine="HepG2",
   perturbationType="Consensus signature from shRNAs targeting the same gene")
