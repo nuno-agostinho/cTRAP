@@ -1,4 +1,4 @@
-#' L1000 package
+#' cTRAP package
 #'
 #' Compare differential gene expression results with those from big datasets
 #' (e.g. L1000), allowing to infer which types of perturbations may explain the
@@ -36,7 +36,7 @@
 #' \strong{Output:} The output includes a data frame of ranked perturbations
 #' based on the associated statistical values and respective p-values.
 #'
-#' @name l1000
+#' @name cTRAP
 #' @docType package
 NULL
 
@@ -212,5 +212,31 @@ NULL
 #' }
 #'
 #' @name l1000perturbationsSmallMolecules
+#' @docType data
+NULL
+
+#' Sample of ENCODE samples
+#'
+#' @description
+#' Sample of ENCODE samples obtained by running the following code:
+#'
+#' \preformatted{
+#' # Download ENCODE metadata for a specific cell line and gene
+#' cellLine <- "HepG2"
+#' gene <- "EIF4G1"
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#'
+#' # Download samples based on filtered ENCODE metadata
+#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'
+#' # Get small subset of whole dataset
+#' filter <- ENCODEsamples[[1]]$expected_count > 0
+#' genes <- head(ENCODEsamples[[1]][filter, ])$gene_id
+#' for (k in seq(ENCODEsamples)) {
+#'     ENCODEsamples[[k]] <- ENCODEsamples[[k]][
+#'         ENCODEsamples[[k]]$gene_id %in% genes, ]
+#' }
+#'
+#' @name ENCODEsamples
 #' @docType data
 NULL

@@ -22,9 +22,7 @@ getENCODEcontrols <- function(control, table) {
 #' @return Data frame containing ENCODE knockdown experiment metadata
 #' @export
 #' @examples
-#' \dontrun{
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
-#' }
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
     cat("Downloading metadata for ENCODE knockdown experiments...", fill=TRUE)
@@ -49,7 +47,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     url <- paste(
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
         "limit=all", "searchTerm=knock/metadata.tsv")
-    table <- suppressMessages(read_tsv(url))
+    table <- suppressWarnings(suppressMessages(read_tsv(url)))
     table <- table[table$`Assembly` == "hg19" &
                        table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
@@ -142,17 +140,16 @@ downloadENCODEsamples <- function(metadata) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Download ENCODE metadata for a specific cell line and gene
-#' cellLine <- "HepG2"
-#' gene <- "EIF4G1"
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' data("ENCODEsamples")
+#' ## Download ENCODE metadata for a specific cell line and gene
+#' # cellLine <- "HepG2"
+#' # gene <- "EIF4G1"
+#' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' # Download samples based on filtered ENCODE metadata
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' ## Download samples based on filtered ENCODE metadata
+#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
 #'
 #' prepareENCODEgeneExpression(ENCODEsamples)
-#' }
 prepareENCODEgeneExpression <- function(samples) {
     # Check if transcripts are identical across samples
     sameTranscriptsAcrossSamples <- all(sapply(lapply(
