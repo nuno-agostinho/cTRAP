@@ -23,9 +23,10 @@
 #' l1000metadataKnockdown <- filterL1000metadata(
 #'   l1000metadata, cellLine="HepG2",
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#' \dontrun{
-#' downloadL1000data("l1000zscores.gctx.gz", "zscores",
-#'                   l1000metadataKnockdown$sig_id)
+#'
+#' if (interactive()) {
+#'     downloadL1000data("l1000zscores.gctx.gz", "zscores",
+#'                       l1000metadataKnockdown$sig_id)
 #' }
 downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
                               zscoresId=NULL) {
@@ -307,12 +308,12 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @return Perturbation data from L1000 as a data table
 #' @export
 #' @examples
-#' \dontrun{
-#' metadata <- downloadL1000metadata("l1000metadata.txt")
-#' metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-#' zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
-#' geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
-#' loadL1000perturbations(metadata, zscores, geneInfo)
+#' if (interactive()) {
+#'   metadata <- downloadL1000metadata("l1000metadata.txt")
+#'   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
+#'   zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
+#'   geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+#'   loadL1000perturbations(metadata, zscores, geneInfo)
 #' }
 loadL1000perturbations <- function(metadata, zscores, geneInfo,
                                    sanitizeCompoundNames=FALSE) {

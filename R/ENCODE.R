@@ -116,14 +116,14 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Download ENCODE metadata for a specific cell line and gene
-#' cellLine <- "HepG2"
-#' gene <- "EIF4G1"
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' if (interactive()) {
+#'   # Download ENCODE metadata for a specific cell line and gene
+#'   cellLine <- "HepG2"
+#'   gene <- "EIF4G1"
+#'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' # Download samples based on filtered ENCODE metadata
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'   # Download samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
 #' }
 downloadENCODEsamples <- function(metadata) {
     list(rep1=loadENCODEsample(metadata, replicate=1),

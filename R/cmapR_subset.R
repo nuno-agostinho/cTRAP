@@ -96,7 +96,7 @@ fix.datatypes <- function(meta) {
 #' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
-read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
+readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
                            set_annot_rownames=TRUE) {
     if (!file.exists(gctx_path)) stop(paste(gctx_path, "does not exist"))
     if (dimension=="column") dimension <- "col"
@@ -130,7 +130,7 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
         ids <- ids
 
     # make sure annots row ordering matches that of ids
-    annots <- subset_to_ids(annots, ids)
+    annots <- subsetToIds(annots, ids)
     annots$id <- as.character(annots$id)
     # use the id field to set the rownames
     if (set_annot_rownames) rownames(annots) <- annots$id
@@ -147,7 +147,7 @@ read.gctx.meta <- function(gctx_path, dimension="row", ids=NULL,
 #' @source https://github.com/cmap/cmapR
 #'
 #' @family GCTX parsing functions
-read.gctx.ids <- function(gctx_path, dimension="row") {
+readGctxIds <- function(gctx_path, dimension="row") {
     if (!file.exists(gctx_path)) {
         stop(paste(gctx_path, "does not exist"))
     }
@@ -186,7 +186,7 @@ read.gctx.ids <- function(gctx_path, dimension="row") {
 #'
 #' @family GCTX parsing functions
 #' @keywords internal
-process_ids <- function(ids, all_ids, type="rid") {
+processIds <- function(ids, all_ids, type="rid") {
     if (!is.null(ids)) {
         if (is.numeric(ids)) {
             # is it numeric?
@@ -366,13 +366,13 @@ setMethod("initialize", signature = "GCT", definition = function(
             message(paste("reading", src))
             .Object@src = src
             # get all the row and column ids
-            all_rid <- read.gctx.ids(src, dimension="row")
-            all_cid <- read.gctx.ids(src, dimension="col")
+            all_rid <- readGctxIds(src, dimension="row")
+            all_cid <- readGctxIds(src, dimension="col")
             # if rid or cid specified, read only those rows/columns
             # if already numeric, use as is
             # else convert to numeric indices
-            processed_rids <- process_ids(rid, all_rid, type="rid")
-            processed_cids <- process_ids(cid, all_cid, type="cid")
+            processed_rids <- processIds(rid, all_rid, type="rid")
+            processed_cids <- processIds(cid, all_cid, type="cid")
             # read the data matrix
             .Object@mat <- h5read(src, name="0/DATA/0/matrix",
                                   index=list(processed_rids$idx,
@@ -384,10 +384,10 @@ setMethod("initialize", signature = "GCT", definition = function(
             colnames(.Object@mat) <- processed_cids$ids
             # get the meta data
             if (!matrix_only) {
-                .Object@rdesc <- read.gctx.meta(
+                .Object@rdesc <- readGctxMeta(
                     src, dimension="row", ids=processed_rids$ids,
                     set_annot_rownames=set_annot_rownames)
-                .Object@cdesc <- read.gctx.meta(
+                .Object@cdesc <- readGctxMeta(
                     src, dimension="col", ids=processed_cids$ids,
                     set_annot_rownames=set_annot_rownames)
             } else {
@@ -428,7 +428,7 @@ closeOpenHandles <- function() {
 #'   columns of \code{df}
 #'
 #' @source https://github.com/cmap/cmapR
-check_colnames <- function(test_names, df, throw_error=TRUE) {
+checkColnames <- function(test_names, df, throw_error=TRUE) {
     # check whether test_names are valid names in df
     # throw error if specified
     diffs <- setdiff(test_names, names(df))
@@ -453,9 +453,9 @@ check_colnames <- function(test_names, df, throw_error=TRUE) {
 #' @source https://github.com/cmap/cmapR
 #'
 #' @keywords internal
-subset_to_ids <- function(df, ids) {
+subsetToIds <- function(df, ids) {
     # helper function to do a robust df subset
-    check_colnames("id", df)
+    checkColnames("id", df)
     newdf <- data.frame(df[match(ids, df$id), ])
     names(newdf) <- names(df)
     return(newdf)

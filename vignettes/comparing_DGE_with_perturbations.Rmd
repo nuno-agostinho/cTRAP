@@ -1,5 +1,5 @@
 ---
-title: 'cTRAP: tutorial'
+title: 'cTRAP: differential expression comparison with cellular perturbations'
 author: Bernardo P. de Almeida & Nuno Saraiva-Agostinho
 date: "`r Sys.Date()`"
 output: 
@@ -7,7 +7,7 @@ output:
         toc: true
 vignette: >
     \usepackage[utf8]{inputenc}
-    %\VignetteIndexEntry{cTRAP tutorial}
+    %\VignetteIndexEntry{cTRAP: DGE comparison with cellular perturbations}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console

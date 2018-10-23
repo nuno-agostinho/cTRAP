@@ -5,5 +5,23 @@
 \alias{ENCODEsamples}
 \title{Sample of ENCODE samples}
 \description{
-Sample of ENCODE samples
+Sample of ENCODE samples obtained by running the following code:
+
+\preformatted{
+# Download ENCODE metadata for a specific cell line and gene
+cellLine <- "HepG2"
+gene <- "EIF4G1"
+ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+
+# Download samples based on filtered ENCODE metadata
+ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+
+# Get small subset of whole dataset
+filter <- ENCODEsamples[[1]]$expected_count > 0
+genes <- head(ENCODEsamples[[1]][filter, ])$gene_id
+for (k in seq(ENCODEsamples)) {
+    ENCODEsamples[[k]] <- ENCODEsamples[[k]][
+        ENCODEsamples[[k]]$gene_id %in% genes, ]
+}
+}
 }

@@ -236,6 +236,7 @@ NULL
 #'     ENCODEsamples[[k]] <- ENCODEsamples[[k]][
 #'         ENCODEsamples[[k]]$gene_id %in% genes, ]
 #' }
+#' }
 #'
 #' @name ENCODEsamples
 #' @docType data

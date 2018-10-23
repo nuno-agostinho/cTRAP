@@ -23,11 +23,11 @@ Perturbation data from L1000 as a data table
 Load L1000 perturbation data
 }
 \examples{
-\dontrun{
-metadata <- downloadL1000metadata("l1000metadata.txt")
-metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
-geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
-loadL1000perturbations(metadata, zscores, geneInfo)
+if (interactive()) {
+  metadata <- downloadL1000metadata("l1000metadata.txt")
+  metadata <- filterL1000metadata(metadata, cellLine="HepG2")
+  zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
+  geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+  loadL1000perturbations(metadata, zscores, geneInfo)
 }
 }

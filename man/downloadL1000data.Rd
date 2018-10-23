@@ -32,8 +32,9 @@ downloadL1000data("l1000geneInfo.txt", "geneInfo")
 l1000metadataKnockdown <- filterL1000metadata(
   l1000metadata, cellLine="HepG2",
   perturbationType="Consensus signature from shRNAs targeting the same gene")
-\dontrun{
-downloadL1000data("l1000zscores.gctx.gz", "zscores",
-                  l1000metadataKnockdown$sig_id)
+
+if (interactive()) {
+    downloadL1000data("l1000zscores.gctx.gz", "zscores",
+                      l1000metadataKnockdown$sig_id)
 }
 }
