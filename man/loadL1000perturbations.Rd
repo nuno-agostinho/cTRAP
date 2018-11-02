@@ -24,10 +24,11 @@ Load L1000 perturbation data
 }
 \examples{
 if (interactive()) {
-  metadata <- downloadL1000metadata("l1000metadata.txt")
+  metadata <- downloadL1000data("l1000metadata.txt", "metadata")
   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-  zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
-  geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+  zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
+      metadata$sig_id)
+  geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
   loadL1000perturbations(metadata, zscores, geneInfo)
 }
 }

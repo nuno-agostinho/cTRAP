@@ -69,7 +69,7 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
 #'
 #' @examples
 #' data("l1000metadata")
-#' # l1000metadata <- downloadL1000metadata("l1000metadata.txt")
+#' # l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #' getL1000conditions(l1000metadata)
 getL1000conditions <- function(metadata) {
     pertTypes <- getL1000perturbationTypes()
@@ -298,7 +298,6 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 
 #' Load L1000 perturbation data
 #'
-#' @inheritParams downloadL1000metadata
 #' @param metadata Data frame: L1000 Metadata
 #' @param zscores Data frame: GCTX z-scores
 #' @param geneInfo Data frame: L1000 gene info
@@ -311,10 +310,11 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @export
 #' @examples
 #' if (interactive()) {
-#'   metadata <- downloadL1000metadata("l1000metadata.txt")
+#'   metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #'   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-#'   zscores  <- downloadL1000zscores("l1000zscores.gctx", metadata$sig_id)
-#'   geneInfo <- downloadL1000geneInfo("l1000geneInfo.txt")
+#'   zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
+#'       metadata$sig_id)
+#'   geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
 #'   loadL1000perturbations(metadata, zscores, geneInfo)
 #' }
 loadL1000perturbations <- function(metadata, zscores, geneInfo,
