@@ -41,7 +41,6 @@
 #' # diffExpr <- performDifferentialExpression(counts)
 performDifferentialExpression <- function(counts) {
     counts <- data.frame(counts)
-    rownames(counts) <- counts$gene_id
 
     # Design matrix
     Sample_info <- data.frame(
@@ -57,16 +56,17 @@ performDifferentialExpression <- function(counts) {
     # Fit linear model
     fit <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)], design=design)
     ebayes <- eBayes(fit)
-    results <- topTable(ebayes, coef=2, number=nrow(ebayes), sort.by="logFC",
-                        resort.by="p")
+    results <- topTable(ebayes, coef=2, number=nrow(ebayes),
+                        genelist=counts$gene_id)
 
     # Mean-aggregation per gene symbol to compare unique gene knockdowns
-    results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,
-                          by=list(Gene_symbol=rownames(results)))
+    meanAggr <- aggregate(results[ , -1], data=results, FUN=mean,
+                          by=list(Gene_symbol=results$ID))
 
     # Remove non-matching genes (if any)
-    results2 <- results2[rownames(results2) != "", ]
-    return(results2)
+    meanAggr           <- meanAggr[meanAggr$Gene_symbol != "", ]
+    rownames(meanAggr) <- meanAggr$Gene_symbol
+    return(meanAggr)
 }
 
 #' Download data if a file does not exist
