@@ -1,5 +1,5 @@
 ---
-title: 'cTRAP: differential expression comparison with cellular perturbations'
+title: 'cTRAP: identifying candidate causal perturbations from differential gene expression data'
 author: Bernardo P. de Almeida & Nuno Saraiva-Agostinho
 date: "`r Sys.Date()`"
 output: 
@@ -304,7 +304,7 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 
 > Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
 >
-> Bernardo P. de Almeida (bernardo.almeida@imp.ac.at)
+> Bernardo P. de Almeida (bernardo.almeida94@gmail.com)
 >
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
