@@ -4,10 +4,12 @@
 \alias{getL1000conditions}
 \title{List available conditions in L1000 datasets}
 \usage{
-getL1000conditions(metadata)
+getL1000conditions(metadata, control = FALSE)
 }
 \arguments{
-\item{metadata}{frame: L1000 metadata}
+\item{metadata}{Data table: L1000 metadata}
+
+\item{control}{Boolean: show controls for perturbation types?}
 }
 \value{
 List of conditions in L1000 datasets

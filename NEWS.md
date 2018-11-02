@@ -2,6 +2,8 @@
 
 * Update title, author names, version and README
 * Remove biomaRt dependency
+* By default, `getL1000conditions` now shows CMap perturbation types except for
+controls
 * Tables with results:
     - Remove "_t" from column names (as the t-statistic may or may not be used)
 * Documentation:

@@ -62,7 +62,8 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
 #'
 #' Downloads metadata if not available
 #'
-#' @param metadata frame: L1000 metadata
+#' @param metadata Data table: L1000 metadata
+#' @param control Boolean: show controls for perturbation types?
 #'
 #' @return List of conditions in L1000 datasets
 #' @export
@@ -71,9 +72,14 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
 #' data("l1000metadata")
 #' # l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #' getL1000conditions(l1000metadata)
-getL1000conditions <- function(metadata) {
+getL1000conditions <- function(metadata, control=FALSE) {
     pertTypes <- getL1000perturbationTypes()
     pertTypes <- names(pertTypes)[pertTypes %in% unique(metadata$pert_type)]
+
+    if (!control) {
+        pertTypes <- grep("Control", pertTypes, value=TRUE, invert=TRUE,
+                          fixed=TRUE)
+    }
 
     list("Perturbation type"=pertTypes,
          "Cell line"=unique(metadata$cell_id),
