@@ -118,7 +118,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
     names(cor) <- names(pval) <- names(qval) <- colnames(perturbation)
 
     res <- data.table(names(cor), cor, pval, qval)
-    names(res) <- c("genes", sprintf("%s_t_%s_%s", cellLine, method,
+    names(res) <- c("genes", sprintf("%s_%s_%s", cellLine, method,
                                      c("coef", "pvalue", "qvalue")))
     attr(res, "perturbation") <- ref
     return(res)
@@ -223,7 +223,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
     if (method %in% c("spearman", "pearson")) {
         cellLineRes <- lapply(cellLine, correlatePerCellLine,
                               diffExprGenes, perturbations, method)
-        colnameSuffix <- sprintf("_t_%s_coef", method)
+        colnameSuffix <- sprintf("_%s_coef", method)
     } else if (method == "gsea") {
         ordered     <- order(diffExprGenes)
         topGenes    <- names(diffExprGenes)[head(ordered, geneSize)]

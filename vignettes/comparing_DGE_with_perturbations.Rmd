@@ -215,9 +215,9 @@ the Benjamini-Hochberg-adjusted p-value.
 ```{r order knockdown perturbation comparison}
 # Order knockdown perturbations according to similarity
 compareKnockdown$spearman_ordered <- compareKnockdown$spearman[
-    order(compareKnockdown$spearman$HepG2_t_spearman_coef, decreasing=TRUE)]
+    order(compareKnockdown$spearman$HepG2_spearman_coef, decreasing=TRUE)]
 compareKnockdown$pearson_ordered <- compareKnockdown$pearson[
-    order(compareKnockdown$pearson$HepG2_t_pearson_coef, decreasing=TRUE)]
+    order(compareKnockdown$pearson$HepG2_pearson_coef, decreasing=TRUE)]
 compareKnockdown$gsea_ordered <- compareKnockdown$gsea[
     order(compareKnockdown$gsea$HepG2_WTCS, decreasing=FALSE)]
 
@@ -239,9 +239,9 @@ For small molecules:
 ```{r order small molecule perturbation comparison}
 # Order small molecule perturbations according to similarity
 compareSmallMolecule$spearman_ordered <- compareSmallMolecule$spearman[
-    order(compareSmallMolecule$spearman$HepG2_t_spearman_coef, decreasing=TRUE)]
+    order(compareSmallMolecule$spearman$HepG2_spearman_coef, decreasing=TRUE)]
 compareSmallMolecule$pearson_ordered <- compareSmallMolecule$pearson[
-    order(compareSmallMolecule$pearson$HepG2_t_pearson_coef, decreasing=TRUE)]
+    order(compareSmallMolecule$pearson$HepG2_pearson_coef, decreasing=TRUE)]
 compareSmallMolecule$gsea_ordered <- compareSmallMolecule$gsea[
     order(compareSmallMolecule$gsea$HepG2_WTCS, decreasing=FALSE)]
 
