@@ -25,3 +25,4 @@ filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 counts <- counts[filter, ]
 }
 }
+\keyword{internal}

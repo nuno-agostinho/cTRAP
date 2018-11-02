@@ -38,3 +38,4 @@ filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
 l1000perturbationsKnockdown <- l1000perturbationsKnockdown[ , filter]
 }
 }
+\keyword{internal}

@@ -78,6 +78,7 @@ performDifferentialExpression <- function(counts) {
 #' @importFrom utils download.file
 #'
 #' @return Download file if a file does not exist
+#' @keywords internal
 downloadIfNeeded <- function(file, link, gz=TRUE) {
     if (!file.exists(file)) {
         if (gz) {

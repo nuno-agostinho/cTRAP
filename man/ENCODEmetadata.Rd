@@ -13,3 +13,4 @@ cellLine <- "HepG2"
 ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 }
 }
+\keyword{internal}

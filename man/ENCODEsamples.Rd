@@ -25,3 +25,4 @@ for (k in seq(ENCODEsamples)) {
 }
 }
 }
+\keyword{internal}

@@ -32,3 +32,4 @@ The GCT class serves to represent annotated
 \seealso{
 \url{http://clue.io/help} for more information on the GCT format
 }
+\keyword{internal}

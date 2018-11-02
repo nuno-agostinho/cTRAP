@@ -17,3 +17,4 @@ Character vector with respective experiment identifiers
 \description{
 Get experiments files for a given control
 }
+\keyword{internal}

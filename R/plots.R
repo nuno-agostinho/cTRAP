@@ -12,6 +12,7 @@
 #' @importFrom stats na.omit
 #'
 #' @return Grid of plots illustrating a GSEA plot
+#' @keywords internal
 plotGSEA <- function(pathways, stats, title="GSEA plot") {
     # Custom
     axis_title_size <- 12

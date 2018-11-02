@@ -12,3 +12,4 @@ Closes all open identifiers
 \description{
 Close open handles
 }
+\keyword{internal}

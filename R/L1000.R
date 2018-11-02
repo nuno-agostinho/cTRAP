@@ -91,6 +91,7 @@ getL1000conditions <- function(metadata) {
 #' @importFrom stats cor.test p.adjust
 #'
 #' @return Data frame with correlations statistics, p-value and q-value
+#' @keywords internal
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
                                  method) {
     cat(paste("Comparing with cell line", cellLine), fill=TRUE)
@@ -135,6 +136,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #'
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' cell line
+#' @keywords internal
 performGSAperCellLine <- function(cellLine, perturbations, pathways) {
     perturbation <- perturbations[
         , tolower(attr(perturbations, "cellLines")) == tolower(cellLine)]

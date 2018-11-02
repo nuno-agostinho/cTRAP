@@ -33,3 +33,4 @@ diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
 }
 }
+\keyword{internal}

@@ -25,3 +25,4 @@ Data frame with correlations statistics, p-value and q-value
 \description{
 Correlate differential expression scores per cell line
 }
+\keyword{internal}

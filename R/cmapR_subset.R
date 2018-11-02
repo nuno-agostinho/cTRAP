@@ -20,6 +20,7 @@
 #' @seealso \url{http://clue.io/help} for more information on the GCT format
 #'
 #' @source https://github.com/cmap/cmapR
+#' @keywords internal
 setClass("GCT", representation(
     mat = "matrix", rid = "character", cid = "character", rdesc = "data.frame",
     cdesc = "data.frame", version = "character", src = "character"))
@@ -37,11 +38,10 @@ setClass("GCT", representation(
 #' @details This is a low-level helper function
 #'   which most users will not need to access directly
 #'
-#' @return meta the same data frame with (potentially) adjusted
-#'   column types.
+#' @return meta the same data frame with (potentially) adjusted column types
+#' @keywords internal
 #'
 #' @family GCTX parsing functions
-#' @keywords internal
 #'
 #' @source https://github.com/cmap/cmapR
 fix.datatypes <- function(meta) {
@@ -92,6 +92,7 @@ fix.datatypes <- function(meta) {
 #' @importFrom rhdf5 h5read
 #'
 #' @return a \code{data.frame} of metadata
+#' @keywords internal
 #'
 #' @source https://github.com/cmap/cmapR
 #'
@@ -143,6 +144,7 @@ readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
 #' @param dimension which ids to read (row or column)
 #'
 #' @return a character vector of row or column ids from the provided file
+#' @keywords internal
 #'
 #' @source https://github.com/cmap/cmapR
 #'
@@ -410,6 +412,7 @@ setMethod("initialize", signature = "GCT", definition = function(
 #' @importFrom utils packageVersion
 #'
 #' @return Closes all open identifiers
+#' @keywords internal
 closeOpenHandles <- function() {
     if(packageVersion('rhdf5') < "2.23.0")
         rhdf5::H5close()
@@ -428,6 +431,7 @@ closeOpenHandles <- function() {
 #'   columns of \code{df}
 #'
 #' @source https://github.com/cmap/cmapR
+#' @keywords internal
 checkColnames <- function(test_names, df, throw_error=TRUE) {
     # check whether test_names are valid names in df
     # throw error if specified
@@ -451,7 +455,6 @@ checkColnames <- function(test_names, df, throw_error=TRUE) {
 #' @return a subset version of \code{df}
 #'
 #' @source https://github.com/cmap/cmapR
-#'
 #' @keywords internal
 subsetToIds <- function(df, ids) {
     # helper function to do a robust df subset

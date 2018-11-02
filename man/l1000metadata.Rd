@@ -13,3 +13,4 @@ l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
                                      timepoint = "2 h")
 }
 }
+\keyword{internal}
