@@ -4,13 +4,14 @@
 #'
 #' @importFrom stats model.matrix aggregate
 #' @importFrom limma voom lmFit eBayes topTable
-#' @importFrom biomaRt useDataset getBM useMart
 #'
 #' @return Data frame with differential gene expression results between
 #' knockdown and control
 #' @export
 #'
 #' @examples
+#' data("ENCODEsamples")
+#'
 #' ## Download ENCODE metadata for a specific cell line and gene
 #' # cellLine <- "HepG2"
 #' # gene <- "EIF4G1"
@@ -19,7 +20,6 @@
 #' ## Download samples based on filtered ENCODE metadata
 #' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
 #'
-#' data("ENCODEsamples")
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -28,8 +28,17 @@
 #' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 #' counts <- counts[filter, ]
 #'
-#' # Perform differential gene expression analysis
-#' diffExpr <- performDifferentialExpression(counts)
+#' ## Convert ENSEMBL identifier to gene symbol
+#' # library(biomaRt)
+#' # mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+#' # genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
+#' # geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
+#' #                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
+#' # counts$gene_id <- geneConversion$hgnc_symbol[
+#' #     match(genes, geneConversion$ensembl_gene_id)]
+#'
+#' ## Perform differential gene expression analysis
+#' # diffExpr <- performDifferentialExpression(counts)
 performDifferentialExpression <- function(counts) {
     counts <- data.frame(counts)
     rownames(counts) <- counts$gene_id
@@ -46,26 +55,17 @@ performDifferentialExpression <- function(counts) {
                  normalize.method="quantile")
 
     # Fit linear model
-    fit     <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)],
-                     design=design)
-    ebayes  <- eBayes(fit)
-    results <- topTable(ebayes, coef = 2, number = nrow(ebayes),
-                        sort.by = "logFC", resort.by = "p")
-
-    # Convert to gene symbol
-    mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-    genes <- sapply(strsplit(rownames(results), "\\."), `[`, 1)
-    geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
-                            attributes=c("ensembl_gene_id", "hgnc_symbol"))
-    results$Gene_symbol <- geneConversion$hgnc_symbol[
-        match(genes, geneConversion$ensembl_gene_id)]
+    fit <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)], design=design)
+    ebayes <- eBayes(fit)
+    results <- topTable(ebayes, coef=2, number=nrow(ebayes), sort.by="logFC",
+                        resort.by="p")
 
     # Mean-aggregation per gene symbol to compare unique gene knockdowns
     results2 <- aggregate(results[ , 1:6], data=results, FUN=mean,
-                          by=list(Gene_symbol=results$Gene_symbol))
+                          by=list(Gene_symbol=rownames(results)))
 
-    # Remove non-matching genes
-    results2 <- results2[results2$Gene_symbol != "", ]
+    # Remove non-matching genes (if any)
+    results2 <- results2[rownames(results2) != "", ]
     return(results2)
 }
 

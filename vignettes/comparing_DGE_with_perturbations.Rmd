@@ -83,6 +83,15 @@ minSamples <- 2
 filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 counts <- counts[filter, ]
 
+# Convert ENSEMBL identifier to gene symbol
+library(biomaRt)
+mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
+geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
+                        attributes=c("ensembl_gene_id", "hgnc_symbol"))
+counts$gene_id <- geneConversion$hgnc_symbol[
+    match(genes, geneConversion$ensembl_gene_id)]
+
 # Perform differential gene expression analysis
 diffExpr <- performDifferentialExpression(counts)
 ```
@@ -91,7 +100,8 @@ As our metric of differential expression after EIF4G1 shRNA knock-down, we will
 use the respective t-statistic.
 
 ```{r t-statistics}
-# Get t-statistics of differential expression with respective gene names
+# Get t-statistics of differential expression with respective gene names 
+# (expected input for downstream analyses)
 diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
 ```
