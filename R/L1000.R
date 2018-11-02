@@ -99,7 +99,7 @@ getL1000conditions <- function(metadata, control=FALSE) {
 #' @return Data frame with correlations statistics, p-value and q-value
 #' @keywords internal
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
-                                 method) {
+                                 method, pAdjustMethod="BH") {
     cat(paste("Comparing with cell line", cellLine), fill=TRUE)
     perturbation <- perturbations[
         , tolower(attr(perturbations, "cellLines")) == tolower(cellLine)]
@@ -120,7 +120,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 
     cor <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
-    qval <- p.adjust(pval)
+    qval <- p.adjust(pval, pAdjustMethod)
     names(cor) <- names(pval) <- names(qval) <- colnames(perturbation)
 
     res <- data.table(names(cor), cor, pval, qval)
@@ -189,14 +189,16 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #'   where the name of the vector are gene names and the values are a statistic
 #'   that represents significance and magnitude of differentially expressed
 #'   genes (e.g. t-statistics)
-#' @param geneSize Number: top and bottom differentially expressed genes to use
-#'   for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
-#'   argument does nothing
 #' @param perturbations \code{l1000perturbations} object: file with L1000 loaded
 #'   perturbations (check \code{\link{loadL1000perturbations}})
 #' @param cellLine Character: cell line(s)
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
 #'   or \code{gsea})
+#' @param geneSize Number: top and bottom differentially expressed genes to use
+#'   for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})
+#' @param pAdjustMethod Character: method for p-value adjustment (for more
+#'   details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
+#'   \code{spearman} or \code{pearson})
 #'
 #' @importFrom data.table setkeyv
 #' @importFrom piano loadGSC
@@ -224,11 +226,11 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #' compareAgainstL1000(diffExprStat, perturbations, cellLine, method="gsea")
 compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                                 method=c("spearman", "pearson", "gsea"),
-                                geneSize=150) {
+                                geneSize=150, pAdjustMethod="BH") {
     method <- match.arg(method)
     if (method %in% c("spearman", "pearson")) {
-        cellLineRes <- lapply(cellLine, correlatePerCellLine,
-                              diffExprGenes, perturbations, method)
+        cellLineRes <- lapply(cellLine, correlatePerCellLine, diffExprGenes,
+                              perturbations, method, pAdjustMethod)
         colnameSuffix <- sprintf("_%s_coef", method)
     } else if (method == "gsea") {
         ordered     <- order(diffExprGenes)
