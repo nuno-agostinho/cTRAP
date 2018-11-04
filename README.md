@@ -8,9 +8,17 @@ Such analyses allow not only to infer the molecular causes of the observed
 difference in gene expression but also to identify small molecules that could 
 drive or revert specific transcriptomic alterations.
 
-## Installation
+## Installing
 
-You can install cTRAP from GitHub with:
+[cTRAP is available in Bioconductor][bioconductor] and can be installed with:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("cTRAP")
+```
+
+If you prefer, you can install cTRAP from GitHub instead:
 
 ``` r
 install.packages("devtools")
@@ -25,3 +33,4 @@ devtools::install_github("nuno-agostinho/cTRAP")
 [codecovBadge]: https://img.shields.io/codecov/c/github/nuno-agostinho/cTRAP/master.svg
 [appveyor]: https://ci.appveyor.com/project/nuno-agostinho/cTRAP
 [appveyorBadge]: https://ci.appveyor.com/api/projects/status/github/nuno-agostinho/cTRAP?branch=master&svg=true
+[bioconductor]: http://bioconductor.org/packages/cTRAP

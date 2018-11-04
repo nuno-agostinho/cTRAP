@@ -19,3 +19,4 @@ Grid of plots illustrating a GSEA plot
 \description{
 Plot gene set enrichment analysis (GSEA)
 }
+\keyword{internal}

@@ -41,3 +41,4 @@ l1000perturbationsSmallMolecules <- l1000perturbationsSmallMolecules[
     , filter]
 }
 }
+\keyword{internal}

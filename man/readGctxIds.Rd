@@ -25,3 +25,4 @@ Other GCTX parsing functions: \code{\link{fix.datatypes}},
   \code{\link{processIds}}, \code{\link{readGctxMeta}}
 }
 \concept{GCTX parsing functions}
+\keyword{internal}

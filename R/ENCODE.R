@@ -4,6 +4,7 @@
 #' @param table Data frame
 #'
 #' @return Character vector with respective experiment identifiers
+#' @keywords internal
 getENCODEcontrols <- function(control, table) {
     sub <- table[table$`Experiment accession` == control, ]
     exp <- sub$`File accession`
@@ -90,6 +91,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
 #'
 #' @importFrom data.table fread
 #' @return Data table with ENCODE sample data
+#' @keywords internal
 loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     metadata <- metadata[metadata$`Biological replicate(s)` == replicate, ]
 

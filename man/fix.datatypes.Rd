@@ -13,8 +13,7 @@ fix.datatypes(meta)
 \item{meta}{a data.frame}
 }
 \value{
-meta the same data frame with (potentially) adjusted
-  column types.
+meta the same data frame with (potentially) adjusted column types
 }
 \description{
 GCT(X) parsing initially returns data frames

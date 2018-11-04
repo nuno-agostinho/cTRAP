@@ -21,3 +21,4 @@ cell line
 \description{
 Perform gene set enrichment (GSA) per cell line
 }
+\keyword{internal}

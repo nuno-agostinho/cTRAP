@@ -19,3 +19,4 @@ Data table with ENCODE sample data
 \description{
 Load ENCODE sample
 }
+\keyword{internal}

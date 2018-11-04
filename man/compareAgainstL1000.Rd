@@ -5,7 +5,8 @@
 \title{Compare against L1000 datasets}
 \usage{
 compareAgainstL1000(diffExprGenes, perturbations, cellLine,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150)
+  method = c("spearman", "pearson", "gsea"), geneSize = 150,
+  pAdjustMethod = "BH")
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -22,8 +23,11 @@ perturbations (check \code{\link{loadL1000perturbations}})}
 or \code{gsea})}
 
 \item{geneSize}{Number: top and bottom differentially expressed genes to use
-for gene set enrichment (GSE); if \code{method} is not \code{gsea}, this
-argument does nothing}
+for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})}
+
+\item{pAdjustMethod}{Character: method for p-value adjustment (for more
+details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
+\code{spearman} or \code{pearson})}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

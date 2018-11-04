@@ -33,3 +33,4 @@ Other GCTX parsing functions: \code{\link{fix.datatypes}},
   \code{\link{processIds}}, \code{\link{readGctxIds}}
 }
 \concept{GCTX parsing functions}
+\keyword{internal}

@@ -32,8 +32,8 @@ test_that("Compare using Spearman correlation", {
                                 method="spearman")
     expect_is(data, "l1000comparison")
     expect_identical(colnames(data), c(
-        "genes", "HepG2_t_spearman_coef", "HepG2_t_spearman_pvalue",
-        "HepG2_t_spearman_qvalue", "Average_t_spearman_coef"))
+        "genes", "HepG2_spearman_coef", "HepG2_spearman_pvalue",
+        "HepG2_spearman_qvalue", "Average_spearman_coef"))
 })
 
 test_that("Compare using Pearson correlation", {
@@ -41,8 +41,8 @@ test_that("Compare using Pearson correlation", {
                                 method="pearson")
     expect_is(data, "l1000comparison")
     expect_identical(colnames(data), c(
-        "genes", "HepG2_t_pearson_coef", "HepG2_t_pearson_pvalue",
-        "HepG2_t_pearson_qvalue", "Average_t_pearson_coef"))
+        "genes", "HepG2_pearson_coef", "HepG2_pearson_pvalue",
+        "HepG2_pearson_qvalue", "Average_pearson_coef"))
 })
 
 test_that("Compare using GSEA", {

@@ -65,6 +65,7 @@ NULL
 #'
 #' @name counts
 #' @docType data
+#' @keywords internal
 NULL
 
 #' Differential expression's t-statistics sample
@@ -100,6 +101,7 @@ NULL
 #'
 #' @name diffExprStat
 #' @docType data
+#' @keywords internal
 NULL
 
 #' ENCODE metadata sample
@@ -115,6 +117,7 @@ NULL
 #'
 #' @name ENCODEmetadata
 #' @docType data
+#' @keywords internal
 NULL
 
 #' L1000 metadata
@@ -130,6 +133,7 @@ NULL
 #'
 #' @name l1000metadata
 #' @docType data
+#' @keywords internal
 NULL
 
 #' L1000 perturbations sample for knockdown experiments
@@ -170,6 +174,7 @@ NULL
 #'
 #' @name l1000perturbationsKnockdown
 #' @docType data
+#' @keywords internal
 NULL
 
 #' L1000 perturbations sample for small molecules
@@ -213,6 +218,7 @@ NULL
 #'
 #' @name l1000perturbationsSmallMolecules
 #' @docType data
+#' @keywords internal
 NULL
 
 #' Sample of ENCODE samples
@@ -240,4 +246,5 @@ NULL
 #'
 #' @name ENCODEsamples
 #' @docType data
+#' @keywords internal
 NULL

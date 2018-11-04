@@ -24,3 +24,4 @@ boolean indicating whether or not all \code{test_names} are
 \description{
 Check whether \code{test_names} are columns in the \code{\link{data.frame}}
 }
+\keyword{internal}
