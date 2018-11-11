@@ -1,7 +1,7 @@
 Package: cTRAP
 Title: Identification of candidate causal perturbations from differential gene 
     expression data
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
@@ -25,7 +25,7 @@ Suggests: testthat,
     knitr,
     covr,
     biomaRt
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports: data.table,
     limma,
     stats,

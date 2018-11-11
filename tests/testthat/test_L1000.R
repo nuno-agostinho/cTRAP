@@ -50,4 +50,11 @@ test_that("Compare using GSEA", {
                                 method="gsea")
     expect_is(data, "l1000comparison")
     expect_identical(colnames(data), c("genes", "HepG2_WTCS", "Average_WTCS"))
+    expect_identical(head(data$genes),
+                     c("BRD-A14014306", "BRD-A65142661", "BRD-K31030218",
+                       "BRD-K41172353", "BRD-K77508012", "BRD-K84389640"))
+    expect_identical(head(data[order(data$HepG2_WTCS), ]$genes),
+                     c("BRD-A65142661", "caffeic-acid-phenethyl-ester",
+                       "BRD-K94818765", "BRD-K77508012", "BRD-K31030218",
+                       "BRD-K41172353"))
 })
