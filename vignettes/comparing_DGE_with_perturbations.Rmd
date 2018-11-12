@@ -219,7 +219,7 @@ compareKnockdown$spearman_ordered <- compareKnockdown$spearman[
 compareKnockdown$pearson_ordered <- compareKnockdown$pearson[
     order(compareKnockdown$pearson$HepG2_pearson_coef, decreasing=TRUE)]
 compareKnockdown$gsea_ordered <- compareKnockdown$gsea[
-    order(compareKnockdown$gsea$HepG2_WTCS, decreasing=FALSE)]
+    order(compareKnockdown$gsea$HepG2_WTCS, decreasing=TRUE)]
 
 # Most positively associated perturbations (note that EIF4G1 knockdown is the
 # 6th, 1st and 2nd most positively associated perturbation based on Spearman
@@ -243,7 +243,7 @@ compareSmallMolecule$spearman_ordered <- compareSmallMolecule$spearman[
 compareSmallMolecule$pearson_ordered <- compareSmallMolecule$pearson[
     order(compareSmallMolecule$pearson$HepG2_pearson_coef, decreasing=TRUE)]
 compareSmallMolecule$gsea_ordered <- compareSmallMolecule$gsea[
-    order(compareSmallMolecule$gsea$HepG2_WTCS, decreasing=FALSE)]
+    order(compareSmallMolecule$gsea$HepG2_WTCS, decreasing=TRUE)]
 
 # Most positively associated perturbations
 head(compareSmallMolecule$spearman_ordered)

@@ -233,7 +233,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                               perturbations, method, pAdjustMethod)
         colnameSuffix <- sprintf("_%s_coef", method)
     } else if (method == "gsea") {
-        ordered     <- order(diffExprGenes)
+        ordered     <- order(diffExprGenes, decreasing=TRUE)
         topGenes    <- names(diffExprGenes)[head(ordered, geneSize)]
         bottomGenes <- names(diffExprGenes)[tail(ordered, geneSize)]
         gsc <- loadGSC(matrix(c(
