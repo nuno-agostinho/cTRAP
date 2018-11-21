@@ -1,3 +1,7 @@
+# 1.0.3 (12 November, 2018)
+
+* Include copyright text and full license for source code distributed from cmapR
+
 # 1.0.2 (11 November, 2018)
 
 * Fix comparison against CMap perturbations using gene set enrichment analysis 
