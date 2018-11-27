@@ -1,5 +1,6 @@
-# 1.0.3 (12 November, 2018)
+# 1.0.3 (27 November, 2018)
 
+* Replace instances of -666 in CMap data to show up as missing values
 * Include copyright text and full license for source code distributed from cmapR
 
 # 1.0.2 (11 November, 2018)

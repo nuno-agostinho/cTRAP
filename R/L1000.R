@@ -31,6 +31,7 @@
 downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
                               zscoresId=NULL) {
     type <- match.arg(type)
+    nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666")
     if (type == "metadata") {
         downloadIfNeeded(file, paste0(
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
@@ -38,14 +39,14 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores"),
             "file=GSE92742_Broad_LINCS_sig_info.txt.gz"))
 
         message("Loading L1000 metadata...")
-        data <- fread(file, sep="\t", na.strings=c("NA", "na", "-666"))
+        data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "geneInfo") {
         downloadIfNeeded(
             file,
             paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                    "format=file&",
                    "file=GSE92742_Broad_LINCS_gene_info.txt.gz"))
-        data <- fread(file, sep="\t", na.strings=c("NA", "na", "-666"))
+        data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "zscores") {
         downloadIfNeeded(
             file, paste0(
