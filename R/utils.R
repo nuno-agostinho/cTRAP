@@ -91,3 +91,43 @@ downloadIfNeeded <- function(file, link, gz=TRUE) {
         if (gz) gunzip(file)
     }
 }
+
+#' Subset an \code{l1000perturbations} object
+#'
+#' @param x \code{l1000perturbations} object
+#' @param ... Extra parameters passed to \code{`[`}
+#'
+#' @return \code{l1000perturbations} object with subset data
+#' @export
+`[.l1000perturbations` <- function(x, ...) {
+    out <- unclass(x)
+    out <- `[`(out, ...)
+
+    # Inherit the same attributes
+    attrs <- attributes(x)
+    attrs$dim <- NULL
+    attrs$dimnames <- NULL
+    attrs$names <- NULL
+
+    # Trim metadata to contain subset information
+    if (ncol(x) != ncol(out) && !is.null(attrs$metadata)) {
+        samples <- attrs$metadata$sig_id %in% colnames(out)
+        attrs$metadata <- attrs$metadata[samples, ]
+    }
+    attributes(out) <- c(attributes(out), attrs)
+    return(out)
+}
+
+#' @inherit base::as.data.frame
+#' @export
+as.data.frame.l1000perturbations <- function(x, ...) {
+    as.data.frame(unclass(x), ...)
+}
+
+#' @inherit utils::head
+#' @export
+head.l1000perturbations <- function(x, ...) head(unclass(x), ...)
+
+#' @inherit utils::tail
+#' @export
+tail.l1000perturbations <- function(x, ...) tail(unclass(x), ...)

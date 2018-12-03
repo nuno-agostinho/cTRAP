@@ -13,7 +13,7 @@ compareKnockdown$spearman <- compareAgainstL1000(diffExprStat, perturbations,
                                                  cellLine, method="spearman")
 compareKnockdown$gsea     <- compareAgainstL1000(diffExprStat, perturbations,
                                                  cellLine, method="gsea")
-condition <- compareKnockdown$gsea$genes[[1]]
+condition <- compareKnockdown$gsea$compounds[[1]]
 
 test_that("Plot Spearman correlation", {
     plot <- plotL1000comparison(compareKnockdown$spearman, condition)
@@ -26,9 +26,6 @@ test_that("Plot Pearson correlation", {
 })
 
 test_that("Plot GSEA", {
-    plot <- plotL1000comparison(compareKnockdown$gsea, condition, topGenes=150)
-    expect_is(plot, "ggplot")
-
-    plot <- plotL1000comparison(compareKnockdown$gsea, condition, topGenes=20)
+    plot <- plotL1000comparison(compareKnockdown$gsea, condition)
     expect_is(plot, "ggplot")
 })

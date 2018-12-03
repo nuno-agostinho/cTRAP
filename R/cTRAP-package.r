@@ -144,9 +144,10 @@ NULL
 #'
 #' \preformatted{
 #' # Code for loading CMap gene KD HepG2 data
+#' cellLine <- "HepG2"
 #' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #' l1000metadataKnockdown <- filterL1000metadata(
-#'   l1000metadata, cellLine="HepG2",
+#'   l1000metadata, cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
 #'                                    l1000metadataKnockdown$sig_id)
@@ -169,6 +170,7 @@ NULL
 #'
 #' genes  <- lapply(compareKnockdown, "[[", "genes")
 #' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
+#' filter <- unique(filter)
 #' l1000perturbationsKnockdown <- l1000perturbationsKnockdown[ , filter]
 #' }
 #'
@@ -184,8 +186,10 @@ NULL
 #' following code:
 #'
 #' \preformatted{
+#' cellLine <- "HepG2"
+#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #' l1000metadataSmallMolecules <- filterL1000metadata(
-#'     l1000metadata, cellLine="HepG2", timepoint="24 h",
+#'     l1000metadata, cellLine=cellLine, timepoint="24 h",
 #'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
 #'     perturbationType="Compound")
 #' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
@@ -193,27 +197,7 @@ NULL
 #' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
 #'
 #' l1000perturbationsSmallMolecules <- loadL1000perturbations(
-#'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo,
-#'     sanitizeCompoundNames=TRUE)
-#'
-#' # Select only some perturbations (to reduce file size)
-#' data("diffExprStat")
-#'
-#' compareSmallMolecule <- list()
-#' compareSmallMolecule$spearman <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
-#'     method="spearman")
-#' compareSmallMolecule$pearson <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
-#'     method="pearson")
-#' compareSmallMolecule$gsea <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="gsea",
-#'     geneSize=150)
-#'
-#' genes  <- lapply(compareSmallMolecule, "[[", "genes")
-#' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
-#' l1000perturbationsSmallMolecules <- l1000perturbationsSmallMolecules[
-#'     , filter]
+#'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)
 #' }
 #'
 #' @name l1000perturbationsSmallMolecules

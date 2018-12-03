@@ -4,8 +4,7 @@
 \alias{loadL1000perturbations}
 \title{Load L1000 perturbation data}
 \usage{
-loadL1000perturbations(metadata, zscores, geneInfo,
-  sanitizeCompoundNames = FALSE)
+loadL1000perturbations(metadata, zscores, geneInfo)
 }
 \arguments{
 \item{metadata}{Data frame: L1000 Metadata}
@@ -13,8 +12,6 @@ loadL1000perturbations(metadata, zscores, geneInfo,
 \item{zscores}{Data frame: GCTX z-scores}
 
 \item{geneInfo}{Data frame: L1000 gene info}
-
-\item{sanitizeCompoundNames}{Boolean: replace identifiers with compound names}
 }
 \value{
 Perturbation data from L1000 as a data table

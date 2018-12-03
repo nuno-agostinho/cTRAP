@@ -6,7 +6,7 @@
 \usage{
 compareAgainstL1000(diffExprGenes, perturbations, cellLine,
   method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  pAdjustMethod = "BH")
+  pAdjustMethod = "BH", cellLineMean = length(cellLine) > 1)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -28,13 +28,24 @@ for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})}
 \item{pAdjustMethod}{Character: method for p-value adjustment (for more
 details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
 \code{spearman} or \code{pearson})}
+
+\item{cellLineMean}{Boolean: add a column with the mean across cell lines}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
 gene expression values with those associated with L1000 perturbations
 }
 \description{
-Compare against L1000 datasets
+Weighted connectivity scores (WCTS) are calculated when \code{method} is
+\code{gsea}. For more information on WCTS, read
+\url{https://clue.io/connectopedia/cmap_algorithms}.
+}
+\details{
+Order results according to the correlation coefficient (if
+\code{method} is \code{spearman} or \code{pearson}) or the weighted
+connectivity score (WTCS) score (if \code{method} is \code{gsea}) of the mean
+across cell lines (if \code{cellLineMean} is \code{TRUE}; otherwise results
+are ordered based on the first cell line alone).
 }
 \examples{
 cellLine <- "HepG2"
