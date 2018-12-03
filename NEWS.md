@@ -1,3 +1,8 @@
+# 1.0.3 (3 December, 2018)
+
+* Add tag ImmunoOncology to BiocViews
+
+
 # 1.0.2 (11 November, 2018)
 
 * Fix comparison against CMap perturbations using gene set enrichment analysis 

@@ -1,7 +1,7 @@
 Package: cTRAP
 Title: Identification of candidate causal perturbations from differential gene 
     expression data
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
@@ -18,7 +18,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
-    Pathways
+    Pathways, ImmunoOncology
 URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat,
