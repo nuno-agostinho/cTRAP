@@ -1,4 +1,4 @@
-# 1.0.3 (3 December, 2018)
+# 1.0.3 (5 December, 2018)
 
 * Replace instances of -666 in CMap data to show up as missing values
 * Include copyright text and full license for source code distributed from cmapR
@@ -12,6 +12,7 @@
     Spearman's and Pearson's correlation) or the weighted connectivity score 
     (WTCS) score (for Gene Set Enrichment Analysis) using the mean across cell
     lines or the results for the first cell line alone
+    - Improve comparison performance when testing for correlation
 * Included datasets:
     - Update the `l1000perturbationsSmallMolecules` and 
     `l1000perturbationsKnockdown` datasets according to new internal changes and

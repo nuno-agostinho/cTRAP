@@ -95,6 +95,7 @@ getL1000conditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' Correlate differential expression scores per cell line
 #'
 #' @inheritParams compareAgainstL1000
+#' @param metadata Data frame: perturbation metadata
 #' @param method Character: correlation method
 #'
 #' @importFrom pbapply pblapply
@@ -104,33 +105,30 @@ getL1000conditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @return Data frame with correlations statistics, p-value and q-value
 #' @keywords internal
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
-                                 method, pAdjustMethod="BH") {
+                                 metadata, method, pAdjustMethod="BH") {
     cat(paste("Comparing with cell line", cellLine), fill=TRUE)
-    perturbation <- perturbations[
-        , tolower(attr(perturbations, "metadata")$cell_id) == tolower(cellLine)]
 
-    # Select intersecting genes
-    genes <- intersect(names(diffExprGenes), rownames(perturbation))
+    # Select intersecting genes to compare
+    genes <- intersect(names(diffExprGenes), rownames(perturbations))
     diffExprGenes <- diffExprGenes[genes]
 
-    # setkeyv(perturbation, "Gene")
-    # genesKey <- match(rownames(perturbation), genes)
-    # genesKey <- genesKey[!is.na(genesKey)]
-    ref <- unclass(perturbation[genes, ])
+    # Filter perturbation based on current cell line
+    filteredPert <- colnames(perturbations)[
+        tolower(metadata$cell_id) == tolower(cellLine)]
 
     # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    cors <- suppressWarnings(pblapply(seq(ncol(ref)), function(k)
-        cor.test(ref[ , k], diffExprGenes, method=method)))
+    perturbations <- perturbations[genes, ]
+    cors <- suppressWarnings(pblapply(seq(filteredPert), function(pert)
+        cor.test(perturbations[ , pert], diffExprGenes, method=method)))
 
     cor <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
     qval <- p.adjust(pval, pAdjustMethod)
-    names(cor) <- names(pval) <- names(qval) <- colnames(perturbation)
+    names(cor) <- names(pval) <- names(qval) <- filteredPert
 
     res <- data.table(names(cor), cor, pval, qval)
     names(res) <- c("identifier", sprintf("%s_%s_%s", cellLine, method,
                                           c("coef", "pvalue", "qvalue")))
-    attr(res, "perturbation") <- ref
     return(res)
 }
 
@@ -246,8 +244,10 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations, cellLine,
                                 cellLineMean=length(cellLine) > 1) {
     method <- match.arg(method)
     if (method %in% c("spearman", "pearson")) {
-        cellLineRes <- lapply(cellLine, correlatePerCellLine, diffExprGenes,
-                              perturbations, method, pAdjustMethod)
+        metadata      <- attr(perturbations, "metadata")
+        perturbations <- unclass(perturbations)
+        cellLineRes   <- lapply(cellLine, correlatePerCellLine, diffExprGenes,
+                                perturbations, metadata, method, pAdjustMethod)
         colnameSuffix <- sprintf("_%s_coef", method)
     } else if (method == "gsea") {
         ordered     <- order(diffExprGenes, decreasing=TRUE)

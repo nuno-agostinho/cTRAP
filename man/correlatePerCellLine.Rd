@@ -4,8 +4,8 @@
 \alias{correlatePerCellLine}
 \title{Correlate differential expression scores per cell line}
 \usage{
-correlatePerCellLine(cellLine, diffExprGenes, perturbations, method,
-  pAdjustMethod = "BH")
+correlatePerCellLine(cellLine, diffExprGenes, perturbations, metadata,
+  method, pAdjustMethod = "BH")
 }
 \arguments{
 \item{cellLine}{Character: cell line(s)}
@@ -17,6 +17,8 @@ genes (e.g. t-statistics)}
 
 \item{perturbations}{\code{l1000perturbations} object: file with L1000 loaded
 perturbations (check \code{\link{loadL1000perturbations}})}
+
+\item{metadata}{Data frame: perturbation metadata}
 
 \item{method}{Character: correlation method}
 
