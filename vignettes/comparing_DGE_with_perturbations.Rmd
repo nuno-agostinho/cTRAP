@@ -17,14 +17,13 @@ editor_options:
 
 # Introduction
 
-`cTRAP` is an R package designed to compare differential gene
-expression results with those from known cellular perturbations (such as gene
-knock-down, overexpression or small molecules) derived from the
-[Connectivity Map][clue.io]
-([Subramanian et al., Cell 2017][subramanian2017]). Such analyses allow
-not only to infer the molecular causes of the observed difference in gene
-expression but also to identify small molecules that could drive or revert
-specific transcriptomic alterations.
+`cTRAP` is an R package designed to compare differential gene expression results
+with those from known cellular perturbations (such as gene knock-down, 
+overexpression or small molecules) derived from the [Connectivity Map][clue.io]
+([Subramanian et al., Cell 2017][subramanian2017]). Such analyses allow not only
+to infer the molecular causes of the observed difference in gene expression but
+also to identify small molecules that could drive or revert specific
+transcriptomic alterations.
 
 To illustrate the package functionalities, we will use an example based on a
 gene knock-down dataset from the [ENCODE project][ENCODE] for which there is
@@ -117,9 +116,17 @@ available in z-score normalised values (see
 [Subramanian et al., Cell 2017][subramanian2017] for more details).
 
 ```{r L1000 metadata conditions}
-# Check available conditions for L1000 perturbations
+# Summarise available conditions for L1000 perturbations
 l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 getL1000conditions(l1000metadata)
+
+# Summarise available conditions for HepG2 cell line
+getL1000conditions(l1000metadata, cellLine="HepG2")
+
+# Summarise available conditions for HepG2 cell line and a specific perturbation
+getL1000conditions(
+    l1000metadata, cellLine="HepG2", 
+    perturbationType="Consensus signature from shRNAs targeting the same gene")
 ```
 
 ```{r L1000 knockdown perturbations, eval=FALSE}
@@ -142,16 +149,15 @@ command:
 
 ```{r L1000 small molecule perturbations, eval=FALSE}
 l1000metadataSmallMolecules <- filterL1000metadata(
-    l1000metadata, cellLine="HepG2", timepoint="24 h", 
-    dosage="5 \U00B5M", # \U00B5 is the unicode code for the micro symbol
+    l1000metadata, cellLine="HepG2", timepoint="24 h", dosage="5 \U00B5M",
+    # this means 5 micromolar (\U00B5 is the unicode symbol for micro)
     perturbationType="Compound")
 l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
                                    l1000metadataSmallMolecules$sig_id)
-l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
+l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
 
 l1000perturbationsSmallMolecules <- loadL1000perturbations(
-    l1000metadataSmallMolecules, l1000zscores, l1000geneInfo,
-    sanitizeCompoundNames=TRUE)
+    l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)
 ```
 
 ```{r load L1000 perturbations, include=FALSE}
@@ -161,13 +167,12 @@ data("l1000perturbationsSmallMolecules")
 
 # Comparison with Connectivity Map's perturbations
 
-This is the main function of the package. Here we compare the statistic for
-differential expression (the t-statistic, in this case) with the z-scores for
-the perturbations we have loaded using the three different methods available
-(Spearman's correlation, Pearson's correlation and Gene Set Enrichment Analysis
-(GSEA)). For GSEA, the default option is to use the top and bottom 150 genes
-(ranked by the user's t-statistic) as gene sets, but this can be changed by the
-user.
+The `compareAgainstL1000` function compares the statistic for differential
+expression (the t-statistic, in this case) with the z-scores for the loaded 
+perturbations using the three different methods available (Spearman's 
+correlation, Pearson's correlation and Gene Set Enrichment Analysis (GSEA)). For
+GSEA, the top and bottom *n* genes (sorted by the t-statistic) are used as gene 
+sets (by default, *n* = 150 genes).
 
 ```{r compare knockdown, include=FALSE}
 compareKnockdown <- list()
@@ -213,101 +218,79 @@ correlation coefficient or GSEA Enrichment Score), the respective p-value and
 the Benjamini-Hochberg-adjusted p-value.
 
 ```{r order knockdown perturbation comparison}
-# Order knockdown perturbations according to similarity
-compareKnockdown$spearman_ordered <- compareKnockdown$spearman[
-    order(compareKnockdown$spearman$HepG2_spearman_coef, decreasing=TRUE)]
-compareKnockdown$pearson_ordered <- compareKnockdown$pearson[
-    order(compareKnockdown$pearson$HepG2_pearson_coef, decreasing=TRUE)]
-compareKnockdown$gsea_ordered <- compareKnockdown$gsea[
-    order(compareKnockdown$gsea$HepG2_WTCS, decreasing=TRUE)]
-
 # Most positively associated perturbations (note that EIF4G1 knockdown is the
 # 6th, 1st and 2nd most positively associated perturbation based on Spearman
 # correlation, Pearson correlation and GSEA, respectively)
-head(compareKnockdown$spearman_ordered)
-head(compareKnockdown$pearson_ordered)
-head(compareKnockdown$gsea_ordered)
+head(compareKnockdown$spearman)
+head(compareKnockdown$pearson)
+head(compareKnockdown$gsea)
 
 # Most negatively associated perturbations
-tail(compareKnockdown$spearman_ordered)
-tail(compareKnockdown$pearson_ordered)
-tail(compareKnockdown$gsea_ordered)
+tail(compareKnockdown$spearman)
+tail(compareKnockdown$pearson)
+tail(compareKnockdown$gsea)
 ```
 
 For small molecules:
 
 ```{r order small molecule perturbation comparison}
-# Order small molecule perturbations according to similarity
-compareSmallMolecule$spearman_ordered <- compareSmallMolecule$spearman[
-    order(compareSmallMolecule$spearman$HepG2_spearman_coef, decreasing=TRUE)]
-compareSmallMolecule$pearson_ordered <- compareSmallMolecule$pearson[
-    order(compareSmallMolecule$pearson$HepG2_pearson_coef, decreasing=TRUE)]
-compareSmallMolecule$gsea_ordered <- compareSmallMolecule$gsea[
-    order(compareSmallMolecule$gsea$HepG2_WTCS, decreasing=TRUE)]
-
 # Most positively associated perturbations
-head(compareSmallMolecule$spearman_ordered)
-head(compareSmallMolecule$pearson_ordered)
-head(compareSmallMolecule$gsea_ordered)
+head(compareSmallMolecule$spearman)
+head(compareSmallMolecule$pearson)
+head(compareSmallMolecule$gsea)
 
 # Most negatively associated perturbations
-tail(compareSmallMolecule$spearman_ordered)
-tail(compareSmallMolecule$pearson_ordered)
-tail(compareSmallMolecule$gsea_ordered)
+tail(compareSmallMolecule$spearman)
+tail(compareSmallMolecule$pearson)
+tail(compareSmallMolecule$gsea)
 ```
 
 # Plot
 
 To analyse the relationship between the user-provided differential expression
-profile with that associated with a specific perturbation, we provide the option
-to create a scatter plot (for Spearman and Pearson analyses) or a GSEA plot.
+profile with that associated with a specific perturbation, scatter plots (for
+Spearman and Pearson analyses) and GSEA plots are available.
 
-Below you can see how to plot the relationship between the ENCODE's EIF4G1 shRNA
+For instance, let's plot the relationship between ENCODE's EIF4G1 shRNA 
 knockdown with the perturbations of interest.
 
-```{r plot knockdown perturbation comparison}
-# Plot relationship with EIF4G1 knockdown
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea_ordered$genes,
-                        value=TRUE)
+```{r plot knockdown perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
+# Plot relationship with EIF4G1 knockdown from L1000
+EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
 plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
 plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
-plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown, topGenes=TRUE)
-plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown, topGenes=FALSE)
+plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown)
 
 # Plot relationship with most negatively associated perturbation
-plotL1000comparison(compareKnockdown$spearman,
-                    tail(compareKnockdown$spearman_ordered, 1)$genes)
-plotL1000comparison(compareKnockdown$pearson,
-                    tail(compareKnockdown$pearson_ordered, 1)$genes)
+plotL1000comparison(compareKnockdown$spearman, 
+                    tail(compareKnockdown$spearman, 1)$genes)
+plotL1000comparison(compareKnockdown$pearson, 
+                    tail(compareKnockdown$pearson, 1)$genes)
 plotL1000comparison(compareKnockdown$gsea,
-                    tail(compareKnockdown$gsea_ordered, 1)$genes, 
-                    topGenes=TRUE)
-plotL1000comparison(compareKnockdown$gsea, 
-                    tail(compareKnockdown$gsea_ordered, 1)$genes, 
-                    topGenes=FALSE)
+                    tail(compareKnockdown$gsea, 1)$genes)
 ```
 
 For small molecules:
 
-```{r plot small molecule perturbation comparison}
+```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
 plotL1000comparison(compareSmallMolecule$spearman,
-                    head(compareSmallMolecule$spearman_ordered, 1)$genes)
+                    head(compareSmallMolecule$spearman, 1)$compounds)
 plotL1000comparison(compareSmallMolecule$pearson,
-                    head(compareSmallMolecule$pearson_ordered, 1)$genes)
+                    head(compareSmallMolecule$pearson, 1)$compounds)
 plotL1000comparison(compareSmallMolecule$gsea,
-                    head(compareSmallMolecule$gsea_ordered, 1)$genes)
+                    head(compareSmallMolecule$gsea, 1)$compounds)
 
 # Plot relationship with most negatively associated perturbation
 plotL1000comparison(compareSmallMolecule$spearman,
-                    tail(compareSmallMolecule$spearman_ordered, 1)$genes)
+                    tail(compareSmallMolecule$spearman, 1)$compounds)
 plotL1000comparison(compareSmallMolecule$pearson,
-                    tail(compareSmallMolecule$pearson_ordered, 1)$genes)
+                    tail(compareSmallMolecule$pearson, 1)$compounds)
 plotL1000comparison(compareSmallMolecule$gsea,
-                    tail(compareSmallMolecule$gsea_ordered, 1)$genes)
+                    tail(compareSmallMolecule$gsea, 1)$compounds)
 ```
 
-# Feedback
+# Contact information
 
 All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
