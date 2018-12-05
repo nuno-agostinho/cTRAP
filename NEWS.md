@@ -17,6 +17,7 @@
     - Update the `l1000perturbationsSmallMolecules` and 
     `l1000perturbationsKnockdown` datasets according to new internal changes and
     fix their respective code in the documentation
+* Update and copy-edit function documentation
 
 # 1.0.2 (11 November, 2018)
 

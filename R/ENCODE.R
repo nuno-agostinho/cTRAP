@@ -110,7 +110,10 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     fread(outfile)
 }
 
-#' Download ENCODE samples
+#' Load ENCODE samples
+#'
+#' Samples are automatically downloaded and loaded if they are not found in the
+#' current workspace.
 #'
 #' @param metadata Character: ENCODE metadata
 #'

@@ -2,13 +2,13 @@
 % Please edit documentation in R/L1000.R
 \name{downloadL1000data}
 \alias{downloadL1000data}
-\title{Download L1000 data}
+\title{Load L1000 data}
 \usage{
 downloadL1000data(file, type = c("metadata", "geneInfo", "zscores"),
   zscoresId = NULL)
 }
 \arguments{
-\item{file}{Character: filepath}
+\item{file}{Character: path to file}
 
 \item{type}{Character: type of data to load}
 
@@ -19,7 +19,8 @@ downloadL1000data(file, type = c("metadata", "geneInfo", "zscores"),
 Metadata as a data table
 }
 \description{
-The data will be downloaded if not available
+Load data from L1000. If \code{file} does not exist, it will first be
+downloaded.
 }
 \examples{
 # Download L1000 metadata

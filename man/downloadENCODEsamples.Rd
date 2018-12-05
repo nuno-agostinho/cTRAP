@@ -2,7 +2,7 @@
 % Please edit documentation in R/ENCODE.R
 \name{downloadENCODEsamples}
 \alias{downloadENCODEsamples}
-\title{Download ENCODE samples}
+\title{Load ENCODE samples}
 \usage{
 downloadENCODEsamples(metadata)
 }
@@ -13,7 +13,8 @@ downloadENCODEsamples(metadata)
 List of loaded ENCODE samples
 }
 \description{
-Download ENCODE samples
+Samples are automatically downloaded and loaded if they are not found in the
+current workspace.
 }
 \examples{
 if (interactive()) {

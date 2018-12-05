@@ -1,8 +1,9 @@
-#' Download L1000 data
+#' Load L1000 data
 #'
-#' The data will be downloaded if not available
+#' Load data from L1000. If \code{file} does not exist, it will first be
+#' downloaded.
 #'
-#' @param file Character: filepath
+#' @param file Character: path to file
 #' @param type Character: type of data to load
 #' @param zscoresId Character: identifiers to partially load z-scores file
 #' (for performance reasons)
@@ -359,7 +360,7 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   metadata <- downloadL1000data("l1000metadata.txt", "metadata")
 #'   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
 #'   zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-#'       metadata$sig_id)
+#'                                 metadata$sig_id)
 #'   geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
 #'   loadL1000perturbations(metadata, zscores, geneInfo)
 #' }
