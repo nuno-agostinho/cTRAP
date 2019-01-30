@@ -20,20 +20,19 @@ editor_options:
 `cTRAP` is an R package designed to compare differential gene expression results
 with those from known cellular perturbations (such as gene knock-down, 
 overexpression or small molecules) derived from the [Connectivity Map][clue.io]
-([Subramanian et al., Cell 2017][subramanian2017]). Such analyses allow not only
-to infer the molecular causes of the observed difference in gene expression but
-also to identify small molecules that could drive or revert specific
-transcriptomic alterations.
+(CMap; [Subramanian et al., Cell 2017][subramanian2017]). Such analyses allow 
+not only to infer the molecular causes of the observed difference in gene 
+expression but also to identify small molecules that could drive or revert 
+specific transcriptomic alterations.
 
 To illustrate the package functionalities, we will use an example based on a
 gene knock-down dataset from the [ENCODE project][ENCODE] for which there is
 available RNA-seq data. After performing differential expression analyses to the
-macthed-control sample, we will compare the respective transcriptomic changes
-with the ones caused by all Connectivity Map's gene knock-down perturbations to
-identify which ones have similar or inverse transcriptomic changes to the
-observed ones. As a positive control, we expect to find the knock-down of the
-gene depleted in the ENCODE experiment as one of the most similar transcriptomic
-perturbations.
+matched-control sample, we will compare the respective transcriptomic changes
+with the ones caused by all CMap's gene knock-down perturbations to identify 
+which ones have similar or inverse transcriptomic changes to the observed ones. 
+As a positive control, we expect to find the knock-down of the gene depleted in
+the ENCODE experiment as one of the most similar transcriptomic perturbations.
 
 # Getting started
 
@@ -105,15 +104,15 @@ diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
 ```
 
-# Load Connectivity Map perturbation data
+# Load CMap perturbation data
 
-We will compare our differential gene expression metric with all Connectivity
-Map's gene knock-down perturbations in the same cell line (HepG2). Note that
-this comparison can also be done to perturbations in a different cell line or in
-all cell lines, using in the latter the average result across cell lines.
-Differential gene expression data for each Connectivity Map's perturbation are
-available in z-score normalised values (see
-[Subramanian et al., Cell 2017][subramanian2017] for more details).
+We will compare our differential gene expression metric with all the CMap's gene 
+knock-down perturbations in the same cell line (HepG2). Note that this
+comparison can also be done to perturbations in a different cell line or in all
+cell lines, using in the latter the average result across cell lines. 
+Differential gene expression data for each CMap perturbation are available in 
+z-score normalised values (see [Subramanian et al., Cell 2017][subramanian2017]
+for more details).
 
 ```{r L1000 metadata conditions}
 # Summarise available conditions for L1000 perturbations
@@ -149,7 +148,7 @@ command:
 
 ```{r L1000 small molecule perturbations, eval=FALSE}
 l1000metadataSmallMolecules <- filterL1000metadata(
-    l1000metadata, cellLine="HepG2", timepoint="24 h", dosage="5 \U00B5M",
+    l1000metadata, cellLine="HepG2", #timepoint="24 h", dosage="5 \U00B5M",
     # this means 5 micromolar (\U00B5 is the unicode symbol for micro)
     perturbationType="Compound")
 l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
@@ -165,7 +164,7 @@ data("l1000perturbationsKnockdown")
 data("l1000perturbationsSmallMolecules")
 ```
 
-# Comparison with Connectivity Map's perturbations
+# Comparison with CMap's perturbations
 
 The `compareAgainstL1000` function compares the statistic for differential
 expression (the t-statistic, in this case) with the z-scores for the loaded 
@@ -256,38 +255,42 @@ knockdown with the perturbations of interest.
 
 ```{r plot knockdown perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from L1000
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
-plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
-plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
-plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown)
+EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$gene_perturbation, 
+                        value=TRUE)
+plot(compareKnockdown$spearman, EIF4G1knockdown)
+plot(compareKnockdown$pearson,  EIF4G1knockdown)
+plot(compareKnockdown$gsea,     EIF4G1knockdown)
 
 # Plot relationship with most negatively associated perturbation
-plotL1000comparison(compareKnockdown$spearman, 
-                    tail(compareKnockdown$spearman, 1)$genes)
-plotL1000comparison(compareKnockdown$pearson, 
-                    tail(compareKnockdown$pearson, 1)$genes)
-plotL1000comparison(compareKnockdown$gsea,
-                    tail(compareKnockdown$gsea, 1)$genes)
+plot(compareKnockdown$spearman,
+     tail(compareKnockdown$spearman, 1)$gene_perturbation)
+plot(compareKnockdown$pearson,
+     tail(compareKnockdown$pearson, 1)$gene_perturbation)
+plot(compareKnockdown$gsea,
+     tail(compareKnockdown$gsea, 1)$gene_perturbation)
 ```
+
+> By default, `plotL1000comparison` plots both the top and bottom genes based on
+the `compareAgainstL1000` arguments.
 
 For small molecules:
 
 ```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
-plotL1000comparison(compareSmallMolecule$spearman,
-                    head(compareSmallMolecule$spearman, 1)$compounds)
-plotL1000comparison(compareSmallMolecule$pearson,
-                    head(compareSmallMolecule$pearson, 1)$compounds)
-plotL1000comparison(compareSmallMolecule$gsea,
-                    head(compareSmallMolecule$gsea, 1)$compounds)
+plot(compareSmallMolecule$spearman, 
+     head(compareSmallMolecule$spearman, 1)$compound_perturbation)
+plot(compareSmallMolecule$pearson,
+     head(compareSmallMolecule$pearson, 1)$compound_perturbation)
+plot(compareSmallMolecule$gsea, 
+     head(compareSmallMolecule$gsea, 1)$compound_perturbation)
 
 # Plot relationship with most negatively associated perturbation
-plotL1000comparison(compareSmallMolecule$spearman,
-                    tail(compareSmallMolecule$spearman, 1)$compounds)
-plotL1000comparison(compareSmallMolecule$pearson,
-                    tail(compareSmallMolecule$pearson, 1)$compounds)
-plotL1000comparison(compareSmallMolecule$gsea,
-                    tail(compareSmallMolecule$gsea, 1)$compounds)
+plot(compareSmallMolecule$spearman,
+     tail(compareSmallMolecule$spearman, 1)$compound_perturbation)
+plot(compareSmallMolecule$pearson, 
+     tail(compareSmallMolecule$pearson, 1)$compound_perturbation)
+plot(compareSmallMolecule$gsea, 
+     tail(compareSmallMolecule$gsea, 1)$compound_perturbation)
 ```
 
 # Contact information

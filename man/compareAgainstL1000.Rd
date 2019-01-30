@@ -4,9 +4,9 @@
 \alias{compareAgainstL1000}
 \title{Compare against L1000 datasets}
 \usage{
-compareAgainstL1000(diffExprGenes, perturbations, cellLine,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  pAdjustMethod = "BH", cellLineMean = length(cellLine) > 1)
+compareAgainstL1000(diffExprGenes, perturbations, method = c("spearman",
+  "pearson", "gsea"), geneSize = 150, pAdjustMethod = "BH",
+  cellLineMean = "auto")
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -16,8 +16,6 @@ genes (e.g. t-statistics)}
 
 \item{perturbations}{\code{l1000perturbations} object: file with L1000 loaded
 perturbations (check \code{\link{loadL1000perturbations}})}
-
-\item{cellLine}{Character: cell line(s)}
 
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea})}
@@ -29,15 +27,19 @@ for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})}
 details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
 \code{spearman} or \code{pearson})}
 
-\item{cellLineMean}{Boolean: add a column with the mean across cell lines}
+\item{cellLineMean}{Boolean: add a column with the mean across cell lines? If
+\code{"auto"} (default) the mean will be added if more than one cell line is
+available}
+
+\item{cellLine}{Character: cell line(s)}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
 gene expression values with those associated with L1000 perturbations
 }
 \description{
-Weighted connectivity scores (WCTS) are calculated when \code{method} is
-\code{gsea}. For more information on WCTS, read
+Weighted connectivity scores (WTCS) are calculated when \code{method} is
+\code{gsea}. For more information on WTCS, read
 \url{https://clue.io/connectopedia/cmap_algorithms}.
 }
 \details{

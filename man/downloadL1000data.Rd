@@ -4,13 +4,14 @@
 \alias{downloadL1000data}
 \title{Load L1000 data}
 \usage{
-downloadL1000data(file, type = c("metadata", "geneInfo", "zscores"),
-  zscoresId = NULL)
+downloadL1000data(file, type = c("metadata", "geneInfo", "zscores",
+  "compoundInfo"), zscoresId = NULL)
 }
 \arguments{
 \item{file}{Character: path to file}
 
-\item{type}{Character: type of data to load}
+\item{type}{Character: type of data to load (\code{metadata},
+\code{geneInfo}, \code{zscores} or \code{compoundInfo})}
 
 \item{zscoresId}{Character: identifiers to partially load z-scores file
 (for performance reasons)}
@@ -19,8 +20,13 @@ downloadL1000data(file, type = c("metadata", "geneInfo", "zscores"),
 Metadata as a data table
 }
 \description{
-Load data from L1000. If \code{file} does not exist, it will first be
-downloaded.
+Load L1000 data. If \code{file} does not exist, it will first be downloaded.
+}
+\note{
+If \code{type = compoundInfo}, two files from
+\strong{The Drug Repurposing Hub} will be downloaded containing information
+about drugs and perturbations. The files will be named \code{file} with
+\code{_drugs} and \code{_samples} before their extension, respectively.
 }
 \examples{
 # Download L1000 metadata

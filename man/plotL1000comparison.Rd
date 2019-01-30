@@ -2,18 +2,23 @@
 % Please edit documentation in R/plots.R
 \name{plotL1000comparison}
 \alias{plotL1000comparison}
+\alias{plot.l1000comparison}
 \title{Plot L1000 data comparison}
 \usage{
-plotL1000comparison(object, perturbationID, topGenes = TRUE)
+plotL1000comparison(x, perturbation = NULL, perturbationID = NULL,
+  genes = c("both", "top", "bottom"))
+
+\method{plot}{l1000comparison}(x, perturbation = NULL,
+  perturbationID = NULL, genes = c("both", "top", "bottom"))
 }
 \arguments{
-\item{object}{\code{L1000 comparison} object}
+\item{x}{\code{l1000comparison} object}
 
 \item{perturbationID}{Character: perturbation identifier}
 
-\item{topGenes}{Boolean: plot top (\code{topGenes = TRUE}) or bottom genes
-(\code{topGenes = FALSE}) in case of plotting gene set enrichment analysis
-(GSEA)}
+\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
+plot top genes (\code{genes = "top"}), bottom genes
+(\code{genes = "bottom"}) or both (\code{genes = "both"})}
 }
 \value{
 Plot illustrating the comparison with L1000 data
@@ -34,8 +39,8 @@ compareKnockdown$spearman <- compareAgainstL1000(
 compareKnockdown$pearson <- compareAgainstL1000(
     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
 
-# Compare against L1000 using gene set enrichment analysis (GSEA) with the top
-# and bottom 150 genes
+# Compare against L1000 using gene set enrichment analysis (GSEA) with the
+# top and bottom 150 genes as gene sets
 compareKnockdown$gsea <- compareAgainstL1000(
     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
     geneSize=150)
