@@ -22,7 +22,7 @@ Returns the first or last parts of a vector, matrix, table, data frame
 }
 \details{
 For matrices, 2-dim tables and data frames, \code{head()} (\code{tail()}) returns
-  the first (last) \code{n} rows when \code{n > 0} or all but the
+  the first (last) \code{n} rows when \code{n >= 0} or all but the
   last (first) \code{n} rows when \code{n < 0}.  \code{head.matrix()} and
   \code{tail.matrix()} are exported.  For functions, the
   lines of the deparsed function are returned as character strings.

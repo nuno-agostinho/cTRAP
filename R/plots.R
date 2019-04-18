@@ -48,7 +48,6 @@ plotGSEAenrichment <- function(enrichmentScore, gseaStat, titleSize=14,
     # enrichmentPlot <- enrichmentPlot +
     #     geom_hline(yintercept=max(gseaStat$tops), colour="red",
     #                linetype="dashed")
-
     return(enrichmentPlot)
 }
 
