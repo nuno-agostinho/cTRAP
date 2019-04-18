@@ -12,7 +12,7 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
-l1000metadata.txt
-l1000zscores.gctx
-l1000geneInfo.txt
+l1000*.txt
+*.gctx
 ENC*.tsv
+tests/testthat/Rplots.pdf
