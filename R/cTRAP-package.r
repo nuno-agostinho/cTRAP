@@ -1,7 +1,7 @@
 #' cTRAP package
 #'
 #' Compare differential gene expression results with those from big datasets
-#' (e.g. L1000), allowing to infer which types of perturbations may explain the
+#' (e.g. CMap), allowing to infer which types of perturbations may explain the
 #' observed difference in gene expression.
 #'
 #' \strong{Input:} To use this package, a named vector of differentially
@@ -13,15 +13,15 @@
 #' against selected perturbation conditions by:
 #' \itemize{
 #'     \item{Spearman or Pearson correlation with z-scores of differentially
-#'     expressed genes after perturbations from L1000. Use function
-#'     \code{compareAgainstL1000} with \code{method = "spearman"} or
+#'     expressed genes after perturbations from CMap. Use function
+#'     \code{compareAgainstCMap} with \code{method = "spearman"} or
 #'     \code{method = "pearson"}}
 #'     \item{Gene set enrichment analysis (GSEA) using the (around) 12 000 genes
-#'     from L1000. Use function \code{compareAgainstL1000} with
+#'     from CMap. Use function \code{compareAgainstCMap} with
 #'     \code{method = gsea}.}
 #' }
 #'
-#' Available perturbation conditions for L1000 include:
+#' Available perturbation conditions for CMap include:
 #' \itemize{
 #'     \item{Cell line(s).}
 #'     \item{Perturbation type (gene knockdown, gene upregulation or drug
@@ -31,7 +31,7 @@
 #' }
 #'
 #' Values for each perturbation type can be listed with
-#' \code{getL1000perturbationTypes()}
+#' \code{getCMapPerturbationTypes()}
 #'
 #' \strong{Output:} The output includes a data frame of ranked perturbations
 #' based on the associated statistical values and respective p-values.
@@ -120,87 +120,87 @@ NULL
 #' @keywords internal
 NULL
 
-#' L1000 metadata
+#' CMap metadata
 #'
 #' @description
-#' L1000 metadata obtained by running the following code:
+#' CMap metadata obtained by running the following code:
 #'
 #' \preformatted{
-#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-#' l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
-#'                                      timepoint = "2 h")
+#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#' cmapMetadata <- filterCMapMetadata(cmapMetadata, cellLine = "HEPG2",
+#'                                    timepoint = "2 h")
 #' }
 #'
-#' @name l1000metadata
+#' @name cmapMetadata
 #' @docType data
 #' @keywords internal
 NULL
 
-#' L1000 perturbations sample for knockdown experiments
+#' CMap perturbations sample for knockdown experiments
 #'
 #' @description
-#' L1000 perturbations sample for knockdown experiments obtained by running the
+#' CMap perturbations sample for knockdown experiments obtained by running the
 #' following code:
 #'
 #' \preformatted{
 #' # Code for loading CMap gene KD HepG2 data
 #' cellLine <- "HepG2"
-#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-#' l1000metadataKnockdown <- filterL1000metadata(
-#'   l1000metadata, cellLine=cellLine,
+#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#' cmapMetadataKnockdown <- filterCMapMetadata(
+#'   cmapMetadata, cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#' l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
-#'                                l1000metadataKnockdown$sig_id)
-#' l1000geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
+#' cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
+#'                              cmapMetadataKnockdown$sig_id)
+#' cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 #'
-#' l1000perturbationsKnockdown <- loadL1000perturbations(
-#'   l1000metadataKnockdown, l1000zscores, l1000geneInfo)
+#' cmapPerturbationsKnockdown <- loadCMapPerturbations(
+#'   cmapMetadataKnockdown, cmapZscores, cmapGeneInfo)
 #'
 #' # Select only some perturbations (to reduce file size)
 #' data("diffExprStat")
 #'
 #' compareKnockdown <- list()
-#' compareKnockdown$spearman <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
-#' compareKnockdown$pearson <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
-#' compareKnockdown$gsea <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
+#' compareKnockdown$spearman <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
+#' compareKnockdown$pearson <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
+#' compareKnockdown$gsea <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
 #'     geneSize=150)
 #'
 #' genes  <- lapply(compareKnockdown, "[[", "genes")
 #' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
 #' filter <- unique(filter)
-#' l1000perturbationsKnockdown <- l1000perturbationsKnockdown[ , filter]
+#' cmapPerturbationsKnockdown <- cmapPerturbationsKnockdown[ , filter]
 #' }
 #'
-#' @name l1000perturbationsKnockdown
+#' @name cmapPerturbationsKnockdown
 #' @docType data
 #' @keywords internal
 NULL
 
-#' L1000 perturbations sample for small molecules
+#' CMap perturbations sample for small molecules
 #'
 #' @description
-#' L1000 perturbations sample for small molecules obtained by running the
+#' CMap perturbations sample for small molecules obtained by running the
 #' following code:
 #'
 #' \preformatted{
 #' cellLine <- "HepG2"
-#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-#' l1000metadataSmallMolecules <- filterL1000metadata(
-#'     l1000metadata, cellLine=cellLine, timepoint="24 h",
+#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#' cmapMetadataSmallMolecules <- filterCMapMetadata(
+#'     cmapMetadata, cellLine=cellLine, timepoint="24 h",
 #'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
 #'     perturbationType="Compound")
-#' l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
-#'                                l1000metadataSmallMolecules$sig_id)
-#' l1000geneInfo <- loadL1000data("l1000geneInfo.txt")
+#' cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
+#'                              cmapMetadataSmallMolecules$sig_id)
+#' cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt")
 #'
-#' l1000perturbationsSmallMolecules <- loadL1000perturbations(
-#'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)
+#' cmapPerturbationsSmallMolecules <- loadCMapPerturbations(
+#'     cmapMetadataSmallMolecules, cmapZscores, cmapGeneInfo)
 #' }
 #'
-#' @name l1000perturbationsSmallMolecules
+#' @name cmapPerturbationsSmallMolecules
 #' @docType data
 #' @keywords internal
 NULL

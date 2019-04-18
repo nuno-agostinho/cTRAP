@@ -1,31 +1,31 @@
 context("Plot results")
 
 # data(compareKnockdown)
-data("l1000perturbationsSmallMolecules")
-perturbations <- l1000perturbationsSmallMolecules
+data("cmapPerturbationsSmallMolecules")
+perturbations <- cmapPerturbationsSmallMolecules
 data("diffExprStat")
 cellLine <- "HEPG2"
 
 compareKnockdown <- list()
-compareKnockdown$pearson  <- compareAgainstL1000(diffExprStat, perturbations,
-                                                 cellLine, method="pearson")
-compareKnockdown$spearman <- compareAgainstL1000(diffExprStat, perturbations,
-                                                 cellLine, method="spearman")
-compareKnockdown$gsea     <- compareAgainstL1000(diffExprStat, perturbations,
-                                                 cellLine, method="gsea")
+compareKnockdown$pearson  <- compareAgainstCMap(diffExprStat, perturbations,
+                                                cellLine, method="pearson")
+compareKnockdown$spearman <- compareAgainstCMap(diffExprStat, perturbations,
+                                                cellLine, method="spearman")
+compareKnockdown$gsea     <- compareAgainstCMap(diffExprStat, perturbations,
+                                                cellLine, method="gsea")
 condition <- compareKnockdown$gsea$compounds[[1]]
 
 test_that("Plot Spearman correlation", {
-    plot <- plotL1000comparison(compareKnockdown$spearman, condition)
+    plot <- plotCMapComparison(compareKnockdown$spearman, condition)
     expect_is(plot, "NULL")
 })
 
 test_that("Plot Pearson correlation", {
-    plot <- plotL1000comparison(compareKnockdown$pearson, condition)
+    plot <- plotCMapComparison(compareKnockdown$pearson, condition)
     expect_is(plot, "NULL")
 })
 
 test_that("Plot GSEA", {
-    plot <- plotL1000comparison(compareKnockdown$gsea, condition)
+    plot <- plotCMapComparison(compareKnockdown$gsea, condition)
     expect_is(plot, "ggplot")
 })

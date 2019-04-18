@@ -113,16 +113,16 @@ collapseDuplicatedRows <- function(df, column) {
     return(collapsed)
 }
 
-# l1000perturbations object ----------------------------------------------------
+# cmapPerturbations object -----------------------------------------------------
 
-#' Subset an \code{l1000perturbations} object
+#' Subset an \code{cmapPerturbations} object
 #'
-#' @param x \code{l1000perturbations} object
+#' @param x \code{cmapPerturbations} object
 #' @param ... Extra parameters passed to \code{`[`}
 #'
-#' @return \code{l1000perturbations} object with subset data
+#' @return \code{cmapPerturbations} object with subset data
 #' @export
-`[.l1000perturbations` <- function(x, ...) {
+`[.cmapPerturbations` <- function(x, ...) {
     out <- unclass(x)
     out <- `[`(out, ..., drop=FALSE)
 
@@ -143,14 +143,14 @@ collapseDuplicatedRows <- function(df, column) {
 
 #' @inherit base::as.data.frame
 #' @export
-as.data.frame.l1000perturbations <- function(x, ...) {
+as.data.frame.cmapPerturbations <- function(x, ...) {
     as.data.frame(unclass(x), ...)
 }
 
 #' @inherit utils::head
 #' @export
-head.l1000perturbations <- function(x, ...) head(unclass(x), ...)
+head.cmapPerturbations <- function(x, ...) head(unclass(x), ...)
 
 #' @inherit utils::tail
 #' @export
-tail.l1000perturbations <- function(x, ...) tail(unclass(x), ...)
+tail.cmapPerturbations <- function(x, ...) tail(unclass(x), ...)

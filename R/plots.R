@@ -132,19 +132,19 @@ plotGSEA <- function(pathways, stats, genes=c("both", "top", "bottom"),
     statsAdj <- statsAdj / max(abs(statsAdj))
 
     prepareOneEndGseaPlot <- function(pathways, stats, ..., id="") {
-      gseaRes <- performGSEA(pathways, stats)
+        gseaRes <- performGSEA(pathways, stats)
 
-      if (id != "") id <- sprintf(" for %s", id)
-      message(sprintf("Preparing enrichment plot%s...", id))
-      enrichmentPlot <- plotGSEAenrichment(gseaRes$enrichmentScore,
-                                           gseaRes$stat, ...) +
-          theme(plot.margin=unit(c(5.5, 5.5, 0, 5.5), "pt"))
+        if (id != "") id <- sprintf(" for %s", id)
+        message(sprintf("Preparing enrichment plot%s...", id))
+        enrichmentPlot <- plotGSEAenrichment(gseaRes$enrichmentScore,
+                                             gseaRes$stat, ...) +
+            theme(plot.margin=unit(c(5.5, 5.5, 0, 5.5), "pt"))
 
-      message(sprintf("Preparing gene hits plot%s...", id))
-      geneHitsPlot <- plotGeneHits(gseaRes$enrichmentScore, gseaRes$stat,
-                                   gseaRes$pathway) +
-          theme(plot.margin=unit(c(0, 5.5, 0, 5.5), "pt"))
-      return(list(enrichmentPlot=enrichmentPlot, geneHitsPlot=geneHitsPlot))
+        message(sprintf("Preparing gene hits plot%s...", id))
+        geneHitsPlot <- plotGeneHits(gseaRes$enrichmentScore, gseaRes$stat,
+                                     gseaRes$pathway) +
+            theme(plot.margin=unit(c(0, 5.5, 0, 5.5), "pt"))
+        return(list(enrichmentPlot=enrichmentPlot, geneHitsPlot=geneHitsPlot))
     }
 
     message("Preparing metric distribution plot...")
@@ -284,9 +284,9 @@ plotRes <- function(x, cellLine=NULL, n=5, signifThreshold=0.05, alpha=0.3) {
     }
 }
 
-#' Plot L1000 data comparison
+#' Plot CMap data comparison
 #'
-#' @param x \code{l1000comparison} object
+#' @param x \code{cmapComparison} object
 #' @param perturbationID Character: perturbation identifier
 #' @param genes Character: when plotting gene set enrichment analysis (GSEA),
 #'   plot top genes (\code{genes = "top"}), bottom genes
@@ -294,33 +294,33 @@ plotRes <- function(x, cellLine=NULL, n=5, signifThreshold=0.05, alpha=0.3) {
 #'
 #' @importFrom graphics plot
 #'
-#' @return Plot illustrating the comparison with L1000 data
+#' @return Plot illustrating the comparison with CMap data
 #' @export
 #'
 #' @examples
-#' data("l1000perturbationsKnockdown")
+#' data("cmapPerturbationsKnockdown")
 #' cellLine <- "HepG2"
 #' compareKnockdown <- list()
 #'
-#' # Compare against L1000 using Spearman correlation
-#' compareKnockdown$spearman <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
+#' # Compare against CMap using Spearman correlation
+#' compareKnockdown$spearman <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
 #'
-#' # Compare against L1000 using Pearson correlation
-#' compareKnockdown$pearson <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
+#' # Compare against CMap using Pearson correlation
+#' compareKnockdown$pearson <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
 #'
-#' # Compare against L1000 using gene set enrichment analysis (GSEA) with the
+#' # Compare against CMap using gene set enrichment analysis (GSEA) with the
 #' # top and bottom 150 genes as gene sets
-#' compareKnockdown$gsea <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
+#' compareKnockdown$gsea <- compareAgainstCMap(
+#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
 #'     geneSize=150)
 #'
 #' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
-#' plotL1000comparison(compareKnockdown$spearman, EIF4G1knockdown)
-#' plotL1000comparison(compareKnockdown$pearson, EIF4G1knockdown)
-#' plotL1000comparison(compareKnockdown$gsea, EIF4G1knockdown)
-plotL1000comparison <- function(x, perturbation=NULL, perturbationID=NULL,
+#' plot(compareKnockdown$spearman, EIF4G1knockdown)
+#' plot(compareKnockdown$pearson, EIF4G1knockdown)
+#' plot(compareKnockdown$gsea, EIF4G1knockdown)
+plot.cmapComparison <- function(x, perturbation=NULL, perturbationID=NULL,
                                 genes=c("both", "top", "bottom")) {
     method <- attr(x, "method")
     perturbation <- unclass(perturbation)
@@ -349,7 +349,3 @@ plotL1000comparison <- function(x, perturbation=NULL, perturbationID=NULL,
         plotRes(x, cellLine=NULL, n=3, signifThreshold=0.05)
     }
 }
-
-#' @rdname plotL1000comparison
-#' @export
-plot.l1000comparison <- plotL1000comparison

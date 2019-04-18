@@ -1,6 +1,6 @@
-#' Load L1000 data
+#' Load CMap data
 #'
-#' Load L1000 data. If \code{file} does not exist, it will first be downloaded.
+#' Load CMap data. If \code{file} does not exist, it will first be downloaded.
 #'
 #' @note If \code{type = compoundInfo}, two files from
 #' \strong{The Drug Repurposing Hub} will be downloaded containing information
@@ -20,24 +20,24 @@
 #' @export
 #'
 #' @examples
-#' # Load L1000 metadata (data is automatically downloaded if not available)
-#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
+#' # Load CMap metadata (data is automatically downloaded if not available)
+#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'
-#' # Load L1000 gene info
-#' loadL1000data("l1000geneInfo.txt", "geneInfo")
+#' # Load CMap gene info
+#' loadCMapData("cmapGeneInfo.txt", "geneInfo")
 #'
-#' # Load L1000 zscores based on filtered metadata
-#' l1000metadataKnockdown <- filterL1000metadata(
-#'   l1000metadata, cellLine="HepG2",
+#' # Load CMap zscores based on filtered metadata
+#' cmapMetadataKnockdown <- filterCMapMetadata(
+#'   cmapMetadata, cellLine="HepG2",
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #'
 #' if (interactive()) {
-#'   loadL1000data("l1000zscores.gctx.gz", "zscores",
-#'                 l1000metadataKnockdown$sig_id)
+#'   loadCmapData("cmapZscores.gctx.gz", "zscores",
+#'                cmapMetadataKnockdown$sig_id)
 #' }
-loadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
-                                       "compoundInfo"),
-                          zscoresId=NULL) {
+loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
+                                      "compoundInfo"),
+                         zscoresId=NULL) {
     type <- match.arg(type)
     nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666")
     if (type == "metadata") {
@@ -98,26 +98,26 @@ loadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
     return(data)
 }
 
-#' List available conditions in L1000 datasets
+#' List available conditions in CMap datasets
 #'
 #' Downloads metadata if not available
 #'
-#' @inheritParams filterL1000metadata
+#' @inheritParams filterCMapMetadata
 #' @param control Boolean: show controls for perturbation types?
 #'
-#' @return List of conditions in L1000 datasets
+#' @return List of conditions in CMap datasets
 #' @export
 #'
 #' @examples
-#' data("l1000metadata")
-#' # l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-getL1000conditions <- function(metadata, cellLine=NULL, timepoint=NULL,
-                               dosage=NULL, perturbationType=NULL,
-                               control=FALSE) {
-    metadata <- filterL1000metadata(metadata, cellLine=cellLine,
-                                    timepoint=timepoint, dosage=dosage,
-                                    perturbationType=perturbationType)
-    pertTypes <- getL1000perturbationTypes()
+#' data("cmapMetadata")
+#' # cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
+                              dosage=NULL, perturbationType=NULL,
+                              control=FALSE) {
+    metadata <- filterCMapMetadata(metadata, cellLine=cellLine,
+                                   timepoint=timepoint, dosage=dosage,
+                                   perturbationType=perturbationType)
+    pertTypes <- getCMapPerturbationTypes()
     pertTypes <- names(pertTypes)[pertTypes %in% unique(metadata$pert_type)]
     if (!control) {
         pertTypes <- grep("Control", pertTypes, value=TRUE, invert=TRUE,
@@ -132,7 +132,7 @@ getL1000conditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 
 #' Correlate differential expression scores per cell line
 #'
-#' @inheritParams compareAgainstL1000
+#' @inheritParams compareAgainstCMap
 #' @param metadata Data frame: perturbation metadata
 #' @param method Character: correlation method
 #'
@@ -169,7 +169,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 
 #' Perform gene set enrichment (GSA) per cell line
 #'
-#' @inheritParams compareAgainstL1000
+#' @inheritParams compareAgainstCMap
 #' @inheritParams fgsea::fgsea
 #'
 #' @importFrom fgsea fgsea
@@ -198,7 +198,7 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 
     gsaRes <- cbind(identifier=rep(names(gsa), each=2), rbind.fill(gsa))
 
-    # based on L1000 paper (page e8) - weighted connectivity score (WTCS)
+    # based on CMap paper (page e8) - weighted connectivity score (WTCS)
     ES_list <- c()
     for (geneID in unique(gsaRes$identifier)) {
         geneID_GSA  <- gsaRes[gsaRes$identifier %in% geneID, ]
@@ -218,7 +218,7 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
     return(results)
 }
 
-#' Compare against L1000 datasets
+#' Compare against CMap datasets
 #'
 #' Weighted connectivity scores (WTCS) are calculated when \code{method} is
 #' \code{gsea}. For more information on WTCS, read
@@ -234,8 +234,8 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #'   where the name of the vector are gene names and the values are a statistic
 #'   that represents significance and magnitude of differentially expressed
 #'   genes (e.g. t-statistics)
-#' @param perturbations \code{l1000perturbations} object: file with L1000 loaded
-#'   perturbations (check \code{\link{loadL1000perturbations}})
+#' @param perturbations \code{cmapPerturbations} object: file with CMap loaded
+#'   perturbations (check \code{\link{loadCMapPerturbations}})
 #' @param cellLine Character: cell line(s)
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
 #'   or \code{gsea})
@@ -253,29 +253,29 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 #' @importFrom utils head tail
 #'
 #' @return Data table with correlation or GSEA results comparing differential
-#' gene expression values with those associated with L1000 perturbations
+#' gene expression values with those associated with CMap perturbations
 #' @export
 #'
 #' @examples
 #' cellLine <- "HepG2"
-#' data("l1000perturbationsSmallMolecules")
-#' perturbations <- l1000perturbationsSmallMolecules
+#' data("cmapPerturbationsSmallMolecules")
+#' perturbations <- cmapPerturbationsSmallMolecules
 #' data("diffExprStat")
 #'
-#' # Compare against L1000 using Spearman correlation
-#' compareAgainstL1000(diffExprStat, perturbations, cellLine,
-#'                     method="spearman")
+#' # Compare against CMap using Spearman correlation
+#' compareAgainstCMap(diffExprStat, perturbations, cellLine,
+#'                    method="spearman")
 #'
-#' # Compare against L1000 using Pearson correlation
-#' compareAgainstL1000(diffExprStat, perturbations, cellLine,
-#'                     method="pearson")
+#' # Compare against CMap using Pearson correlation
+#' compareAgainstCMap(diffExprStat, perturbations, cellLine,
+#'                    method="pearson")
 #'
-#' # Compare against L1000 using gene set enrichment analysis (GSEA)
-#' compareAgainstL1000(diffExprStat, perturbations, cellLine, method="gsea")
-compareAgainstL1000 <- function(diffExprGenes, perturbations,
-                                method=c("spearman", "pearson", "gsea"),
-                                geneSize=150, pAdjustMethod="BH",
-                                cellLineMean="auto") {
+#' # Compare against CMap using gene set enrichment analysis (GSEA)
+#' compareAgainstCMap(diffExprStat, perturbations, cellLine, method="gsea")
+compareAgainstCMap <- function(diffExprGenes, perturbations,
+                               method=c("spearman", "pearson", "gsea"),
+                               geneSize=150, pAdjustMethod="BH",
+                               cellLineMean="auto") {
     startTime <- Sys.time()
     method   <- match.arg(method)
     metadata <- attr(perturbations, "metadata")
@@ -352,7 +352,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations,
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
     if (length(pertType) == 1) {
-        pertTypes <- getL1000perturbationTypes()
+        pertTypes <- getCMapPerturbationTypes()
         pertType  <- names(pertTypes[pertTypes == pertType])
 
         if (pertType == "Compound")
@@ -369,7 +369,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations,
     attr(data, "diffExprGenes") <- diffExprGenes
     attr(data, "perturbations") <- perturbations
     if (method == "gsea") attr(data, "pathways") <- pathways
-    class(data) <- c("l1000comparison", class(data))
+    class(data) <- c("cmapComparison", class(data))
 
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
@@ -381,7 +381,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations,
     return(data)
 }
 
-#' Filter L1000 metadata
+#' Filter CMap metadata
 #'
 #' @param metadata Data frame: metadata
 #' @param cellLine Character: cell line (if \code{NULL}, all values are loaded)
@@ -390,16 +390,16 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations,
 #' @param perturbationType Character: type of perturbation (if \code{NULL}, all
 #' perturbation types are loaded)
 #'
-#' @return Filtered L1000 metadata
+#' @return Filtered CMap metadata
 #'
 #' @export
 #' @examples
-#' data("l1000metadata")
-#' # l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-#' filterL1000metadata(l1000metadata, cellLine="HEPG2", timepoint="2 h",
-#'                     dosage="25 ng/mL")
-filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
-                                dosage=NULL, perturbationType=NULL) {
+#' data("cmapMetadata")
+#' # cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#' filterCMapMetadata(cmapMetadata, cellLine="HEPG2", timepoint="2 h",
+#'                    dosage="25 ng/mL")
+filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
+                               dosage=NULL, perturbationType=NULL) {
     if (!is.null(cellLine))
         metadata <- metadata[tolower(metadata$cell_id) %in% tolower(cellLine), ]
 
@@ -410,7 +410,7 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
         metadata <- metadata[metadata$pert_idose %in% dosage, ]
 
     if (!is.null(perturbationType)) {
-        tmp <- getL1000perturbationTypes()[perturbationType]
+        tmp <- getCMapPerturbationTypes()[perturbationType]
         if (!is.na(tmp)) perturbationType <- tmp
         metadata <- metadata[metadata$pert_type %in% perturbationType, ]
     }
@@ -418,42 +418,41 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
     return(metadata)
 }
 
-#' Load L1000 perturbation data
+#' Load CMap perturbation data
 #'
-#' @param metadata Data frame: L1000 Metadata
+#' @param metadata Data frame: CMap Metadata
 #' @param zscores Data frame: GCTX z-scores
-#' @param geneInfo Data frame: L1000 gene info
+#' @param geneInfo Data frame: CMap gene info
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
 #'
-#' @return Perturbation data from L1000 as a data table
+#' @return Perturbation data from CMap as a data table
 #' @export
 #' @examples
 #' if (interactive()) {
-#'   metadata <- loadL1000data("l1000metadata.txt", "metadata")
-#'   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-#'   zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
-#'                                 metadata$sig_id)
-#'   geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
-#'   loadL1000perturbations(metadata, zscores, geneInfo)
+#'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+#'   zscores  <- loadCMapData("cmapZscores.gctx", "zscores", metadata$sig_id)
+#'   geneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
+#'   loadCMapPerturbations(metadata, zscores, geneInfo)
 #' }
-loadL1000perturbations <- function(metadata, zscores, geneInfo) {
+loadCMapPerturbations <- function(metadata, zscores, geneInfo) {
     rownames(zscores) <- geneInfo$pr_gene_symbol[
         match(rownames(zscores), geneInfo$pr_gene_id)]
     attr(zscores, "metadata") <- metadata
-    class(zscores) <- c("l1000perturbations", class(zscores))
+    class(zscores) <- c("cmapPerturbations", class(zscores))
     return(zscores)
 }
 
 #' Get perturbation types
 #'
-#' @return Perturbation types and respective codes as used by L1000 datasets
+#' @return Perturbation types and respective codes as used by CMap datasets
 #' @export
 #'
 #' @examples
-#' getL1000perturbationTypes()
-getL1000perturbationTypes <- function () {
+#' getCMapPerturbationTypes()
+getCMapPerturbationTypes <- function () {
     c("Compound"="trt_cp",
       "Peptides and other biological agents (e.g. cytokine)"="trt_lig",
       "shRNA for loss of function (LoF) of gene"="trt_sh",

@@ -1,38 +1,38 @@
-context("Working with L1000 data")
+context("Working with CMap data")
 
 cellLine <- "HepG2"
-data("l1000perturbationsSmallMolecules")
-perturbations <- l1000perturbationsSmallMolecules
+data("cmapPerturbationsSmallMolecules")
+perturbations <- cmapPerturbationsSmallMolecules
 data("diffExprStat")
 
-test_that("L1000 metadata and conditions are loaded", {
-    data("l1000metadata")
-    # metadata <- loadL1000data("L1000metadata.txt", "metadata")
-    # metadata <- filterL1000metadata(metadata, cellLine = cellLine,
-    #                                 timepoint = "2 h")
+test_that("CMap metadata and conditions are loaded", {
+    data("cmapMetadata")
+    # metadata <- loadCMapData("cmapMetadata.txt", "metadata")
+    # metadata <- filterCMapMetadata(metadata, cellLine = cellLine,
+    #                                timepoint = "2 h")
 
-    expect_is(l1000metadata, "data.table")
+    expect_is(cmapMetadata, "data.table")
     expect_true(all(c("sig_id", "pert_id", "cell_id",
-                      "pert_idose", "pert_itime") %in% colnames(l1000metadata)))
+                      "pert_idose", "pert_itime") %in% colnames(cmapMetadata)))
 
-    conditions <- getL1000conditions(l1000metadata)
+    conditions <- getCMapConditions(cmapMetadata)
     expect_is(conditions, "list")
     expect_identical(names(conditions), c("Perturbation type", "Cell line",
                                           "Dosage", "Time points"))
 
-    expect_true(!is.null(attr(l1000perturbationsSmallMolecules, "metadata")))
+    expect_true(!is.null(attr(cmapPerturbationsSmallMolecules, "metadata")))
 })
 
 test_that("Perturbation types are retrievable", {
-    pertTypes <- getL1000perturbationTypes()
+    pertTypes <- getCMapPerturbationTypes()
     expect_is(pertTypes, "character")
     expect_true(all(c("trt_cp", "trt_sh.cgs") %in% pertTypes))
 })
 
 test_that("Compare using Spearman correlation", {
-    data <- compareAgainstL1000(diffExprStat, perturbations, cellLine,
+    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
                                 method="spearman")
-    expect_is(data, "l1000comparison")
+    expect_is(data, "cmapComparison")
     expect_identical(colnames(data), c(
         "compounds", "HepG2_spearman_coef", "HepG2_spearman_pvalue",
         "HepG2_spearman_qvalue", "Average_spearman_coef"))
@@ -55,9 +55,9 @@ test_that("Compare using Spearman correlation", {
 })
 
 test_that("Compare using Pearson correlation", {
-    data <- compareAgainstL1000(diffExprStat, perturbations, cellLine,
+    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
                                 method="pearson")
-    expect_is(data, "l1000comparison")
+    expect_is(data, "cmapComparison")
     expect_identical(colnames(data), c(
         "compounds", "HepG2_pearson_coef", "HepG2_pearson_pvalue",
         "HepG2_pearson_qvalue", "Average_pearson_coef"))
@@ -80,9 +80,9 @@ test_that("Compare using Pearson correlation", {
 })
 
 test_that("Compare using GSEA", {
-    data <- compareAgainstL1000(diffExprStat, perturbations, cellLine,
+    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
                                 method="gsea")
-    expect_is(data, "l1000comparison")
+    expect_is(data, "cmapComparison")
     expect_identical(colnames(data),
                      c("compounds", "HepG2_WTCS", "Average_WTCS"))
 

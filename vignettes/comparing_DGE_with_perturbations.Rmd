@@ -114,31 +114,31 @@ Differential gene expression data for each CMap perturbation are available in
 z-score normalised values (see [Subramanian et al., Cell 2017][subramanian2017]
 for more details).
 
-```{r L1000 metadata conditions}
-# Summarise available conditions for L1000 perturbations
-l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
-getL1000conditions(l1000metadata)
+```{r CMap metadata conditions}
+# Summarise available conditions for CMap perturbations
+cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+getCMapConditions(cmapMetadata)
 
 # Summarise available conditions for HepG2 cell line
-getL1000conditions(l1000metadata, cellLine="HepG2")
+getCMapConditions(cmapMetadata, cellLine="HepG2")
 
 # Summarise available conditions for HepG2 cell line and a specific perturbation
-getL1000conditions(
-    l1000metadata, cellLine="HepG2", 
+getCMapConditions(
+    cmapMetadata, cellLine="HepG2", 
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 ```
 
-```{r L1000 knockdown perturbations, eval=FALSE}
+```{r CMap knockdown perturbations, eval=FALSE}
 # Code for loading CMap gene KD HepG2 data
-l1000metadataKnockdown <- filterL1000metadata(
-    l1000metadata, cellLine="HepG2",
+cmapMetadataKnockdown <- filterCMapMetadata(
+    cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
-l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
-                               l1000metadataKnockdown$sig_id)
-l1000geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
+cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
+                             cmapMetadataKnockdown$sig_id)
+cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 
-l1000perturbationsKnockdown <- loadL1000perturbations(
-    l1000metadataKnockdown, l1000zscores, l1000geneInfo)
+cmapPerturbationsKnockdown <- loadCMapPerturbations(
+    cmapMetadataKnockdown, cmapZscores, cmapGeneInfo)
 ```
 
 If the interest is in small molecules, one can download the differential gene
@@ -146,25 +146,25 @@ expression z-scores for each small molecule perturbation in HepG2 (given a
 specific concentration and time point of RNA extraction) through the following
 command:
 
-```{r L1000 small molecule perturbations, eval=FALSE}
-l1000metadataSmallMolecules <- filterL1000metadata(
-    l1000metadata, cellLine="HepG2", perturbationType="Compound")
-l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
-                               l1000metadataSmallMolecules$sig_id)
-l1000geneInfo <- laodL1000data("l1000geneInfo.txt", "geneInfo")
+```{r CMap small molecule perturbations, eval=FALSE}
+cmapMetadataSmallMolecules <- filterCMapMetadata(
+    cmapMetadata, cellLine="HepG2", perturbationType="Compound")
+cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
+                             cmapMetadataSmallMolecules$sig_id)
+cmapGeneInfo <- laodCMapData("cmapGeneInfo.txt", "geneInfo")
 
-l1000perturbationsSmallMolecules <- loadL1000perturbations(
-    l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)
+cmapPerturbationsSmallMolecules <- loadCMapPerturbations(
+    cmapMetadataSmallMolecules, cmapZscores, cmapGeneInfo)
 ```
 
-```{r load L1000 perturbations, include=FALSE}
-data("l1000perturbationsKnockdown")
-data("l1000perturbationsSmallMolecules")
+```{r load CMap perturbations, include=FALSE}
+data("cmapPerturbationsKnockdown")
+data("cmapPerturbationsSmallMolecules")
 ```
 
 # Comparison with CMap's perturbations
 
-The `compareAgainstL1000` function compares the statistic for differential
+The `compareAgainstCMap` function compares the statistic for differential
 expression (the t-statistic, in this case) with the z-scores for the loaded 
 perturbations using the three different methods available (Spearman's 
 correlation, Pearson's correlation and Gene Set Enrichment Analysis (GSEA)). For
@@ -174,18 +174,18 @@ sets (by default, *n* = 150 genes).
 ```{r compare knockdown, include=FALSE}
 compareKnockdown <- list()
 
-# Compare against L1000 using Spearman correlation
-compareKnockdown$spearman <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
+# Compare against CMap using Spearman correlation
+compareKnockdown$spearman <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
 
-# Compare against L1000 using Pearson correlation
-compareKnockdown$pearson <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
+# Compare against CMap using Pearson correlation
+compareKnockdown$pearson <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
 
-# Compare against L1000 using gene set enrichment analysis (GSEA) with the top
+# Compare against CMap using gene set enrichment analysis (GSEA) with the top
 # and bottom 150 genes
-compareKnockdown$gsea <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
+compareKnockdown$gsea <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
     geneSize=150)
 ```
 
@@ -193,18 +193,18 @@ For small molecules:
 
 ```{r compare small molecules}
 compareSmallMolecule <- list()
-# Compare against L1000 using Spearman correlation
-compareSmallMolecule$spearman <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="spearman")
+# Compare against CMap using Spearman correlation
+compareSmallMolecule$spearman <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="spearman")
 
-# Compare against L1000 using Pearson correlation
-compareSmallMolecule$pearson <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="pearson")
+# Compare against CMap using Pearson correlation
+compareSmallMolecule$pearson <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="pearson")
 
-# Compare against L1000 using gene set enrichment analysis (GSEA) with the top
+# Compare against CMap using gene set enrichment analysis (GSEA) with the top
 # and bottom 150 genes
-compareSmallMolecule$gsea <- compareAgainstL1000(
-    diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="gsea",
+compareSmallMolecule$gsea <- compareAgainstCMap(
+    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="gsea",
     geneSize=150)
 ```
 
@@ -252,7 +252,7 @@ For instance, let's plot the relationship between ENCODE's EIF4G1 shRNA
 knockdown with the perturbations of interest.
 
 ```{r plot knockdown perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
-# Plot relationship with EIF4G1 knockdown from L1000
+# Plot relationship with EIF4G1 knockdown from CMap
 EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$gene_perturbation, 
                         value=TRUE)
 plot(compareKnockdown$spearman, EIF4G1knockdown)
@@ -268,8 +268,8 @@ plot(compareKnockdown$gsea,
      tail(compareKnockdown$gsea, 1)$gene_perturbation)
 ```
 
-> By default, `plotL1000comparison` plots both the top and bottom genes based on
-the `compareAgainstL1000` arguments.
+> By default, `plot()` plots both the top and bottom genes based on the
+`compareAgainstCMap()` arguments.
 
 For small molecules:
 
