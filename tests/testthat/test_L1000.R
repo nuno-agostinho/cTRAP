@@ -7,7 +7,7 @@ data("diffExprStat")
 
 test_that("L1000 metadata and conditions are loaded", {
     data("l1000metadata")
-    # metadata <- downloadL1000data("L1000metadata.txt", "metadata")
+    # metadata <- loadL1000data("L1000metadata.txt", "metadata")
     # metadata <- filterL1000metadata(metadata, cellLine = cellLine,
     #                                 timepoint = "2 h")
 

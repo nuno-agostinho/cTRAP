@@ -8,7 +8,7 @@
 L1000 metadata obtained by running the following code:
 
 \preformatted{
-l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
                                      timepoint = "2 h")
 }

@@ -11,13 +11,13 @@ following code:
 \preformatted{
 # Code for loading CMap gene KD HepG2 data
 cellLine <- "HepG2"
-l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 l1000metadataKnockdown <- filterL1000metadata(
   l1000metadata, cellLine=cellLine,
   perturbationType="Consensus signature from shRNAs targeting the same gene")
-l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-                                   l1000metadataKnockdown$sig_id)
-l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+                               l1000metadataKnockdown$sig_id)
+l1000geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
 
 l1000perturbationsKnockdown <- loadL1000perturbations(
   l1000metadataKnockdown, l1000zscores, l1000geneInfo)

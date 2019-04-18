@@ -48,7 +48,7 @@ In this example, we will use the EIF4G1 shRNA knockdown followed by RNA-seq
 experiment in HepG2 cell line from the ENCODE project as the dataset of
 interest. The RNA-seq processed data (gene quantifications from RSEM method) for
 the EIF4G1 knock-down and respective controls (two replicates each) can be
-downloaded by typing:
+automatically downloaded and loaded by typing:
 
 ```{r load ENCODE samples, eval=FALSE}
 gene <- "EIF4G1"
@@ -58,7 +58,7 @@ ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 table(ENCODEmetadata$`Experiment target`)
 length(unique(ENCODEmetadata$`Experiment target`))
 
-ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 counts <- prepareENCODEgeneExpression(ENCODEsamples)
 ```
 
@@ -116,7 +116,7 @@ for more details).
 
 ```{r L1000 metadata conditions}
 # Summarise available conditions for L1000 perturbations
-l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 getL1000conditions(l1000metadata)
 
 # Summarise available conditions for HepG2 cell line
@@ -133,9 +133,9 @@ getL1000conditions(
 l1000metadataKnockdown <- filterL1000metadata(
     l1000metadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
-l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-                                   l1000metadataKnockdown$sig_id)
-l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+                               l1000metadataKnockdown$sig_id)
+l1000geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
 
 l1000perturbationsKnockdown <- loadL1000perturbations(
     l1000metadataKnockdown, l1000zscores, l1000geneInfo)
@@ -148,12 +148,10 @@ command:
 
 ```{r L1000 small molecule perturbations, eval=FALSE}
 l1000metadataSmallMolecules <- filterL1000metadata(
-    l1000metadata, cellLine="HepG2", #timepoint="24 h", dosage="5 \U00B5M",
-    # this means 5 micromolar (\U00B5 is the unicode symbol for micro)
-    perturbationType="Compound")
-l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-                                   l1000metadataSmallMolecules$sig_id)
-l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+    l1000metadata, cellLine="HepG2", perturbationType="Compound")
+l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+                               l1000metadataSmallMolecules$sig_id)
+l1000geneInfo <- laodL1000data("l1000geneInfo.txt", "geneInfo")
 
 l1000perturbationsSmallMolecules <- loadL1000perturbations(
     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)

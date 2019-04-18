@@ -53,7 +53,7 @@ NULL
 #' table(ENCODEmetadata$`Experiment target`)
 #' length(unique(ENCODEmetadata$`Experiment target`))
 #'
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -82,7 +82,7 @@ NULL
 #' table(ENCODEmetadata$`Experiment target`)
 #' length(unique(ENCODEmetadata$`Experiment target`))
 #'
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -126,7 +126,7 @@ NULL
 #' L1000 metadata obtained by running the following code:
 #'
 #' \preformatted{
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #' l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
 #'                                      timepoint = "2 h")
 #' }
@@ -145,13 +145,13 @@ NULL
 #' \preformatted{
 #' # Code for loading CMap gene KD HepG2 data
 #' cellLine <- "HepG2"
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #' l1000metadataKnockdown <- filterL1000metadata(
 #'   l1000metadata, cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-#'                                    l1000metadataKnockdown$sig_id)
-#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+#' l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+#'                                l1000metadataKnockdown$sig_id)
+#' l1000geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
 #'
 #' l1000perturbationsKnockdown <- loadL1000perturbations(
 #'   l1000metadataKnockdown, l1000zscores, l1000geneInfo)
@@ -187,14 +187,14 @@ NULL
 #'
 #' \preformatted{
 #' cellLine <- "HepG2"
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #' l1000metadataSmallMolecules <- filterL1000metadata(
 #'     l1000metadata, cellLine=cellLine, timepoint="24 h",
 #'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
 #'     perturbationType="Compound")
-#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-#'                                    l1000metadataSmallMolecules$sig_id)
-#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
+#' l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+#'                                l1000metadataSmallMolecules$sig_id)
+#' l1000geneInfo <- loadL1000data("l1000geneInfo.txt")
 #'
 #' l1000perturbationsSmallMolecules <- loadL1000perturbations(
 #'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)
@@ -216,8 +216,8 @@ NULL
 #' gene <- "EIF4G1"
 #' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' # Download samples based on filtered ENCODE metadata
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' # Load samples based on filtered ENCODE metadata
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 #'
 #' # Get small subset of whole dataset
 #' filter <- ENCODEsamples[[1]]$expected_count > 0

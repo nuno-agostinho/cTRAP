@@ -10,14 +10,14 @@ following code:
 
 \preformatted{
 cellLine <- "HepG2"
-l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 l1000metadataSmallMolecules <- filterL1000metadata(
     l1000metadata, cellLine=cellLine, timepoint="24 h",
     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
     perturbationType="Compound")
-l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-                                   l1000metadataSmallMolecules$sig_id)
-l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
+l1000zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
+                               l1000metadataSmallMolecules$sig_id)
+l1000geneInfo <- loadL1000data("l1000geneInfo.txt")
 
 l1000perturbationsSmallMolecules <- loadL1000perturbations(
     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo)

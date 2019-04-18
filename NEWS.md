@@ -1,8 +1,10 @@
-# 1.0.3 (30 January, 2018)
+# 1.0.3 (18 April, 2019)
 
 * Update and copy-edit the tutorial and function documentation
+* Rename `downloadL1000data()` and `downloadENCODEsamples()` to `loadL1000data()` and
+`loadENCODEsamples()`, respectively
 * Integrate compound metadata from CMap:
-    - Allow to download CMap compound metadata using `downloadL1000data()`
+    - Allow to download CMap compound metadata using `loadL1000data()`
 * Improve comparison against CMap perturbations (`compareAgainstL1000()`):
     - Correctly set name of perturbagens depending on the perturbation type
     (genes, biological agents or compounds)

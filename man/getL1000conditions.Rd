@@ -29,5 +29,5 @@ Downloads metadata if not available
 }
 \examples{
 data("l1000metadata")
-# l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+# l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 }

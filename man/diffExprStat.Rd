@@ -16,7 +16,7 @@ ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 table(ENCODEmetadata$`Experiment target`)
 length(unique(ENCODEmetadata$`Experiment target`))
 
-ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 counts <- prepareENCODEgeneExpression(ENCODEsamples)
 
 # Remove low coverage (at least 10 counts shared across two samples)

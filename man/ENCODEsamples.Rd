@@ -13,8 +13,8 @@ cellLine <- "HepG2"
 gene <- "EIF4G1"
 ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 
-# Download samples based on filtered ENCODE metadata
-ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+# Load samples based on filtered ENCODE metadata
+ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 
 # Get small subset of whole dataset
 filter <- ENCODEsamples[[1]]$expected_count > 0

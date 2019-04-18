@@ -17,13 +17,13 @@ Load an ENCODE gene expression data
 }
 \examples{
 data("ENCODEsamples")
-## Download ENCODE metadata for a specific cell line and gene
+## Load ENCODE metadata for a specific cell line and gene
 # cellLine <- "HepG2"
 # gene <- "EIF4G1"
-# ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+# ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 
-## Download samples based on filtered ENCODE metadata
-# ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+## Load samples based on filtered ENCODE metadata
+# ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 
 prepareENCODEgeneExpression(ENCODEsamples)
 }

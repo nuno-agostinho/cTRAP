@@ -112,8 +112,8 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 
 #' Load ENCODE samples
 #'
-#' Samples are automatically downloaded and loaded if they are not found in the
-#' current workspace.
+#' Samples are first downloaded automatically if they are not found in the
+#' current working directory.
 #'
 #' @param metadata Character: ENCODE metadata
 #'
@@ -122,15 +122,15 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #'
 #' @examples
 #' if (interactive()) {
-#'   # Download ENCODE metadata for a specific cell line and gene
+#'   # Load ENCODE metadata for a specific cell line and gene
 #'   cellLine <- "HepG2"
 #'   gene <- "EIF4G1"
 #'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#'   # Download samples based on filtered ENCODE metadata
-#'   ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'   # Load samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 #' }
-downloadENCODEsamples <- function(metadata) {
+loadENCODEsamples <- function(metadata) {
     list(rep1=loadENCODEsample(metadata, replicate=1),
          rep2=loadENCODEsample(metadata, replicate=2),
          control1=loadENCODEsample(metadata, replicate=1, control=TRUE),
@@ -146,13 +146,13 @@ downloadENCODEsamples <- function(metadata) {
 #'
 #' @examples
 #' data("ENCODEsamples")
-#' ## Download ENCODE metadata for a specific cell line and gene
+#' ## Load ENCODE metadata for a specific cell line and gene
 #' # cellLine <- "HepG2"
 #' # gene <- "EIF4G1"
-#' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' # ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' ## Download samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' ## Load samples based on filtered ENCODE metadata
+#' # ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
 #'
 #' prepareENCODEgeneExpression(ENCODEsamples)
 prepareENCODEgeneExpression <- function(samples) {

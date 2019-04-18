@@ -20,46 +20,44 @@
 #' @export
 #'
 #' @examples
-#' # Download L1000 metadata
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' # Load L1000 metadata (data is automatically downloaded if not available)
+#' l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #'
-#' # Download L1000 gene info
-#' downloadL1000data("l1000geneInfo.txt", "geneInfo")
+#' # Load L1000 gene info
+#' loadL1000data("l1000geneInfo.txt", "geneInfo")
 #'
-#' # Download L1000 zscores based on filtered metadata
+#' # Load L1000 zscores based on filtered metadata
 #' l1000metadataKnockdown <- filterL1000metadata(
 #'   l1000metadata, cellLine="HepG2",
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #'
 #' if (interactive()) {
-#'     downloadL1000data("l1000zscores.gctx.gz", "zscores",
-#'                       l1000metadataKnockdown$sig_id)
+#'   loadL1000data("l1000zscores.gctx.gz", "zscores",
+#'                 l1000metadataKnockdown$sig_id)
 #' }
-downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
-                                           "compoundInfo"),
-                              zscoresId=NULL) {
+loadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
+                                       "compoundInfo"),
+                          zscoresId=NULL) {
     type <- match.arg(type)
     nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666")
     if (type == "metadata") {
-        downloadIfNeeded(file, paste0(
+        link <- paste0(
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-            "format=file&",
-            "file=GSE92742_Broad_LINCS_sig_info.txt.gz"))
-        message("Loading L1000 metadata...")
+            "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
+        downloadIfNeeded(file, link)
         data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "geneInfo") {
-        downloadIfNeeded(
-            file,
-            paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-                   "format=file&",
-                   "file=GSE92742_Broad_LINCS_gene_info.txt.gz"))
+        link <- paste0(
+            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+            "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
+        downloadIfNeeded(file, link)
         data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "zscores") {
-        downloadIfNeeded(
-            file, paste0(
-                "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-                "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
-                "MODZ_n473647x12328.gctx.gz"))
+        link <- paste0(
+            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+            "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
+            "MODZ_n473647x12328.gctx.gz")
+        downloadIfNeeded(file, link)
         data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
                     set_annot_rownames=FALSE, matrix_only=FALSE)@mat
     } else if (type == "compoundInfo") {
@@ -77,20 +75,20 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
         }
 
         # Process drug data
-        downloadIfNeeded(
-            file[["drugs"]], paste0(
-                "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
-                "repurposing_drugs_20180907.txt"))
+        link <- paste0(
+            "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
+            "repurposing_drugs_20180907.txt")
+        downloadIfNeeded(file[["drugs"]], link)
 
         # Replace separation symbols for targets
         drugData <- readAfterComments(file[["drugs"]])
         drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
 
         # Process perturbation data
-        downloadIfNeeded(
-            file[["samples"]], paste0(
-                "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
-                "repurposing_samples_20180907.txt"))
+        link <- paste0(
+            "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
+            "repurposing_samples_20180907.txt")
+        downloadIfNeeded(file[["samples"]], link)
         pertData <- readAfterComments(file[["samples"]])
         pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
                                   "InChIKey", "pubchem_cid")]
@@ -112,7 +110,7 @@ downloadL1000data <- function(file, type=c("metadata", "geneInfo", "zscores",
 #'
 #' @examples
 #' data("l1000metadata")
-#' # l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' # l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 getL1000conditions <- function(metadata, cellLine=NULL, timepoint=NULL,
                                dosage=NULL, perturbationType=NULL,
                                control=FALSE) {
@@ -397,7 +395,7 @@ compareAgainstL1000 <- function(diffExprGenes, perturbations,
 #' @export
 #' @examples
 #' data("l1000metadata")
-#' # l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#' # l1000metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #' filterL1000metadata(l1000metadata, cellLine="HEPG2", timepoint="2 h",
 #'                     dosage="25 ng/mL")
 filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
@@ -433,11 +431,11 @@ filterL1000metadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @export
 #' @examples
 #' if (interactive()) {
-#'   metadata <- downloadL1000data("l1000metadata.txt", "metadata")
+#'   metadata <- loadL1000data("l1000metadata.txt", "metadata")
 #'   metadata <- filterL1000metadata(metadata, cellLine="HepG2")
-#'   zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
+#'   zscores  <- loadL1000data("l1000zscores.gctx", "zscores",
 #'                                 metadata$sig_id)
-#'   geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
+#'   geneInfo <- loadL1000data("l1000geneInfo.txt", "geneInfo")
 #'   loadL1000perturbations(metadata, zscores, geneInfo)
 #' }
 loadL1000perturbations <- function(metadata, zscores, geneInfo) {
