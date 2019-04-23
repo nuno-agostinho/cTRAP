@@ -4,14 +4,18 @@
 \alias{loadCMapPerturbations}
 \title{Load CMap perturbation data}
 \usage{
-loadCMapPerturbations(metadata, zscores, geneInfo)
+loadCMapPerturbations(metadata, zscores, geneInfo, compoundInfo)
 }
 \arguments{
-\item{metadata}{Data frame: CMap Metadata}
+\item{metadata}{Data frame (CMap metadata) or character (respective filepath)}
 
-\item{zscores}{Data frame: GCTX z-scores}
+\item{zscores}{Data frame (GCTX z-scores) or character (respective filepath)}
 
-\item{geneInfo}{Data frame: CMap gene info}
+\item{geneInfo}{Data frame (CMap gene info) or character (respective
+filepath)}
+
+\item{compoundInfo}{Data frame (CMap compound info) or character (respective
+filepath)}
 }
 \value{
 Perturbation data from CMap as a data table

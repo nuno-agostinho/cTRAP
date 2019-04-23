@@ -15,8 +15,10 @@ dataset and function names:
     - Rename `downloadENCODEsamples()` to `loadENCODEsamples()`
     - Allow to load multiple cell lines and genes from ENCODE using 
     `loadENCODEsamples()`
-* Integrate compound metadata from CMap:
-    - Allow to download CMap compound metadata using `loadCMapData()`
+* Improve metadata integration from CMap:
+    - Allow to load CMap's compound metadata using `loadCMapData()`
+    - Allow to load CMap metadata using filepath arguments for the arguments of
+    `loadCMapPerturbations`
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):
     - Correctly set name of perturbagens depending on the perturbation type
     (genes, biological agents or compounds)

@@ -383,7 +383,7 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
 
 #' Filter CMap metadata
 #'
-#' @param metadata Data frame: metadata
+#' @param metadata Data frame (CMap metadata) or character (respective filepath)
 #' @param cellLine Character: cell line (if \code{NULL}, all values are loaded)
 #' @param timepoint Character: timepoint (if \code{NULL}, all values are loaded)
 #' @param dosage Character: dosage (if \code{NULL}, all values are loaded)
@@ -400,6 +400,8 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
 #'                    dosage="25 ng/mL")
 filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
                                dosage=NULL, perturbationType=NULL) {
+    if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
+
     if (!is.null(cellLine))
         metadata <- metadata[tolower(metadata$cell_id) %in% tolower(cellLine), ]
 
@@ -420,9 +422,12 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 
 #' Load CMap perturbation data
 #'
-#' @param metadata Data frame: CMap Metadata
-#' @param zscores Data frame: GCTX z-scores
-#' @param geneInfo Data frame: CMap gene info
+#' @param metadata Data frame (CMap metadata) or character (respective filepath)
+#' @param zscores Data frame (GCTX z-scores) or character (respective filepath)
+#' @param geneInfo Data frame (CMap gene info) or character (respective
+#'   filepath)
+#' @param compoundInfo Data frame (CMap compound info) or character (respective
+#'   filepath)
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -437,10 +442,21 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   geneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 #'   loadCMapPerturbations(metadata, zscores, geneInfo)
 #' }
-loadCMapPerturbations <- function(metadata, zscores, geneInfo) {
+loadCMapPerturbations <- function(metadata, zscores, geneInfo, compoundInfo) {
+    if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
+    if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
+    if (is.character(zscores)) {
+        zscores <- loadCMapData(zscores, "zscores", metadata$sig_id)
+    }
+    if (is.character(compoundInfo)) {
+        compoundInfo <- loadCMapData(compoundInfo, "compoundInfo")
+    }
+
     rownames(zscores) <- geneInfo$pr_gene_symbol[
         match(rownames(zscores), geneInfo$pr_gene_id)]
     attr(zscores, "metadata") <- metadata
+    attr(zscores, "geneInfo") <- geneInfo
+    attr(zscores, "compoundInfo") <- compoundInfo
     class(zscores) <- c("cmapPerturbations", class(zscores))
     return(zscores)
 }

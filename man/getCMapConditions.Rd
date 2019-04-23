@@ -8,7 +8,7 @@ getCMapConditions(metadata, cellLine = NULL, timepoint = NULL,
   dosage = NULL, perturbationType = NULL, control = FALSE)
 }
 \arguments{
-\item{metadata}{Data frame: metadata}
+\item{metadata}{Data frame (CMap metadata) or character (respective filepath)}
 
 \item{cellLine}{Character: cell line (if \code{NULL}, all values are loaded)}
 
