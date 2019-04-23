@@ -53,7 +53,7 @@ NULL
 #' table(ENCODEmetadata$`Experiment target`)
 #' length(unique(ENCODEmetadata$`Experiment target`))
 #'
-#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -82,7 +82,7 @@ NULL
 #' table(ENCODEmetadata$`Experiment target`)
 #' length(unique(ENCODEmetadata$`Experiment target`))
 #'
-#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -186,7 +186,7 @@ NULL
 #' following code:
 #'
 #' \preformatted{
-#' cellLine <- "HepG2"
+#' cellLine <- c("HepG2", "HUH7")
 #' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' cmapMetadataSmallMolecules <- filterCMapMetadata(
 #'     cmapMetadata, cellLine=cellLine, timepoint="24 h",
@@ -217,7 +217,7 @@ NULL
 #' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
 #' # Load samples based on filtered ENCODE metadata
-#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #'
 #' # Get small subset of whole dataset
 #' filter <- ENCODEsamples[[1]]$expected_count > 0

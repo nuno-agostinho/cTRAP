@@ -104,9 +104,9 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     sample <- paste0(sample)
 
     outfile <- paste0(sample, ".tsv")
-    downloadIfNeeded(outfile, sprintf(
-        "https://www.encodeproject.org/files/%s/@@download/%s.tsv",
-        sample, sample), gz=FALSE)
+    link <- sprintf("https://www.encodeproject.org/files/%s/@@download/%s.tsv",
+                    sample, sample)
+    downloadIfNeeded(outfile, link, gz=FALSE)
     fread(outfile)
 }
 
@@ -117,6 +117,8 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #'
 #' @param metadata Character: ENCODE metadata
 #'
+#' @importFrom pbapply pblapply
+#'
 #' @return List of loaded ENCODE samples
 #' @export
 #'
@@ -124,17 +126,32 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #' if (interactive()) {
 #'   # Load ENCODE metadata for a specific cell line and gene
 #'   cellLine <- "HepG2"
-#'   gene <- "EIF4G1"
+#'   gene <- c("EIF4G1", "U2AF2")
 #'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
 #'   # Load samples based on filtered ENCODE metadata
-#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+#'   loadENCODEsamples(ENCODEmetadata)
 #' }
 loadENCODEsamples <- function(metadata) {
-    list(rep1=loadENCODEsample(metadata, replicate=1),
-         rep2=loadENCODEsample(metadata, replicate=2),
-         control1=loadENCODEsample(metadata, replicate=1, control=TRUE),
-         control2=loadENCODEsample(metadata, replicate=2, control=TRUE))
+    loadENCODEsamplePerGene <- function(metadata) {
+        gene <- list()
+        reps <- as.numeric(metadata$`Biological replicate(s)`)
+        for (rep in reps) {
+            sample  <- loadENCODEsample(metadata, replicate=rep)
+            control <- loadENCODEsample(metadata, replicate=rep, control=TRUE)
+            gene <- c(gene, rep=list(sample), control=list(control))
+        }
+        names(gene) <- paste0(names(gene), rep(reps, each=max(reps)))
+        return(gene)
+    }
+
+    metadataPerGene <- split(metadata,
+                             sprintf("%s_%s_%s",
+                                     metadata$`Biosample term name`,
+                                     metadata$`Experiment target`,
+                                     metadata$`Experiment accession`))
+    res <- pblapply(metadataPerGene, loadENCODEsamplePerGene)
+    return(res)
 }
 
 #' Load an ENCODE gene expression data
@@ -152,7 +169,7 @@ loadENCODEsamples <- function(metadata) {
 #' # ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 #'
 #' ## Load samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+#' # ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #'
 #' prepareENCODEgeneExpression(ENCODEsamples)
 prepareENCODEgeneExpression <- function(samples) {

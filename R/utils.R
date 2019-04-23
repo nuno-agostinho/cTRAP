@@ -18,7 +18,7 @@
 #' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
 #' ## Download samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' # ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #'
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'

@@ -11,7 +11,10 @@ dataset and function names:
     - `loadL1000perturbations()`    -> `loadCMapPerturbations()`
     - `compareAgainstL1000()`       -> `compareAgainstCMap()`
     - `plotL1000comparison()`       -> `plot()`
-* Rename `downloadENCODEsamples()` to `loadENCODEsamples()`
+* Improve loading of ENCODE samples:
+    - Rename `downloadENCODEsamples()` to `loadENCODEsamples()`
+    - Allow to load multiple cell lines and genes from ENCODE using 
+    `loadENCODEsamples()`
 * Integrate compound metadata from CMap:
     - Allow to download CMap compound metadata using `loadCMapData()`
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):

@@ -23,7 +23,7 @@ data("ENCODEsamples")
 # ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 
 ## Load samples based on filtered ENCODE metadata
-# ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+# ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 
 prepareENCODEgeneExpression(ENCODEsamples)
 }

@@ -9,7 +9,7 @@ CMap perturbations sample for small molecules obtained by running the
 following code:
 
 \preformatted{
-cellLine <- "HepG2"
+cellLine <- c("HepG2", "HUH7")
 cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 cmapMetadataSmallMolecules <- filterCMapMetadata(
     cmapMetadata, cellLine=cellLine, timepoint="24 h",

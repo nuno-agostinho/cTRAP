@@ -20,10 +20,10 @@ current working directory.
 if (interactive()) {
   # Load ENCODE metadata for a specific cell line and gene
   cellLine <- "HepG2"
-  gene <- "EIF4G1"
+  gene <- c("EIF4G1", "U2AF2")
   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 
   # Load samples based on filtered ENCODE metadata
-  ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)
+  loadENCODEsamples(ENCODEmetadata)
 }
 }
