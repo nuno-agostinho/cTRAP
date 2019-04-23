@@ -13,6 +13,6 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 cmap*.txt
-*.gctx
+*.gctx*
 ENC*.tsv
 tests/testthat/Rplots.pdf
