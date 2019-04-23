@@ -115,7 +115,7 @@ collapseDuplicatedRows <- function(df, column) {
 
 # cmapPerturbations object -----------------------------------------------------
 
-#' Subset an \code{cmapPerturbations} object
+#' Subset a \code{cmapPerturbations} object
 #'
 #' @param x \code{cmapPerturbations} object
 #' @param ... Extra parameters passed to \code{`[`}
@@ -123,19 +123,18 @@ collapseDuplicatedRows <- function(df, column) {
 #' @return \code{cmapPerturbations} object with subset data
 #' @export
 `[.cmapPerturbations` <- function(x, ...) {
-    out <- unclass(x)
-    out <- `[`(out, ..., drop=FALSE)
+    out <- NextMethod("[", drop=FALSE)
 
-    # Inherit the same attributes
+    # Inherit input's attributes
     attrs <- attributes(x)
     attrs$dim <- NULL
     attrs$dimnames <- NULL
     attrs$names <- NULL
 
-    # Trim metadata to contain subset information
+    # Trim metadata to only contain subset information
     if (ncol(x) != ncol(out) && !is.null(attrs$metadata)) {
         samples <- attrs$metadata$sig_id %in% colnames(out)
-        attrs$metadata <- attrs$metadata[samples, ]
+        attrs$metadata <- attrs$metadata[samples, , drop=FALSE]
     }
     attributes(out) <- c(attributes(out), attrs)
     return(out)
@@ -143,14 +142,12 @@ collapseDuplicatedRows <- function(df, column) {
 
 #' @inherit base::as.data.frame
 #' @export
-as.data.frame.cmapPerturbations <- function(x, ...) {
-    as.data.frame(unclass(x), ...)
-}
+as.data.frame.cmapPerturbations <- function(x, ...) NextMethod("as.data.frame")
 
 #' @inherit utils::head
 #' @export
-head.cmapPerturbations <- function(x, ...) head(unclass(x), ...)
+head.cmapPerturbations <- function(x, ...) NextMethod("head")
 
 #' @inherit utils::tail
 #' @export
-tail.cmapPerturbations <- function(x, ...) tail(unclass(x), ...)
+tail.cmapPerturbations <- function(x, ...) NextMethod("tail", ...)
