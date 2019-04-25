@@ -115,14 +115,14 @@ z-score normalised values (see [Subramanian et al., Cell 2017][subramanian2017]
 for more details).
 
 ```{r CMap metadata conditions}
-# Summarise available conditions for CMap perturbations
-cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+# Summarise conditions for all CMap perturbations
+cmapMetadata <- loadCMapData("cmapMetadata.txt")
 getCMapConditions(cmapMetadata)
 
-# Summarise available conditions for HepG2 cell line
+# Summarise conditions for HepG2 cell line
 getCMapConditions(cmapMetadata, cellLine="HepG2")
 
-# Summarise available conditions for HepG2 cell line and a specific perturbation
+# Summarise conditions for HepG2 cell line and a specific perturbation
 getCMapConditions(
     cmapMetadata, cellLine="HepG2", 
     perturbationType="Consensus signature from shRNAs targeting the same gene")

@@ -39,13 +39,18 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
                                       "compoundInfo"),
                          zscoresId=NULL) {
     type <- match.arg(type)
-    nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666")
+    nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666",
+              "-666.000000", "-666.0|-666.000000")
     if (type == "metadata") {
         link <- paste0(
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
             "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
         downloadIfNeeded(file, link)
         data <- fread(file, sep="\t", na.strings=nas)
+
+        data$pert_dose[data$pert_dose == "300.0|300.000000"] <- 300
+        data$pert_dose <- as.numeric(data$pert_dose)
+        data$pert_idose[data$pert_idose == "300 ng|300 ng"] <- "300 ng"
     } else if (type == "geneInfo") {
         link <- paste0(
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
@@ -111,23 +116,33 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
 #' @examples
 #' data("cmapMetadata")
 #' # cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#' getCMapConditions(cmapMetadata)
 getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
                               dosage=NULL, perturbationType=NULL,
                               control=FALSE) {
     metadata <- filterCMapMetadata(metadata, cellLine=cellLine,
                                    timepoint=timepoint, dosage=dosage,
                                    perturbationType=perturbationType)
-    pertTypes <- getCMapPerturbationTypes()
+    pertTypes <- getCMapPerturbationTypes(control=control)
     pertTypes <- names(pertTypes)[pertTypes %in% unique(metadata$pert_type)]
-    if (!control) {
-        pertTypes <- grep("Control", pertTypes, value=TRUE, invert=TRUE,
-                          fixed=TRUE)
-    }
 
-    list("Perturbation type"=pertTypes,
-         "Cell line"=unique(metadata$cell_id),
-         "Dosage"=unique(metadata$pert_idose),
-         "Time points"=unique(metadata$pert_itime))
+    # Order categories of value with units
+    sortNumericUnitChar <- function(data, levels=NULL) {
+        uniq   <- unique(na.omit(data))
+        values <- as.numeric(sapply(strsplit(na.omit(uniq), " "), "[[", 1))
+        units  <- sapply(strsplit(na.omit(uniq), " "), "[[", 2)
+        units  <- factor(units, levels=unique(c(levels, unique(units))))
+        sorted <- c(if (any(is.na(data))) NA, uniq[order(units, values)])
+        return(sorted)
+    }
+    dose <- sortNumericUnitChar(
+        metadata$pert_idose, c("%", "nM", "µM", "µL", "ng", "ng/µL", "ng/mL"))
+    timepoint <- sortNumericUnitChar(metadata$pert_itime)
+
+    list("perturbationType"=pertTypes,
+         "cellLine"=sort(unique(metadata$cell_id)),
+         "dosage"=dose,
+         "timepoint"=timepoint)
 }
 
 #' Correlate differential expression scores per cell line
@@ -463,24 +478,39 @@ loadCMapPerturbations <- function(metadata, zscores, geneInfo, compoundInfo) {
 
 #' Get perturbation types
 #'
+#' @param controls Boolean: return perturbation types used as control?
+#'
 #' @return Perturbation types and respective codes as used by CMap datasets
 #' @export
 #'
 #' @examples
 #' getCMapPerturbationTypes()
-getCMapPerturbationTypes <- function () {
-    c("Compound"="trt_cp",
+getCMapPerturbationTypes <- function (control=FALSE) {
+    perts <- c("Compound"="trt_cp",
       "Peptides and other biological agents (e.g. cytokine)"="trt_lig",
       "shRNA for loss of function (LoF) of gene"="trt_sh",
       "Consensus signature from shRNAs targeting the same gene"="trt_sh.cgs",
       "cDNA for overexpression of wild-type gene"="trt_oe",
       "cDNA for overexpression of mutated gene"="trt_oe.mut",
-      "CRISPR for LLoF"="trt_xpr",
-      "Controls - vehicle for compound treatment (e.g DMSO)"="ctl_vehicle",
-      "Controls - vector for genetic perturbation (e.g empty vector, GFP)"="ctl_vector",
-      "Controls - consensus signature from shRNAs that share a common seed sequence"="trt_sh.css",
-      "Controls - consensus signature of vehicles"="ctl_vehicle.cns",
-      "Controls - consensus signature of vectors"="ctl_vector.cns",
-      "Controls - consensus signature of many untreated wells"="ctl_untrt.cns",
-      "Controls - Untreated cells"="ctl_untrt")
+      "CRISPR for LLoF"="trt_xpr")
+
+    if (control) {
+        controlPerts <- c("ctl_vehicle", "ctl_vector", "trt_sh.css",
+                          "ctl_vehicle.cns", "ctl_vector.cns", "ctl_untrt.cns",
+                          "ctl_untrt")
+        controlPerts <- c(
+            "vehicle for compound treatment (e.g DMSO)",
+            "vector for genetic perturbation (e.g empty vector, GFP)",
+            "consensus signature from shRNAs that share a common seed sequence",
+            "consensus signature of vehicles",
+            "consensus signature of vectors",
+            "consensus signature of many untreated wells",
+            "Untreated cells")
+        names(controlPerts) <- paste("Controls -", names(controlPerts))
+
+        res <- c(perts, controlPerts)
+    } else {
+        res <- perts
+    }
+    return(res)
 }

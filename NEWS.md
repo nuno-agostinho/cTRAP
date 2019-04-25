@@ -1,4 +1,4 @@
-# 1.0.3 (18 April, 2019)
+# 1.0.3 (29 April, 2019)
 
 * Update and copy-edit the tutorial and function documentation
 * Improve performance when subsetting `cmapPerturbations` objects
@@ -15,10 +15,17 @@ dataset and function names:
     - Rename `downloadENCODEsamples()` to `loadENCODEsamples()`
     - Allow to load multiple cell lines and genes from ENCODE using 
     `loadENCODEsamples()`
-* Improve metadata integration from CMap:
+* Improve CMap metadata retrieval:
     - Allow to load CMap's compound metadata using `loadCMapData()`
     - Allow to load CMap metadata using filepath arguments for the arguments of
     `loadCMapPerturbations`
+    - By default, do not return control pertubation types when using
+    `getCMapPerturbationTypes()` (return with argument `control=TRUE`)
+    - Show further metadata information (including compound data, if available) 
+    related with a given perturbation by calling `print()` with a
+    `cmapComparison` object and a specific pertubation
+    - Show a complete table with metadata and compound information (if 
+    available) when calling `as.table()` with a `cmapComparison` object
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):
     - Correctly set name of perturbagens depending on the perturbation type
     (genes, biological agents or compounds)
@@ -40,11 +47,19 @@ dataset and function names:
     render results for both top and bottom genes 79by default
     - Improve rendering performance of the GSEA plot
     - Plot comparison results against all perturbations
+
+## Bug fixes and minor changes
+
+* CMap metadata improvements:
+    - Improve list returned by `getCMapConditions()`, including sorting of dose 
+    and time points
+    - Correctly set instances of `-666` in CMap metadata as missing values and 
+    fix specific issues with metadata (such as doses displayed as
+    `300 ng|300 ng`)
 * Update demo datasets:
     - Update the `cmapPerturbationsSmallMolecules` and 
     `cmapPerturbationsKnockdown` datasets according to new internal changes and
     fix their respective code in the documentation
-* Replace instances of -666 in CMap data to show up as missing values
 * Include copyright text and full license for source code distributed from cmapR
 * Fix error when subsetting a `cmapPerturbations` object with only one row
 

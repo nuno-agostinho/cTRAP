@@ -132,7 +132,8 @@ collapseDuplicatedRows <- function(df, column) {
     attrs$names <- NULL
 
     # Trim metadata to only contain subset information
-    if (ncol(x) != ncol(out) && !is.null(attrs$metadata)) {
+    if (!is.null(ncol(out)) && ncol(x) != ncol(out) &&
+        !is.null(attrs$metadata)) {
         samples <- attrs$metadata$sig_id %in% colnames(out)
         attrs$metadata <- attrs$metadata[samples, , drop=FALSE]
     }
@@ -151,3 +152,87 @@ head.cmapPerturbations <- function(x, ...) NextMethod("head")
 #' @inherit utils::tail
 #' @export
 tail.cmapPerturbations <- function(x, ...) NextMethod("tail", ...)
+
+# cmapComparison object --------------------------------------------------------
+
+#' Print a \code{cmapComparison} object
+#'
+#' @param x \code{cmapComparison} object
+#' @param perturbation Character (perturbation identifier) or numeric
+#'   (perturbation index)
+#' @param ... Extra parameters passed to \code{print}
+#'
+#' @return Information on \code{cmapPerturbations} object or on specific
+#'   perturbations (if \code{perturbation} is set)
+print.cmapComparison <- function(x, perturbation=NULL, ...) {
+    if (is.null(perturbation)) {
+        NextMethod("print")
+    } else {
+        if (is.numeric(perturbation)) perturbation <- x[[1]][perturbation]
+
+        metadata <- attr(x, "metadata")
+        if (!is.null(metadata)) {
+            selectMetadata <- metadata[metadata$sig_id %in% perturbation]
+            if (nrow(selectMetadata) == 0) {
+                # Check to see if using identifiers referring to summary stats
+                summaryID <- gsub("\\_[A-Z].*\\_", "\\_", metadata$sig_id)
+                selectMetadata <- metadata[summaryID %in% perturbation]
+            }
+        }
+
+        compoundInfo <- attr(x, "compoundInfo")
+        if (!is.null(compoundInfo)) {
+            compound <- selectMetadata$pert_iname
+            selectCompounds <- compoundInfo[
+                compoundInfo$pert_iname %in% compound]
+            res <- list(metadata=selectMetadata, compoundInfo=selectCompounds)
+        } else {
+            selectCompounds <- NULL
+            res <- list(metadata=selectMetadata)
+        }
+        return(res)
+    }
+}
+
+#' Cross Tabulation and Table Creation
+#'
+#' @param x \code{cmapComparison} object
+#' @param ... Extra parameters passed to \code{table}
+#' @param clean Boolean: only show certain columns (to avoid redundancy)?
+#'
+#' @return Complete table with metadata based on a \code{cmapComparison} object
+as.table.cmapComparison <- function(x, ..., clean=TRUE) {
+    metadata <- attr(x, "metadata")
+    if (!is.null(metadata)) {
+        nonCellID <- "non_cell_id"
+
+        summaryID <- gsub("\\_[A-Z].*\\_", "\\_", metadata$sig_id)
+        metadata[[nonCellID]] <- summaryID
+        metadataSubset <- metadata[unique(match(summaryID, summaryID)), ]
+        metadataSubset[ , c("cell_id", "sig_id", "distil_id")] <- NULL
+
+        x[[nonCellID]] <- gsub("\\_[A-Z].*\\_", "\\_", x[[1]])
+        res <- merge(x, metadataSubset, all.x=TRUE, by=nonCellID)
+        res[[nonCellID]] <- NULL
+
+        compoundInfo <- attr(x, "compoundInfo")
+        if (!is.null(compoundInfo)) {
+            res <- merge(res, compoundInfo, by="pert_iname", all.x=TRUE)
+            # Place "pert_iname" column after "pert_id" one
+            m <- match("pert_id", colnames(res))
+            res <- res[ , c(2:m, 1, (m+1):(ncol(res))), with=FALSE]
+        }
+    } else {
+        res <- x
+    }
+
+    if (clean) {
+        hideCols <- c(colnames(res)[endsWith(colnames(res), "value") |
+                                        endsWith(colnames(res), "value_rank")],
+                      "pert_dose", "pert_dose_unit",
+                      "pert_time", "pert_time_unit")
+        hideCols <- hideCols[hideCols %in% colnames(res)]
+        if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
+    }
+
+    return(res)
