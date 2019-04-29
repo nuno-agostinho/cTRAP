@@ -30,8 +30,7 @@ test_that("Perturbation types are retrievable", {
 })
 
 test_that("Compare using Spearman correlation", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
-                                method="spearman")
+    data <- compareAgainstCMap(diffExprStat, perturbations, method="spearman")
     expect_is(data, "cmapComparison")
     expect_identical(colnames(data), c(
         "compounds", "HepG2_spearman_coef", "HepG2_spearman_pvalue",
@@ -55,8 +54,7 @@ test_that("Compare using Spearman correlation", {
 })
 
 test_that("Compare using Pearson correlation", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
-                                method="pearson")
+    data <- compareAgainstCMap(diffExprStat, perturbations, method="pearson")
     expect_is(data, "cmapComparison")
     expect_identical(colnames(data), c(
         "compounds", "HepG2_pearson_coef", "HepG2_pearson_pvalue",
@@ -80,8 +78,7 @@ test_that("Compare using Pearson correlation", {
 })
 
 test_that("Compare using GSEA", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, cellLine,
-                                method="gsea")
+    data <- compareAgainstCMap(diffExprStat, perturbations, method="gsea")
     expect_is(data, "cmapComparison")
     expect_identical(colnames(data),
                      c("compounds", "HepG2_WTCS", "Average_WTCS"))

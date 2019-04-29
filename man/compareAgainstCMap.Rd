@@ -2,11 +2,11 @@
 % Please edit documentation in R/CMap.R
 \name{compareAgainstCMap}
 \alias{compareAgainstCMap}
-\title{Compare against CMap datasets}
+\title{Compare differential expression results against CMap perturbations}
 \usage{
 compareAgainstCMap(diffExprGenes, perturbations, method = c("spearman",
-  "pearson", "gsea"), geneSize = 150, pAdjustMethod = "BH",
-  cellLineMean = "auto")
+  "pearson", "gsea"), geneSize = 150, cellLineMean = "auto",
+  rankPerturbationsByCellLine = FALSE)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -14,24 +14,22 @@ where the name of the vector are gene names and the values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
-\item{perturbations}{\code{cmapPerturbations} object: file with CMap loaded
-perturbations (check \code{\link{loadCMapPerturbations}})}
+\item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
+(check \code{\link{loadCMapPerturbations}})}
 
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
-or \code{gsea})}
+or \code{gsea}; multiple methods may be selected at once)}
 
-\item{geneSize}{Number: top and bottom differentially expressed genes to use
-for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})}
+\item{geneSize}{Number: top and bottom number of differentially expressed
+genes to use for gene set enrichment (GSE) (only used if
+\code{method = gsea})}
 
-\item{pAdjustMethod}{Character: method for p-value adjustment (for more
-details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
-\code{spearman} or \code{pearson})}
+\item{cellLineMean}{Boolean: add a column with the mean score across cell
+lines? If \code{cellLineMean = "auto"} (default) the mean score will be
+added if more than one cell line is available}
 
-\item{cellLineMean}{Boolean: add a column with the mean across cell lines? If
-\code{"auto"} (default) the mean will be added if more than one cell line is
-available}
-
-\item{cellLine}{Character: cell line(s)}
+\item{rankPerturbationsByCellLine}{Boolean: when ranking, also rank
+perturbations regarding individual cell lines}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
@@ -43,26 +41,20 @@ Weighted connectivity scores (WTCS) are calculated when \code{method} is
 \url{https://clue.io/connectopedia/cmap_algorithms}.
 }
 \details{
-Order results according to the correlation coefficient (if
+Order results according to the mean correlation coefficient (if
 \code{method} is \code{spearman} or \code{pearson}) or the weighted
-connectivity score (WTCS) score (if \code{method} is \code{gsea}) of the mean
-across cell lines (if \code{cellLineMean} is \code{TRUE}; otherwise results
-are ordered based on the first cell line alone).
+connectivity score (WTCS) score (if \code{method} is \code{gsea}) across cell
+lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
+based on the first cell line alone).
 }
 \examples{
-cellLine <- "HepG2"
 data("cmapPerturbationsSmallMolecules")
 perturbations <- cmapPerturbationsSmallMolecules
 data("diffExprStat")
 
-# Compare against CMap using Spearman correlation
-compareAgainstCMap(diffExprStat, perturbations, cellLine,
-                   method="spearman")
+# Compare differential expression results against CMap perturbations
+compareAgainstCMap(diffExprStat, perturbations)
 
-# Compare against CMap using Pearson correlation
-compareAgainstCMap(diffExprStat, perturbations, cellLine,
-                   method="pearson")
-
-# Compare against CMap using gene set enrichment analysis (GSEA)
-compareAgainstCMap(diffExprStat, perturbations, cellLine, method="gsea")
+# Compare using only Spearman's correlation
+compareAgainstCMap(diffExprStat, perturbations, method="spearman")
 }

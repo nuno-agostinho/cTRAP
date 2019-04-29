@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{[.cmapPerturbations}
 \alias{[.cmapPerturbations}
-\title{Subset an \code{cmapPerturbations} object}
+\title{Subset a \code{cmapPerturbations} object}
 \usage{
 \method{[}{cmapPerturbations}(x, ...)
 }
@@ -15,5 +15,5 @@
 \code{cmapPerturbations} object with subset data
 }
 \description{
-Subset an \code{cmapPerturbations} object
+Subset a \code{cmapPerturbations} object
 }

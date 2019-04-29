@@ -27,24 +27,15 @@ dataset and function names:
     - Show a complete table with metadata and compound information (if 
     available) when calling `as.table()` with a `cmapComparison` object
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):
-    - Correctly set name of perturbagens depending on the perturbation type
-    (genes, biological agents or compounds)
-    - Improve performance when correlating against multiple cell lines
-    - Remove `cellLine` argument
+    - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
-    cell line available; mean calculation can now also be avoided if the 
-    argument `cellLineMean = FALSE`
-    - Automatically order results based on the correlation coefficient (for 
-    Spearman's and Pearson's correlation) or the weighted connectivity score 
-    (WTCS) score (for Gene Set Enrichment Analysis) using the mean across cell
-    lines or the results for the first cell line alone
-    - Improve comparison performance when testing for correlation
-    - Fix incorrect label of identifiers
-    - Report run time and settings used
-* Improve plotting of L1000 comparisons (`plot`):
+    cell line available; disabled if argument `cellLineMean = FALSE`
+    - Allow to perform multiple comparison methods if desired (by providing a 
+    vector of supported methods via the `method` argument)
+* Improve plotting of CMap comparisons (`plot()`):
     - Allow to call `plot()` with a `cmapComparison` object
     - When displaying Gene Set Enrichment Analysis (GSEA) plots, automatically
-    render results for both top and bottom genes 79by default
+    render results for both top and bottom genes by default
     - Improve rendering performance of the GSEA plot
     - Plot comparison results against all perturbations
 
@@ -56,12 +47,22 @@ dataset and function names:
     - Correctly set instances of `-666` in CMap metadata as missing values and 
     fix specific issues with metadata (such as doses displayed as
     `300 ng|300 ng`)
+* CMap perturbation minor improvements:
+    - Fix error when subsetting a `cmapPerturbations` object with only one row
+    - Improve performance when subsetting `cmapPerturbations` objects
+* Minor improvements to `compareAgainstCMap()`:
+    - Correctly set name of perturbagens depending on the perturbation type
+    (genes, biological agents or compounds)
+    - Improve performance when correlating against multiple cell lines
+    - Remove `cellLine` argument (please filter conditions with upstream
+    functions such as `filterCMapMetadata`)
+    - Fix incorrect label of identifiers
+    - Report run time and settings used
 * Update demo datasets:
     - Update the `cmapPerturbationsSmallMolecules` and 
     `cmapPerturbationsKnockdown` datasets according to new internal changes and
     fix their respective code in the documentation
-* Include copyright text and full license for source code distributed from cmapR
-* Fix error when subsetting a `cmapPerturbations` object with only one row
+* Include license and copyright text for cmapR code
 
 # 1.0.2 (11 November, 2018)
 

@@ -129,16 +129,15 @@ getCMapConditions(
 ```
 
 ```{r CMap knockdown perturbations, eval=FALSE}
-# Code for loading CMap gene KD HepG2 data
-cmapMetadataKnockdown <- filterCMapMetadata(
+# Load CMap gene knockdown HepG2 data
+cmapMetadataKD <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
-cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
-                             cmapMetadataKnockdown$sig_id)
-cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 
-cmapPerturbationsKnockdown <- loadCMapPerturbations(
-    cmapMetadataKnockdown, cmapZscores, cmapGeneInfo)
+zscoresKD <- loadCMapData("cmapZscores.gctx", "zscores", cmapMetadataKD$sig_id)
+
+cmapPerturbations_HepG2_KD <- loadCMapPerturbations(
+  metadata=cmapMetadataKD, zscoresKD, geneInfo="cmapGeneInfo.txt")
 ```
 
 If the interest is in small molecules, one can download the differential gene
@@ -147,14 +146,16 @@ specific concentration and time point of RNA extraction) through the following
 command:
 
 ```{r CMap small molecule perturbations, eval=FALSE}
+# Load CMap small molecule perturbation data
 cmapMetadataSmallMolecules <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2", perturbationType="Compound")
-cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
-                             cmapMetadataSmallMolecules$sig_id)
-cmapGeneInfo <- laodCMapData("cmapGeneInfo.txt", "geneInfo")
 
-cmapPerturbationsSmallMolecules <- loadCMapPerturbations(
-    cmapMetadataSmallMolecules, cmapZscores, cmapGeneInfo)
+zscoresSmallMolecules <- loadCMapData("cmapZscores.gctx", "zscores",
+                                      cmapMetadataSmallMolecules$sig_id)
+
+cmapPerturbations_HepG2_SmallMolecules <- loadCMapPerturbations(
+    metadata=cmapMetadataSmallMolecules, zscoresSmallMolecules,
+    geneInfo="cmapGeneInfo.txt", compoundInfo="cmapCompoundInfo.txt")
 ```
 
 ```{r load CMap perturbations, include=FALSE}
@@ -172,77 +173,65 @@ GSEA, the top and bottom *n* genes (sorted by the t-statistic) are used as gene
 sets (by default, *n* = 150 genes).
 
 ```{r compare knockdown, include=FALSE}
-compareKnockdown <- list()
-
-# Compare against CMap using Spearman correlation
-compareKnockdown$spearman <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
-
-# Compare against CMap using Pearson correlation
-compareKnockdown$pearson <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
-
-# Compare against CMap using gene set enrichment analysis (GSEA) with the top
-# and bottom 150 genes
-compareKnockdown$gsea <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
-    geneSize=150)
+# Compare against CMap using Spearman's and Pearson's correlation and gene set
+# enrichment analysis (GSEA) with the top and bottom 150 genes
+compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbations_HepG2_KD)
 ```
 
 For small molecules:
 
 ```{r compare small molecules}
-compareSmallMolecule <- list()
-# Compare against CMap using Spearman correlation
-compareSmallMolecule$spearman <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="spearman")
-
-# Compare against CMap using Pearson correlation
-compareSmallMolecule$pearson <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="pearson")
-
-# Compare against CMap using gene set enrichment analysis (GSEA) with the top
-# and bottom 150 genes
-compareSmallMolecule$gsea <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsSmallMolecules, cellLine, method="gsea",
-    geneSize=150)
+# Compare against CMap using Spearman's and Pearson's correlation and gene set
+# enrichment analysis (GSEA) with the top and bottom 150 genes
+compareSmallMolecule <- compareAgainstCMap(
+  diffExprStat, cmapPerturbations_HepG2_SmallMolecules)
 ```
 
-For each method used, this function will return a table with the results of the
-comparison with each perturbation tested, including the test statistics
-(depending on the method used: Spearman's correlation coefficient, Pearson's
-correlation coefficient or GSEA Enrichment Score), the respective p-value and
-the Benjamini-Hochberg-adjusted p-value.
+The output table contains the results of the comparison with each perturbation 
+tested,  including the test statistics (Spearman's correlation coefficient, 
+Pearson's correlation coefficient and/or GSEA Enrichment Score), the respective
+p-value and the Benjamini-Hochberg-adjusted p-value.
 
 ```{r order knockdown perturbation comparison}
-# Most positively associated perturbations (note that EIF4G1 knockdown is the
-# 6th, 1st and 2nd most positively associated perturbation based on Spearman
-# correlation, Pearson correlation and GSEA, respectively)
-head(compareKnockdown$spearman)
-head(compareKnockdown$pearson)
-head(compareKnockdown$gsea)
+# 10 most positively associated perturbations (note that EIF4G1 knockdown is the
+# 7th, 1st and 2nd most positively associated perturbation based on Spearman's
+# correlation, Pearson's correlation and GSEA, respectively)
+head(compareKD[order(spearman_coef_rank)], 10)
+head(compareKD[order(pearson_coef_rank)], 10)
+head(compareKD[order(WTCS_rank)], 10)
 
 # Most negatively associated perturbations
-tail(compareKnockdown$spearman)
-tail(compareKnockdown$pearson)
-tail(compareKnockdown$gsea)
+tail(compareKD[order(spearman_coef_rank)])
+tail(compareKD[order(pearson_coef_rank)])
+tail(compareKD[order(WTCS_rank)])
+
+# Plot list of pertubations
+plot(compareKD, "spearman")
 ```
 
 For small molecules:
 
 ```{r order small molecule perturbation comparison}
-# Most positively associated perturbations
-head(compareSmallMolecule$spearman)
-head(compareSmallMolecule$pearson)
-head(compareSmallMolecule$gsea)
+# Most positively and negatively associated perturbations
+compareSmallMolecule[order(spearman_coef_rank)]
+compareSmallMolecule[order(pearson_coef_rank)]
+compareSmallMolecule[order(WTCS_rank)]
 
-# Most negatively associated perturbations
-tail(compareSmallMolecule$spearman)
-tail(compareSmallMolecule$pearson)
-tail(compareSmallMolecule$gsea)
+plot(compareSmallMolecule, "spearman")
 ```
 
-# Plot
+# Information on perturbations
+
+```{r}
+# Information on the EIF4G1 knockdown perturbation
+EIF4G1knockdown <- grep("EIF4G1", compareKD$gene_perturbation, value=TRUE)
+print(compareKD, EIF4G1knockdown)
+
+# Information on the most similar compound perturbation as ranked by Spearman's
+print(compareSmallMolecule[order(spearman_coef_rank)], 1)
+```
+
+# Relationship plots
 
 To analyse the relationship between the user-provided differential expression
 profile with that associated with a specific perturbation, scatter plots (for
@@ -253,19 +242,14 @@ knockdown with the perturbations of interest.
 
 ```{r plot knockdown perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from CMap
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$gene_perturbation, 
-                        value=TRUE)
-plot(compareKnockdown$spearman, EIF4G1knockdown)
-plot(compareKnockdown$pearson,  EIF4G1knockdown)
-plot(compareKnockdown$gsea,     EIF4G1knockdown)
+plot(zscoresKD, EIF4G1knockdown, "spearman")
+plot(zscoresKD, EIF4G1knockdown, "pearson")
+plot(zscoresKD, EIF4G1knockdown, "gsea")
 
 # Plot relationship with most negatively associated perturbation
-plot(compareKnockdown$spearman,
-     tail(compareKnockdown$spearman, 1)$gene_perturbation)
-plot(compareKnockdown$pearson,
-     tail(compareKnockdown$pearson, 1)$gene_perturbation)
-plot(compareKnockdown$gsea,
-     tail(compareKnockdown$gsea, 1)$gene_perturbation)
+plot(zscoresKD, tail(compareKD[order(spearman_coef_rank)], 1))
+plot(zscoresKD, tail(compareKD[order(pearson_coef_rank)], 1))
+plot(zscoresKD, tail(compareKD[order(WTCS_rank)], 1))
 ```
 
 > By default, `plot()` plots both the top and bottom genes based on the
@@ -275,20 +259,20 @@ For small molecules:
 
 ```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
-plot(compareSmallMolecule$spearman, 
-     head(compareSmallMolecule$spearman, 1)$compound_perturbation)
-plot(compareSmallMolecule$pearson,
-     head(compareSmallMolecule$pearson, 1)$compound_perturbation)
-plot(compareSmallMolecule$gsea, 
-     head(compareSmallMolecule$gsea, 1)$compound_perturbation)
+plot(zscoresSmallMolecules, 
+     head(compareSmallMolecule[order(spearman_coef_rank)], 1))
+plot(zscoresSmallMolecules,
+     head(compareSmallMolecule[order(pearson_coef_rank)], 1))
+plot(zscoresSmallMolecules, 
+     head(compareSmallMolecule[order(WTCS_rank)], 1))
 
 # Plot relationship with most negatively associated perturbation
-plot(compareSmallMolecule$spearman,
-     tail(compareSmallMolecule$spearman, 1)$compound_perturbation)
-plot(compareSmallMolecule$pearson, 
-     tail(compareSmallMolecule$pearson, 1)$compound_perturbation)
-plot(compareSmallMolecule$gsea, 
-     tail(compareSmallMolecule$gsea, 1)$compound_perturbation)
+plot(zscoresSmallMolecules,
+     tail(compareSmallMolecule[order(spearman_coef_rank)], 1))
+plot(zscoresSmallMolecules, 
+     tail(compareSmallMolecule[order(pearson_coef_rank)], 1))
+plot(zscoresSmallMolecules, 
+     tail(compareSmallMolecule[order(WTCS_rank)], 1))
 ```
 
 # Contact information

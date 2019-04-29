@@ -236,3 +236,4 @@ as.table.cmapComparison <- function(x, ..., clean=TRUE) {
     }
 
     return(res)
+}

@@ -12,8 +12,7 @@ following code:
 cellLine <- c("HepG2", "HUH7")
 cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 cmapMetadataSmallMolecules <- filterCMapMetadata(
-    cmapMetadata, cellLine=cellLine, timepoint="24 h",
-    dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
+    cmapMetadata, cellLine=cellLine, timepoint="24 h", dosage="5 µM",
     perturbationType="Compound")
 cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
                              cmapMetadataSmallMolecules$sig_id)

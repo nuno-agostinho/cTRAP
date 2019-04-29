@@ -145,30 +145,23 @@ NULL
 #' \preformatted{
 #' # Code for loading CMap gene KD HepG2 data
 #' cellLine <- "HepG2"
-#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' cmapMetadataKnockdown <- filterCMapMetadata(
-#'   cmapMetadata, cellLine=cellLine,
+#'   "cmapMetadata.txt", cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#' cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
-#'                              cmapMetadataKnockdown$sig_id)
-#' cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 #'
 #' cmapPerturbationsKnockdown <- loadCMapPerturbations(
-#'   cmapMetadataKnockdown, cmapZscores, cmapGeneInfo)
+#'   cmapMetadataKnockdown, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #'
 #' # Select only some perturbations (to reduce file size)
 #' data("diffExprStat")
 #'
-#' compareKnockdown <- list()
-#' compareKnockdown$spearman <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
-#' compareKnockdown$pearson <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
-#' compareKnockdown$gsea <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
-#'     geneSize=150)
+#' compareKnockdown <- compareAgainstCMap(diffExprStat,
+#'                                        cmapPerturbationsKnockdown)
 #'
-#' genes  <- lapply(compareKnockdown, "[[", "genes")
+#' filter <- c(head(order(compareKnockdown$spearman_coef_rank)),
+#'             tail(order(compareKnockdown$spearman_coef_rank)),
+#'             head(order(compareKnockdown$pearson_coef_rank)),
+#'             tail(order(compareKnockdown$pearson_coef_rank)))
 #' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
 #' filter <- unique(filter)
 #' cmapPerturbationsKnockdown <- cmapPerturbationsKnockdown[ , filter]
@@ -189,8 +182,7 @@ NULL
 #' cellLine <- c("HepG2", "HUH7")
 #' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' cmapMetadataSmallMolecules <- filterCMapMetadata(
-#'     cmapMetadata, cellLine=cellLine, timepoint="24 h",
-#'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
+#'     cmapMetadata, cellLine=cellLine, timepoint="24 h", dosage="5 µM",
 #'     perturbationType="Compound")
 #' cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
 #'                              cmapMetadataSmallMolecules$sig_id)

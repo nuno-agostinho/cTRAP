@@ -4,27 +4,21 @@
 \alias{correlatePerCellLine}
 \title{Correlate differential expression scores per cell line}
 \usage{
-correlatePerCellLine(cellLine, diffExprGenes, perturbations, metadata,
+correlatePerCellLine(cellLine, diffExprGenes, perturbations, filtered,
   method, pAdjustMethod = "BH")
 }
 \arguments{
-\item{cellLine}{Character: cell line(s)}
-
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
 where the name of the vector are gene names and the values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
-\item{perturbations}{\code{cmapPerturbations} object: file with CMap loaded
-perturbations (check \code{\link{loadCMapPerturbations}})}
+\item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
+(check \code{\link{loadCMapPerturbations}})}
 
-\item{metadata}{Data frame: perturbation metadata}
+\item{filtered}{Character: perturbations to filter}
 
 \item{method}{Character: correlation method}
-
-\item{pAdjustMethod}{Character: method for p-value adjustment (for more
-details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
-\code{spearman} or \code{pearson})}
 }
 \value{
 Data frame with correlations statistics, p-value and q-value

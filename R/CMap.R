@@ -148,8 +148,8 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' Correlate differential expression scores per cell line
 #'
 #' @inheritParams compareAgainstCMap
-#' @param metadata Data frame: perturbation metadata
 #' @param method Character: correlation method
+#' @param filtered Character: perturbations to filter
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom data.table data.table
@@ -158,11 +158,7 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @return Data frame with correlations statistics, p-value and q-value
 #' @keywords internal
 correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
-                                 metadata, method, pAdjustMethod="BH") {
-    # Filter perturbation based on current cell line
-    filtered <- colnames(perturbations)[
-        tolower(metadata$cell_id) == tolower(cellLine)]
-
+                                 filtered, method, pAdjustMethod="BH") {
     # Suppress warnings to avoid "Cannot compute exact p-value with ties"
     corPert <- function(pert, filtered, perturbations, diffExprGenes, method) {
         thisPert <- perturbations[ , filtered[pert]]
@@ -177,7 +173,7 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
     names(cor) <- names(pval) <- names(qval) <- filtered
 
     res <- data.table(names(cor), cor, pval, qval)
-    names(res) <- c("identifier", sprintf("%s_%s_%s", cellLine, method,
+    names(res) <- c("identifier", sprintf("%s_%s", method,
                                           c("coef", "pvalue", "qvalue")))
     return(res)
 }
@@ -186,34 +182,34 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #'
 #' @inheritParams compareAgainstCMap
 #' @inheritParams fgsea::fgsea
+#' @param filtered Character: perturbations to filter
 #'
 #' @importFrom fgsea fgsea
 #' @importFrom data.table data.table
 #' @importFrom pbapply pblapply
-#' @importFrom plyr rbind.fill
+#' @importFrom dplyr bind_rows
 #'
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' cell line
 #' @keywords internal
-performGSAperCellLine <- function(cellLine, perturbations, pathways) {
-    perturbation <- perturbations[
-        , tolower(attr(perturbations, "metadata")$cell_id) == tolower(cellLine)]
-    perturbation <- unclass(perturbation)
+performGSAperCellLine <- function(cellLine, perturbations, filtered, pathways) {
+    perturbations <- unclass(perturbations[ , filtered])
 
     performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
         signature <- perturbation[ , k]
         names(signature) <- rownames(perturbation)
-        suppressWarnings(fgsea(pathways=pathways$gsc, stats=sort(signature),
+        suppressWarnings(fgsea(pathways=pathways, stats=sort(signature),
                                minSize=15, maxSize=500, nperm=1))
     }
-    gsa <- pblapply(seq(ncol(perturbation)),
-                    performGSAwithPerturbationSignature, perturbation, pathways)
+    gsa <- pblapply(
+        seq(ncol(perturbations)), performGSAwithPerturbationSignature,
+        perturbations, pathways)
     # gsa <- plyr::compact(gsa) # in case of NULL elements
-    names(gsa) <- colnames(perturbation)[seq(ncol(perturbation))]
+    names(gsa) <- colnames(perturbations)[seq(ncol(perturbations))]
 
-    gsaRes <- cbind(identifier=rep(names(gsa), each=2), rbind.fill(gsa))
+    gsaRes <- cbind(identifier=rep(names(gsa), each=2), bind_rows(gsa))
 
-    # based on CMap paper (page e8) - weighted connectivity score (WTCS)
+    # Based on CMap paper (page e8) - weighted connectivity score (WTCS)
     ES_list <- c()
     for (geneID in unique(gsaRes$identifier)) {
         geneID_GSA  <- gsaRes[gsaRes$identifier %in% geneID, ]
@@ -229,90 +225,86 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
 
     names(ES_list) <- unique(gsaRes[["identifier"]])
     results <- data.table(names(ES_list), ES_list)
-    names(results)[1:2] <- c("identifier", paste0(cellLine, "_WTCS"))
+    names(results)[1:2] <- c("identifier", "WTCS")
     return(results)
 }
 
-#' Compare against CMap datasets
+#' Compare with cell line (print progress)
 #'
-#' Weighted connectivity scores (WTCS) are calculated when \code{method} is
-#' \code{gsea}. For more information on WTCS, read
-#' \url{https://clue.io/connectopedia/cmap_algorithms}.
+#' @param metadata Data frame: perturbation metadata
 #'
-#' @details Order results according to the correlation coefficient (if
-#' \code{method} is \code{spearman} or \code{pearson}) or the weighted
-#' connectivity score (WTCS) score (if \code{method} is \code{gsea}) of the mean
-#' across cell lines (if \code{cellLineMean} is \code{TRUE}; otherwise results
-#' are ordered based on the first cell line alone).
+#' @keywords internal
+compareWithCellLineProgress <- function(cellLine, cellLines, FUN, method,
+                                        perturbations, metadata, ...) {
+    current <- match(cellLine, cellLines)
+    total   <- length(cellLines)
+    msg <- paste("Performing %s using %s's %s perturbations",
+                 "(%s out of %s cell lines)...")
+    methodStr <- switch(method,
+                        "spearman"="Spearman's correlation",
+                        "pearson" ="Pearson's correlation",
+                        "gsea"    ="GSEA")
+
+    # Filter perturbation based on currently selected cell line
+    cellLinePerts <- metadata$sig_id[
+        tolower(metadata$cell_id) == tolower(cellLine)]
+    filtered <- colnames(perturbations)[
+        colnames(perturbations) %in% cellLinePerts]
+    pertNumber <- length(filtered)
+
+    cat(sprintf(msg, methodStr, cellLine, pertNumber, current, total),
+        fill=TRUE)
+    FUN(cellLine, perturbations=perturbations, filtered=filtered, ...)
+}
+
+#' Prepare GSEA pathways
 #'
 #' @param diffExprGenes Numeric: named vector of differentially expressed genes
 #'   where the name of the vector are gene names and the values are a statistic
 #'   that represents significance and magnitude of differentially expressed
 #'   genes (e.g. t-statistics)
-#' @param perturbations \code{cmapPerturbations} object: file with CMap loaded
-#'   perturbations (check \code{\link{loadCMapPerturbations}})
-#' @param cellLine Character: cell line(s)
+#' @param geneSize Number: top and bottom number of differentially expressed
+#'   genes to use for gene set enrichment (GSE) (only used if
+#'   \code{method = gsea})
+#'
+#' @return List of top and bottom differentially expressed genes
+#' @keywords internal
+prepareGSEApathways <- function(diffExprGenes, geneSize) {
+    ordered         <- order(diffExprGenes, decreasing=TRUE)
+    topGenes        <- names(diffExprGenes)[head(ordered, geneSize)]
+    bottomGenes     <- names(diffExprGenes)[tail(ordered, geneSize)]
+    pathways        <- list(topGenes, bottomGenes)
+    names(pathways) <- paste0(c("top", "bottom"), geneSize)
+    return(pathways)
+}
+
+#' Compare single method
+#'
+#' @inheritParams prepareGSEApathways
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
-#'   or \code{gsea})
-#' @param geneSize Number: top and bottom differentially expressed genes to use
-#'   for gene set enrichment (GSE) (only used if \code{method} is \code{gsea})
-#' @param pAdjustMethod Character: method for p-value adjustment (for more
-#'   details, see \code{\link{p.adjust.methods}}; only used if \code{method} is
-#'   \code{spearman} or \code{pearson})
-#' @param cellLineMean Boolean: add a column with the mean across cell lines? If
-#' \code{"auto"} (default) the mean will be added if more than one cell line is
-#' available
+#'   or \code{gsea}; multiple methods may be selected at once)
+#' @param perturbations \code{cmapPerturbations} object: CMap perturbations
+#'   (check \code{\link{loadCMapPerturbations}})
+#' @param cellLineMean Boolean: add a column with the mean score across cell
+#'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
+#'   added if more than one cell line is available
 #'
-#' @importFrom data.table setkeyv
-#' @importFrom piano loadGSC
 #' @importFrom utils head tail
+#' @importFrom tidyr gather
+#' @importFrom dplyr bind_rows
 #'
-#' @return Data table with correlation or GSEA results comparing differential
-#' gene expression values with those associated with CMap perturbations
-#' @export
-#'
-#' @examples
-#' cellLine <- "HepG2"
-#' data("cmapPerturbationsSmallMolecules")
-#' perturbations <- cmapPerturbationsSmallMolecules
-#' data("diffExprStat")
-#'
-#' # Compare against CMap using Spearman correlation
-#' compareAgainstCMap(diffExprStat, perturbations, cellLine,
-#'                    method="spearman")
-#'
-#' # Compare against CMap using Pearson correlation
-#' compareAgainstCMap(diffExprStat, perturbations, cellLine,
-#'                    method="pearson")
-#'
-#' # Compare against CMap using gene set enrichment analysis (GSEA)
-#' compareAgainstCMap(diffExprStat, perturbations, cellLine, method="gsea")
-compareAgainstCMap <- function(diffExprGenes, perturbations,
-                               method=c("spearman", "pearson", "gsea"),
-                               geneSize=150, pAdjustMethod="BH",
-                               cellLineMean="auto") {
+#' @keywords internal
+compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
+                                perturbations=perturbations, geneSize=geneSize,
+                                cellLineMean=cellLineMean) {
     startTime <- Sys.time()
-    method   <- match.arg(method)
-    metadata <- attr(perturbations, "metadata")
-    cellLine <- unique(metadata$cell_id)
+    metadata  <- attr(perturbations, "metadata")
+    cellLine  <- unique(metadata$cell_id)
 
-    compareWithCellLineProgress <- function(cellLine, cellLines, FUN, method,
-                                            ...) {
-        current <- match(cellLine, cellLines)
-        total   <- length(cellLines)
-        msg <- paste("Performing %s using %s's perturbations",
-                     "(%s out of %s cell lines)...")
-        methodStr <- switch(method,
-                            "spearman"="Spearman's correlation",
-                            "pearson" ="Pearson's correlation",
-                            "gsea"    ="GSEA")
-        cat(sprintf(msg, methodStr, cellLine, current, total), fill=TRUE)
-        FUN(cellLine, ...)
-    }
-
+    pathways <- NULL
     if (method %in% c("spearman", "pearson")) {
-        cat(paste("Subsetting perturbations based on intersecting genes for",
-                  "comparison..."), fill=TRUE)
+        cat("Subsetting perturbations based on intersecting genes...",
+            fill=TRUE)
         genes <- intersect(names(diffExprGenes), rownames(perturbations))
         diffExprGenes        <- diffExprGenes[genes]
         class(perturbations) <- tail(class(perturbations), 1)
@@ -320,49 +312,50 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
 
         # Correlate per cell line
         cellLineRes <- lapply(
-            cellLine, compareWithCellLineProgress, cellLine,
-            correlatePerCellLine, method, diffExprGenes, perturbations,
-            metadata, method, pAdjustMethod)
+            cellLine, compareWithCellLineProgress, cellLines=cellLine,
+            correlatePerCellLine, method, diffExprGenes=diffExprGenes,
+            perturbations=perturbations, metadata=metadata, method)
         colnameSuffix <- sprintf("_%s_coef", method)
     } else if (method == "gsea") {
-        ordered     <- order(diffExprGenes, decreasing=TRUE)
-        topGenes    <- names(diffExprGenes)[head(ordered, geneSize)]
-        bottomGenes <- names(diffExprGenes)[tail(ordered, geneSize)]
-        gsc <- loadGSC(matrix(c(
-            c(topGenes, bottomGenes),
-            c(rep(paste0("top", geneSize), geneSize),
-              rep(paste0("bottom", geneSize), geneSize))), ncol=2))
-        cellLineRes <- lapply(cellLine, compareWithCellLineProgress, cellLine,
-                              performGSAperCellLine, method, perturbations, gsc)
+        pathways <- prepareGSEApathways(diffExprGenes, geneSize)
+        cellLineRes <- lapply(
+            cellLine, compareWithCellLineProgress, cellLines=cellLine,
+            performGSAperCellLine, method, perturbations=perturbations,
+            metadata=metadata, pathways=pathways)
         colnameSuffix <- "_WTCS"
-        pathways <- gsc$gsc
     }
     names(cellLineRes) <- cellLine
-
-    # Merge results per cell line
-    merged <- data.table("identifier"=unique(names(diffExprGenes)))
-    for (i in seq(cellLine)) {
-        # Remove cell line information from the identifier
-        cellLineRes[[i]]$identifier <- gsub("\\_[A-Z].*\\_", "\\_",
-                                            cellLineRes[[i]]$identifier)
-        merged <- merge(merged, cellLineRes[[i]], all=TRUE, on="identifier")
-    }
-
-    data <- merged[rowSums(is.na(merged)) != ncol(merged) - 1, ]
+    data <- bind_rows(cellLineRes)
 
     # Set whether to calculate the mean value across cell lines
     if (cellLineMean == "auto") cellLineMean <- length(cellLine) > 1
 
     if (cellLineMean) {
-        # Calculate mean across cell lines and use it when ordering data
-        orderCol <- paste0("Average", colnameSuffix)
-        data[ , orderCol] <- rowMeans(
-            data[ , grep(colnameSuffix, names(data)), with=FALSE], na.rm=TRUE)
-    } else {
-        # Use the results for the first cell line when ordering data
-        orderCol <- grep(colnameSuffix, names(data))[[1]]
+        scoreCol <- 2
+        # Remove cell line information from the identifier
+        allIDs <- gsub("\\_[A-Z].*\\_", "\\_", data$identifier)
+        idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
+        names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
+
+        cellLine <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", data$identifier)
+        names(cellLine) <- data$identifier
+
+        res <- pblapply(idsFromMultipleCellLines, function(id, allIDs, score,
+                                                         cellLine) {
+            list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
+                 mean=mean(score[id == allIDs]))
+        }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
+
+        avg <- sapply(res, "[[", 2)
+        avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
+        colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
+        data <- bind_rows(list(data, avgDF))
+        cellLines <- rbind(
+            data.frame(cellLines=cellLine,
+                       summarised=allIDs %in% idsFromMultipleCellLines),
+            data.frame(cellLines=sapply(res, "[[", 1), summarised=TRUE))
+        attr(data, "cellLines") <- cellLines
     }
-    data <- data[order(data[[orderCol]], decreasing=TRUE)]
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -378,13 +371,12 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
             id <- "gene_perturbation"
         colnames(data)[colnames(data) == "identifier"] <- id
     }
-
     rownames(data) <- data$genes
-    attr(data, "method") <- method
-    attr(data, "diffExprGenes") <- diffExprGenes
-    attr(data, "perturbations") <- perturbations
-    if (method == "gsea") attr(data, "pathways") <- pathways
-    class(data) <- c("cmapComparison", class(data))
+
+    # Add pathway information based on GSEA run if available
+    if (method == "gsea" && !is.null(pathways)) {
+        attr(data, "pathways") <- pathways
+    }
 
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
@@ -394,6 +386,82 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
                     sprintf("(gene size of %s) ", geneSize), "")
     message(sprintf(msg, ncol(perturbations), method, extra, diffTime))
     return(data)
+}
+
+#' Compare differential expression results against CMap perturbations
+#'
+#' Weighted connectivity scores (WTCS) are calculated when \code{method} is
+#' \code{gsea}. For more information on WTCS, read
+#' \url{https://clue.io/connectopedia/cmap_algorithms}.
+#'
+#' @details Order results according to the mean correlation coefficient (if
+#' \code{method} is \code{spearman} or \code{pearson}) or the weighted
+#' connectivity score (WTCS) score (if \code{method} is \code{gsea}) across cell
+#' lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
+#' based on the first cell line alone).
+#'
+#' @inheritParams compareSingleMethod
+#' @param rankPerturbationsByCellLine Boolean: when ranking, also rank
+#'   perturbations regarding individual cell lines
+#'
+#' @return Data table with correlation or GSEA results comparing differential
+#' gene expression values with those associated with CMap perturbations
+#' @export
+#'
+#' @examples
+#' data("cmapPerturbationsSmallMolecules")
+#' perturbations <- cmapPerturbationsSmallMolecules
+#' data("diffExprStat")
+#'
+#' # Compare differential expression results against CMap perturbations
+#' compareAgainstCMap(diffExprStat, perturbations)
+#'
+#' # Compare using only Spearman's correlation
+#' compareAgainstCMap(diffExprStat, perturbations, method="spearman")
+compareAgainstCMap <- function(diffExprGenes, perturbations,
+                               method=c("spearman", "pearson", "gsea"),
+                               geneSize=150, cellLineMean="auto",
+                               rankPerturbationsByCellLine=FALSE) {
+    supported <- c("spearman", "pearson", "gsea")
+    method <- unique(method)
+    method <- method[method %in% supported]
+
+    if (length(method) == 0) {
+        stop(paste(
+            "Method must contain one of the following supported comparison",
+            "methods:", paste(supported, collapse=", ")))
+    }
+
+    names(method) <- method
+    res <- lapply(method, compareSingleMethod,
+                  diffExprGenes=diffExprGenes, perturbations=perturbations,
+                  geneSize=geneSize, cellLineMean=cellLineMean)
+    cellLineAttr <- attr(res[[1]], "cellLine")
+
+    pathways <- NULL
+    if (!is.null(res$gsea)) pathways <- attr(res$gsea, "pathways")
+    merged <- Reduce(merge, res)
+
+    # Rank perturbations
+    rankPerturbations <- function(data) {
+        dataDf <- data[ , -c(1), drop=FALSE]
+        ranked <- apply(-dataDf, 2, rank, na.last="keep")
+        colnames(ranked) <- paste0(colnames(dataDf), "_rank")
+        mode(ranked) <- "integer"
+        return(cbind(data, ranked))
+    }
+    ranked <- rankPerturbations(merged)
+
+    # Inherit metadata from perturbations and other useful information
+    attr(ranked, "metadata")      <- attr(perturbations, "metadata")
+    attr(ranked, "geneInfo")      <- attr(perturbations, "geneInfo")
+    attr(ranked, "compoundInfo")  <- attr(perturbations, "compoundInfo")
+    attr(ranked, "diffExprGenes") <- diffExprGenes
+    attr(ranked, "cellLine")      <- cellLineAttr
+    attr(ranked, "pathways")      <- pathways
+
+    class(ranked) <- c("cmapComparison", class(ranked))
+    return(ranked)
 }
 
 #' Filter CMap metadata
@@ -457,7 +525,8 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   geneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
 #'   loadCMapPerturbations(metadata, zscores, geneInfo)
 #' }
-loadCMapPerturbations <- function(metadata, zscores, geneInfo, compoundInfo) {
+loadCMapPerturbations <- function(metadata, zscores, geneInfo,
+                                  compoundInfo=NULL) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {

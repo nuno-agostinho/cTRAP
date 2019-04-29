@@ -4,7 +4,7 @@
 \alias{loadCMapPerturbations}
 \title{Load CMap perturbation data}
 \usage{
-loadCMapPerturbations(metadata, zscores, geneInfo, compoundInfo)
+loadCMapPerturbations(metadata, zscores, geneInfo, compoundInfo = NULL)
 }
 \arguments{
 \item{metadata}{Data frame (CMap metadata) or character (respective filepath)}
