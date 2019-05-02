@@ -1,7 +1,7 @@
-# 1.0.3 (29 April, 2019)
+# 1.0.3 (2 May, 2019)
 
-* Update and copy-edit the tutorial and function documentation
 * Improve performance when subsetting `cmapPerturbations` objects
+* Update the tutorial and function documentation
 * Replace all references to `L1000` with `CMap`, as appropriate, including in
 dataset and function names:
     - `getL1000perturbationTypes()` -> `getCMapPerturbationTypes()`
