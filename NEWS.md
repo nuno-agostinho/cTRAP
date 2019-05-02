@@ -33,11 +33,12 @@ dataset and function names:
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
 * Improve plotting of CMap comparisons (`plot()`):
-    - Allow to call `plot()` with a `cmapComparison` object
+    - Plot comparison results against all perturbations by calling `plot()` with
+    a `cmapComparison` object
+    - Plot scatter and GSEA plots between differential expression results and a
+    single perturbation by calling `plot()` with a `cmapPerturbations` object
     - When displaying Gene Set Enrichment Analysis (GSEA) plots, automatically
     render results for both top and bottom genes by default
-    - Improve rendering performance of the GSEA plot
-    - Plot comparison results against all perturbations
 
 ## Bug fixes and minor changes
 
@@ -58,6 +59,9 @@ dataset and function names:
     functions such as `filterCMapMetadata`)
     - Fix incorrect label of identifiers
     - Report run time and settings used
+* Minor improvements to `plot()`:
+    - Improve rendering performance of the GSEA plot
+    - Fix disproportion of top and bottom enrichment score panels in GSEA plots
 * Update demo datasets:
     - Update the `cmapPerturbationsCompounds` and 
     `cmapPerturbationsKD` datasets according to new internal changes and

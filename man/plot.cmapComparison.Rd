@@ -4,17 +4,23 @@
 \alias{plot.cmapComparison}
 \title{Plot CMap data comparison}
 \usage{
-\method{plot}{cmapComparison}(x, perturbation = NULL,
-  perturbationID = NULL, genes = c("both", "top", "bottom"))
+\method{plot}{cmapComparison}(x, method = c("spearman", "pearson",
+  "gsea"), n = c(3, 3), showMetadata = TRUE, alpha = 0.3)
 }
 \arguments{
 \item{x}{\code{cmapComparison} object}
 
-\item{perturbationID}{Character: perturbation identifier}
+\item{method}{Character: method to plot results (\code{spearman},
+\code{pearson} or \code{gsea})}
 
-\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
-plot top genes (\code{genes = "top"}), bottom genes
-(\code{genes = "bottom"}) or both (\code{genes = "both"})}
+\item{n}{Numeric: number of top and bottom genes to label (if a vector of two
+numbers is given, the first and second numbers will be used as the number
+of top and bottom genes to label, respectively)}
+
+\item{showMetadata}{Boolean: show available metadata information instead of
+perturbation identifiers?}
+
+\item{alpha}{Numeric: transparency}
 }
 \value{
 Plot illustrating the comparison with CMap data
@@ -23,26 +29,14 @@ Plot illustrating the comparison with CMap data
 Plot CMap data comparison
 }
 \examples{
-data("cmapPerturbationsKnockdown")
-cellLine <- "HepG2"
-compareKnockdown <- list()
+data("cmapPerturbationsKD")
 
-# Compare against CMap using Spearman correlation
-compareKnockdown$spearman <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
+# Compare against CMap using Spearman's correlation, Pearson's correlation
+# and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
+# as gene sets
+compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 
-# Compare against CMap using Pearson correlation
-compareKnockdown$pearson <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
-
-# Compare against CMap using gene set enrichment analysis (GSEA) with the
-# top and bottom 150 genes as gene sets
-compareKnockdown$gsea <- compareAgainstCMap(
-    diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
-    geneSize=150)
-
-EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
-plot(compareKnockdown$spearman, EIF4G1knockdown)
-plot(compareKnockdown$pearson, EIF4G1knockdown)
-plot(compareKnockdown$gsea, EIF4G1knockdown)
+plot(compareKD, "spearman", c(7, 3))
+plot(compareKD, "pearson")
+plot(compareKD, "gsea")
 }

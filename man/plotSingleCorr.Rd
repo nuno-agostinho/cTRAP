@@ -4,7 +4,7 @@
 \alias{plotSingleCorr}
 \title{Render scatter plot to show a single relationship}
 \usage{
-plotSingleCorr(diffExprGenes, perturbation, perturbationID)
+plotSingleCorr(perturbation, label, diffExprGenes)
 }
 \description{
 Render scatter plot to show a single relationship

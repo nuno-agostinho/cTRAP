@@ -43,7 +43,7 @@ plotGSEAenrichment <- function(enrichmentScore, gseaStat, titleSize=14,
               axis.text.y=element_text(size=axisTextSize, colour="black"),
               plot.title=element_text(size=titleSize, colour="black",
                                       hjust=0.5)) +
-        labs(y="Enrichment score (ES)")
+        labs(y="Enrichment score")
 
     # enrichmentPlot <- enrichmentPlot +
     #     geom_hline(yintercept=max(gseaStat$tops), colour="red",
@@ -118,12 +118,12 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 #' @param gseaParam Numeric: GSEA-like parameter
 #'
 #' @importFrom ggplot2 ggtitle theme unit
-#' @importFrom cowplot plot_grid
+#' @importFrom cowplot plot_grid ggdraw draw_label
 #' @importFrom stats na.omit
 #'
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
-plotGSEA <- function(pathways, stats, genes=c("both", "top", "bottom"),
+plotGSEA <- function(stats, pathways, genes=c("both", "top", "bottom"),
                      titleSize=14, axisTitleSize=12, axisTextSize=10,
                      enrichmentPlotPointSize=0.1, gseaParam=1) {
     stats <- unclass(stats)
@@ -164,20 +164,21 @@ plotGSEA <- function(pathways, stats, genes=c("both", "top", "bottom"),
                                              id="bottom genes")
     }
 
+    title <- ggdraw() + draw_label("GSEA plot")
     if (genes == "both") {
-        plotHeights <- c(6, 1, 6, 1, 6)
-        grid <- plot_grid(topPlot$enrichmentPlot + ggtitle("GSEA plot"),
+        plotHeights <- c(1, 6, 1, 6, 1, 6)
+        grid <- plot_grid(title, topPlot$enrichmentPlot,
                           topPlot$geneHitsPlot, bottomPlot$enrichmentPlot,
                           bottomPlot$geneHitsPlot, metricPlot,
                           align="v", ncol=1, rel_heights=plotHeights)
     } else if (genes == "top") {
-        plotHeights <- c(6, 1, 6)
-        grid <- plot_grid(topPlot$enrichmentPlot + ggtitle("GSEA plot"),
+        plotHeights <- c(1, 6, 1, 6)
+        grid <- plot_grid(title, topPlot$enrichmentPlot,
                           topPlot$geneHitsPlot, metricPlot,
                           align="v", ncol=1, rel_heights=plotHeights)
     } else if (genes == "bottom") {
-        plotHeights <- c(6, 1, 6)
-        grid <- plot_grid(bottomPlot$enrichmentPlot + ggtitle("GSEA plot"),
+        plotHeights <- c(1, 6, 1, 6)
+        grid <- plot_grid(title, bottomPlot$enrichmentPlot,
                           bottomPlot$geneHitsPlot, metricPlot,
                           align="v", ncol=1, rel_heights=plotHeights)
     }
@@ -190,7 +191,7 @@ plotGSEA <- function(pathways, stats, genes=c("both", "top", "bottom"),
 #' geom_density_2d
 #'
 #' @keywords internal
-plotSingleCorr <- function(diffExprGenes, perturbation, perturbationID) {
+plotSingleCorr <- function(perturbation, label, diffExprGenes) {
     # Intersect common genes
     genes <- intersect(names(perturbation), names(diffExprGenes))
     perturbation  <- perturbation[genes]
@@ -202,150 +203,167 @@ plotSingleCorr <- function(diffExprGenes, perturbation, perturbationID) {
         geom_rug(alpha=0.1) +
         geom_density_2d() +
         xlab("Differentially expressed genes (input)") +
-        ylab(perturbationID) +
+        ylab(label) +
         theme_bw()
     return(plot)
-}
-
-#' Plot perturbations according to a given column representation
-#'
-#' @importFrom ggplot2 ggplot aes_string geom_point geom_hline xlab ylab
-#'  theme element_blank scale_colour_manual xlim theme_classic guides
-#' @importFrom ggrepel geom_text_repel
-#'
-#' @keywords internal
-plotRes <- function(x, cellLine=NULL, n=5, signifThreshold=0.05, alpha=0.3) {
-    if (is.null(cellLine)) {
-        cellLines <- unique(attr(attr(x, "perturbations"), "metadata")$cell_id)
-        summary <- grepl("Average", colnames(x))
-        if (any(summary))
-            cellLine <- colnames(x)[summary]
-        else
-            cellLine <- cellLines[[1]]
-    }
-
-    if (attr(x, "method") == "gsea")
-        queryStr <- "WTCS"
-    else
-        queryStr <- c("coef", "qvalue")
-
-    query  <- sprintf("^%s.*\\_%s$", cellLine, queryStr)
-    stat   <- grep(query[[1]], colnames(x), value=TRUE, ignore.case=TRUE)
-    statLabel <- sprintf("`%s`", stat)
-
-    if (length(query) == 2) {
-        signif <- grep(query[[2]], colnames(x), value=TRUE, ignore.case=TRUE)
-        legend <- sprintf("p %s %s", c("<", ">="), signifThreshold)
-        signifLabel <- sprintf("-log10(`%s`)", signif)
-
-        x$thresh <- ifelse(x[[signif]] < signifThreshold,
-                           legend[[1]], legend[[2]])
-        colour <- TRUE
-    } else {
-        colour <- FALSE
-    }
-
-    plotType <- 2
-    if (plotType == 1) {
-        # Correlation coefficient vs q-value
-        ggplot(x, aes_string(x=statLabel, y=signifLabel, colour="thresh")) +
-            geom_point(alpha=alpha) +
-            geom_rug(alpha=alpha) +
-            scale_colour_manual(values=c("#56B4E9", "#999999")) +
-            theme_classic() +
-            theme(legend.title=element_blank(), legend.position="bottom")
-    } else if (plotType == 2) {
-        # Label perturbations
-        sortedPert <- order(x[[stat]], decreasing=TRUE)
-        index <- unique(c(head(sortedPert, n), tail(sortedPert, n)))
-        x$label  <- ""
-        x$label[index] <- x[[1]][index]
-
-        # Correlation coefficient with labels for top and bottom perturbations
-        if (colour) {
-            vars <- aes_string(x=1, y=statLabel, label="label", colour="thresh")
-            rug  <- geom_rug(alpha=alpha, sides="l")
-        } else {
-            vars <- aes_string(x=1, y=statLabel, label="label")
-            rug  <- geom_rug(alpha=alpha, sides="l", colour="#56B4E9")
-        }
-
-        plot <- ggplot(x, vars) +
-            rug +
-            scale_colour_manual(values=c("#56B4E9", "#999999")) +
-            geom_text_repel(nudge_x=0.15, direction="y", hjust=0,
-                            segment.size=0.2, show.legend=FALSE, size=6) +
-            xlim(1, 1.375) +
-            theme_classic(base_size=18) +
-            theme(legend.title=element_blank(), legend.position="bottom",
-                  axis.line.x=element_blank(), axis.ticks.x=element_blank(),
-                  axis.text.x=element_blank(), axis.title.x=element_blank())
-        return(plot)
-    }
 }
 
 #' Plot CMap data comparison
 #'
 #' @param x \code{cmapComparison} object
-#' @param perturbationID Character: perturbation identifier
-#' @param genes Character: when plotting gene set enrichment analysis (GSEA),
-#'   plot top genes (\code{genes = "top"}), bottom genes
-#'   (\code{genes = "bottom"}) or both (\code{genes = "both"})
+#' @param method Character: method to plot results (\code{spearman},
+#'   \code{pearson} or \code{gsea})
+#' @param n Numeric: number of top and bottom genes to label (if a vector of two
+#'   numbers is given, the first and second numbers will be used as the number
+#'   of top and bottom genes to label, respectively)
+#' @param showMetadata Boolean: show available metadata information instead of
+#'   perturbation identifiers?
+#' @param alpha Numeric: transparency
 #'
 #' @importFrom graphics plot
+#' @importFrom R.utils capitalize
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_hline ylab theme
+#'   element_blank scale_colour_manual xlim theme_classic guides
+#' @importFrom ggrepel geom_text_repel
 #'
 #' @return Plot illustrating the comparison with CMap data
 #' @export
 #'
 #' @examples
-#' data("cmapPerturbationsKnockdown")
-#' cellLine <- "HepG2"
-#' compareKnockdown <- list()
+#' data("cmapPerturbationsKD")
 #'
-#' # Compare against CMap using Spearman correlation
-#' compareKnockdown$spearman <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="spearman")
+#' # Compare against CMap using Spearman's correlation, Pearson's correlation
+#' # and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
+#' # as gene sets
+#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 #'
-#' # Compare against CMap using Pearson correlation
-#' compareKnockdown$pearson <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="pearson")
-#'
-#' # Compare against CMap using gene set enrichment analysis (GSEA) with the
-#' # top and bottom 150 genes as gene sets
-#' compareKnockdown$gsea <- compareAgainstCMap(
-#'     diffExprStat, cmapPerturbationsKnockdown, cellLine, method="gsea",
-#'     geneSize=150)
-#'
-#' EIF4G1knockdown <- grep("EIF4G1", compareKnockdown$gsea$genes, value=TRUE)
-#' plot(compareKnockdown$spearman, EIF4G1knockdown)
-#' plot(compareKnockdown$pearson, EIF4G1knockdown)
-#' plot(compareKnockdown$gsea, EIF4G1knockdown)
-plot.cmapComparison <- function(x, perturbation=NULL, perturbationID=NULL,
-                                genes=c("both", "top", "bottom")) {
-    method <- attr(x, "method")
-    perturbation <- unclass(perturbation)
+#' plot(compareKD, "spearman", c(7, 3))
+#' plot(compareKD, "pearson")
+#' plot(compareKD, "gsea")
+plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
+                                n=c(3, 3), showMetadata=TRUE, alpha=0.3) {
+    if (length(method) > 1) stop("Only one method is currently supported.")
+    method <- match.arg(method)
 
-    hasPertID <- !is.null(perturbationID)
-    isGSEA    <- method == "gsea"
-
-    if (hasPertID) {
-        if (length(perturbationID) == 0)
-            stop("One perturbation ID must be provided")
-        else if (length(perturbationID) > 1)
-            stop("Only one perturbation ID is currently supported")
-        else if (!perturbationID %in% colnames(perturbation))
-            stop("Perturbation not found in the columns of the given dataset")
-
-        perturbation <- perturbation[ , perturbationID]
-        if (!isGSEA) {
-            diffExprGenes <- attr(x, "diffExprGenes")
-            plotSingleCorr(diffExprGenes, perturbation, perturbationID)
-        } else {
-            pathways <- attr(x, "pathways")
-            genes <- match.arg(genes)
-            plotGSEA(pathways, perturbation, genes=genes)
-        }
+    if (method == "gsea") {
+        stat <- "WTCS"
+        yLabel <- "Weighted Connectivity Score (WCTS)"
     } else {
-        plotRes(x, cellLine=NULL, n=3, signifThreshold=0.05)
+        stat <- paste0(method, "_coef")
+        yLabel <- sprintf("%s's correlation coefficient", capitalize(method))
+    }
+
+    # Label perturbations
+    sortedPert <- order(x[[stat]], decreasing=TRUE)
+
+    top <- bottom <- n
+    if (length(n) == 2) {
+        top    <- n[[1]]
+        bottom <- n[[2]]
+    }
+    index          <- unique(c(head(sortedPert, top), tail(sortedPert, bottom)))
+    x$label        <- ""
+
+    prepareLabel <- function(k, perturbations) {
+        info <- print(perturbations, perturbations[[1]][[k]])
+
+        collapse <- function(var) paste(unique(var), collapse="/")
+
+        name <- collapse(info$metadata$pert_iname)
+        type <- collapse(info$metadata$pert_type)
+
+        isOverexpression <- startsWith(type, "trt_oe")
+        isLossOfFunction <- startsWith(type, "trt_sh") ||
+            startsWith(type, "trt_xpr")
+
+        if (isOverexpression) {
+            name <- paste(name, "OE")
+        } else if (isLossOfFunction) {
+            name <- paste(name, "KD")
+        }
+        cellLine   <- collapse(info$metadata$cell_id)
+        dose       <- collapse(info$metadata$pert_idose)
+        timepoint  <- collapse(info$metadata$pert_itime)
+        x$label[k] <- sprintf("%s (%s, %s at %s)",
+                              name, cellLine, dose, timepoint)
+    }
+
+    if (showMetadata){
+        x$label[index] <- sapply(index, prepareLabel, x)
+    } else {
+        x$label[index] <- x[[1]][index]
+    }
+
+    # Correlation coefficient with labels for top and bottom perturbations
+    vars <- aes_string(x=1, y=stat, label="label")
+    rug  <- geom_rug(alpha=alpha, sides="l", colour="#56B4E9")
+
+    plot <- ggplot(x, vars) +
+        rug +
+        # scale_colour_manual(values=c("#56B4E9", "#999999")) +
+        geom_text_repel(nudge_x=0.15, direction="y", hjust=0, segment.size=0.2,
+                        show.legend=FALSE, size=6) +
+        xlim(1, 1.375) +
+        ylab(yLabel) +
+        theme_classic(base_size=18) +
+        theme(legend.title=element_blank(), legend.position="bottom",
+              axis.line.x=element_blank(), axis.ticks.x=element_blank(),
+              axis.text.x=element_blank(), axis.title.x=element_blank())
+    return(plot)
+}
+
+#' Plot CMap data comparison
+#'
+#' @param x \code{cmapPerturbations} object
+#' @param perturbation Character (perturbation identifier) or a
+#'   \code{cmapComparison} table (from which the respective perturbation
+#'   identifiers are retrieved)
+#' @inheritParams prepareGSEApathways
+#' @param method Character: method to plot results (\code{spearman},
+#'   \code{pearson} or \code{gsea})
+#' @param genes Character: when plotting gene set enrichment analysis (GSEA),
+#'   plot top genes (\code{genes = "top"}), bottom genes
+#'   (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
+#'   \code{method = gsea}
+#'
+#' @export
+#' @examples
+#' data("diffExprStat")
+#' data("cmapPerturbationsKD")
+#'
+#' # Compare against CMap using Spearman's correlation, Pearson's correlation
+#' # and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
+#' # as gene sets
+#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+#'
+#' EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
+#'
+#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
+#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
+#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="gsea")
+plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
+                                   method=c("spearman", "pearson", "gsea"),
+                                   geneSize=150,
+                                   genes=c("both", "top", "bottom")) {
+    if (length(method) > 1) stop("Only one method is currently supported.")
+    method <- match.arg(method)
+
+    if (is(perturbation, "cmapComparison")) perturbation <- perturbation[[1]]
+
+    if (length(perturbation) == 0)
+        stop("One perturbation ID must be provided")
+    else if (length(perturbation) > 1)
+        stop("Only one perturbation ID is currently supported")
+    else if (!perturbation %in% colnames(x))
+        stop("Perturbation not found in the columns of the given dataset")
+
+    x <- setNames(as.numeric(x[ , perturbation]), rownames(x[ , perturbation]))
+    if (method != "gsea") {
+        plotSingleCorr(x, perturbation, diffExprGenes)
+    } else {
+        pathways <- prepareGSEApathways(diffExprGenes=diffExprGenes,
+                                        geneSize=geneSize)
+        genes <- match.arg(genes)
+        plotGSEA(x, pathways, genes)
     }
 }
