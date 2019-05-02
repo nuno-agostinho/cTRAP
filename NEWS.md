@@ -1,9 +1,8 @@
 # 1.0.3 (2 May, 2019)
 
-* Improve performance when subsetting `cmapPerturbations` objects
 * Update the tutorial and function documentation
 * Replace all references to `L1000` with `CMap`, as appropriate, including in
-dataset and function names:
+function names:
     - `getL1000perturbationTypes()` -> `getCMapPerturbationTypes()`
     - `getL1000conditions()`        -> `getCMapConditions()`
     - `downloadL1000data()`         -> `loadCMapData()`
@@ -42,7 +41,7 @@ dataset and function names:
 
 ## Bug fixes and minor changes
 
-* CMap metadata improvements:
+* CMap metadata minor improvements:
     - Improve list returned by `getCMapConditions()`, including sorting of dose 
     and time points
     - Correctly set instances of `-666` in CMap metadata as missing values and 
