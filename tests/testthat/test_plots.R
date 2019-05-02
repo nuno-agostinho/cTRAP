@@ -1,8 +1,8 @@
 context("Plot results")
 
 # data(compareKnockdown)
-data("cmapPerturbationsSmallMolecules")
-perturbations <- cmapPerturbationsSmallMolecules
+data("cmapPerturbationsCompounds")
+perturbations <- cmapPerturbationsCompounds
 data("diffExprStat")
 cellLine <- "HEPG2"
 

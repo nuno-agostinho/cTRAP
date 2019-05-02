@@ -59,8 +59,8 @@ dataset and function names:
     - Fix incorrect label of identifiers
     - Report run time and settings used
 * Update demo datasets:
-    - Update the `cmapPerturbationsSmallMolecules` and 
-    `cmapPerturbationsKnockdown` datasets according to new internal changes and
+    - Update the `cmapPerturbationsCompounds` and 
+    `cmapPerturbationsKD` datasets according to new internal changes and
     fix their respective code in the documentation
 * Include license and copyright text for cmapR code
 

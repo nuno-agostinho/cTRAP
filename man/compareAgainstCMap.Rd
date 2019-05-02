@@ -48,8 +48,8 @@ lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
 based on the first cell line alone).
 }
 \examples{
-data("cmapPerturbationsSmallMolecules")
-perturbations <- cmapPerturbationsSmallMolecules
+data("cmapPerturbationsCompounds")
+perturbations <- cmapPerturbationsCompounds
 data("diffExprStat")
 
 # Compare differential expression results against CMap perturbations

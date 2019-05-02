@@ -11,6 +11,9 @@ ENCODE metadata sample obtained by running the following code:
 gene <- "EIF4G1"
 cellLine <- "HepG2"
 ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+
+table(ENCODEmetadata$`Experiment target`)
+length(unique(ENCODEmetadata$`Experiment target`))
 }
 }
 \keyword{internal}

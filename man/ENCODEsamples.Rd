@@ -8,10 +8,7 @@
 Sample of ENCODE samples obtained by running the following code:
 
 \preformatted{
-# Download ENCODE metadata for a specific cell line and gene
-cellLine <- "HepG2"
-gene <- "EIF4G1"
-ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+data("ENCODEmetadata")
 
 # Load samples based on filtered ENCODE metadata
 ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]

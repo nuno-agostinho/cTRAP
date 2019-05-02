@@ -1,15 +1,14 @@
 context("Working with CMap data")
 
-cellLine <- "HepG2"
-data("cmapPerturbationsSmallMolecules")
-perturbations <- cmapPerturbationsSmallMolecules
+data("cmapPerturbationsCompounds")
+perturbations <- cmapPerturbationsCompounds
 data("diffExprStat")
 
 test_that("CMap metadata and conditions are loaded", {
     data("cmapMetadata")
     # metadata <- loadCMapData("cmapMetadata.txt", "metadata")
-    # metadata <- filterCMapMetadata(metadata, cellLine = cellLine,
-    #                                timepoint = "2 h")
+    # metadata <- filterCMapMetadata(metadata, cellLine="HepG2",
+    #                                timepoint="2 h")
 
     expect_is(cmapMetadata, "data.table")
     expect_true(all(c("sig_id", "pert_id", "cell_id",
@@ -20,7 +19,7 @@ test_that("CMap metadata and conditions are loaded", {
     expect_identical(names(conditions), c("Perturbation type", "Cell line",
                                           "Dosage", "Time points"))
 
-    expect_true(!is.null(attr(cmapPerturbationsSmallMolecules, "metadata")))
+    expect_true(!is.null(attr(cmapPerturbationsCompounds, "metadata")))
 })
 
 test_that("Perturbation types are retrievable", {

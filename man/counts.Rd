@@ -8,14 +8,7 @@
 Gene expression data sample obtained by running the following code:
 
 \preformatted{
-gene <- "EIF4G1"
-cellLine <- "HepG2"
-
-ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-table(ENCODEmetadata$`Experiment target`)
-length(unique(ENCODEmetadata$`Experiment target`))
-
-ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+data("ENCODEsamples")
 counts <- prepareENCODEgeneExpression(ENCODEsamples)
 
 # Remove low coverage (at least 10 counts shared across two samples)
@@ -23,6 +16,15 @@ minReads   <- 10
 minSamples <- 2
 filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 counts <- counts[filter, ]
+
+# Convert ENSEMBL identifier to gene symbol
+library(biomaRt)
+mart  <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
+geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
+                        attributes=c("ensembl_gene_id", "hgnc_symbol"))
+counts$gene_id <- geneConversion$hgnc_symbol[
+    match(genes, geneConversion$ensembl_gene_id)]
 }
 }
 \keyword{internal}

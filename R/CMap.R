@@ -409,8 +409,8 @@ compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
 #' @export
 #'
 #' @examples
-#' data("cmapPerturbationsSmallMolecules")
-#' perturbations <- cmapPerturbationsSmallMolecules
+#' data("cmapPerturbationsCompounds")
+#' perturbations <- cmapPerturbationsCompounds
 #' data("diffExprStat")
 #'
 #' # Compare differential expression results against CMap perturbations
