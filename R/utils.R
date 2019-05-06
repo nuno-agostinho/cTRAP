@@ -164,6 +164,7 @@ tail.cmapPerturbations <- function(x, ...) NextMethod("tail", ...)
 #'
 #' @return Information on \code{cmapPerturbations} object or on specific
 #'   perturbations (if \code{perturbation} is set)
+#' @export
 print.cmapComparison <- function(x, perturbation=NULL, ...) {
     if (is.null(perturbation)) {
         NextMethod("print")
