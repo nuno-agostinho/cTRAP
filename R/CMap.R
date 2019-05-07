@@ -417,6 +417,8 @@ compareAgainstCMapPerMethod <- function(
 #'
 #' @inheritParams compareAgainstCMapPerMethod
 #'
+#' @importFrom data.table setkeyv
+#'
 #' @return Data table with correlation or GSEA results comparing differential
 #' gene expression values with those associated with CMap perturbations
 #' @export
@@ -464,7 +466,8 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
 
     # Rank perturbations
     rankPerturbations <- function(data, cellLineInfo, colsPerMethod) {
-        for(k in seq(colsPerMethod)) {
+        setkeyv(data, colnames(data)[[1]])
+        for(k in seq(length(colsPerMethod))) {
             if (k == 1) {
                 col <- 2
             } else {
