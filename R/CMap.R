@@ -252,8 +252,7 @@ compareWithCellLineProgress <- function(cellLine, cellLines, FUN, method,
         colnames(perturbations) %in% cellLinePerts]
     pertNumber <- length(filtered)
 
-    cat(sprintf(msg, methodStr, cellLine, pertNumber, current, total),
-        fill=TRUE)
+    message(sprintf(msg, methodStr, cellLine, pertNumber, current, total))
     FUN(cellLine, perturbations=perturbations, filtered=filtered, ...)
 }
 
@@ -309,8 +308,7 @@ compareAgainstCMapPerMethod <- function(
 
     pathways <- NULL
     if (method %in% c("spearman", "pearson")) {
-        cat("Subsetting perturbations based on intersecting genes...",
-            fill=TRUE)
+        message("Subsetting perturbations based on intersecting genes...")
         genes <- intersect(names(diffExprGenes), rownames(perturbations))
         diffExprGenes        <- diffExprGenes[genes]
         class(perturbations) <- tail(class(perturbations), 1)

@@ -26,7 +26,7 @@ getENCODEcontrols <- function(control, table) {
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
-    cat("Downloading metadata for ENCODE knockdown experiments...", fill=TRUE)
+    message("Downloading metadata for ENCODE knockdown experiments...")
     url <- paste(
         sep="&", "https://www.encodeproject.org/search/?type=Experiment",
         "searchTerm=knock", "limit=all", "frame=object", "format=json")
