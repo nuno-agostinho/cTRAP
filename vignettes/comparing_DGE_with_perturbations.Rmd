@@ -261,24 +261,24 @@ For small molecules:
 
 ```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
-plot(cmapPerturbationsCompound, 
-     head(compareCompound[order(spearman_coef_rank)], 1), diffExprStat,
+plot(cmapPerturbationsCompounds, 
+     head(compareCompounds[order(spearman_coef_rank)], 1), diffExprStat,
      "spearman")
-plot(cmapPerturbationsCompound,
-     head(compareCompound[order(pearson_coef_rank)], 1), diffExprStat, 
+plot(cmapPerturbationsCompounds,
+     head(compareCompounds[order(pearson_coef_rank)], 1), diffExprStat, 
      "pearson")
-plot(cmapPerturbationsCompound, 
-     head(compareCompound[order(WTCS_rank)], 1), diffExprStat, "gsea")
+plot(cmapPerturbationsCompounds, 
+     head(compareCompounds[order(WTCS_rank)], 1), diffExprStat, "gsea")
 
 # Plot relationship with most negatively associated perturbation
-plot(cmapPerturbationsCompound,
-     tail(compareCompound[order(spearman_coef_rank)], 1), diffExprStat, 
+plot(cmapPerturbationsCompounds,
+     tail(compareCompounds[order(spearman_coef_rank)], 1), diffExprStat, 
      "spearman")
-plot(cmapPerturbationsCompound, 
-     tail(compareCompound[order(pearson_coef_rank)], 1), diffExprStat,
+plot(cmapPerturbationsCompounds, 
+     tail(compareCompounds[order(pearson_coef_rank)], 1), diffExprStat,
      "pearson")
-plot(cmapPerturbationsCompound, 
-     tail(compareCompound[order(WTCS_rank)], 1), diffExprStat, "gsea")
+plot(cmapPerturbationsCompounds, 
+     tail(compareCompounds[order(WTCS_rank)], 1), diffExprStat, "gsea")
 ```
 
 # Contact information

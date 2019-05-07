@@ -242,7 +242,6 @@ plotSingleCorr <- function(perturbation, label, diffExprGenes) {
 #' plot(compareKD, "gsea")
 plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
                                 n=c(3, 3), showMetadata=TRUE, alpha=0.3) {
-    if (length(method) > 1) stop("Only one method is currently supported.")
     method <- match.arg(method)
 
     if (method == "gsea") {
@@ -251,6 +250,10 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
     } else {
         stat <- paste0(method, "_coef")
         yLabel <- sprintf("%s's correlation coefficient", capitalize(method))
+    }
+    if (!stat %in% colnames(x)) {
+        stop(sprintf("'%s' was not run with method '%s'",
+                     deparse(substitute(x)), method))
     }
 
     # Label perturbations
@@ -345,7 +348,6 @@ plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
                                    method=c("spearman", "pearson", "gsea"),
                                    geneSize=150,
                                    genes=c("both", "top", "bottom")) {
-    if (length(method) > 1) stop("Only one method is currently supported.")
     method <- match.arg(method)
 
     if (is(perturbation, "cmapComparison")) perturbation <- perturbation[[1]]
