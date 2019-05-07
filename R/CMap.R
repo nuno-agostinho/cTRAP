@@ -288,15 +288,21 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @param cellLineMean Boolean: add a column with the mean score across cell
 #'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
 #'   added if more than one cell line is available
+#' @param rankIndividualCellLines Boolean: when ranking results, also rank
+#'   perturbations regarding individual cell lines instead of the average alone
+#'   (if \code{cellLineMean = FALSE}, individual cell line perturbations are
+#'   ranked, no matter the value of \code{rankIndividualCellLines})
 #'
 #' @importFrom utils head tail
 #' @importFrom tidyr gather
 #' @importFrom dplyr bind_rows
 #'
 #' @keywords internal
-compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
-                                perturbations=perturbations, geneSize=geneSize,
-                                cellLineMean=cellLineMean) {
+compareAgainstCMapPerMethod <- function(
+    method, diffExprGenes=diffExprGenes, perturbations=perturbations,
+    geneSize=geneSize, cellLineMean=cellLineMean,
+    rankIndividualCellLines=FALSE) {
+
     startTime <- Sys.time()
     metadata  <- attr(perturbations, "metadata")
     cellLine  <- unique(metadata$cell_id)
@@ -330,6 +336,11 @@ compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
     # Set whether to calculate the mean value across cell lines
     if (cellLineMean == "auto") cellLineMean <- length(cellLine) > 1
 
+    # Retrieve cell line information
+    cellLine <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", data$identifier)
+    names(cellLine) <- data$identifier
+
+    # Calculate the cell line mean if desired
     if (cellLineMean) {
         scoreCol <- 2
         # Remove cell line information from the identifier
@@ -337,25 +348,31 @@ compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
         idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
         names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
 
-        cellLine <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", data$identifier)
-        names(cellLine) <- data$identifier
-
-        res <- pblapply(idsFromMultipleCellLines, function(id, allIDs, score,
-                                                         cellLine) {
-            list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
-                 mean=mean(score[id == allIDs]))
-        }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
+        res <- pblapply(
+            idsFromMultipleCellLines,
+            function(id, allIDs, score, cellLine) {
+                list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
+                     mean=mean(score[id == allIDs]))
+            }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
 
         avg <- sapply(res, "[[", 2)
         avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
         colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
         data <- bind_rows(list(data, avgDF))
-        cellLines <- rbind(
-            data.frame(cellLines=cellLine,
-                       summarised=allIDs %in% idsFromMultipleCellLines),
-            data.frame(cellLines=sapply(res, "[[", 1), summarised=TRUE))
-        attr(data, "cellLines") <- cellLines
+
+        isSummarised <- allIDs %in% idsFromMultipleCellLines
+        toRank <- rankIndividualCellLines | !isSummarised
+        avgCellLines <- sapply(res, "[[", 1)
+
+        cellLineInfo <- data.table(
+            c(names(cellLine), names(avgCellLines)),
+            c(cellLine, avgCellLines),
+            c(toRank, rep(TRUE, length(avgCellLines))))
+    } else {
+        cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
     }
+    names(cellLineInfo) <- c("cTRAP_id", "cellLines", paste0(method, "_rank"))
+    attr(data, "cellLineInfo") <- cellLineInfo
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -400,9 +417,7 @@ compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
 #' lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
 #' based on the first cell line alone).
 #'
-#' @inheritParams compareSingleMethod
-#' @param rankPerturbationsByCellLine Boolean: when ranking, also rank
-#'   perturbations regarding individual cell lines
+#' @inheritParams compareAgainstCMapPerMethod
 #'
 #' @return Data table with correlation or GSEA results comparing differential
 #' gene expression values with those associated with CMap perturbations
@@ -421,7 +436,7 @@ compareSingleMethod <- function(method, diffExprGenes=diffExprGenes,
 compareAgainstCMap <- function(diffExprGenes, perturbations,
                                method=c("spearman", "pearson", "gsea"),
                                geneSize=150, cellLineMean="auto",
-                               rankPerturbationsByCellLine=FALSE) {
+                               rankIndividualCellLines=FALSE) {
     supported <- c("spearman", "pearson", "gsea")
     method <- unique(method)
     method <- method[method %in% supported]
@@ -433,31 +448,46 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
     }
 
     names(method) <- method
-    res <- lapply(method, compareSingleMethod,
+    res <- lapply(method, compareAgainstCMapPerMethod,
                   diffExprGenes=diffExprGenes, perturbations=perturbations,
-                  geneSize=geneSize, cellLineMean=cellLineMean)
-    cellLineAttr <- attr(res[[1]], "cellLine")
+                  geneSize=geneSize, cellLineMean=cellLineMean,
+                  rankIndividualCellLines=rankIndividualCellLines)
+    colsPerMethod <- sapply(res, length) - 1
+    cellLineInfo  <- Reduce(merge, lapply(res, attr, "cellLine"))
+    replaceNAsWithFALSE <- function(DT) {
+        for (i in names(DT)) DT[is.na(get(i)), (i):=FALSE]
+        return(DT)
+    }
+    cellLineInfo <- replaceNAsWithFALSE(cellLineInfo)
 
     pathways <- NULL
     if (!is.null(res$gsea)) pathways <- attr(res$gsea, "pathways")
     merged <- Reduce(merge, res)
 
     # Rank perturbations
-    rankPerturbations <- function(data) {
-        dataDf <- data[ , -c(1), drop=FALSE]
-        ranked <- apply(-dataDf, 2, rank, na.last="keep")
-        colnames(ranked) <- paste0(colnames(dataDf), "_rank")
-        mode(ranked) <- "integer"
-        return(cbind(data, ranked))
+    rankPerturbations <- function(data, cellLineInfo, colsPerMethod) {
+        for(k in seq(colsPerMethod)) {
+            if (k == 1) {
+                col <- 2
+            } else {
+                col <- cumsum(colsPerMethod)[k - 1] + 2
+            }
+            rankCol    <- paste0(names(colsPerMethod[k]), "_rank")
+            toRank     <- cellLineInfo[[rankCol]]
+            colsToRank <- cellLineInfo[[1]][toRank]
+            ranked     <- rank(-data[colsToRank][[col]], na.last="keep")
+            data[colsToRank, rankCol] <- ranked
+        }
+        return(data)
     }
-    ranked <- rankPerturbations(merged)
+    ranked <- rankPerturbations(merged, cellLineInfo, colsPerMethod)
 
     # Inherit metadata from perturbations and other useful information
     attr(ranked, "metadata")      <- attr(perturbations, "metadata")
     attr(ranked, "geneInfo")      <- attr(perturbations, "geneInfo")
     attr(ranked, "compoundInfo")  <- attr(perturbations, "compoundInfo")
     attr(ranked, "diffExprGenes") <- diffExprGenes
-    attr(ranked, "cellLine")      <- cellLineAttr
+    attr(ranked, "cellLineInfo")  <- cellLineInfo
     attr(ranked, "pathways")      <- pathways
 
     class(ranked) <- c("cmapComparison", class(ranked))

@@ -29,6 +29,8 @@ function names:
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
     cell line available; disabled if argument `cellLineMean = FALSE`
+    - Allow to rank (or not) individual cell line perturbations (argument
+    `rankIndividualCellLines`) if mean is calculated
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
 * Improve plotting of CMap comparisons (`plot()`):
