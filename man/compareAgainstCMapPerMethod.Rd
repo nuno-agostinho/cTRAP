@@ -6,7 +6,7 @@
 \usage{
 compareAgainstCMapPerMethod(method, diffExprGenes = diffExprGenes,
   perturbations = perturbations, geneSize = geneSize,
-  cellLineMean = cellLineMean, rankIndividualCellLines = FALSE)
+  cellLineMean = cellLineMean, rankCellLinePerturbations = FALSE)
 }
 \arguments{
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
@@ -28,10 +28,10 @@ genes to use for gene set enrichment (GSE) (only used if
 lines? If \code{cellLineMean = "auto"} (default) the mean score will be
 added if more than one cell line is available}
 
-\item{rankIndividualCellLines}{Boolean: when ranking results, also rank
-perturbations regarding individual cell lines instead of the average alone
-(if \code{cellLineMean = FALSE}, individual cell line perturbations are
-ranked, no matter the value of \code{rankIndividualCellLines})}
+\item{rankCellLinePerturbations}{Boolean: when ranking results, also rank
+perturbations regarding individual cell lines instead of the mean
+perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
+line perturbations are always ranked}
 }
 \description{
 Compare single method

@@ -327,7 +327,7 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 #' @param genes Character: when plotting gene set enrichment analysis (GSEA),
 #'   plot top genes (\code{genes = "top"}), bottom genes
 #'   (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-#'   \code{method = gsea}
+#'   \code{method = "gsea"}
 #'
 #' @export
 #' @examples

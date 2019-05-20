@@ -80,7 +80,7 @@ test_that("Compare using GSEA", {
     data <- compareAgainstCMap(diffExprStat, perturbations, method="gsea")
     expect_is(data, "cmapComparison")
     expect_identical(colnames(data),
-                     c("compound_perturbation", "WTCS", "gsea_rank"))
+                     c("compound_perturbation", "GSEA", "gsea_rank"))
     expect_equal(head(data$compound_perturbation),
                  c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
                    "CVD001_24H:BRD-A65142661-034-01-8:5.35",
@@ -122,24 +122,24 @@ test_that("Compare against CMap by also ranking individual cell lines", {
     # Expect missing values in rankings when individual cell lines are not
     # ranked and if means across cell lines are calculated
     data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankIndividualCellLines=FALSE,
+                               rankCellLinePerturbations=FALSE,
                                cellLineMean=TRUE)
     expect_true(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings when individual cell lines are
     # ranked as well
     data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankIndividualCellLines=TRUE)
+                               rankCellLinePerturbations=TRUE)
     expect_false(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings if cell line means are NOT calculated
     data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankIndividualCellLines=FALSE,
+                               rankCellLinePerturbations=FALSE,
                                cellLineMean=FALSE)
     expect_false(areNAsIncludedInRanks(data))
 
     data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankIndividualCellLines=TRUE,
+                               rankCellLinePerturbations=TRUE,
                                cellLineMean=FALSE)
     expect_false(areNAsIncludedInRanks(data))
 })

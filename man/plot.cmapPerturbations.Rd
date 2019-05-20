@@ -30,7 +30,7 @@ genes to use for gene set enrichment (GSE) (only used if
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
 plot top genes (\code{genes = "top"}), bottom genes
 (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-\code{method = gsea}}
+\code{method = "gsea"}}
 }
 \description{
 Plot CMap data comparison

@@ -2,7 +2,7 @@
 #'
 #' Load CMap data. If \code{file} does not exist, it will first be downloaded.
 #'
-#' @note If \code{type = compoundInfo}, two files from
+#' @note If \code{type = "compoundInfo"}, two files from
 #' \strong{The Drug Repurposing Hub} will be downloaded containing information
 #' about drugs and perturbations. The files will be named \code{file} with
 #' \code{_drugs} and \code{_samples} before their extension, respectively.
@@ -225,7 +225,7 @@ performGSAperCellLine <- function(cellLine, perturbations, filtered, pathways) {
 
     names(ES_list) <- unique(gsaRes[["identifier"]])
     results <- data.table(names(ES_list), ES_list)
-    names(results)[1:2] <- c("identifier", "WTCS")
+    names(results)[1:2] <- c("identifier", "GSEA")
     return(results)
 }
 
@@ -287,10 +287,10 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @param cellLineMean Boolean: add a column with the mean score across cell
 #'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
 #'   added if more than one cell line is available
-#' @param rankIndividualCellLines Boolean: when ranking results, also rank
-#'   perturbations regarding individual cell lines instead of the average alone
-#'   (if \code{cellLineMean = FALSE}, individual cell line perturbations are
-#'   ranked, no matter the value of \code{rankIndividualCellLines})
+#' @param rankCellLinePerturbations Boolean: when ranking results, also rank
+#'   perturbations regarding individual cell lines instead of the mean
+#'   perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
+#'   line perturbations are always ranked
 #'
 #' @importFrom utils head tail
 #' @importFrom tidyr gather
@@ -300,7 +300,7 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 compareAgainstCMapPerMethod <- function(
     method, diffExprGenes=diffExprGenes, perturbations=perturbations,
     geneSize=geneSize, cellLineMean=cellLineMean,
-    rankIndividualCellLines=FALSE) {
+    rankCellLinePerturbations=FALSE) {
 
     startTime <- Sys.time()
     metadata  <- attr(perturbations, "metadata")
@@ -326,7 +326,7 @@ compareAgainstCMapPerMethod <- function(
             cellLine, compareWithCellLineProgress, cellLines=cellLine,
             performGSAperCellLine, method, perturbations=perturbations,
             metadata=metadata, pathways=pathways)
-        colnameSuffix <- "_WTCS"
+        colnameSuffix <- "_GSEA"
     }
     names(cellLineRes) <- cellLine
     data <- bind_rows(cellLineRes)
@@ -359,7 +359,7 @@ compareAgainstCMapPerMethod <- function(
         data <- bind_rows(list(data, avgDF))
 
         isSummarised <- allIDs %in% idsFromMultipleCellLines
-        toRank <- rankIndividualCellLines | !isSummarised
+        toRank <- rankCellLinePerturbations | !isSummarised
         avgCellLines <- sapply(res, "[[", 1)
 
         cellLineInfo <- data.table(
@@ -405,15 +405,15 @@ compareAgainstCMapPerMethod <- function(
 
 #' Compare differential expression results against CMap perturbations
 #'
-#' Weighted connectivity scores (WTCS) are calculated when \code{method} is
-#' \code{gsea}. For more information on WTCS, read
+#' Weighted connectivity scores (WTCS) are calculated when
+#' \code{method = "gsea"}. For more information on WTCS, read
 #' \url{https://clue.io/connectopedia/cmap_algorithms}.
 #'
 #' @details Order results according to the mean correlation coefficient (if
 #' \code{method} is \code{spearman} or \code{pearson}) or the weighted
-#' connectivity score (WTCS) score (if \code{method} is \code{gsea}) across cell
-#' lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
-#' based on the first cell line alone).
+#' connectivity score (WTCS) score (if \code{method = "gsea"}) across cell lines
+#' (if \code{cellLineMean = TRUE}; otherwise results are ordered based on the
+#' first cell line alone).
 #'
 #' @inheritParams compareAgainstCMapPerMethod
 #'
@@ -436,7 +436,7 @@ compareAgainstCMapPerMethod <- function(
 compareAgainstCMap <- function(diffExprGenes, perturbations,
                                method=c("spearman", "pearson", "gsea"),
                                geneSize=150, cellLineMean="auto",
-                               rankIndividualCellLines=FALSE) {
+                               rankCellLinePerturbations=FALSE) {
     supported <- c("spearman", "pearson", "gsea")
     method <- unique(method)
     method <- method[method %in% supported]
@@ -451,7 +451,7 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
     res <- lapply(method, compareAgainstCMapPerMethod,
                   diffExprGenes=diffExprGenes, perturbations=perturbations,
                   geneSize=geneSize, cellLineMean=cellLineMean,
-                  rankIndividualCellLines=rankIndividualCellLines)
+                  rankCellLinePerturbations=rankCellLinePerturbations)
     colsPerMethod <- sapply(res, length) - 1
     cellLineInfo  <- Reduce(merge, lapply(res, attr, "cellLine"))
     replaceNAsWithFALSE <- function(DT) {

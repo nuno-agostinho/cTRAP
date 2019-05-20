@@ -6,7 +6,7 @@
 \usage{
 compareAgainstCMap(diffExprGenes, perturbations, method = c("spearman",
   "pearson", "gsea"), geneSize = 150, cellLineMean = "auto",
-  rankIndividualCellLines = FALSE)
+  rankCellLinePerturbations = FALSE)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -28,26 +28,26 @@ genes to use for gene set enrichment (GSE) (only used if
 lines? If \code{cellLineMean = "auto"} (default) the mean score will be
 added if more than one cell line is available}
 
-\item{rankIndividualCellLines}{Boolean: when ranking results, also rank
-perturbations regarding individual cell lines instead of the average alone
-(if \code{cellLineMean = FALSE}, individual cell line perturbations are
-ranked, no matter the value of \code{rankIndividualCellLines})}
+\item{rankCellLinePerturbations}{Boolean: when ranking results, also rank
+perturbations regarding individual cell lines instead of the mean
+perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
+line perturbations are always ranked}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
 gene expression values with those associated with CMap perturbations
 }
 \description{
-Weighted connectivity scores (WTCS) are calculated when \code{method} is
-\code{gsea}. For more information on WTCS, read
+Weighted connectivity scores (WTCS) are calculated when
+\code{method = "gsea"}. For more information on WTCS, read
 \url{https://clue.io/connectopedia/cmap_algorithms}.
 }
 \details{
 Order results according to the mean correlation coefficient (if
 \code{method} is \code{spearman} or \code{pearson}) or the weighted
-connectivity score (WTCS) score (if \code{method} is \code{gsea}) across cell
-lines (if \code{cellLineMean} is \code{TRUE}; otherwise results are ordered
-based on the first cell line alone).
+connectivity score (WTCS) score (if \code{method = "gsea"}) across cell lines
+(if \code{cellLineMean = TRUE}; otherwise results are ordered based on the
+first cell line alone).
 }
 \examples{
 data("cmapPerturbationsCompounds")

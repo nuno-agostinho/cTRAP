@@ -23,7 +23,7 @@ Metadata as a data table
 Load CMap data. If \code{file} does not exist, it will first be downloaded.
 }
 \note{
-If \code{type = compoundInfo}, two files from
+If \code{type = "compoundInfo"}, two files from
 \strong{The Drug Repurposing Hub} will be downloaded containing information
 about drugs and perturbations. The files will be named \code{file} with
 \code{_drugs} and \code{_samples} before their extension, respectively.
