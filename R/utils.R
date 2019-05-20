@@ -117,6 +117,32 @@ collapseDuplicatedRows <- function(df, column) {
     return(collapsed)
 }
 
+#' Parse CMap identifier
+#'
+#' @param id Character: CMap identifier
+#' @param cellLine Boolean: if \code{TRUE}, return cell line information from
+#'   CMap identifier; else, return the CMap identifier without the cell line
+#'
+#' @return Character vector with information from CMap identifiers
+#' @export
+#'
+#' @examples
+#' id <- c("CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8",
+#'         "CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967",
+#'         "CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1")
+#' parseCMapID(id, cellLine=TRUE)
+#' parseCMapID(id, cellLine=FALSE)
+parseCMapID <- function(id, cellLine=FALSE) {
+    if (cellLine) {
+        # Retrieve cell line
+        res <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", id)
+    } else {
+        # Remove cell line identifier
+        res <- gsub("\\_[A-Z].*\\_", "\\_", id)
+    }
+    return(res)
+}
+
 # cmapPerturbations object -----------------------------------------------------
 
 #' Subset a \code{cmapPerturbations} object
@@ -180,7 +206,7 @@ print.cmapComparison <- function(x, perturbation=NULL, ...) {
             selectMetadata <- metadata[metadata$sig_id %in% perturbation]
             if (nrow(selectMetadata) == 0) {
                 # Check to see if using identifiers referring to summary stats
-                summaryID <- gsub("\\_[A-Z].*\\_", "\\_", metadata$sig_id)
+                summaryID <- parseCMapID(metadata$sig_id, cellLine=FALSE)
                 selectMetadata <- metadata[summaryID %in% perturbation]
             }
         }
@@ -211,12 +237,12 @@ as.table.cmapComparison <- function(x, ..., clean=TRUE) {
     if (!is.null(metadata)) {
         nonCellID <- "non_cell_id"
 
-        summaryID <- gsub("\\_[A-Z].*\\_", "\\_", metadata$sig_id)
+        summaryID <- parseCMapID(metadata$sig_id, cellLine=FALSE)
         metadata[[nonCellID]] <- summaryID
         metadataSubset <- metadata[unique(match(summaryID, summaryID)), ]
         metadataSubset[ , c("cell_id", "sig_id", "distil_id")] <- NULL
 
-        x[[nonCellID]] <- gsub("\\_[A-Z].*\\_", "\\_", x[[1]])
+        x[[nonCellID]] <- parseCMapID(x[[1]], cellLine=FALSE)
         res <- merge(x, metadataSubset, all.x=TRUE, by=nonCellID)
         res[[nonCellID]] <- NULL
 

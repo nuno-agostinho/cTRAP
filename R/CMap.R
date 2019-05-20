@@ -341,14 +341,14 @@ compareAgainstCMapPerMethod <- function(
     if (cellLineMean == "auto") cellLineMean <- length(cellLine) > 1
 
     # Retrieve cell line information
-    cellLine <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", data$identifier)
+    cellLine <- parseCMapID(data$identifier, cellLine=TRUE)
     names(cellLine) <- data$identifier
 
     # Calculate the cell line mean if desired
     if (cellLineMean) {
         scoreCol <- 2
         # Remove cell line information from the identifier
-        allIDs <- gsub("\\_[A-Z].*\\_", "\\_", data$identifier)
+        allIDs <- parseCMapID(data$identifier, cellLine=FALSE)
         idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
         names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
 

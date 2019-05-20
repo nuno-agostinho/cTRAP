@@ -15,6 +15,7 @@ function names:
     - Allow to load multiple cell lines and genes from ENCODE using 
     `loadENCODEsamples()`
 * Improve CMap metadata retrieval:
+    - Allow to parse CMap identifiers using `parseCMapID()`
     - Allow to load CMap's compound metadata using `loadCMapData()`
     - Allow to load CMap metadata using filepath arguments for the arguments of
     `loadCMapPerturbations`
