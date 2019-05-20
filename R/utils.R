@@ -87,8 +87,12 @@ downloadIfNeeded <- function(file, link, gz=TRUE) {
         } else {
             mode <- "w"
         }
+        message("File does not exist: downloading data...")
         download.file(link, file, mode="wb")
-        if (gz) gunzip(file)
+        if (gz) {
+            message("Extracting downloaded data...")
+            gunzip(file)
+        }
     }
 }
 

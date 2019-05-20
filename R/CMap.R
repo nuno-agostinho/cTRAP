@@ -46,6 +46,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
             "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
         downloadIfNeeded(file, link)
+        message("Loading data from file...")
         data <- fread(file, sep="\t", na.strings=nas)
 
         data$pert_dose[data$pert_dose == "300.0|300.000000"] <- 300
@@ -56,6 +57,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
             "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
         downloadIfNeeded(file, link)
+        message("Loading data from file...")
         data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "zscores") {
         link <- paste0(
@@ -63,6 +65,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
             "MODZ_n473647x12328.gctx.gz")
         downloadIfNeeded(file, link)
+        message("Loading data from file...")
         data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
                     set_annot_rownames=FALSE, matrix_only=FALSE)@mat
     } else if (type == "compoundInfo") {
@@ -86,6 +89,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
         downloadIfNeeded(file[["drugs"]], link)
 
         # Replace separation symbols for targets
+        message("Loading compound data from drug file...")
         drugData <- readAfterComments(file[["drugs"]])
         drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
 
@@ -94,6 +98,8 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
             "repurposing_samples_20180907.txt")
         downloadIfNeeded(file[["samples"]], link)
+
+        message("Loading compound data from sample file...")
         pertData <- readAfterComments(file[["samples"]])
         pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
                                   "InChIKey", "pubchem_cid")]
