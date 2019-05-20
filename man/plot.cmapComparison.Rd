@@ -5,7 +5,8 @@
 \title{Plot CMap data comparison}
 \usage{
 \method{plot}{cmapComparison}(x, method = c("spearman", "pearson",
-  "gsea"), n = c(3, 3), showMetadata = TRUE, alpha = 0.3)
+  "gsea"), n = c(3, 3), showMetadata = TRUE,
+  plotNonRankedPerturbations = FALSE, alpha = 0.3)
 }
 \arguments{
 \item{x}{\code{cmapComparison} object}
@@ -19,6 +20,9 @@ of top and bottom genes to label, respectively)}
 
 \item{showMetadata}{Boolean: show available metadata information instead of
 perturbation identifiers?}
+
+\item{plotNonRankedPerturbations}{Boolean: plot non-ranked perturbations in
+grey?}
 
 \item{alpha}{Numeric: transparency}
 }

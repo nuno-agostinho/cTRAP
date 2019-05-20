@@ -35,7 +35,8 @@ function names:
     vector of supported methods via the `method` argument)
 * Improve plotting of CMap comparisons (`plot()`):
     - Plot comparison results against all perturbations by calling `plot()` with
-    a `cmapComparison` object
+    a `cmapComparison` object (non-ranked perturbations may also be plotted 
+    with `plotNonRankedPerturbations = TRUE`)
     - Plot scatter and GSEA plots between differential expression results and a
     single perturbation by calling `plot()` with a `cmapPerturbations` object
     - When displaying Gene Set Enrichment Analysis (GSEA) plots, automatically

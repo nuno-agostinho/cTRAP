@@ -219,6 +219,8 @@ plotSingleCorr <- function(perturbation, label, diffExprGenes) {
 #' @param showMetadata Boolean: show available metadata information instead of
 #'   perturbation identifiers?
 #' @param alpha Numeric: transparency
+#' @param plotNonRankedPerturbations Boolean: plot non-ranked perturbations in
+#'   grey?
 #'
 #' @importFrom graphics plot
 #' @importFrom R.utils capitalize
@@ -241,15 +243,19 @@ plotSingleCorr <- function(perturbation, label, diffExprGenes) {
 #' plot(compareKD, "pearson")
 #' plot(compareKD, "gsea")
 plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
-                                n=c(3, 3), showMetadata=TRUE, alpha=0.3) {
+                                n=c(3, 3), showMetadata=TRUE,
+                                plotNonRankedPerturbations=FALSE,
+                                alpha=0.3) {
     method <- match.arg(method)
 
     if (method == "gsea") {
-        stat <- "WTCS"
-        yLabel <- "Weighted Connectivity Score (WCTS)"
+        stat     <- "GSEA"
+        statRank <- "gsea_rank"
+        yLabel   <- "Weighted Connectivity Score (WCTS)"
     } else {
-        stat <- paste0(method, "_coef")
-        yLabel <- sprintf("%s's correlation coefficient", capitalize(method))
+        stat     <- paste0(method, "_coef")
+        statRank <- paste0(method, "_rank")
+        yLabel   <- sprintf("%s's correlation coefficient", capitalize(method))
     }
     if (!stat %in% colnames(x)) {
         stop(sprintf("'%s' was not run with method '%s'",
@@ -257,6 +263,12 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
     }
 
     # Label perturbations
+    if (!plotNonRankedPerturbations) {
+        x <- x[order(x[[statRank]], na.last=NA)]
+        x$ranked <- "Ranked"
+    } else {
+        x$ranked <- ifelse(!is.na(x[[statRank]]), "Ranked", "Non-ranked")
+    }
     sortedPert <- order(x[[stat]], decreasing=TRUE)
 
     top <- bottom <- n
@@ -264,8 +276,8 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
         top    <- n[[1]]
         bottom <- n[[2]]
     }
-    index          <- unique(c(head(sortedPert, top), tail(sortedPert, bottom)))
-    x$label        <- ""
+    index   <- unique(c(head(sortedPert, top), tail(sortedPert, bottom)))
+    x$label <- ""
 
     prepareLabel <- function(k, perturbations) {
         info <- print(perturbations, perturbations[[1]][[k]])
@@ -284,7 +296,11 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
         } else if (isLossOfFunction) {
             name <- paste(name, "KD")
         }
-        cellLine   <- collapse(info$metadata$cell_id)
+
+        # cellLine   <- collapse(info$metadata$cell_id)
+        cellLine <- unique(info$metadata$cell_id)
+        if (length(unique(cellLine)) > 1) cellLine <- "mean"
+
         dose       <- collapse(info$metadata$pert_idose)
         timepoint  <- collapse(info$metadata$pert_itime)
         x$label[k] <- sprintf("%s (%s, %s at %s)",
@@ -298,12 +314,13 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
     }
 
     # Correlation coefficient with labels for top and bottom perturbations
-    vars <- aes_string(x=1, y=stat, label="label")
-    rug  <- geom_rug(alpha=alpha, sides="l", colour="#56B4E9")
+    vars <- aes_string(x=1, y=stat, label="label", colour="ranked")
+    rug  <- geom_rug(alpha=alpha, sides="l")
 
     plot <- ggplot(x, vars) +
         rug +
-        # scale_colour_manual(values=c("#56B4E9", "#999999")) +
+        scale_colour_manual(values=c("Ranked"="#56B4E9",
+                                     "Non-ranked"="#999999")) +
         geom_text_repel(nudge_x=0.15, direction="y", hjust=0, segment.size=0.2,
                         show.legend=FALSE, size=6) +
         xlim(1, 1.375) +
@@ -312,6 +329,8 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
         theme(legend.title=element_blank(), legend.position="bottom",
               axis.line.x=element_blank(), axis.ticks.x=element_blank(),
               axis.text.x=element_blank(), axis.title.x=element_blank())
+
+    if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour=FALSE)
     return(plot)
 }
 
