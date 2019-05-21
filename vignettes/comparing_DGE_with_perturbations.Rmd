@@ -63,9 +63,6 @@ counts <- prepareENCODEgeneExpression(ENCODEsamples)
 ```
 
 ```{r load data, include=FALSE}
-gene <- "EIF4G1"
-cellLine <- "HepG2"
-
 data("ENCODEmetadata")
 data("counts")
 ```
@@ -74,7 +71,7 @@ Gene expression data (read counts) were quantile-normalized using [`voom`][voom]
 and differential expression analysis was performed using the [`limma`][limma] R
 package.
 
-```{r differential gene expression}
+```{r differential gene expression, eval=FALSE}
 # Remove low coverage (at least 10 counts shared across two samples)
 minReads   <- 10
 minSamples <- 2
@@ -97,11 +94,15 @@ diffExpr <- performDifferentialExpression(counts)
 As our metric of differential expression after EIF4G1 shRNA knock-down, we will
 use the respective t-statistic.
 
-```{r t-statistics}
+```{r t-statistics, eval=FALSE}
 # Get t-statistics of differential expression with respective gene names 
 # (expected input for downstream analyses)
 diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
+```
+
+```{r}
+data("diffExprStat")
 ```
 
 # Load CMap perturbation data
@@ -124,7 +125,7 @@ getCMapConditions(cmapMetadata, cellLine="HepG2")
 
 # Summarise conditions for HepG2 cell line and a specific perturbation
 getCMapConditions(
-    cmapMetadata, cellLine="HepG2", 
+    cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 ```
 
@@ -146,29 +147,31 @@ command:
 
 ```{r CMap small molecule perturbations, eval=FALSE}
 # Load CMap small molecule perturbation data
-cmapMetadataCompound <- filterCMapMetadata(
+cmapMetadataCompounds <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2", perturbationType="Compound")
 
-cmapPerturbationsCompound <- loadCMapPerturbations(
-    metadata=cmapMetadataCompound, zscores="cmapZscores.gctx",
+cmapPerturbationsCompounds <- loadCMapPerturbations(
+    metadata=cmapMetadataCompounds, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt", compoundInfo="cmapCompoundInfo.txt")
 ```
 
 ```{r load CMap perturbations, include=FALSE}
 data("cmapPerturbationsKD")
-data("cmapPerturbationsCompound")
+data("cmapPerturbationsCompounds")
+cmapPerturbationsCompounds <- cmapPerturbationsCompounds[
+    , grep("HEPG2", colnames(cmapPerturbationsCompounds))]
 ```
 
 # Comparison with CMap's perturbations
 
 The `compareAgainstCMap` function compares the statistic for differential
 expression (the t-statistic, in this case) with the z-scores for the loaded 
-perturbations using the three different methods available (Spearman's 
-correlation, Pearson's correlation and Gene Set Enrichment Analysis (GSEA)). For
-GSEA, the top and bottom *n* genes (sorted by the t-statistic) are used as gene 
-sets (by default, *n* = 150 genes).
+perturbations using the available methods (Spearman's correlation, Pearson's 
+correlation and Gene Set Enrichment Analysis (GSEA)). For GSEA, the top and 
+bottom *n* genes from the user's differential expression profile are used as
+gene sets (by default, *n* = 150 genes).
 
-```{r compare knockdown, include=FALSE}
+```{r compare knockdown, message=FALSE}
 # Compare against CMap using Spearman's and Pearson's correlation and gene set
 # enrichment analysis (GSEA) with the top and bottom 150 genes
 compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
@@ -176,29 +179,29 @@ compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 
 For small molecules:
 
-```{r compare small molecules}
+```{r compare small molecules, message=FALSE}
 # Compare against CMap using Spearman's and Pearson's correlation and gene set
 # enrichment analysis (GSEA) with the top and bottom 150 genes
-compareCompound <- compareAgainstCMap(diffExprStat, cmapPerturbationsCompound)
+compareCompounds <- compareAgainstCMap(diffExprStat, cmapPerturbationsCompounds)
 ```
 
 The output table contains the results of the comparison with each perturbation 
 tested,  including the test statistics (Spearman's correlation coefficient, 
-Pearson's correlation coefficient and/or GSEA Enrichment Score), the respective
-p-value and the Benjamini-Hochberg-adjusted p-value.
+Pearson's correlation coefficient and/or GSEA score), the respective p-value and
+the Benjamini-Hochberg-adjusted p-value.
 
-```{r order knockdown perturbation comparison}
+```{r order knockdown perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively associated perturbations (note that EIF4G1 knockdown is the
 # 7th, 1st and 2nd most positively associated perturbation based on Spearman's
 # correlation, Pearson's correlation and GSEA, respectively)
-head(compareKD[order(spearman_coef_rank)], n=10)
-head(compareKD[order(pearson_coef_rank)])
-head(compareKD[order(WTCS_rank)])
+head(compareKD[order(spearman_rank, na.last=NA)], n=10)
+head(compareKD[order(pearson_rank, na.last=NA)])
+head(compareKD[order(gsea_rank, na.last=NA)])
 
 # Most negatively associated perturbations
-tail(compareKD[order(spearman_coef_rank)])
-tail(compareKD[order(pearson_coef_rank)])
-tail(compareKD[order(WTCS_rank)])
+tail(compareKD[order(spearman_rank, na.last=NA)])
+tail(compareKD[order(pearson_rank, na.last=NA)])
+tail(compareKD[order(gsea_rank, na.last=NA)])
 
 # Plot list of compared pertubations
 plot(compareKD, "spearman", n=c(10, 3))
@@ -208,16 +211,31 @@ plot(compareKD, "gsea")
 
 For small molecules:
 
-```{r order small molecule perturbation comparison}
+```{r order small molecule perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively and negatively associated perturbations
-compareCompound[order(spearman_coef_rank)]
-compareCompound[order(pearson_coef_rank)]
-compareCompound[order(WTCS_rank)]
+compareCompounds[order(spearman_rank, na.last=NA)]
+compareCompounds[order(pearson_rank, na.last=NA)]
+compareCompounds[order(gsea_rank, na.last=NA)]
 
-plot(compareCompound, "spearman")
-plot(compareCompound, "pearson")
-plot(compareCompound, "gsea")
+plot(compareCompounds, "spearman")
+plot(compareCompounds, "pearson")
+plot(compareCompounds, "gsea")
 ```
+
+> The Gene Set Enrichment Analysis (GSEA) score is based on the Weighted
+Connectivity Score (WTCS), a composite and bi-directional version of the 
+weighted Kolmogorov-Smirnov enrichment statistic (ES)
+([Subramanian et al., Cell 2017][subramanian2017]).
+
+> To calculate the GSEA score, GSEA is run for top and bottom ranked genes from 
+the user's differential expression profile. The GSEA score is the mean between 
+ES~top~ and ES~bottom~ (however, if ES~top~ and ES~bottom~ have the same sign, 
+the GSEA score is 0).
+
+> If a perturbation has a similar differential expression profile to our data 
+(higher GSEA score), we expect to see the top (bottom) ranked genes in the
+perturbation enriched in the top (bottom) *n* differentially expressed genes
+from our data.
 
 # Information on perturbations
 
@@ -226,8 +244,9 @@ plot(compareCompound, "gsea")
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 print(compareKD, EIF4G1knockdown)
 
-# Information on the most similar compound perturbation as ranked by Spearman's
-print(compareCompound[order(spearman_coef_rank)], 1)
+# Information on the most similar compound perturbation (based on Spearman's 
+# correlation)
+print(compareCompounds[order(spearman_rank, na.last=NA)], 1)
 ```
 
 # Relationship plots
@@ -247,11 +266,14 @@ plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "gsea")
 
 # Plot relationship with most negatively associated perturbation
 plot(cmapPerturbationsKD, 
-     tail(compareKD[order(spearman_coef_rank)], 1), diffExprStat, "spearman")
+     tail(compareKD[order(spearman_rank, na.last=NA)], 1), 
+     diffExprStat, "spearman")
 plot(cmapPerturbationsKD, 
-     tail(compareKD[order(pearson_coef_rank)], 1), diffExprStat, "pearson")
+     tail(compareKD[order(pearson_rank, na.last=NA)], 1), 
+     diffExprStat, "pearson")
 plot(cmapPerturbationsKD, 
-     tail(compareKD[order(WTCS_rank)], 1), diffExprStat, "gsea")
+     tail(compareKD[order(gsea_rank, na.last=NA)], 1), 
+     diffExprStat, "gsea")
 ```
 
 > By default, `plot()` plots both the top and bottom genes based on the
@@ -262,23 +284,25 @@ For small molecules:
 ```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
 plot(cmapPerturbationsCompounds, 
-     head(compareCompounds[order(spearman_coef_rank)], 1), diffExprStat,
-     "spearman")
-plot(cmapPerturbationsCompounds,
-     head(compareCompounds[order(pearson_coef_rank)], 1), diffExprStat, 
-     "pearson")
+     head(compareCompounds[order(spearman_rank, na.last=NA)], 1), 
+     diffExprStat, "spearman")
 plot(cmapPerturbationsCompounds, 
-     head(compareCompounds[order(WTCS_rank)], 1), diffExprStat, "gsea")
+     head(compareCompounds[order(pearson_rank, na.last=NA)], 1), 
+     diffExprStat,"pearson")
+plot(cmapPerturbationsCompounds, 
+     head(compareCompounds[order(gsea_rank, na.last=NA)], 1), 
+     diffExprStat, "gsea")
 
 # Plot relationship with most negatively associated perturbation
 plot(cmapPerturbationsCompounds,
-     tail(compareCompounds[order(spearman_coef_rank)], 1), diffExprStat, 
-     "spearman")
+     tail(compareCompounds[order(spearman_rank, na.last=NA)], 1),
+     diffExprStat, "spearman")
 plot(cmapPerturbationsCompounds, 
-     tail(compareCompounds[order(pearson_coef_rank)], 1), diffExprStat,
-     "pearson")
+     tail(compareCompounds[order(pearson_rank, na.last=NA)], 1), 
+     diffExprStat, "pearson")
 plot(cmapPerturbationsCompounds, 
-     tail(compareCompounds[order(WTCS_rank)], 1), diffExprStat, "gsea")
+     tail(compareCompounds[order(gsea_rank, na.last=NA)], 1), 
+     diffExprStat, "gsea")
 ```
 
 # Contact information
