@@ -10,16 +10,18 @@ following code:
 
 \preformatted{
 cellLine <- c("HepG2", "HUH7")
-cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 cmapMetadataCompounds <- filterCMapMetadata(
-    cmapMetadata, cellLine=cellLine, timepoint="24 h", dosage="5 µM",
-    perturbationType="Compound")
-cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
-                             cmapMetadataCompounds$sig_id)
-cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt")
+    "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
+    dosage="5 \u00B5M", perturbationType="Compound")
 
 cmapPerturbationsCompounds <- loadCMapPerturbations(
-    cmapMetadataCompounds, cmapZscores, cmapGeneInfo)
+    cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt")
+
+# Remove non-ASCII characters for portability reasons
+metadata <- attr(cmapPerturbationsCompounds, "metadata")
+metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+attr(cmapPerturbationsCompounds, "metadata") <- metadata
 }
 }
 \keyword{internal}

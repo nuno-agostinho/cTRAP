@@ -18,17 +18,24 @@ cmapMetadataKD <- filterCMapMetadata(
 cmapPerturbationsKD <- loadCMapPerturbations(
   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt")
 
-# Select only some perturbations (to reduce file size)
 data("diffExprStat")
-
 compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 
-filter <- c(head(order(compareKD$spearman_coef_rank)),
-            tail(order(compareKD$spearman_coef_rank)),
-            head(order(compareKD$pearson_coef_rank)),
-            tail(order(compareKD$pearson_coef_rank)))
+# Select only some perturbations (to reduce file size)
+filter <- c(head(order(compareKD$spearman_rank)),
+            tail(order(compareKD$spearman_rank)),
+            head(order(compareKD$pearson_rank)),
+            tail(order(compareKD$pearson_rank)),
+            head(order(compareKD$gsea_rank)),
+            tail(order(compareKD$gsea_rank)))
 filter <- unique(compareKD[[1]][filter])
 cmapPerturbationsKD <- cmapPerturbationsKD[ , filter]
+
+# Remove non-ASCII characters for portability reasons
+metadata <- attr(cmapPerturbationsKD, "metadata")
+metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+attr(cmapPerturbationsKD, "metadata") <- metadata
 }
 }
 \keyword{internal}

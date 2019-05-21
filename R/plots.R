@@ -103,8 +103,8 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
     #     scale_colour_gradient2(low="dodgerblue", mid="white",
     #                            high="orangered", midpoint=0)
     metricPlot <- metricPlot +
-        geom_area(position="identity", aes(group=quantile, fill=quantile),
-                  na.rm=TRUE) +
+        geom_area(position="identity",
+                  aes_string(group="quantile", fill="quantile"), na.rm=TRUE) +
         scale_fill_gradient2(low="dodgerblue", mid="grey95", high="orangered",
                              midpoint=0)
     return(metricPlot)
@@ -211,6 +211,7 @@ plotSingleCorr <- function(perturbation, label, diffExprGenes) {
 #' Plot CMap data comparison
 #'
 #' @param x \code{cmapComparison} object
+#' @param ... Extra arguments currently not used
 #' @param method Character: method to plot results (\code{spearman},
 #'   \code{pearson} or \code{gsea})
 #' @param n Numeric: number of top and bottom genes to label (if a vector of two
@@ -245,7 +246,7 @@ plotSingleCorr <- function(perturbation, label, diffExprGenes) {
 plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
                                 n=c(3, 3), showMetadata=TRUE,
                                 plotNonRankedPerturbations=FALSE,
-                                alpha=0.3) {
+                                alpha=0.3, ...) {
     method <- match.arg(method)
 
     if (method == "gsea") {
@@ -337,6 +338,7 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 #' Plot CMap data comparison
 #'
 #' @param x \code{cmapPerturbations} object
+#' @param ... Extra arguments currently not used
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{cmapComparison} table (from which the respective perturbation
 #'   identifiers are retrieved)
@@ -347,6 +349,9 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 #'   plot top genes (\code{genes = "top"}), bottom genes
 #'   (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
 #'   \code{method = "gsea"}
+#'
+#' @importFrom methods is
+#' @importFrom stats setNames
 #'
 #' @export
 #' @examples
@@ -366,17 +371,20 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
                                    method=c("spearman", "pearson", "gsea"),
                                    geneSize=150,
-                                   genes=c("both", "top", "bottom")) {
+                                   genes=c("both", "top", "bottom"), ...) {
     method <- match.arg(method)
 
     if (is(perturbation, "cmapComparison")) perturbation <- perturbation[[1]]
 
-    if (length(perturbation) == 0)
+    isSummary <- perturbation %in% parseCMapID(colnames(x), cellLine=FALSE)
+
+    if (length(perturbation) == 0) {
         stop("One perturbation ID must be provided")
-    else if (length(perturbation) > 1)
+    } else if (length(perturbation) > 1) {
         stop("Only one perturbation ID is currently supported")
-    else if (!perturbation %in% colnames(x))
+    } else if (!perturbation %in% colnames(x) && !isSummary) {
         stop("Perturbation not found in the columns of the given dataset")
+    }
 
     x <- setNames(as.numeric(x[ , perturbation]), rownames(x[ , perturbation]))
     if (method != "gsea") {

@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{cmapComparison}(x, method = c("spearman", "pearson",
   "gsea"), n = c(3, 3), showMetadata = TRUE,
-  plotNonRankedPerturbations = FALSE, alpha = 0.3)
+  plotNonRankedPerturbations = FALSE, alpha = 0.3, ...)
 }
 \arguments{
 \item{x}{\code{cmapComparison} object}
@@ -25,6 +25,8 @@ perturbation identifiers?}
 grey?}
 
 \item{alpha}{Numeric: transparency}
+
+\item{...}{Extra arguments currently not used}
 }
 \value{
 Plot illustrating the comparison with CMap data

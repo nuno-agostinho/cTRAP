@@ -8,8 +8,7 @@
 CMap metadata obtained by running the following code:
 
 \preformatted{
-cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
-cmapMetadata <- filterCMapMetadata(cmapMetadata, cellLine = "HEPG2",
+cmapMetadata <- filterCMapMetadata("cmapMetadata.txt", cellLine = "HEPG2",
                                    timepoint = "2 h")
 }
 }

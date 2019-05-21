@@ -69,7 +69,7 @@ performDifferentialExpression <- function(counts) {
     return(meanAggr)
 }
 
-#' Download data if a file does not exist
+#' Download data if file is not found
 #'
 #' @param file Character: filepath
 #' @param link Character: link to download file
@@ -77,17 +77,17 @@ performDifferentialExpression <- function(counts) {
 #'
 #' @importFrom utils download.file
 #'
-#' @return Download file if a file does not exist
+#' @return Download file if file is not found
 #' @keywords internal
 downloadIfNeeded <- function(file, link, gz=TRUE) {
     if (!file.exists(file)) {
+        message(paste(file, "not found: downloading data..."))
         if (gz) {
             file <- paste0(file, ".gz")
             mode <- "wb"
         } else {
             mode <- "w"
         }
-        message("File does not exist: downloading data...")
         download.file(link, file, mode="wb")
         if (gz) {
             message("Extracting downloaded data...")

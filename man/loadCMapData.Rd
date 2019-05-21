@@ -20,7 +20,7 @@ loadCMapData(file, type = c("metadata", "geneInfo", "zscores",
 Metadata as a data table
 }
 \description{
-Load CMap data. If \code{file} does not exist, it will first be downloaded.
+Load CMap data (if not found, \code{file} will be automatically downloaded)
 }
 \note{
 If \code{type = "compoundInfo"}, two files from

@@ -19,7 +19,7 @@ test_that("CMap metadata and conditions are loaded", {
     expect_identical(names(conditions), c("perturbationType", "cellLine",
                                           "dosage", "timepoint"))
 
-    expect_true(!is.null(attr(cmapPerturbationsCompounds, "metadata")))
+    expect_true(!is.null(attr(perturbations, "metadata")))
 })
 
 test_that("Perturbation types are retrievable", {

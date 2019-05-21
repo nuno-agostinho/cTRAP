@@ -143,8 +143,7 @@ NULL
 #' CMap metadata obtained by running the following code:
 #'
 #' \preformatted{
-#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
-#' cmapMetadata <- filterCMapMetadata(cmapMetadata, cellLine = "HEPG2",
+#' cmapMetadata <- filterCMapMetadata("cmapMetadata.txt", cellLine = "HEPG2",
 #'                                    timepoint = "2 h")
 #' }
 #'
@@ -169,17 +168,24 @@ NULL
 #' cmapPerturbationsKD <- loadCMapPerturbations(
 #'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #'
-#' # Select only some perturbations (to reduce file size)
 #' data("diffExprStat")
-#'
 #' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 #'
-#' filter <- c(head(order(compareKD$spearman_coef_rank)),
-#'             tail(order(compareKD$spearman_coef_rank)),
-#'             head(order(compareKD$pearson_coef_rank)),
-#'             tail(order(compareKD$pearson_coef_rank)))
+#' # Select only some perturbations (to reduce file size)
+#' filter <- c(head(order(compareKD$spearman_rank)),
+#'             tail(order(compareKD$spearman_rank)),
+#'             head(order(compareKD$pearson_rank)),
+#'             tail(order(compareKD$pearson_rank)),
+#'             head(order(compareKD$gsea_rank)),
+#'             tail(order(compareKD$gsea_rank)))
 #' filter <- unique(compareKD[[1]][filter])
 #' cmapPerturbationsKD <- cmapPerturbationsKD[ , filter]
+#'
+#' # Remove non-ASCII characters for portability reasons
+#' metadata <- attr(cmapPerturbationsKD, "metadata")
+#' metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+#' metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+#' attr(cmapPerturbationsKD, "metadata") <- metadata
 #' }
 #'
 #' @name cmapPerturbationsKD
@@ -195,16 +201,18 @@ NULL
 #'
 #' \preformatted{
 #' cellLine <- c("HepG2", "HUH7")
-#' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' cmapMetadataCompounds <- filterCMapMetadata(
-#'     cmapMetadata, cellLine=cellLine, timepoint="24 h", dosage="5 µM",
-#'     perturbationType="Compound")
-#' cmapZscores  <- loadCMapData("cmapZscores.gctx", "zscores",
-#'                              cmapMetadataCompounds$sig_id)
-#' cmapGeneInfo <- loadCMapData("cmapGeneInfo.txt")
+#'     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
+#'     dosage="5 \u00B5M", perturbationType="Compound")
 #'
 #' cmapPerturbationsCompounds <- loadCMapPerturbations(
-#'     cmapMetadataCompounds, cmapZscores, cmapGeneInfo)
+#'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt")
+#'
+#' # Remove non-ASCII characters for portability reasons
+#' metadata <- attr(cmapPerturbationsCompounds, "metadata")
+#' metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+#' metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+#' attr(cmapPerturbationsCompounds, "metadata") <- metadata
 #' }
 #'
 #' @name cmapPerturbationsCompounds

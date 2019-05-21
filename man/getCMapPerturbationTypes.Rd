@@ -7,7 +7,7 @@
 getCMapPerturbationTypes(control = FALSE)
 }
 \arguments{
-\item{controls}{Boolean: return perturbation types used as control?}
+\item{control}{Boolean: return perturbation types used as control?}
 }
 \value{
 Perturbation types and respective codes as used by CMap datasets

@@ -34,12 +34,15 @@ function names:
     `rankIndividualCellLinePerturbations`) when the mean is calculated
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
+    - Summarise multiple comparison method scores in a new column
 * Improve plotting of CMap comparisons (`plot()`):
     - Plot comparison results against all perturbations by calling `plot()` with
     a `cmapComparison` object (non-ranked perturbations may also be plotted 
     with `plotNonRankedPerturbations = TRUE`)
     - Plot scatter and GSEA plots between differential expression results and a
-    single perturbation by calling `plot()` with a `cmapPerturbations` object
+    single perturbation by calling `plot()` with a `cmapPerturbations` object 
+    (if an identifier regarding the summary of multiple perturbations scores 
+    across cell lines is given, the plots are coloured by cell line)
     - When displaying Gene Set Enrichment Analysis (GSEA) plots, automatically
     render results for both top and bottom genes by default
 
@@ -66,9 +69,9 @@ function names:
     - Improve rendering performance of the GSEA plot
     - Fix disproportion of top and bottom enrichment score panels in GSEA plots
 * Update demo datasets:
-    - Update the `cmapPerturbationsCompounds` and 
-    `cmapPerturbationsKD` datasets according to new internal changes and
-    fix their respective code in the documentation
+    - Update the `cmapPerturbationsCompounds` and `cmapPerturbationsKD` datasets 
+    according to new internal changes and fix their respective code in the 
+    documentation
 * Include license and copyright text for cmapR code
 
 # 1.0.2 (11 November, 2018)

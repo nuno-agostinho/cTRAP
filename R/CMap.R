@@ -1,6 +1,6 @@
 #' Load CMap data
 #'
-#' Load CMap data. If \code{file} does not exist, it will first be downloaded.
+#' Load CMap data (if not found, \code{file} will be automatically downloaded)
 #'
 #' @note If \code{type = "compoundInfo"}, two files from
 #' \strong{The Drug Repurposing Hub} will be downloaded containing information
@@ -46,7 +46,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
             "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
         downloadIfNeeded(file, link)
-        message("Loading data from file...")
+        message(sprintf("Loading data from %s...", file))
         data <- fread(file, sep="\t", na.strings=nas)
 
         data$pert_dose[data$pert_dose == "300.0|300.000000"] <- 300
@@ -57,7 +57,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
             "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
         downloadIfNeeded(file, link)
-        message("Loading data from file...")
+        message(sprintf("Loading data from %s...", file))
         data <- fread(file, sep="\t", na.strings=nas)
     } else if (type == "zscores") {
         link <- paste0(
@@ -65,7 +65,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
             "MODZ_n473647x12328.gctx.gz")
         downloadIfNeeded(file, link)
-        message("Loading data from file...")
+        message(sprintf("Loading data from %s...", file))
         data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
                     set_annot_rownames=FALSE, matrix_only=FALSE)@mat
     } else if (type == "compoundInfo") {
@@ -142,7 +142,8 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
         return(sorted)
     }
     dose <- sortNumericUnitChar(
-        metadata$pert_idose, c("%", "nM", "µM", "µL", "ng", "ng/µL", "ng/mL"))
+        metadata$pert_idose, c("%", "nM", "\u00B5M", "\u00B5L", "ng",
+                               "ng/\u00B5L", "ng/mL"))
     timepoint <- sortNumericUnitChar(metadata$pert_itime)
 
     list("perturbationType"=pertTypes,
@@ -423,7 +424,7 @@ compareAgainstCMapPerMethod <- function(
 #'
 #' @inheritParams compareAgainstCMapPerMethod
 #'
-#' @importFrom data.table setkeyv
+#' @importFrom data.table setkeyv :=
 #'
 #' @return Data table with correlation or GSEA results comparing differential
 #' gene expression values with those associated with CMap perturbations
@@ -542,12 +543,14 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 
 #' Load CMap perturbation data
 #'
-#' @param metadata Data frame (CMap metadata) or character (respective filepath)
-#' @param zscores Data frame (GCTX z-scores) or character (respective filepath)
+#' @param metadata Data frame (CMap metadata) or character (respective filepath
+#'   to load data from file)
+#' @param zscores Data frame (GCTX z-scores) or character (respective filepath
+#'   to load data from file)
 #' @param geneInfo Data frame (CMap gene info) or character (respective
-#'   filepath)
+#'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
-#'   filepath)
+#'   filepath to load data from file)
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -558,9 +561,7 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' if (interactive()) {
 #'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
-#'   zscores  <- loadCMapData("cmapZscores.gctx", "zscores", metadata$sig_id)
-#'   geneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
-#'   loadCMapPerturbations(metadata, zscores, geneInfo)
+#'   loadCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
 loadCMapPerturbations <- function(metadata, zscores, geneInfo,
                                   compoundInfo=NULL) {
@@ -584,7 +585,7 @@ loadCMapPerturbations <- function(metadata, zscores, geneInfo,
 
 #' Get perturbation types
 #'
-#' @param controls Boolean: return perturbation types used as control?
+#' @param control Boolean: return perturbation types used as control?
 #'
 #' @return Perturbation types and respective codes as used by CMap datasets
 #' @export

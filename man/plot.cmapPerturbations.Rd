@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{cmapPerturbations}(x, perturbation, diffExprGenes,
   method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  genes = c("both", "top", "bottom"))
+  genes = c("both", "top", "bottom"), ...)
 }
 \arguments{
 \item{x}{\code{cmapPerturbations} object}
@@ -31,6 +31,8 @@ genes to use for gene set enrichment (GSE) (only used if
 plot top genes (\code{genes = "top"}), bottom genes
 (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
 \code{method = "gsea"}}
+
+\item{...}{Extra arguments currently not used}
 }
 \description{
 Plot CMap data comparison

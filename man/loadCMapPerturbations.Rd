@@ -7,15 +7,17 @@
 loadCMapPerturbations(metadata, zscores, geneInfo, compoundInfo = NULL)
 }
 \arguments{
-\item{metadata}{Data frame (CMap metadata) or character (respective filepath)}
+\item{metadata}{Data frame (CMap metadata) or character (respective filepath
+to load data from file)}
 
-\item{zscores}{Data frame (GCTX z-scores) or character (respective filepath)}
+\item{zscores}{Data frame (GCTX z-scores) or character (respective filepath
+to load data from file)}
 
 \item{geneInfo}{Data frame (CMap gene info) or character (respective
-filepath)}
+filepath to load data from file)}
 
 \item{compoundInfo}{Data frame (CMap compound info) or character (respective
-filepath)}
+filepath to load data from file)}
 }
 \value{
 Perturbation data from CMap as a data table
@@ -27,8 +29,6 @@ Load CMap perturbation data
 if (interactive()) {
   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
-  zscores  <- loadCMapData("cmapZscores.gctx", "zscores", metadata$sig_id)
-  geneInfo <- loadCMapData("cmapGeneInfo.txt", "geneInfo")
-  loadCMapPerturbations(metadata, zscores, geneInfo)
+  loadCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 }
 }

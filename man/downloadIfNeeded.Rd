@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{downloadIfNeeded}
 \alias{downloadIfNeeded}
-\title{Download data if a file does not exist}
+\title{Download data if file is not found}
 \usage{
 downloadIfNeeded(file, link, gz = TRUE)
 }
@@ -14,9 +14,9 @@ downloadIfNeeded(file, link, gz = TRUE)
 \item{gz}{Boolean: is downloaded file compressed?}
 }
 \value{
-Download file if a file does not exist
+Download file if file is not found
 }
 \description{
-Download data if a file does not exist
+Download data if file is not found
 }
 \keyword{internal}
