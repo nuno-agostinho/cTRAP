@@ -18,7 +18,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
-    Pathways
+    Pathways, ImmunoOncology
 URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat,
