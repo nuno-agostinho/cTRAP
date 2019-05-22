@@ -34,7 +34,6 @@ function names:
     `rankIndividualCellLinePerturbations`) when the mean is calculated
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
-    - Summarise multiple comparison method scores in a new column
 * Improve plotting of CMap comparisons (`plot()`):
     - Plot comparison results against all perturbations by calling `plot()` with
     a `cmapComparison` object (non-ranked perturbations may also be plotted 
@@ -62,7 +61,7 @@ function names:
     (genes, biological agents or compounds)
     - Improve performance when correlating against multiple cell lines
     - Remove `cellLine` argument (please filter conditions with upstream
-    functions such as `filterCMapMetadata`)
+    functions such as `filterCMapMetadata()`)
     - Fix incorrect label of identifiers
     - Report run time and settings used
 * Minor improvements to `plot()`:
