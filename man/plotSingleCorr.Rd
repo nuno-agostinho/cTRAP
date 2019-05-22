@@ -4,7 +4,16 @@
 \alias{plotSingleCorr}
 \title{Render scatter plot to show a single relationship}
 \usage{
-plotSingleCorr(perturbation, label, diffExprGenes)
+plotSingleCorr(perturbation, ylabel, diffExprGenes)
+}
+\arguments{
+\item{perturbation}{List of named numeric vectors containing the differential
+expression profile score per gene for a perturbation; each perturbation of
+the list will be rendered with a different colour}
+
+\item{ylabel}{Character: Y axis label}
+
+\item{diffExprGenes}{Named vector}
 }
 \description{
 Render scatter plot to show a single relationship

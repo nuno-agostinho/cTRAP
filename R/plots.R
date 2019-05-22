@@ -112,6 +112,7 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 
 #' Plot gene set enrichment analysis (GSEA)
 #'
+#' @inheritParams plotSingleCorr
 #' @inheritParams fgsea::fgsea
 #' @param title Character: plot title
 #' @param titleSize Integer: plot title size
@@ -123,9 +124,14 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 #'
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
-plotGSEA <- function(stats, pathways, genes=c("both", "top", "bottom"),
+plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
                      titleSize=14, axisTitleSize=12, axisTextSize=10,
                      enrichmentPlotPointSize=0.1, gseaParam=1) {
+    if (length(perturbation) > 1) {
+        stop("Plotting GSEA of multiple perturbations is currently unsupported")
+    }
+    stats <- perturbation[[1]]
+
     stats <- unclass(stats)
     statsOrd <- stats[order(rank(-stats))]
     statsAdj <- sign(statsOrd) * (abs(statsOrd) ^ gseaParam)
@@ -187,24 +193,51 @@ plotGSEA <- function(stats, pathways, genes=c("both", "top", "bottom"),
 
 #' Render scatter plot to show a single relationship
 #'
+#' @param perturbation List of named numeric vectors containing the differential
+#' expression profile score per gene for a perturbation; each perturbation of
+#' the list will be rendered with a different colour
+#' @param ylabel Character: Y axis label
+#' @param diffExprGenes Named vector
+#'
 #' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab theme_bw
-#' geom_density_2d
+#' geom_density_2d theme guides guide_legend
 #'
 #' @keywords internal
-plotSingleCorr <- function(perturbation, label, diffExprGenes) {
-    # Intersect common genes
-    genes <- intersect(names(perturbation), names(diffExprGenes))
-    perturbation  <- perturbation[genes]
-    diffExprGenes <- diffExprGenes[genes]
+plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
+    prepareDFperPert <- function(perturbation, diffExprGenes) {
+        # Intersect common genes
+        genes         <- intersect(names(perturbation), names(diffExprGenes))
+        perturbation  <- perturbation[genes]
+        diffExprGenes <- diffExprGenes[genes]
 
-    df <- data.frame(diffExprGenes, perturbation)
-    plot <- ggplot(df, aes(diffExprGenes, perturbation)) +
+        df <- data.frame(diffExprGenes, zscores=perturbation)
+        return(df)
+    }
+    dfPerPert  <- lapply(perturbation, prepareDFperPert, diffExprGenes)
+    dfAllPerts <- bind_rows(dfPerPert)
+    dfAllPerts <- cbind(dfAllPerts, perturbation=rep(names(dfPerPert),
+                                                     lapply(dfPerPert, nrow)))
+    dfAllPerts$perturbation <- parseCMapID(dfAllPerts$perturbation,
+                                           cellLine=TRUE)
+
+    multipleCellLines <- length(perturbation) > 1
+    if (multipleCellLines) {
+        aesMap <- aes_string("diffExprGenes", "zscores", colour="perturbation")
+        guide  <- guides(colour=guide_legend(title="Cell line"))
+    } else {
+        aesMap <- aes_string("diffExprGenes", "zscores")
+        guide  <- NULL
+    }
+
+    plot <- ggplot(dfAllPerts, aesMap) +
         geom_point(alpha=0.1) +
         geom_rug(alpha=0.1) +
         geom_density_2d() +
         xlab("Differentially expressed genes (input)") +
-        ylab(label) +
-        theme_bw()
+        ylab(ylabel) +
+        theme_bw() +
+        theme(legend.position="bottom") +
+        guide
     return(plot)
 }
 
@@ -304,8 +337,8 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 
         dose       <- collapse(info$metadata$pert_idose)
         timepoint  <- collapse(info$metadata$pert_itime)
-        x$label[k] <- sprintf("%s (%s, %s at %s)",
-                              name, cellLine, dose, timepoint)
+        res <- sprintf("%s (%s, %s at %s)", name, cellLine, dose, timepoint)
+        return(res)
     }
 
     if (showMetadata){
@@ -358,16 +391,24 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 #' data("diffExprStat")
 #' data("cmapPerturbationsKD")
 #'
-#' # Compare against CMap using Spearman's correlation, Pearson's correlation
-#' # and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
-#' # as gene sets
-#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
-#'
 #' EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
-#'
 #' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
 #' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
 #' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="gsea")
+#'
+#' data("cmapPerturbationsCompounds")
+#' pert <- "CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1"
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+#'
+#' # Multiple cell line perturbations
+#' pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
+#'
+#' # Currently unsupported!
+#' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
                                    method=c("spearman", "pearson", "gsea"),
                                    geneSize=150,
@@ -376,23 +417,30 @@ plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
 
     if (is(perturbation, "cmapComparison")) perturbation <- perturbation[[1]]
 
-    isSummary <- perturbation %in% parseCMapID(colnames(x), cellLine=FALSE)
+    cellLinePerts <- colnames(x)[
+        parseCMapID(colnames(x), cellLine=FALSE) %in% perturbation]
+    isSummaryPert <- length(cellLinePerts) > 0
 
     if (length(perturbation) == 0) {
         stop("One perturbation ID must be provided")
     } else if (length(perturbation) > 1) {
         stop("Only one perturbation ID is currently supported")
-    } else if (!perturbation %in% colnames(x) && !isSummary) {
+    } else if (!perturbation %in% colnames(x) && !isSummaryPert) {
         stop("Perturbation not found in the columns of the given dataset")
     }
 
-    x <- setNames(as.numeric(x[ , perturbation]), rownames(x[ , perturbation]))
+    if (!isSummaryPert) cellLinePerts <- perturbation
+    names(cellLinePerts) <- cellLinePerts
+    data <- lapply(cellLinePerts, function(pert, x) {
+        setNames(as.numeric(x[ , pert]), rownames(x[ , pert]))
+    }, x)
+
     if (method != "gsea") {
-        plotSingleCorr(x, perturbation, diffExprGenes)
+        plotSingleCorr(data, perturbation, diffExprGenes)
     } else {
         pathways <- prepareGSEApathways(diffExprGenes=diffExprGenes,
                                         geneSize=geneSize)
         genes <- match.arg(genes)
-        plotGSEA(x, pathways, genes)
+        plotGSEA(data, pathways, genes)
     }
 }

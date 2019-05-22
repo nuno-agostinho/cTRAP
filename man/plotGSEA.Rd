@@ -4,12 +4,14 @@
 \alias{plotGSEA}
 \title{Plot gene set enrichment analysis (GSEA)}
 \usage{
-plotGSEA(stats, pathways, genes = c("both", "top", "bottom"),
+plotGSEA(perturbation, pathways, genes = c("both", "top", "bottom"),
   titleSize = 14, axisTitleSize = 12, axisTextSize = 10,
   enrichmentPlotPointSize = 0.1, gseaParam = 1)
 }
 \arguments{
-\item{stats}{Named vector of gene-level stats. Names should be the same as in 'pathways'}
+\item{perturbation}{List of named numeric vectors containing the differential
+expression profile score per gene for a perturbation; each perturbation of
+the list will be rendered with a different colour}
 
 \item{pathways}{List of gene sets to check.}
 

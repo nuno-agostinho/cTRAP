@@ -41,14 +41,22 @@ Plot CMap data comparison
 data("diffExprStat")
 data("cmapPerturbationsKD")
 
-# Compare against CMap using Spearman's correlation, Pearson's correlation
-# and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
-# as gene sets
-compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
-
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
-
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="gsea")
+
+data("cmapPerturbationsCompounds")
+pert <- "CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1"
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+
+# Multiple cell line perturbations
+pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
+
+# Currently unsupported!
+# plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 }
