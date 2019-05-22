@@ -41,6 +41,7 @@ Plot CMap data comparison
 data("diffExprStat")
 data("cmapPerturbationsKD")
 
+compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
