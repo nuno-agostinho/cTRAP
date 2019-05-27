@@ -96,27 +96,6 @@ downloadIfNeeded <- function(file, link, gz=TRUE) {
     }
 }
 
-#' Collapse duplicated rows based on a column of a data frame
-#'
-#' @param df Data frame
-#' @param column Character: name of the column with elements to indicate which
-#' rows to collapse
-#'
-#' @importFrom plyr ldply
-#'
-#' @return Data frame with duplicated rows collapsed
-#' @keywords internal
-collapseDuplicatedRows <- function(df, column) {
-    cluster <- split(seq(df[[column]]), df[[column]])
-    collapseRowInfo <- function(thisCluster, df) {
-        tmp <- df[thisCluster, ]
-        apply(tmp, 2, function(x) paste(unique(x), collapse=", "))
-    }
-    collapsed <- pblapply(cluster, collapseRowInfo, df)
-    collapsed <- ldply(collapsed, .id=column)
-    return(collapsed)
-}
-
 #' Parse CMap identifier
 #'
 #' @param id Character: CMap identifier

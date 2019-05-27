@@ -69,6 +69,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
         data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
                     set_annot_rownames=FALSE, matrix_only=FALSE)@mat
     } else if (type == "compoundInfo") {
+        file <- gsub("\\_drugs|\\_samples", "", file)
         file <- sprintf("%s%s.%s", file_path_sans_ext(file),
                         c("_drugs", "_samples"), file_ext(file))
         names(file) <- c("drugs", "samples")
@@ -89,7 +90,7 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
         downloadIfNeeded(file[["drugs"]], link)
 
         # Replace separation symbols for targets
-        message("Loading compound data from drug file...")
+        message(sprintf("Loading compound data from %s...", file[["drugs"]]))
         drugData <- readAfterComments(file[["drugs"]])
         drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
 
@@ -99,11 +100,13 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
             "repurposing_samples_20180907.txt")
         downloadIfNeeded(file[["samples"]], link)
 
-        message("Loading compound data from sample file...")
+        message(sprintf("Loading compound data from %s...", file[["samples"]]))
         pertData <- readAfterComments(file[["samples"]])
         pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
                                   "InChIKey", "pubchem_cid")]
-        pertData <- collapseDuplicatedRows(pertData, "pert_iname")
+        pertData <- unique(pertData)
+        pertData <- aggregate(pertData, by=list(pertData$pert_iname),
+                              function(x) paste(unique(x), collapse=", "))
         data <- merge(drugData, pertData, all=TRUE)
     }
     return(data)
