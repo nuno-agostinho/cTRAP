@@ -4,8 +4,8 @@
 \alias{correlatePerCellLine}
 \title{Correlate differential expression scores per cell line}
 \usage{
-correlatePerCellLine(cellLine, diffExprGenes, perturbations, filtered,
-  method, pAdjustMethod = "BH")
+correlatePerCellLine(cellLine, diffExprGenes, perturbations, method,
+  pAdjustMethod = "BH")
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -14,9 +14,7 @@ that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
 \item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
-(check \code{\link{loadCMapPerturbations}})}
-
-\item{filtered}{Character: perturbations to filter}
+(check \code{\link{prepareCMapPerturbations}})}
 
 \item{method}{Character: correlation method}
 }

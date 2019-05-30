@@ -432,9 +432,11 @@ plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
 
     if (!isSummaryPert) cellLinePerts <- perturbation
     names(cellLinePerts) <- cellLinePerts
-    data <- lapply(cellLinePerts, function(pert, x) {
-        setNames(as.numeric(x[ , pert]), rownames(x[ , pert]))
-    }, x)
+    zscores <- loadCMapZscores(x[cellLinePerts])
+
+    data <- lapply(cellLinePerts, function(pert, zscores) {
+        setNames(as.numeric(zscores[ , pert]), rownames(zscores[ , pert]))
+    }, zscores)
 
     if (method != "gsea") {
         plotSingleCorr(data, perturbation, diffExprGenes)

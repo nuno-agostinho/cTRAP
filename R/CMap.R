@@ -1,3 +1,110 @@
+loadCMapMetadata <- function(file, nas, load=FALSE) {
+    link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+                   "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
+    downloadIfNeeded(file, link)
+    message(sprintf("Loading data from %s...", file))
+    data <- fread(file, sep="\t", na.strings=nas)
+
+    # Fix issues with specific metadata values
+    data$pert_dose[data$pert_dose == "300.0|300.000000"] <- 300
+    data$pert_dose <- as.numeric(data$pert_dose)
+    data$pert_idose[data$pert_idose == "300 ng|300 ng"] <- "300 ng"
+    return(data)
+}
+
+prepareCMapZscores <- function(file, zscoresID=NULL) {
+    link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+                   "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
+                   "MODZ_n473647x12328.gctx.gz")
+    downloadIfNeeded(file, link)
+    data <- normalizePath(file)
+    attr(data, "genes")         <- readGctxIds(data, dimension="row")
+    attr(data, "perturbations") <- processIds(
+        zscoresID, readGctxIds(data, dimension="col"), type="cid")$ids
+    return(data)
+}
+
+#' Load matrix of CMap zscores
+#'
+#' @param data
+#' @param verbose Boolean: print messages?
+#'
+#' @return Matrix containing CMap perturbation z-scores (genes as rows,
+#'   perturbations as columns)
+#' @export
+#'
+#' @examples
+#' #' if (interactive()) {
+#'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
+#'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+#'   perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
+#'                                     "cmapGeneInfo.txt")
+#'   zscores <- loadCMapZscores(perts[ , 1:50])
+#' }
+loadCMapZscores <- function(data, verbose=TRUE) {
+    if (verbose) message(sprintf("Loading data from %s...", data))
+    zscores  <- new("GCT", src=data, cid=colnames(data), verbose=verbose)@mat
+    geneInfo <- attr(data, "geneInfo")
+    rownames(zscores) <- geneInfo$pr_gene_symbol[
+        match(rownames(zscores), geneInfo$pr_gene_id)]
+    if (!identical(attr(data, "genes"), rownames(zscores)))
+        zscores <- zscores[attr(data, "genes"), ]
+    return(zscores)
+}
+
+loadCMapCompoundInfo <- function(file, nas) {
+    file <- gsub("\\_drugs|\\_samples", "", file)
+    file <- sprintf("%s%s.%s", file_path_sans_ext(file),
+                    c("_drugs", "_samples"), file_ext(file))
+    names(file) <- c("drugs", "samples")
+
+    readAfterComments <- function(file, comment.char="!") {
+        # Ignore first rows starting with a comment character
+        firstRows  <- fread(file, sep="\t", na.strings=nas, nrows=20)
+        ignoreExpr <- paste0("^\\", comment.char)
+        skipRows   <- min(grep(ignoreExpr, firstRows[[1]], invert=TRUE)) - 1
+        data       <- fread(file, sep="\t", na.strings=nas, skip=skipRows)
+        return(data)
+    }
+
+    # Process drug data
+    link <- paste0(
+        "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
+        "repurposing_drugs_20180907.txt")
+    downloadIfNeeded(file[["drugs"]], link)
+
+    # Replace separation symbols for targets
+    message(sprintf("Loading compound data from %s...", file[["drugs"]]))
+    drugData <- readAfterComments(file[["drugs"]])
+    drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
+
+    # Process perturbation data
+    link <- paste0(
+        "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
+        "repurposing_samples_20180907.txt")
+    downloadIfNeeded(file[["samples"]], link)
+
+    message(sprintf("Loading compound data from %s...", file[["samples"]]))
+    pertData <- readAfterComments(file[["samples"]])
+    pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
+                              "InChIKey", "pubchem_cid")]
+    pertData <- unique(pertData)
+    pertData <- aggregate(pertData, by=list(pertData$pert_iname),
+                          function(x) paste(unique(x), collapse=", "))
+    data <- merge(drugData, pertData, all=TRUE)
+    return(data)
+}
+
+loadCMapGeneInfo <- function(file, nas) {
+    link <- paste0(
+        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
+        "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
+    downloadIfNeeded(file, link)
+    message(sprintf("Loading data from %s...", file))
+    data <- fread(file, sep="\t", na.strings=nas)
+    return(data)
+}
+
 #' Load CMap data
 #'
 #' Load CMap data (if not found, \code{file} will be automatically downloaded)
@@ -10,7 +117,7 @@
 #' @param file Character: path to file
 #' @param type Character: type of data to load (\code{metadata},
 #' \code{geneInfo}, \code{zscores} or \code{compoundInfo})
-#' @param zscoresId Character: identifiers to partially load z-scores file
+#' @param zscoresID Character: identifiers to partially load z-scores file
 #' (for performance reasons)
 #'
 #' @importFrom data.table fread
@@ -37,77 +144,20 @@
 #' }
 loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
                                       "compoundInfo"),
-                         zscoresId=NULL) {
+                         zscoresID=NULL) {
+    if (is.null(file)) stop("File cannot be NULL, please provide a filename")
+
     type <- match.arg(type)
     nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666",
               "-666.000000", "-666.0|-666.000000")
     if (type == "metadata") {
-        link <- paste0(
-            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-            "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
-        downloadIfNeeded(file, link)
-        message(sprintf("Loading data from %s...", file))
-        data <- fread(file, sep="\t", na.strings=nas)
-
-        data$pert_dose[data$pert_dose == "300.0|300.000000"] <- 300
-        data$pert_dose <- as.numeric(data$pert_dose)
-        data$pert_idose[data$pert_idose == "300 ng|300 ng"] <- "300 ng"
+        data <- loadCMapMetadata(file, nas)
     } else if (type == "geneInfo") {
-        link <- paste0(
-            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-            "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
-        downloadIfNeeded(file, link)
-        message(sprintf("Loading data from %s...", file))
-        data <- fread(file, sep="\t", na.strings=nas)
+        data <- loadCMapGeneInfo(file, nas)
     } else if (type == "zscores") {
-        link <- paste0(
-            "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
-            "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
-            "MODZ_n473647x12328.gctx.gz")
-        downloadIfNeeded(file, link)
-        message(sprintf("Loading data from %s...", file))
-        data <- new("GCT", src=file, rid=NULL, cid=zscoresId,
-                    set_annot_rownames=FALSE, matrix_only=FALSE)@mat
+        data <- prepareCMapZscores(file, zscoresID)
     } else if (type == "compoundInfo") {
-        file <- gsub("\\_drugs|\\_samples", "", file)
-        file <- sprintf("%s%s.%s", file_path_sans_ext(file),
-                        c("_drugs", "_samples"), file_ext(file))
-        names(file) <- c("drugs", "samples")
-
-        readAfterComments <- function(file, comment.char="!") {
-            # Ignore first rows starting with a comment character
-            firstRows  <- fread(file, sep="\t", na.strings=nas, nrows=20)
-            ignoreExpr <- paste0("^\\", comment.char)
-            skipRows   <- min(grep(ignoreExpr, firstRows[[1]], invert=TRUE)) - 1
-            data       <- fread(file, sep="\t", na.strings=nas, skip=skipRows)
-            return(data)
-        }
-
-        # Process drug data
-        link <- paste0(
-            "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
-            "repurposing_drugs_20180907.txt")
-        downloadIfNeeded(file[["drugs"]], link)
-
-        # Replace separation symbols for targets
-        message(sprintf("Loading compound data from %s...", file[["drugs"]]))
-        drugData <- readAfterComments(file[["drugs"]])
-        drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
-
-        # Process perturbation data
-        link <- paste0(
-            "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
-            "repurposing_samples_20180907.txt")
-        downloadIfNeeded(file[["samples"]], link)
-
-        message(sprintf("Loading compound data from %s...", file[["samples"]]))
-        pertData <- readAfterComments(file[["samples"]])
-        pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
-                                  "InChIKey", "pubchem_cid")]
-        pertData <- unique(pertData)
-        pertData <- aggregate(pertData, by=list(pertData$pert_iname),
-                              function(x) paste(unique(x), collapse=", "))
-        data <- merge(drugData, pertData, all=TRUE)
+        data <- loadCMapCompoundInfo(file, nas)
     }
     return(data)
 }
@@ -159,7 +209,6 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'
 #' @inheritParams compareAgainstCMap
 #' @param method Character: correlation method
-#' @param filtered Character: perturbations to filter
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom data.table data.table
@@ -167,20 +216,37 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'
 #' @return Data frame with correlations statistics, p-value and q-value
 #' @keywords internal
-correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
-                                 filtered, method, pAdjustMethod="BH") {
-    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    corPert <- function(pert, filtered, perturbations, diffExprGenes, method) {
-        thisPert <- perturbations[ , filtered[pert]]
+correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations, method,
+                                 pAdjustMethod="BH") {
+    # Divide perturbations into chunks (only load into memory a chunk at a time)
+    chunkVector <- function(x, nElems) {
+        groups <- ceiling(length(x)/nElems)
+        split(x, factor(sort(rank(x) %% groups)))
+    }
+    chunks      <- chunkVector(colnames(perturbations), 10000)
+    chunkIndex  <- 0
+    data        <- NULL
+    cols        <- NULL
+
+    corPert <- function(k, perturbation, diffExprGenes, method) {
+        if (!k %in% cols) {
+            chunkIndex <<- chunkIndex + 1
+            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
+                                     verbose=FALSE)
+            data <<- unclass(data)
+            cols <<- colnames(data)
+        }
+        thisPert <- data[ , k]
         cor.test(thisPert, diffExprGenes, method=method)
     }
+    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
     cors <- suppressWarnings(pblapply(
-        seq(filtered), corPert, filtered, perturbations, diffExprGenes, method))
+        colnames(perturbations), corPert, perturbations, diffExprGenes, method))
 
     cor  <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
     qval <- p.adjust(pval, pAdjustMethod)
-    names(cor) <- names(pval) <- names(qval) <- filtered
+    names(cor) <- names(pval) <- names(qval) <- colnames(perturbations)
 
     res <- data.table(names(cor), cor, pval, qval)
     names(res) <- c("identifier", sprintf("%s_%s", method,
@@ -192,7 +258,6 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #'
 #' @inheritParams compareAgainstCMap
 #' @inheritParams fgsea::fgsea
-#' @param filtered Character: perturbations to filter
 #'
 #' @importFrom fgsea fgsea
 #' @importFrom data.table data.table
@@ -202,18 +267,33 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations,
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' cell line
 #' @keywords internal
-performGSAperCellLine <- function(cellLine, perturbations, filtered, pathways) {
-    perturbations <- unclass(perturbations[ , filtered])
+performGSAperCellLine <- function(cellLine, perturbations, pathways) {
+    # Divide perturbations into chunks (only load into memory a chunk at a time)
+    chunkVector <- function(x, nElems) {
+        groups <- ceiling(length(x)/nElems)
+        split(x, factor(sort(rank(x) %% groups)))
+    }
+    chunks      <- chunkVector(colnames(perturbations), 10000)
+    chunkIndex  <- 0
+    data        <- NULL
+    cols        <- NULL
 
     performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
-        signature <- perturbation[ , k]
-        names(signature) <- rownames(perturbation)
+        if (!k %in% cols) {
+            chunkIndex <<- chunkIndex + 1
+            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
+                                     verbose=FALSE)
+            data <<- unclass(data)
+            cols <<- colnames(data)
+        }
+        signature <- data[ , k]
+        names(signature) <- rownames(data)
         suppressWarnings(fgsea(pathways=pathways, stats=sort(signature),
                                minSize=15, maxSize=500, nperm=1))
     }
-    gsa <- pblapply(
-        seq(ncol(perturbations)), performGSAwithPerturbationSignature,
-        perturbations, pathways)
+    gsa <- pblapply(colnames(perturbations),
+                    performGSAwithPerturbationSignature,
+                    perturbations, pathways)
     # gsa <- plyr::compact(gsa) # in case of NULL elements
     names(gsa) <- colnames(perturbations)[seq(ncol(perturbations))]
 
@@ -263,7 +343,7 @@ compareWithCellLineProgress <- function(cellLine, cellLines, FUN, method,
     pertNumber <- length(filtered)
 
     message(sprintf(msg, methodStr, cellLine, pertNumber, current, total))
-    FUN(cellLine, perturbations=perturbations, filtered=filtered, ...)
+    FUN(cellLine, perturbations=perturbations[ , filtered], ...)
 }
 
 #' Prepare GSEA pathways
@@ -293,7 +373,7 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
 #'   or \code{gsea}; multiple methods may be selected at once)
 #' @param perturbations \code{cmapPerturbations} object: CMap perturbations
-#'   (check \code{\link{loadCMapPerturbations}})
+#'   (check \code{\link{prepareCMapPerturbations}})
 #' @param cellLineMean Boolean: add a column with the mean score across cell
 #'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
 #'   added if more than one cell line is available
@@ -321,7 +401,6 @@ compareAgainstCMapPerMethod <- function(
         message("Subsetting perturbations based on intersecting genes...")
         genes <- intersect(names(diffExprGenes), rownames(perturbations))
         diffExprGenes        <- diffExprGenes[genes]
-        class(perturbations) <- tail(class(perturbations), 1)
         perturbations        <- perturbations[genes, ]
 
         # Correlate per cell line
@@ -544,7 +623,7 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
     return(metadata)
 }
 
-#' Load CMap perturbation data
+#' Prepare CMap perturbation data
 #'
 #' @param metadata Data frame (CMap metadata) or character (respective filepath
 #'   to load data from file)
@@ -558,16 +637,16 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
 #'
-#' @return Perturbation data from CMap as a data table
+#' @return CMap perturbation data attributes and filename
 #' @export
 #' @examples
 #' if (interactive()) {
 #'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
-#'   loadCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
+#'   prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
-loadCMapPerturbations <- function(metadata, zscores, geneInfo,
-                                  compoundInfo=NULL) {
+prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
+                                     compoundInfo=NULL) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {
@@ -577,8 +656,8 @@ loadCMapPerturbations <- function(metadata, zscores, geneInfo,
         compoundInfo <- loadCMapData(compoundInfo, "compoundInfo")
     }
 
-    rownames(zscores) <- geneInfo$pr_gene_symbol[
-        match(rownames(zscores), geneInfo$pr_gene_id)]
+    attr(zscores, "genes") <- geneInfo$pr_gene_symbol[
+        match(attr(zscores, "genes"), geneInfo$pr_gene_id)]
     attr(zscores, "metadata") <- metadata
     attr(zscores, "geneInfo") <- geneInfo
     attr(zscores, "compoundInfo") <- compoundInfo

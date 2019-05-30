@@ -18,7 +18,7 @@ that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
 \item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
-(check \code{\link{loadCMapPerturbations}})}
+(check \code{\link{prepareCMapPerturbations}})}
 
 \item{geneSize}{Number: top and bottom number of differentially expressed
 genes to use for gene set enrichment (GSE) (only used if

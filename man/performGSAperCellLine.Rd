@@ -4,13 +4,11 @@
 \alias{performGSAperCellLine}
 \title{Perform gene set enrichment (GSA) per cell line}
 \usage{
-performGSAperCellLine(cellLine, perturbations, filtered, pathways)
+performGSAperCellLine(cellLine, perturbations, pathways)
 }
 \arguments{
 \item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
-(check \code{\link{loadCMapPerturbations}})}
-
-\item{filtered}{Character: perturbations to filter}
+(check \code{\link{prepareCMapPerturbations}})}
 
 \item{pathways}{List of gene sets to check.}
 }

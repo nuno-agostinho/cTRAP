@@ -15,7 +15,7 @@ that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
 \item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
-(check \code{\link{loadCMapPerturbations}})}
+(check \code{\link{prepareCMapPerturbations}})}
 
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}

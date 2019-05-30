@@ -127,40 +127,81 @@ parseCMapID <- function(id, cellLine=FALSE) {
 #' Subset a \code{cmapPerturbations} object
 #'
 #' @param x \code{cmapPerturbations} object
+#' @param i,j Character or numeric indexes specifying elements to extract
+#' @param drop Boolean: coerce result to the lowest possible dimension?
 #' @param ... Extra parameters passed to \code{`[`}
 #'
 #' @return \code{cmapPerturbations} object with subset data
 #' @export
-`[.cmapPerturbations` <- function(x, ...) {
-    out <- NextMethod("[", drop=FALSE)
+`[.cmapPerturbations` <- function(x, i, j, drop=FALSE, ...) {
+    if (is.character(x)) {
+        out <- x
+        nargs <- nargs() - length(list(...)) - 1
 
-    # Inherit input's attributes
-    attrs <- attributes(x)
-    attrs$dim <- NULL
-    attrs$dimnames <- NULL
-    attrs$names <- NULL
+        hasI <- !missing(i)
+        hasJ <- !missing(j)
+        genes <- attr(out, "genes")
+        perts <- attr(out, "perturbations")
+        # Allow to search based on characters
+        names(genes) <- genes
+        names(perts) <- perts
+
+        if (nargs == 2) {
+            if (hasI) genes <- genes[i]
+            if (hasJ) perts <- perts[j]
+        } else if (hasI && nargs == 1) {
+            perts <- perts[i]
+        }
+        if (anyNA(perts) || anyNA(genes)) stop("subscript out of bounds")
+        attr(out, "genes") <- unname(genes)
+        attr(out, "perturbations") <- unname(perts)
+    } else {
+        out <- NextMethod("[", drop=drop)
+    }
 
     # Trim metadata to only contain subset information
+    attrs <- attributes(x)
     if (!is.null(ncol(out)) && ncol(x) != ncol(out) &&
         !is.null(attrs$metadata)) {
         samples <- attrs$metadata$sig_id %in% colnames(out)
+        attr(out, "metadata") <- NULL
         attrs$metadata <- attrs$metadata[samples, , drop=FALSE]
     }
+    # Inherit input's attributes
+    attrs <- attrs[!names(attrs) %in% names(attributes(out))]
     attributes(out) <- c(attributes(out), attrs)
     return(out)
 }
 
-#' @inherit base::as.data.frame
+#' Dimensions of a \code{cmapPerturbations} object
+#'
+#' @param x \code{cmapPerturbations} object
+#'
+#' @return Dimensions of a \code{cmapPerturbations} object
 #' @export
-as.data.frame.cmapPerturbations <- function(x, ...) NextMethod("as.data.frame")
+dim.cmapPerturbations <- function(x) {
+    if (is.character(x)) {
+        res <- vapply(dimnames(x), length, numeric(1))
+    } else {
+        res <- NextMethod("dim")
+    }
+    return(res)
+}
 
-#' @inherit utils::head
+#' Dimnames of a \code{cmapPerturbations} object
+#'
+#' @param x \code{cmapPerturbations} object
+#'
+#' @return Retrieve dimnames of a \code{cmapPerturbations} object
 #' @export
-head.cmapPerturbations <- function(x, ...) NextMethod("head")
-
-#' @inherit utils::tail
-#' @export
-tail.cmapPerturbations <- function(x, ...) NextMethod("tail", ...)
+dimnames.cmapPerturbations <- function(x) {
+    if (is.character(x)) {
+        res <- list(attr(x, "genes"), attr(x, "perturbations"))
+    } else {
+        res <- NextMethod("dimnames")
+    }
+    return(res)
+}
 
 # cmapComparison object --------------------------------------------------------
 

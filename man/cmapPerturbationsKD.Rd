@@ -15,7 +15,7 @@ cmapMetadataKD <- filterCMapMetadata(
   "cmapMetadata.txt", cellLine=cellLine,
   perturbationType="Consensus signature from shRNAs targeting the same gene")
 
-cmapPerturbationsKD <- loadCMapPerturbations(
+cmapPerturbationsKD <- prepareCMapPerturbations(
   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt")
 
 data("diffExprStat")

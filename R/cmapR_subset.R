@@ -46,34 +46,20 @@ setClass("GCT", representation(
 #' @source https://github.com/cmap/cmapR
 fix.datatypes <- function(meta) {
     for (field.name in names(meta)) {
-        # get the field values
         field <- meta[[field.name]]
-        # check if it's numeric. data may come in as a string
-        # but actually contains numeric values. if so, as.numeric
-        # will not result in a vector of NA values
+        # Check if string contains numeric values
         field.as.numeric <- suppressWarnings(as.numeric(field))
         if (!any(is.na(field.as.numeric))) {
             field <- field.as.numeric
         }
         if (is.numeric(field)) {
-            # check if it's an integer. data may be floats but
-            # if we coerce to an integer and the difference from
-            # original values is zero, that means data are actually
-            # integers. integer conversion will return NA if there
-            # are any issues.
+            # Check if floats are actually integers
             field.as.integer <- suppressWarnings(as.integer(field))
             if (!any(is.na(field.as.integer))) {
-                # integer conversion was fine, lets see if the
-                # values are altered
                 diffs <- field - field.as.integer
-                if (all(diffs == 0)) {
-                    # converting to integer didn't change value,
-                    # set field to integer values
-                    field <- field.as.integer
-                }
+                if (all(diffs == 0)) field <- field.as.integer
             }
         }
-        # insert back into the annotations
         meta[[field.name]] <- field
     }
     return(meta)
@@ -109,31 +95,28 @@ readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
     else
         name <- "0/META/COL"
 
-    raw_annots <- h5read(gctx_path, name=name) # returns a list
+    raw_annots <- h5read(gctx_path, name=name) # Returns a list
     fields <- names(raw_annots)
-    # define an empty data frame of the correct dimensions
+    # Empty data frame of the correct dimensions
     annots <-  data.frame(matrix(nrow=length(raw_annots[[fields[1]]]),
                                  ncol=length(fields)))
     names(annots) <-  fields
-    # loop through each field and fill the annots data.frame
+    # Loop through each field and fill the annots data.frame
     for (i in 1:length(fields)) {
         field <- fields[i]
-        # remove any trailing spaces
-        # and cast as vector
+        # Remove any trailing spaces and cast as vector
         annots[,i] <- as.vector(gsub("\\s*$", "", raw_annots[[field]],
                                      perl=TRUE))
     }
     annots <- fix.datatypes(annots)
-    # subset to the provided set of ids, if given
+    # Subset to the provided set of identifiers, if any
     if (is.null(ids))
         ids <- as.character(annots$id)
     else
         ids <- ids
 
-    # make sure annots row ordering matches that of ids
     annots <- subsetToIds(annots, ids)
     annots$id <- as.character(annots$id)
-    # use the id field to set the rownames
     if (set_annot_rownames) rownames(annots) <- annots$id
     return(annots)
 }
@@ -162,9 +145,7 @@ readGctxIds <- function(gctx_path, dimension="row") {
     } else {
         name <- "0/META/COL/id"
     }
-    # remove any spaces
     ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=TRUE)
-    # cast as character
     ids <- as.character(ids)
     return(ids)
 }
@@ -191,7 +172,7 @@ readGctxIds <- function(gctx_path, dimension="row") {
 processIds <- function(ids, all_ids, type="rid") {
     if (!is.null(ids)) {
         if (is.numeric(ids)) {
-            # is it numeric?
+            # Check if numeric
             idx <- ids
             is_invalid_idx <- (idx > length(all_ids)) | (idx <= 0)
             invalid_idx <- idx[is_invalid_idx]
@@ -200,7 +181,7 @@ processIds <- function(ids, all_ids, type="rid") {
                            "indices were found in the dataset"))
             }
             if (any(is_invalid_idx)) {
-                # requested indices are outside of the possible range
+                # Requested indices are outside of the possible range
                 warning(paste(
                     "the following ", type,
                     " were are outside possible range and will be ignored:\n",
@@ -208,7 +189,7 @@ processIds <- function(ids, all_ids, type="rid") {
             }
             idx <- idx[!is_invalid_idx]
         } else {
-            # assume its a character
+            # Assume it is a character
             idx <- match(ids, all_ids)
             if (all(is.na(idx))) {
                 stop(paste("none of the requested", type,
@@ -216,18 +197,17 @@ processIds <- function(ids, all_ids, type="rid") {
             }
             if (any(is.na(idx))) {
                 ids_not_found <- ids[is.na(idx)]
-                warning(paste("the following ", type,
-                              " were not found and will be ignored:\n",
+                warning(paste("The following", type,
+                              "were not found and will be ignored:\n",
                               paste(ids_not_found, collapse="\n"), sep=""))
             }
             idx <- idx[!is.na(idx)]
         }
     } else {
-        # ids were null, just return an index vector
-        # allong all_ids
+        # NULL IDs: just return an index vector along all_ids
         idx <- seq_along(all_ids)
     }
-    # subset the character ids to the ones we want
+    # Subset the character identifiers to the ones we want
     id_keep <- as.character(all_ids[idx])
     return(list(idx=idx, ids=id_keep))
 }
@@ -235,7 +215,9 @@ processIds <- function(ids, all_ids, type="rid") {
 # Define the initialization method for the GCT class
 setMethod("initialize", signature = "GCT", definition = function(
     .Object, mat=NULL, rdesc=NULL, cdesc=NULL, src=NULL, rid=NULL, cid=NULL,
-    set_annot_rownames=FALSE, matrix_only=FALSE) {
+    set_annot_rownames=FALSE, matrix_only=FALSE, verbose=TRUE) {
+
+    if (!is.null(src)) src <- as.character(src)
     time <- Sys.time()
 
     # Use both matrix and annotation (if supplied)
@@ -271,19 +253,21 @@ setMethod("initialize", signature = "GCT", definition = function(
             nrmat = dimensions[1]
             ncmat = dimensions[2]
             if (length(dimensions)==4) {
-                message("Parsing as GCT v1.3...")
+                if (verbose) message("Parsing as GCT v1.3...")
                 nrhd <- dimensions[3]
                 nchd <- dimensions[4]
             } else {
-                message("Parsing as GCT v1.2...")
+                if (verbose) message("Parsing as GCT v1.2...")
                 nrhd <- 0
                 nchd <- 0
             }
-            message(paste(src, nrmat, "rows,", ncmat, "cols,", nrhd,
-                          "row descriptors,", nchd, "col descriptors"))
+            if (verbose) {
+                message(paste(src, nrmat, "rows,", ncmat, "cols,", nrhd,
+                              "row descriptors,", nchd, "col descriptors"))
+            }
             # Read header
-            header = scan(src, what = "", nlines = 1, skip = 2, sep = "\t",
-                          quote = NULL, quiet = TRUE)
+            header <- scan(src, what="", nlines=1, skip=2, sep="\t", quote=NULL,
+                           quiet=TRUE)
             # Prepare row and column identifiers from header
             if ( nrhd > 0 ) {
                 rhd <- header[2:(nrhd+1)]
@@ -320,7 +304,7 @@ setMethod("initialize", signature = "GCT", definition = function(
                        skip = 3 + nchd, sep = "\t", quote = NULL, quiet = TRUE)
             mat = matrix(mat, nrow = nrmat, ncol = ncmat + nrhd + col_offset,
                          byrow = TRUE)
-            # message(paste(dim(mat), collapse="\t"))
+            # if (verbose) message(paste(dim(mat), collapse="\t"))
             # Extract the row identifiers and descriptions, and data matrix
             rid = mat[,1]
             if ( nrhd > 0 ) {
@@ -335,7 +319,7 @@ setMethod("initialize", signature = "GCT", definition = function(
                              nrow = nrmat, ncol = ncmat)
             }
             # Assign names to the data matrix and the row/column descriptions
-            # message(paste(dim(mat), collapse="\t"))
+            # if (verbose) message(paste(dim(mat), collapse="\t"))
             dimnames(mat) = list(rid, cid)
             if ( nrhd > 0 ) {
                 dimnames(rdesc) = list(rid,rhd)
@@ -359,7 +343,7 @@ setMethod("initialize", signature = "GCT", definition = function(
                 .Object@cdesc$id <- rownames(.Object@cdesc)
             }
         } else {
-            message(sprintf("Reading %s...", src))
+            if (verbose) message(sprintf("Reading %s...", src))
             .Object@src = src
             # Get all row and column identifiers
             all_rid <- readGctxIds(src, dimension="row")
@@ -392,8 +376,11 @@ setMethod("initialize", signature = "GCT", definition = function(
             }
             closeOpenHandles()
             diff <- Sys.time() - time
-            message(sprintf("Successfully read data from %s in %s", src,
-                            format(diff, digits=3)))
+            if (verbose) {
+                msg <- sprintf("Successfully read data from %s in %s", src,
+                               format(diff, digits=3))
+                message(msg)
+            }
         }
     }
     return(.Object)
@@ -425,8 +412,7 @@ closeOpenHandles <- function() {
 #' @source https://github.com/cmap/cmapR
 #' @keywords internal
 checkColnames <- function(test_names, df, throw_error=TRUE) {
-    # check whether test_names are valid names in df
-    # throw error if specified
+    # Check if test_names are valid; throw error if specified
     diffs <- setdiff(test_names, names(df))
     if (length(diffs) > 0) {
         if (throw_error) {
@@ -449,7 +435,6 @@ checkColnames <- function(test_names, df, throw_error=TRUE) {
 #' @source https://github.com/cmap/cmapR
 #' @keywords internal
 subsetToIds <- function(df, ids) {
-    # helper function to do a robust df subset
     checkColnames("id", df)
     newdf <- data.frame(df[match(ids, df$id), ])
     names(newdf) <- names(df)

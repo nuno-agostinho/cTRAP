@@ -14,7 +14,7 @@ cmapMetadataCompounds <- filterCMapMetadata(
     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
     dosage="5 \u00B5M", perturbationType="Compound")
 
-cmapPerturbationsCompounds <- loadCMapPerturbations(
+cmapPerturbationsCompounds <- prepareCMapPerturbations(
     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt")
 
 # Remove non-ASCII characters for portability reasons

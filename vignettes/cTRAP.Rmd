@@ -135,7 +135,7 @@ cmapMetadataKD <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 
-cmapPerturbationsKD <- loadCMapPerturbations(
+cmapPerturbationsKD <- prepareCMapPerturbations(
     metadata=cmapMetadataKD, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt")
 ```
@@ -150,7 +150,7 @@ command:
 cmapMetadataCompounds <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2", perturbationType="Compound")
 
-cmapPerturbationsCompounds <- loadCMapPerturbations(
+cmapPerturbationsCompounds <- prepareCMapPerturbations(
     metadata=cmapMetadataCompounds, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt", compoundInfo="cmapCompoundInfo.txt")
 ```

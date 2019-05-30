@@ -5,7 +5,7 @@
 \title{Load CMap data}
 \usage{
 loadCMapData(file, type = c("metadata", "geneInfo", "zscores",
-  "compoundInfo"), zscoresId = NULL)
+  "compoundInfo"), zscoresID = NULL)
 }
 \arguments{
 \item{file}{Character: path to file}
@@ -13,7 +13,7 @@ loadCMapData(file, type = c("metadata", "geneInfo", "zscores",
 \item{type}{Character: type of data to load (\code{metadata},
 \code{geneInfo}, \code{zscores} or \code{compoundInfo})}
 
-\item{zscoresId}{Character: identifiers to partially load z-scores file
+\item{zscoresID}{Character: identifiers to partially load z-scores file
 (for performance reasons)}
 }
 \value{

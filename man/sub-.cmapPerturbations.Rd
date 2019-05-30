@@ -4,10 +4,14 @@
 \alias{[.cmapPerturbations}
 \title{Subset a \code{cmapPerturbations} object}
 \usage{
-\method{[}{cmapPerturbations}(x, ...)
+\method{[}{cmapPerturbations}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{cmapPerturbations} object}
+
+\item{i, j}{Character or numeric indexes specifying elements to extract}
+
+\item{drop}{Boolean: coerce result to the lowest possible dimension?}
 
 \item{...}{Extra parameters passed to \code{`[`}}
 }

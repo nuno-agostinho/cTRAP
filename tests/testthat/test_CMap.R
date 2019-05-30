@@ -28,6 +28,84 @@ test_that("Perturbation types are retrievable", {
     expect_true(all(c("trt_cp", "trt_sh.cgs") %in% pertTypes))
 })
 
+test_that("Subsetting a cmapPerturbations object", {
+    ncol <- 22
+    nrow <- 12328
+    expect_identical(dim(perturbations), c(nrow, ncol))
+    expect_identical(nrow(perturbations), nrow)
+    expect_identical(ncol(perturbations), ncol)
+
+    expect_identical(rownames(perturbations), attr(perturbations, "genes"))
+    expect_identical(colnames(perturbations),
+                     attr(perturbations, "perturbations"))
+    expect_identical(dimnames(perturbations),
+                     list(rownames(perturbations), colnames(perturbations)))
+
+    # Missing i and implicitly missing j
+    perts <- perturbations[]
+    expect_identical(rownames(perts), attr(perturbations, "genes"))
+    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+    expect_identical(perts, perturbations)
+
+    # Missing i and explicitly missing j
+    perts <- perturbations[ , ]
+    expect_identical(rownames(perts), attr(perturbations, "genes"))
+    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+    expect_identical(perts, perturbations)
+
+    # Given i and implicitly missing j
+    perts <- perturbations[5:8]
+    expect_identical(rownames(perts), attr(perturbations, "genes"))
+    expect_identical(colnames(perts), attr(perturbations, "perturbations")[5:8])
+
+    # Given i and explicitly missing j
+    perts <- perturbations[13:19, ]
+    expect_identical(rownames(perts), attr(perturbations, "genes")[13:19])
+    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+
+    # Explicitly missing i and given j
+    perts <- perturbations[ , 4:7]
+    expect_identical(rownames(perts), attr(perturbations, "genes"))
+    expect_identical(colnames(perts), attr(perturbations, "perturbations")[4:7])
+
+    # Given i and j
+    perts <- perturbations[21:22, 11:22]
+    expect_identical(rownames(perts), attr(perturbations, "genes")[21:22])
+    expect_identical(colnames(perts),
+                     attr(perturbations, "perturbations")[11:22])
+
+    # Given i and j
+    perts <- perturbations[6:14, 3:9]
+    expect_identical(rownames(perts), attr(perturbations, "genes")[6:14])
+    expect_identical(colnames(perts), attr(perturbations, "perturbations")[3:9])
+
+    # Subscript out of bounds - giving both excessive i and j
+    expect_error(perturbations[seq(nrow(perturbations) + 10),
+                               seq(ncol(perturbations) + 10)])
+    # Subscript out of bounds - only giving excessive i
+    expect_error(perturbations[seq(nrow(perturbations) + 10),
+                               seq(ncol(perturbations))])
+    # Subscript out of bounds - only giving excessive j
+    expect_error(perturbations[seq(nrow(perturbations)),
+                               seq(ncol(perturbations) + 10)])
+    # Subscript out of bounds - only giving excessive i and no j
+    expect_error(perturbations[seq(nrow(perturbations) + 10)])
+
+    # Extract based on character strings
+    rows <- c("ABHD4", "SFN", "SRPRB", "DERA")
+    cols <- c("CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967",
+              "CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1",
+              "CVD001_HUH7_24H:BRD-A65142661-034-01-8:5.35")
+    perts <- perturbations[rows, cols]
+    expect_identical(rownames(perts), rows)
+    expect_identical(colnames(perts), cols)
+
+    # Subscript out of bounds - no i found based on character
+    expect_error(perturbations["ddffd"])
+    # Subscript out of bounds - no j found based on character
+    expect_error(perturbations[ , c(cols, "test")])
+})
+
 test_that("Compare using Spearman correlation", {
     data <- compareAgainstCMap(diffExprStat, perturbations, method="spearman")
     expect_is(data, "cmapComparison")

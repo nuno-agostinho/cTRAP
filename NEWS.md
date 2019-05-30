@@ -7,7 +7,7 @@ function names:
     - `getL1000conditions()`        -> `getCMapConditions()`
     - `downloadL1000data()`         -> `loadCMapData()`
     - `filterL1000metadata()`       -> `filterCMapMetadata()`
-    - `loadL1000perturbations()`    -> `loadCMapPerturbations()`
+    - `loadL1000perturbations()`    -> `prepareCMapPerturbations()`
     - `compareAgainstL1000()`       -> `compareAgainstCMap()`
     - `plotL1000comparison()`       -> `plot()`
 * Improve loading of ENCODE samples:
@@ -17,8 +17,8 @@ function names:
 * Improve CMap metadata retrieval:
     - Allow to parse CMap identifiers using `parseCMapID()`
     - Allow to load CMap's compound metadata using `loadCMapData()`
-    - Allow to load CMap metadata using filepath arguments for the arguments of
-    `loadCMapPerturbations`
+    - Allow to load CMap metadata directly from files when using filepaths as
+    arguments of `prepareCMapPerturbations()`
     - By default, do not return control pertubation types when using
     `getCMapPerturbationTypes()` (return with argument `control=TRUE`)
     - Show further metadata information (including compound data, if available) 
@@ -26,6 +26,9 @@ function names:
     `cmapComparison` object and a specific pertubation
     - Show a complete table with metadata and compound information (if 
     available) when calling `as.table()` with a `cmapComparison` object
+    - Significantly decrease memory required to use cTRAP by loading chunks of
+    z-scores from CMap perturbations on-demand (a slight decrease in time
+    performance is expected)
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 

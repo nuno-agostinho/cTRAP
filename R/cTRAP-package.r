@@ -165,7 +165,7 @@ NULL
 #'   "cmapMetadata.txt", cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #'
-#' cmapPerturbationsKD <- loadCMapPerturbations(
+#' cmapPerturbationsKD <- prepareCMapPerturbations(
 #'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #'
 #' data("diffExprStat")
@@ -205,7 +205,7 @@ NULL
 #'     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
 #'     dosage="5 \u00B5M", perturbationType="Compound")
 #'
-#' cmapPerturbationsCompounds <- loadCMapPerturbations(
+#' cmapPerturbationsCompounds <- prepareCMapPerturbations(
 #'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #'
 #' # Remove non-ASCII characters for portability reasons
