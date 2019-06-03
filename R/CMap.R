@@ -47,8 +47,8 @@ loadCMapZscores <- function(data, verbose=TRUE) {
     geneInfo <- attr(data, "geneInfo")
     rownames(zscores) <- geneInfo$pr_gene_symbol[
         match(rownames(zscores), geneInfo$pr_gene_id)]
-    if (!identical(attr(data, "genes"), rownames(zscores)))
-        zscores <- zscores[attr(data, "genes"), ]
+    if (!setequal(attr(data, "genes"), rownames(zscores)))
+        zscores <- zscores[attr(data, "genes"), , drop=FALSE]
     return(zscores)
 }
 
