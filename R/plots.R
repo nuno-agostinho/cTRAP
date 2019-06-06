@@ -435,7 +435,8 @@ plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
     zscores <- loadCMapZscores(x[cellLinePerts])
 
     data <- lapply(cellLinePerts, function(pert, zscores) {
-        setNames(as.numeric(zscores[ , pert]), rownames(zscores[ , pert]))
+        sub <- zscores[ , pert, drop=FALSE]
+        setNames(as.numeric(sub), rownames(sub))
     }, zscores)
 
     if (method != "gsea") {

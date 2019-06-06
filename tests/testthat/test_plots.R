@@ -30,18 +30,18 @@ test_that("Plot similar perturbations according to selected method", {
 
 test_that("Plot custom top and bottom similar perturbations", {
     # Top 7 most similar perturbations
-    plotTopBottomSimilarPerts <- function(comp, top, bottom) {
+    testTopBottomSimilarPertsPlot <- function(comp, top, bottom) {
         plot <- plot(comp, n=c(top, bottom))
         expect_s3_class(plot, "ggplot")
         expect_equal(length(unique(plot$data$label)) - 1, sum(top, bottom))
     }
-    plotTopBottomSimilarPerts(cmp, 7, 0)
+    testTopBottomSimilarPertsPlot(cmp, 7, 0)
 
     # Bottom 4 least similar perturbations
-    plotTopBottomSimilarPerts(cmp, 0, 4)
+    testTopBottomSimilarPertsPlot(cmp, 0, 4)
 
     # Top 5 most and bottom 2 least similar perturbations
-    plotTopBottomSimilarPerts(cmp, 5, 2)
+    testTopBottomSimilarPertsPlot(cmp, 5, 2)
 })
 
 test_that("Plot similar perturbations with/without metadata", {
