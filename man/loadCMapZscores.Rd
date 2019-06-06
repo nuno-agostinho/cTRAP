@@ -7,6 +7,8 @@
 loadCMapZscores(data, verbose = TRUE)
 }
 \arguments{
+\item{data}{cmapPerturbations object}
+
 \item{verbose}{Boolean: print messages?}
 }
 \value{
@@ -22,6 +24,6 @@ Load matrix of CMap zscores
   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
   perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
                                     "cmapGeneInfo.txt")
-  zscores <- loadCMapZscores(perts[ , 1:50])
+  zscores <- loadCMapZscores(perts[ , 1:10])
 }
 }

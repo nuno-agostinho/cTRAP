@@ -26,7 +26,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 
 #' Load matrix of CMap zscores
 #'
-#' @param data
+#' @param data cmapPerturbations object
 #' @param verbose Boolean: print messages?
 #'
 #' @return Matrix containing CMap perturbation z-scores (genes as rows,
@@ -39,7 +39,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
 #'   perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
 #'                                     "cmapGeneInfo.txt")
-#'   zscores <- loadCMapZscores(perts[ , 1:50])
+#'   zscores <- loadCMapZscores(perts[ , 1:10])
 #' }
 loadCMapZscores <- function(data, verbose=TRUE) {
     if (verbose) message(sprintf("Loading data from %s...", data))
@@ -205,56 +205,7 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
          "timepoint"=timepoint)
 }
 
-#' Correlate differential expression scores per cell line
-#'
-#' @inheritParams compareAgainstCMap
-#' @param method Character: correlation method
-#'
-#' @importFrom pbapply pblapply
-#' @importFrom data.table data.table
-#' @importFrom stats cor.test p.adjust
-#'
-#' @return Data frame with correlations statistics, p-value and q-value
-#' @keywords internal
-correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations, method,
-                                 pAdjustMethod="BH") {
-    # Divide perturbations into chunks (only load into memory a chunk at a time)
-    chunkVector <- function(x, nElems) {
-        groups <- ceiling(length(x)/nElems)
-        split(x, factor(sort(rank(x) %% groups)))
-    }
-    chunks      <- chunkVector(colnames(perturbations), 10000)
-    chunkIndex  <- 0
-    data        <- NULL
-    cols        <- NULL
-
-    corPert <- function(k, perturbation, diffExprGenes, method) {
-        if (!k %in% cols) {
-            chunkIndex <<- chunkIndex + 1
-            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
-                                     verbose=FALSE)
-            data <<- unclass(data)
-            cols <<- colnames(data)
-        }
-        thisPert <- data[ , k]
-        cor.test(thisPert, diffExprGenes, method=method)
-    }
-    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    cors <- suppressWarnings(pblapply(
-        colnames(perturbations), corPert, perturbations, diffExprGenes, method))
-
-    cor  <- sapply(cors, "[[", "estimate")
-    pval <- sapply(cors, "[[", "p.value")
-    qval <- p.adjust(pval, pAdjustMethod)
-    names(cor) <- names(pval) <- names(qval) <- colnames(perturbations)
-
-    res <- data.table(names(cor), cor, pval, qval)
-    names(res) <- c("identifier", sprintf("%s_%s", method,
-                                          c("coef", "pvalue", "qvalue")))
-    return(res)
-}
-
-#' Perform gene set enrichment (GSA) per cell line
+#' Perform gene set enrichment (GSA) against CMap perturbations
 #'
 #' @inheritParams compareAgainstCMap
 #' @inheritParams fgsea::fgsea
@@ -265,9 +216,13 @@ correlatePerCellLine <- function(cellLine, diffExprGenes, perturbations, method,
 #' @importFrom dplyr bind_rows
 #'
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
-#' cell line
+#' perturbation
 #' @keywords internal
-performGSAperCellLine <- function(cellLine, perturbations, pathways) {
+performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
+                                   cellLines) {
+    msg <- "Performing GSEA against %s CMap perturbations (%s cell lines)..."
+    message(sprintf(msg, ncol(perturbations), cellLines))
+
     # Divide perturbations into chunks (only load into memory a chunk at a time)
     chunkVector <- function(x, nElems) {
         groups <- ceiling(length(x)/nElems)
@@ -319,31 +274,59 @@ performGSAperCellLine <- function(cellLine, perturbations, pathways) {
     return(results)
 }
 
-#' Compare with cell line (print progress)
+#' Correlate against CMap perturbations
 #'
-#' @param metadata Data frame: perturbation metadata
+#' @inheritParams compareAgainstCMap
+#' @param pAdjust Character: method to use for p-value adjustment
+#'
+#' @importFrom stats p.adjust cor.test
+#'
+#' @return Data frame with correlation results per perturbation
 #'
 #' @keywords internal
-compareWithCellLineProgress <- function(cellLine, cellLines, FUN, method,
-                                        perturbations, metadata, ...) {
-    current <- match(cellLine, cellLines)
-    total   <- length(cellLines)
-    msg <- paste("Performing %s using %s's %s perturbations",
-                 "(%s out of %s cell lines)...")
+correlateAgainstCMap <- function(diffExprGenes, perturbations, method,
+                                 cellLines, pAdjust="BH") {
     methodStr <- switch(method,
                         "spearman"="Spearman's correlation",
                         "pearson" ="Pearson's correlation",
                         "gsea"    ="GSEA")
+    msg <- "Correlating against %s CMap perturbations (%s cell lines; %s)..."
+    message(sprintf(msg, ncol(perturbations), cellLines, methodStr))
 
-    # Filter perturbation based on currently selected cell line
-    cellLinePerts <- metadata$sig_id[
-        tolower(metadata$cell_id) == tolower(cellLine)]
-    filtered <- colnames(perturbations)[
-        colnames(perturbations) %in% cellLinePerts]
-    pertNumber <- length(filtered)
+    # Divide perturbations into chunks (only load into memory a chunk at a time)
+    chunkVector <- function(x, nElems) {
+        groups <- ceiling(length(x)/nElems)
+        split(x, factor(sort(rank(x) %% groups)))
+    }
+    chunks      <- chunkVector(colnames(perturbations), 10000)
+    chunkIndex  <- 0
+    data        <- NULL
+    cols        <- NULL
 
-    message(sprintf(msg, methodStr, cellLine, pertNumber, current, total))
-    FUN(cellLine, perturbations=perturbations[ , filtered], ...)
+    corPert <- function(k, perturbation, diffExprGenes, method) {
+        if (!k %in% cols) {
+            chunkIndex <<- chunkIndex + 1
+            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
+                                     verbose=FALSE)
+            data <<- unclass(data)
+            cols <<- colnames(data)
+        }
+        thisPert <- data[ , k]
+        cor.test(thisPert, diffExprGenes, method=method)
+    }
+    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
+    cors <- suppressWarnings(pblapply(
+        colnames(perturbations), corPert, perturbations, diffExprGenes, method))
+
+    cor  <- sapply(cors, "[[", "estimate")
+    pval <- sapply(cors, "[[", "p.value")
+    qval <- p.adjust(pval, pAdjust)
+    names(cor) <- names(pval) <- names(qval) <- colnames(perturbations)
+
+    res <- data.table(names(cor), cor, pval, qval)
+    names(res) <- c("identifier", sprintf("%s_%s", method,
+                                          c("coef", "pvalue", "qvalue")))
+    return(res)
 }
 
 #' Prepare GSEA pathways
@@ -396,29 +379,27 @@ compareAgainstCMapPerMethod <- function(
     metadata  <- attr(perturbations, "metadata")
     cellLine  <- unique(metadata$cell_id)
 
+
+    genes <- intersect(names(diffExprGenes), rownames(perturbations))
+    intersected <- length(genes)
+    total       <- length(diffExprGenes)
+    message(sprintf(
+        "Comparing %s intersecting genes (%s%% of the %s input genes)...",
+        intersected, round(intersected / total * 100, 0), total))
+
     pathways <- NULL
     if (method %in% c("spearman", "pearson")) {
-        message("Subsetting perturbations based on intersecting genes...")
-        genes <- intersect(names(diffExprGenes), rownames(perturbations))
-        diffExprGenes        <- diffExprGenes[genes]
-        perturbations        <- perturbations[genes, ]
-
-        # Correlate per cell line
-        cellLineRes <- lapply(
-            cellLine, compareWithCellLineProgress, cellLines=cellLine,
-            correlatePerCellLine, method, diffExprGenes=diffExprGenes,
-            perturbations=perturbations, metadata=metadata, method)
-        colnameSuffix <- sprintf("_%s_coef", method)
+        diffExprGenes <- diffExprGenes[genes]
+        perturbations <- perturbations[genes, ]
+        data <- correlateAgainstCMap(
+            diffExprGenes=diffExprGenes, perturbations=perturbations,
+            method=method, cellLines=length(cellLine))
     } else if (method == "gsea") {
         pathways <- prepareGSEApathways(diffExprGenes, geneSize)
-        cellLineRes <- lapply(
-            cellLine, compareWithCellLineProgress, cellLines=cellLine,
-            performGSAperCellLine, method, perturbations=perturbations,
-            metadata=metadata, pathways=pathways)
-        colnameSuffix <- "_GSEA"
+        data <- performGSEAagainstCMap(
+            diffExprGenes=diffExprGenes, perturbations=perturbations,
+            pathways=pathways, cellLines=length(cellLine))
     }
-    names(cellLineRes) <- cellLine
-    data <- bind_rows(cellLineRes)
 
     # Set whether to calculate the mean value across cell lines
     if (cellLineMean == "auto") cellLineMean <- length(cellLine) > 1

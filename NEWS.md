@@ -67,6 +67,8 @@ function names:
     functions such as `filterCMapMetadata()`)
     - Fix incorrect label of identifiers
     - Report run time and settings used
+    - Perform comparisons against perturbations disregarding their cell lines
+    (faster runtime)
 * Minor improvements to `plot()`:
     - Improve rendering performance of the GSEA plot
     - Fix disproportion of top and bottom enrichment score panels in GSEA plots
