@@ -687,7 +687,7 @@ getCMapPerturbationTypes <- function (control=FALSE) {
         controlPerts <- c("ctl_vehicle", "ctl_vector", "trt_sh.css",
                           "ctl_vehicle.cns", "ctl_vector.cns", "ctl_untrt.cns",
                           "ctl_untrt")
-        controlPerts <- c(
+        names(controlPerts) <- c(
             "vehicle for compound treatment (e.g DMSO)",
             "vector for genetic perturbation (e.g empty vector, GFP)",
             "consensus signature from shRNAs that share a common seed sequence",
