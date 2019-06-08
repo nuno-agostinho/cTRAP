@@ -40,8 +40,8 @@ cmapMetadataKnockdown <- filterCMapMetadata(
   cmapMetadata, cellLine="HepG2",
   perturbationType="Consensus signature from shRNAs targeting the same gene")
 
-if (interactive()) {
-  loadCmapData("cmapZscores.gctx.gz", "zscores",
-               cmapMetadataKnockdown$sig_id)
+\donttest{
+loadCMapData("cmapZscores.gctx.gz", "zscores",
+             cmapMetadataKnockdown$sig_id)
 }
 }

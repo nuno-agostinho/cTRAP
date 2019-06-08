@@ -12,12 +12,12 @@ test_that("Load ENCODE gene expression for EIF4G1", {
                        paste0("shRNA", 1:2), paste0("control", 1:2)))
 })
 
-test_that("Perform differential gene expression", {
-    data("ENCODEsamples")
-    counts <- prepareENCODEgeneExpression(ENCODEsamples)
-
-    diffExpr <- performDifferentialExpression(counts)
-    expect_is(diffExpr, "data.frame")
-    expect_identical(colnames(diffExpr), c("Gene_symbol", "logFC", "AveExpr",
-                                           "t", "P.Value", "adj.P.Val", "B"))
-})
+# test_that("Perform differential gene expression", {
+#     data("ENCODEsamples")
+#     counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#
+#     diffExpr <- performDifferentialExpression(counts)
+#     expect_is(diffExpr, "data.frame")
+#     expect_identical(colnames(diffExpr), c("Gene_symbol", "logFC", "AveExpr",
+#                                            "t", "P.Value", "adj.P.Val", "B"))
+# })

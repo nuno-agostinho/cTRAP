@@ -31,53 +31,58 @@ test_that("Perturbation types are retrievable", {
 test_that("Subsetting a cmapPerturbations object", {
     ncol <- 22
     nrow <- 12328
-    expect_identical(dim(perturbations), c(nrow, ncol))
-    expect_identical(nrow(perturbations), nrow)
-    expect_identical(ncol(perturbations), ncol)
+    expect_equal(dim(perturbations), c(nrow, ncol))
+    expect_equal(nrow(perturbations), nrow)
+    expect_equal(ncol(perturbations), ncol)
 
-    expect_identical(rownames(perturbations), attr(perturbations, "genes"))
-    expect_identical(colnames(perturbations),
-                     attr(perturbations, "perturbations"))
+    expect_identical(head(rownames(perturbations)),
+                     c("PSME1", "ATF1", "RHEB", "FOXO3", "RHOA", "IL1B"))
+    expect_identical(head(colnames(perturbations)),
+                     c("CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1",
+                       "CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35",
+                       "CVD001_HEPG2_24H:BRD-K31030218-001-01-1:4.25",
+                       "CVD001_HEPG2_24H:BRD-K41172353-001-01-4:4.7",
+                       "CVD001_HEPG2_24H:BRD-K60476892-001-02-1:4.1072",
+                       "CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768"))
     expect_identical(dimnames(perturbations),
                      list(rownames(perturbations), colnames(perturbations)))
 
     # Missing i and implicitly missing j
     perts <- perturbations[]
-    expect_identical(rownames(perts), attr(perturbations, "genes"))
-    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+    expect_identical(rownames(perts), rownames(perturbations))
+    expect_identical(colnames(perts), colnames(perturbations))
     expect_identical(perts, perturbations)
 
     # Missing i and explicitly missing j
     perts <- perturbations[ , ]
-    expect_identical(rownames(perts), attr(perturbations, "genes"))
-    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+    expect_identical(rownames(perts), rownames(perturbations))
+    expect_identical(colnames(perts), colnames(perturbations))
     expect_identical(perts, perturbations)
 
-    # Given i and implicitly missing j
-    perts <- perturbations[5:8]
-    expect_identical(rownames(perts), attr(perturbations, "genes"))
-    expect_identical(colnames(perts), attr(perturbations, "perturbations")[5:8])
+    # # Given i and implicitly missing j
+    # perts <- perturbations[5:8]
+    # expect_identical(rownames(perts), rownames(perturbations))
+    # expect_identical(colnames(perts), colnames(perturbations)[5:8])
 
     # Given i and explicitly missing j
     perts <- perturbations[13:19, ]
-    expect_identical(rownames(perts), attr(perturbations, "genes")[13:19])
-    expect_identical(colnames(perts), attr(perturbations, "perturbations"))
+    expect_identical(rownames(perts), rownames(perturbations)[13:19])
+    expect_identical(colnames(perts), colnames(perturbations))
 
     # Explicitly missing i and given j
     perts <- perturbations[ , 4:7]
-    expect_identical(rownames(perts), attr(perturbations, "genes"))
-    expect_identical(colnames(perts), attr(perturbations, "perturbations")[4:7])
+    expect_identical(rownames(perts), rownames(perturbations))
+    expect_identical(colnames(perts), colnames(perturbations)[4:7])
 
     # Given i and j
     perts <- perturbations[21:22, 11:22]
-    expect_identical(rownames(perts), attr(perturbations, "genes")[21:22])
-    expect_identical(colnames(perts),
-                     attr(perturbations, "perturbations")[11:22])
+    expect_identical(rownames(perts), rownames(perturbations)[21:22])
+    expect_identical(colnames(perts), colnames(perturbations)[11:22])
 
     # Given i and j
     perts <- perturbations[6:14, 3:9]
-    expect_identical(rownames(perts), attr(perturbations, "genes")[6:14])
-    expect_identical(colnames(perts), attr(perturbations, "perturbations")[3:9])
+    expect_identical(rownames(perts), rownames(perturbations)[6:14])
+    expect_identical(colnames(perts), colnames(perturbations)[3:9])
 
     # Subscript out of bounds - giving both excessive i and j
     expect_error(perturbations[seq(nrow(perturbations) + 10),
@@ -186,8 +191,6 @@ test_that("Compare against CMap using multiple methods simultaneously", {
     expect_true(all(vapply(
         method, checkIfAnyColsHaveMethodsName, logical(1), data)))
 })
-
-
 
 test_that("Compare against CMap by also ranking individual cell lines", {
     areNAsIncludedInRanks <- function(data) {

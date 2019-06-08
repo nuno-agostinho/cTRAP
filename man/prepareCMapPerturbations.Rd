@@ -5,7 +5,7 @@
 \title{Prepare CMap perturbation data}
 \usage{
 prepareCMapPerturbations(metadata, zscores, geneInfo,
-  compoundInfo = NULL)
+  compoundInfo = NULL, loadZscores = FALSE)
 }
 \arguments{
 \item{metadata}{Data frame (CMap metadata) or character (respective filepath
@@ -19,6 +19,9 @@ filepath to load data from file)}
 
 \item{compoundInfo}{Data frame (CMap compound info) or character (respective
 filepath to load data from file)}
+
+\item{loadZscores}{Boolean: load perturbation z-scores? Not recommended in
+memory-constrained systems}
 }
 \value{
 CMap perturbation data attributes and filename
@@ -27,7 +30,7 @@ CMap perturbation data attributes and filename
 Prepare CMap perturbation data
 }
 \examples{
-if (interactive()) {
+\donttest{
   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
   prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")

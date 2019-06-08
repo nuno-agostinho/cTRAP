@@ -59,39 +59,14 @@ NULL
 #' @keywords internal
 NULL
 
-#' Sample of ENCODE samples
-#'
-#' @description
-#' Sample of ENCODE samples obtained by running the following code:
-#'
-#' \preformatted{
-#' data("ENCODEmetadata")
-#'
-#' # Load samples based on filtered ENCODE metadata
-#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
-#'
-#' # Get small subset of whole dataset
-#' filter <- ENCODEsamples[[1]]$expected_count > 0
-#' genes <- head(ENCODEsamples[[1]][filter, ])$gene_id
-#' for (k in seq(ENCODEsamples)) {
-#'     ENCODEsamples[[k]] <- ENCODEsamples[[k]][
-#'         ENCODEsamples[[k]]$gene_id %in% genes, ]
-#' }
-#' }
-#'
-#' @name ENCODEsamples
-#' @docType data
-#' @keywords internal
-NULL
-
-
 #' Gene expression data sample
 #'
 #' @description
 #' Gene expression data sample obtained by running the following code:
 #'
 #' \preformatted{
-#' data("ENCODEsamples")
+#' data("ENCODEmetadata")
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -103,7 +78,7 @@ NULL
 #' # Convert ENSEMBL identifier to gene symbol
 #' library(biomaRt)
 #' mart  <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-#' genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
+#' genes <- sapply(strsplit(counts$gene_id, "\\\."), `[`, 1)
 #' geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
 #'                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
 #' counts$gene_id <- geneConversion$hgnc_symbol[
@@ -166,7 +141,8 @@ NULL
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #'
 #' cmapPerturbationsKD <- prepareCMapPerturbations(
-#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt")
+#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt",
+#'   loadZscores=TRUE)
 #'
 #' data("diffExprStat")
 #' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
@@ -206,7 +182,8 @@ NULL
 #'     dosage="5 \u00B5M", perturbationType="Compound")
 #'
 #' cmapPerturbationsCompounds <- prepareCMapPerturbations(
-#'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt")
+#'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
+#'     loadZscores=TRUE)
 #'
 #' # Remove non-ASCII characters for portability reasons
 #' metadata <- attr(cmapPerturbationsCompounds, "metadata")

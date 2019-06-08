@@ -239,7 +239,7 @@ from our data.
 
 # Information on perturbations
 
-```{r}
+```{r perturbation info}
 # Information on the EIF4G1 knockdown perturbation
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 print(compareKD, EIF4G1knockdown)
@@ -258,21 +258,21 @@ Spearman and Pearson analyses) and GSEA plots are available.
 For instance, let's plot the relationship between ENCODE's EIF4G1 shRNA 
 knockdown with the perturbations of interest.
 
-```{r plot knockdown perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
+```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from CMap
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "spearman")
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "pearson")
 plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "gsea")
 
 # Plot relationship with most negatively associated perturbation
-plot(cmapPerturbationsKD, 
-     tail(compareKD[order(spearman_rank, na.last=NA)], 1), 
+plot(cmapPerturbationsKD,
+     tail(compareKD[order(spearman_rank, na.last=NA)], 1),
      diffExprStat, "spearman")
-plot(cmapPerturbationsKD, 
-     tail(compareKD[order(pearson_rank, na.last=NA)], 1), 
+plot(cmapPerturbationsKD,
+     tail(compareKD[order(pearson_rank, na.last=NA)], 1),
      diffExprStat, "pearson")
-plot(cmapPerturbationsKD, 
-     tail(compareKD[order(gsea_rank, na.last=NA)], 1), 
+plot(cmapPerturbationsKD,
+     tail(compareKD[order(gsea_rank, na.last=NA)], 1),
      diffExprStat, "gsea")
 ```
 
@@ -281,7 +281,7 @@ plot(cmapPerturbationsKD,
 
 For small molecules:
 
-```{r plot small molecule perturbation comparison, message=FALSE, fig.width=5, fig.asp=1}
+```{r plot small molecule comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
 plot(cmapPerturbationsCompounds, 
      head(compareCompounds[order(spearman_rank, na.last=NA)], 1), 

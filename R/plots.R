@@ -432,7 +432,11 @@ plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
 
     if (!isSummaryPert) cellLinePerts <- perturbation
     names(cellLinePerts) <- cellLinePerts
-    zscores <- loadCMapZscores(x[cellLinePerts])
+    if (is.character(x)) {
+        zscores <- loadCMapZscores(x[cellLinePerts])
+    } else {
+        zscores <- unclass(x)
+    }
 
     data <- lapply(cellLinePerts, function(pert, zscores) {
         sub <- zscores[ , pert, drop=FALSE]

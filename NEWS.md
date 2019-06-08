@@ -1,7 +1,7 @@
-# 1.2.1 (22 May, 2019)
+# 1.2.1 (10 June, 2019)
 
 * Update the tutorial and function documentation
-* Replace all references to `L1000` with `CMap`, as appropriate, including in
+* Replace all `L1000` references with `CMap`, as appropriate, including in
 function names:
     - `getL1000perturbationTypes()` -> `getCMapPerturbationTypes()`
     - `getL1000conditions()`        -> `getCMapConditions()`
@@ -10,20 +10,20 @@ function names:
     - `loadL1000perturbations()`    -> `prepareCMapPerturbations()`
     - `compareAgainstL1000()`       -> `compareAgainstCMap()`
     - `plotL1000comparison()`       -> `plot()`
-* Improve loading of ENCODE samples:
-    - Rename `downloadENCODEsamples()` to `loadENCODEsamples()`
-    - Allow to load multiple cell lines and genes from ENCODE using 
-    `loadENCODEsamples()`
+* Improve loading of ENCODE samples (`loadENCODEsamples()`):
+    - Rename function from `downloadENCODEsamples()` to `loadENCODEsamples()`
+    - Allow to load ENCODE samples regarding multiple cell lines and experiment 
+    targets using `loadENCODEsamples()`
 * Improve CMap metadata retrieval:
+    - By default, do not return control pertubation types when using
+    `getCMapPerturbationTypes()` (to do so, set argument `control=TRUE`)
     - Allow to parse CMap identifiers using `parseCMapID()`
     - Allow to load CMap's compound metadata using `loadCMapData()`
     - Allow to load CMap metadata directly from files when using filepaths as
     arguments of `prepareCMapPerturbations()`
-    - By default, do not return control pertubation types when using
-    `getCMapPerturbationTypes()` (return with argument `control=TRUE`)
-    - Show further metadata information (including compound data, if available) 
     - Ask to download CMap perturbations z-scores file for differential 
     expression if not found
+    - Show further metadata information (including compound data, if available)
     related with a given perturbation by calling `print()` with a
     `cmapComparison` object and a specific pertubation
     - Show a complete table with metadata and compound information (if 
@@ -43,12 +43,13 @@ function names:
     - Plot comparison results against all perturbations by calling `plot()` with
     a `cmapComparison` object (non-ranked perturbations may also be plotted 
     with `plotNonRankedPerturbations = TRUE`)
-    - Plot scatter and GSEA plots between differential expression results and a
-    single perturbation by calling `plot()` with a `cmapPerturbations` object 
-    (if an identifier regarding the summary of multiple perturbations scores 
-    across cell lines is given, the plots are coloured by cell line)
-    - When displaying Gene Set Enrichment Analysis (GSEA) plots, automatically
-    render results for both top and bottom genes by default
+    - Plot scatter and Gene Set Enrichment Analysis (GSEA) plots between 
+    differential expression results and a single perturbation by calling 
+    `plot()` with a `cmapPerturbations` object (if an identifier regarding the
+    summary of multiple perturbations scores across cell lines is given, the
+    plots are coloured by cell line)
+    - When displaying GSEA plots, automatically render results for both top and 
+    bottom genes by default
 
 ## Bug fixes and minor changes
 
@@ -67,13 +68,14 @@ function names:
     - Improve performance when correlating against multiple cell lines
     - Remove `cellLine` argument (please filter conditions with upstream
     functions such as `filterCMapMetadata()`)
-    - Fix incorrect label of identifiers
+    - Fix incorrect label of first column identifiers
     - Report run time and settings used
     - Perform comparisons against perturbations disregarding their cell lines
     (faster runtime)
 * Minor improvements to `plot()`:
     - Improve rendering performance of the GSEA plot
-    - Fix disproportion of top and bottom enrichment score panels in GSEA plots
+    - Fix disproportion between top and bottom enrichment score panels in GSEA
+    plots
 * Update demo datasets:
     - Update the `cmapPerturbationsCompounds` and `cmapPerturbationsKD` datasets 
     according to new internal changes and fix their respective code in the 

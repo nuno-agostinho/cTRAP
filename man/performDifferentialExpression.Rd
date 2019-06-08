@@ -17,33 +17,33 @@ knockdown and control
 Perform differential gene expression based on ENCODE data
 }
 \examples{
-data("ENCODEsamples")
+if (interactive()) {
+  # Download ENCODE metadata for a specific cell line and gene
+  cellLine <- "HepG2"
+  gene <- "EIF4G1"
+  ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 
-## Download ENCODE metadata for a specific cell line and gene
-# cellLine <- "HepG2"
-# gene <- "EIF4G1"
-# ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+  # Download samples based on filtered ENCODE metadata
+  ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 
-## Download samples based on filtered ENCODE metadata
-# ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+  counts <- prepareENCODEgeneExpression(ENCODEsamples)
 
-counts <- prepareENCODEgeneExpression(ENCODEsamples)
+  # Remove low coverage (at least 10 counts shared across two samples)
+  minReads   <- 10
+  minSamples <- 2
+  filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
+  counts <- counts[filter, ]
 
-# Remove low coverage (at least 10 counts shared across two samples)
-minReads   <- 10
-minSamples <- 2
-filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
-counts <- counts[filter, ]
+  # Convert ENSEMBL identifier to gene symbol
+  library(biomaRt)
+  mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+  genes <- sapply(strsplit(counts$gene_id, "\\\\."), `[`, 1)
+  geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
+                          attributes=c("ensembl_gene_id", "hgnc_symbol"))
+  counts$gene_id <- geneConversion$hgnc_symbol[
+      match(genes, geneConversion$ensembl_gene_id)]
 
-## Convert ENSEMBL identifier to gene symbol
-# library(biomaRt)
-# mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-# genes <- sapply(strsplit(counts$gene_id, "\\\\."), `[`, 1)
-# geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
-#                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
-# counts$gene_id <- geneConversion$hgnc_symbol[
-#     match(genes, geneConversion$ensembl_gene_id)]
-
-## Perform differential gene expression analysis
-# diffExpr <- performDifferentialExpression(counts)
+  # Perform differential gene expression analysis
+  diffExpr <- performDifferentialExpression(counts)
+}
 }

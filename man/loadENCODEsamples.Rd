@@ -13,8 +13,8 @@ loadENCODEsamples(metadata)
 List of loaded ENCODE samples
 }
 \description{
-Samples are first downloaded automatically if they are not found in the
-current working directory.
+Samples are automatically downloaded if they are not found in the current
+working directory.
 }
 \examples{
 if (interactive()) {

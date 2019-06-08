@@ -1,4 +1,4 @@
-loadCMapMetadata <- function(file, nas, load=FALSE) {
+loadCMapMetadata <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                    "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
     downloadIfNotFound(file, link)
@@ -27,28 +27,41 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #' Load matrix of CMap zscores
 #'
 #' @param data cmapPerturbations object
+#' @param cmapPerturbations Boolean: convert to \code{cmapPerturbations} object?
 #' @param verbose Boolean: print messages?
 #'
 #' @return Matrix containing CMap perturbation z-scores (genes as rows,
 #'   perturbations as columns)
 #' @export
 #'
+#'
 #' @examples
-#' #' if (interactive()) {
+#' \donttest{
 #'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
 #'   perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
 #'                                     "cmapGeneInfo.txt")
 #'   zscores <- loadCMapZscores(perts[ , 1:10])
 #' }
-loadCMapZscores <- function(data, verbose=TRUE) {
+loadCMapZscores <- function(data, cmapPerturbations=FALSE, verbose=TRUE) {
     if (verbose) message(sprintf("Loading data from %s...", data))
     zscores  <- new("GCT", src=data, cid=colnames(data), verbose=verbose)@mat
     geneInfo <- attr(data, "geneInfo")
-    rownames(zscores) <- geneInfo$pr_gene_symbol[
-        match(rownames(zscores), geneInfo$pr_gene_id)]
-    if (!setequal(attr(data, "genes"), rownames(zscores)))
-        zscores <- zscores[attr(data, "genes"), , drop=FALSE]
+    if (!is.null(geneInfo)) {
+        rownames(zscores) <- geneInfo$pr_gene_symbol[
+            match(rownames(zscores), geneInfo$pr_gene_id)]
+        if (!setequal(attr(data, "genes"), rownames(zscores)))
+            zscores <- zscores[attr(data, "genes"), , drop=FALSE]
+    }
+
+    if (cmapPerturbations) {
+        class(zscores) <- c("cmapPerturbations", class(zscores))
+        # Inherit input's attributes
+        attrs <- attributes(data)
+        attrs <- attrs[!names(attrs) %in% c(names(attributes(zscores)),
+                                            "genes", "perturbations")]
+        attributes(zscores) <- c(attributes(zscores), attrs)
+    }
     return(zscores)
 }
 
@@ -138,9 +151,9 @@ loadCMapGeneInfo <- function(file, nas) {
 #'   cmapMetadata, cellLine="HepG2",
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
 #'
-#' if (interactive()) {
-#'   loadCmapData("cmapZscores.gctx.gz", "zscores",
-#'                cmapMetadataKnockdown$sig_id)
+#' \donttest{
+#' loadCMapData("cmapZscores.gctx.gz", "zscores",
+#'              cmapMetadataKnockdown$sig_id)
 #' }
 loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
                                       "compoundInfo"),
@@ -223,18 +236,23 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
     msg <- "Performing GSEA against %s CMap perturbations (%s cell lines)..."
     message(sprintf(msg, ncol(perturbations), cellLines))
 
-    # Divide perturbations into chunks (only load into memory a chunk at a time)
-    chunkVector <- function(x, nElems) {
-        groups <- ceiling(length(x)/nElems)
-        split(x, factor(sort(rank(x) %% groups)))
+    loadPerturbationsFromFile <- is.character(perturbations)
+    if (loadPerturbationsFromFile) {
+        # Divide perturbations into chunks (load into memory a chunk at a time)
+        chunkVector <- function(x, nElems) {
+            groups <- ceiling(length(x)/nElems)
+            split(x, factor(sort(rank(x) %% groups)))
+        }
+        chunks      <- chunkVector(colnames(perturbations), 10000)
+        chunkIndex  <- 0
+        data        <- NULL
+        cols        <- NULL
+    } else {
+        data <- unclass(perturbations)
     }
-    chunks      <- chunkVector(colnames(perturbations), 10000)
-    chunkIndex  <- 0
-    data        <- NULL
-    cols        <- NULL
 
     performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
-        if (!k %in% cols) {
+        if (loadPerturbationsFromFile && !k %in% cols) {
             chunkIndex <<- chunkIndex + 1
             data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
                                      verbose=FALSE)
@@ -255,22 +273,19 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
     gsaRes <- cbind(identifier=rep(names(gsa), each=2), bind_rows(gsa))
 
     # Based on CMap paper (page e8) - weighted connectivity score (WTCS)
-    ES_list <- c()
-    for (geneID in unique(gsaRes$identifier)) {
+    wtcs <- vapply(unique(gsaRes$identifier), function(geneID, gsaRes) {
         geneID_GSA  <- gsaRes[gsaRes$identifier %in% geneID, ]
         topGenes    <- geneID_GSA$ES[grepl("top", geneID_GSA$pathway)]
         bottomGenes <- geneID_GSA$ES[grepl("bottom", geneID_GSA$pathway)]
 
-        if (sign(topGenes) == sign(bottomGenes))
-            ES_final <- 0
-        else if (sign(topGenes) != sign(bottomGenes))
-            ES_final <- (topGenes - bottomGenes) / 2
-        ES_list <- c(ES_list, ES_final)
-    }
+        enrichmentScore <- 0
+        if (sign(topGenes) != sign(bottomGenes))
+            enrichmentScore <- (topGenes - bottomGenes) / 2
+        return(enrichmentScore)
+    }, gsaRes=gsaRes, FUN.VALUE=numeric(1))
 
-    names(ES_list) <- unique(gsaRes[["identifier"]])
-    results <- data.table(names(ES_list), ES_list)
-    names(results)[1:2] <- c("identifier", "GSEA")
+    names(wtcs) <- unique(gsaRes[["identifier"]])
+    results <- data.table("identifier"=names(wtcs), "GSEA"=wtcs)
     return(results)
 }
 
@@ -293,18 +308,23 @@ correlateAgainstCMap <- function(diffExprGenes, perturbations, method,
     msg <- "Correlating against %s CMap perturbations (%s cell lines; %s)..."
     message(sprintf(msg, ncol(perturbations), cellLines, methodStr))
 
-    # Divide perturbations into chunks (only load into memory a chunk at a time)
-    chunkVector <- function(x, nElems) {
-        groups <- ceiling(length(x)/nElems)
-        split(x, factor(sort(rank(x) %% groups)))
+    loadPerturbationsFromFile <- is.character(perturbations)
+    if (loadPerturbationsFromFile) {
+        # Divide perturbations into chunks (load into memory a chunk at a time)
+        chunkVector <- function(x, nElems) {
+            groups <- ceiling(length(x)/nElems)
+            split(x, factor(sort(rank(x) %% groups)))
+        }
+        chunks      <- chunkVector(colnames(perturbations), 10000)
+        chunkIndex  <- 0
+        data        <- NULL
+        cols        <- NULL
+    } else {
+        data <- unclass(perturbations)
     }
-    chunks      <- chunkVector(colnames(perturbations), 10000)
-    chunkIndex  <- 0
-    data        <- NULL
-    cols        <- NULL
 
     corPert <- function(k, perturbation, diffExprGenes, method) {
-        if (!k %in% cols) {
+        if (loadPerturbationsFromFile && !k %in% cols) {
             chunkIndex <<- chunkIndex + 1
             data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
                                      verbose=FALSE)
@@ -614,6 +634,8 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
 #'   filepath to load data from file)
+#' @param loadZscores Boolean: load perturbation z-scores? Not recommended in
+#'   memory-constrained systems
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -621,13 +643,13 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @return CMap perturbation data attributes and filename
 #' @export
 #' @examples
-#' if (interactive()) {
+#' \donttest{
 #'   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
 #'   prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
 prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
-                                     compoundInfo=NULL) {
+                                     compoundInfo=NULL, loadZscores=FALSE) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {
@@ -643,6 +665,8 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     attr(zscores, "geneInfo") <- geneInfo
     attr(zscores, "compoundInfo") <- compoundInfo
     class(zscores) <- c("cmapPerturbations", class(zscores))
+
+    if (loadZscores) zscores <- loadCMapZscores(zscores, cmapPerturbations=TRUE)
     return(zscores)
 }
 

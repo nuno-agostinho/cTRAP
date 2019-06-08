@@ -112,8 +112,8 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 
 #' Load ENCODE samples
 #'
-#' Samples are first downloaded automatically if they are not found in the
-#' current working directory.
+#' Samples are automatically downloaded if they are not found in the current
+#' working directory.
 #'
 #' @param metadata Character: ENCODE metadata
 #'
@@ -162,16 +162,17 @@ loadENCODEsamples <- function(metadata) {
 #' @export
 #'
 #' @examples
-#' data("ENCODEsamples")
-#' ## Load ENCODE metadata for a specific cell line and gene
-#' # cellLine <- "HepG2"
-#' # gene <- "EIF4G1"
-#' # ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
+#' if (interactive()) {
+#'   # Load ENCODE metadata for a specific cell line and gene
+#'   cellLine <- "HepG2"
+#'   gene <- "EIF4G1"
+#'   ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' ## Load samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+#'   # Load samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #'
-#' prepareENCODEgeneExpression(ENCODEsamples)
+#'   prepareENCODEgeneExpression(ENCODEsamples)
+#' }
 prepareENCODEgeneExpression <- function(samples) {
     # Check if transcripts are identical across samples
     sameTranscriptsAcrossSamples <- all(sapply(lapply(

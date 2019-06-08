@@ -4,10 +4,12 @@
 \alias{loadCMapZscores}
 \title{Load matrix of CMap zscores}
 \usage{
-loadCMapZscores(data, verbose = TRUE)
+loadCMapZscores(data, cmapPerturbations = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{data}{cmapPerturbations object}
+
+\item{cmapPerturbations}{Boolean: convert to \code{cmapPerturbations} object?}
 
 \item{verbose}{Boolean: print messages?}
 }
@@ -19,7 +21,7 @@ Matrix containing CMap perturbation z-scores (genes as rows,
 Load matrix of CMap zscores
 }
 \examples{
-#' if (interactive()) {
+\donttest{
   metadata <- loadCMapData("cmapMetadata.txt", "metadata")
   metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
   perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",

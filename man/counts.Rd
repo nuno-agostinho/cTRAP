@@ -8,7 +8,8 @@
 Gene expression data sample obtained by running the following code:
 
 \preformatted{
-data("ENCODEsamples")
+data("ENCODEmetadata")
+ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 counts <- prepareENCODEgeneExpression(ENCODEsamples)
 
 # Remove low coverage (at least 10 counts shared across two samples)
@@ -20,7 +21,7 @@ counts <- counts[filter, ]
 # Convert ENSEMBL identifier to gene symbol
 library(biomaRt)
 mart  <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
+genes <- sapply(strsplit(counts$gene_id, "\\\."), `[`, 1)
 geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
 counts$gene_id <- geneConversion$hgnc_symbol[
