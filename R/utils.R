@@ -73,22 +73,30 @@ performDifferentialExpression <- function(counts) {
 #'
 #' @param file Character: filepath
 #' @param link Character: link to download file
+#' @param ask Boolean: ask to download file?
 #' @param gz Boolean: is downloaded file compressed?
 #'
 #' @importFrom utils download.file
 #'
 #' @return Download file if file is not found
 #' @keywords internal
-downloadIfNeeded <- function(file, link, gz=TRUE) {
+downloadIfNotFound <- function(file, link, ask=FALSE, gz=TRUE) {
     if (!file.exists(file)) {
-        message(paste(file, "not found: downloading data..."))
+        if (ask) {
+            download <- askYesNo(
+                paste(file, "not found: download file?"), FALSE)
+            if (!download) return(stop(paste(file, "not found")))
+        } else {
+            message(paste(file, "not found: downloading data..."))
+        }
+
         if (gz) {
             file <- paste0(file, ".gz")
             mode <- "wb"
         } else {
             mode <- "w"
         }
-        download.file(link, file, mode="wb")
+        download.file(link, file, mode=mode)
         if (gz) {
             message("Extracting downloaded data...")
             gunzip(file)

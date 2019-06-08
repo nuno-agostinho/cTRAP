@@ -22,6 +22,8 @@ function names:
     - By default, do not return control pertubation types when using
     `getCMapPerturbationTypes()` (return with argument `control=TRUE`)
     - Show further metadata information (including compound data, if available) 
+    - Ask to download CMap perturbations z-scores file for differential 
+    expression if not found
     related with a given perturbation by calling `print()` with a
     `cmapComparison` object and a specific pertubation
     - Show a complete table with metadata and compound information (if 

@@ -105,7 +105,7 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     outfile <- paste0(sample, ".tsv")
     link <- sprintf("https://www.encodeproject.org/files/%s/@@download/%s.tsv",
                     sample, sample)
-    downloadIfNeeded(outfile, link, gz=FALSE)
+    downloadIfNotFound(outfile, link, gz=FALSE)
     fread(outfile)
 }
 

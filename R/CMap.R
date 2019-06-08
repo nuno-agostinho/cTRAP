@@ -1,7 +1,7 @@
 loadCMapMetadata <- function(file, nas, load=FALSE) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                    "format=file&", "file=GSE92742_Broad_LINCS_sig_info.txt.gz")
-    downloadIfNeeded(file, link)
+    downloadIfNotFound(file, link)
     message(sprintf("Loading data from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
 
@@ -16,7 +16,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
                    "format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
                    "MODZ_n473647x12328.gctx.gz")
-    downloadIfNeeded(file, link)
+    downloadIfNotFound(file, link, ask=TRUE)
     data <- normalizePath(file)
     attr(data, "genes")         <- readGctxIds(data, dimension="row")
     attr(data, "perturbations") <- processIds(
@@ -71,7 +71,7 @@ loadCMapCompoundInfo <- function(file, nas) {
     link <- paste0(
         "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
         "repurposing_drugs_20180907.txt")
-    downloadIfNeeded(file[["drugs"]], link)
+    downloadIfNotFound(file[["drugs"]], link)
 
     # Replace separation symbols for targets
     message(sprintf("Loading compound data from %s...", file[["drugs"]]))
@@ -82,7 +82,7 @@ loadCMapCompoundInfo <- function(file, nas) {
     link <- paste0(
         "https://s3.amazonaws.com/data.clue.io/repurposing/downloads/",
         "repurposing_samples_20180907.txt")
-    downloadIfNeeded(file[["samples"]], link)
+    downloadIfNotFound(file[["samples"]], link)
 
     message(sprintf("Loading compound data from %s...", file[["samples"]]))
     pertData <- readAfterComments(file[["samples"]])
@@ -99,7 +99,7 @@ loadCMapGeneInfo <- function(file, nas) {
     link <- paste0(
         "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&",
         "format=file&", "file=GSE92742_Broad_LINCS_gene_info.txt.gz")
-    downloadIfNeeded(file, link)
+    downloadIfNotFound(file, link)
     message(sprintf("Loading data from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
     return(data)
