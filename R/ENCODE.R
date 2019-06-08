@@ -47,9 +47,10 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for ENCODE knockdown experiments (table format) --------
     url <- paste(
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
-        "limit=all", "assembly=hg19", "searchTerm=knock/metadata.tsv")
+        "limit=all", "searchTerm=knock/metadata.tsv")
     table <- suppressWarnings(suppressMessages(read_tsv(url)))
-    table <- table[table$`Output type` == "gene quantifications" &
+    table <- table[table$Assembly == "hg19" &
+                       table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
 
     # Retrieve gene quantification experiment files per control ----------------
