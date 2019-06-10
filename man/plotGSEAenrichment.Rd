@@ -7,6 +7,9 @@
 plotGSEAenrichment(enrichmentScore, gseaStat, titleSize = 14,
   axisTitleSize = 12, axisTextSize = 10, pointSize = 0.1)
 }
+\value{
+GSEA enrichment plot
+}
 \description{
 Render GSEA enrichment plot
 }

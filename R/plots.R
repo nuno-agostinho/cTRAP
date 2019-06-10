@@ -3,6 +3,7 @@
 #' @importFrom fgsea calcGseaStat
 #'
 #' @keywords internal
+#' @return List with results of running GSEA
 performGSEA <- function(pathways, stats) {
     pathway <- unname(as.vector(na.omit(match(pathways, names(stats)))))
     pathway <- sort(pathway)
@@ -23,6 +24,7 @@ performGSEA <- function(pathways, stats) {
 #' element_text element_blank element_rect
 #'
 #' @keywords internal
+#' @return GSEA enrichment plot
 plotGSEAenrichment <- function(enrichmentScore, gseaStat, titleSize=14,
                                axisTitleSize=12, axisTextSize=10,
                                pointSize=0.1) {
@@ -57,6 +59,7 @@ plotGSEAenrichment <- function(enrichmentScore, gseaStat, titleSize=14,
 #' scale_y_continuous theme theme_bw element_rect element_blank
 #'
 #' @keywords internal
+#' @return Gene hit plot
 plotGeneHits <- function(enrichmentScore, gseaStat, pathway) {
     geneHitsPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
                                                 y=enrichmentScore$score)) +
@@ -80,6 +83,7 @@ plotGeneHits <- function(enrichmentScore, gseaStat, pathway) {
 #' theme_bw labs guides element_text geom_area scale_fill_gradient2
 #'
 #' @keywords internal
+#' @return Metric distribution plot
 plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
                                    axisTextSize=10) {
     rankedMetric <- data.frame(sort=seq(statsOrd), stat=statsOrd)
@@ -203,6 +207,7 @@ plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
 #' geom_density_2d theme guides guide_legend
 #'
 #' @keywords internal
+#' @return Scatter plot
 plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
     prepareDFperPert <- function(perturbation, diffExprGenes) {
         # Intersect common genes
@@ -386,7 +391,9 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
 #' @importFrom methods is
 #' @importFrom stats setNames
 #'
+#' @return CMap data comparison plots
 #' @export
+#'
 #' @examples
 #' data("diffExprStat")
 #' data("cmapPerturbationsKD")

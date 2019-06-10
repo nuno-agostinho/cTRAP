@@ -6,6 +6,9 @@
 \usage{
 plotGeneHits(enrichmentScore, gseaStat, pathway)
 }
+\value{
+Gene hit plot
+}
 \description{
 Render gene hit plot
 }

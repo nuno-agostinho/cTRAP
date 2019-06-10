@@ -7,6 +7,9 @@
 plotMetricDistribution(statsOrd, breaks = 50, axisTitleSize = 12,
   axisTextSize = 10)
 }
+\value{
+Metric distribution plot
+}
 \description{
 Plot metric distribution
 }

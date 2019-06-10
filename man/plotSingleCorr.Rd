@@ -15,6 +15,9 @@ the list will be rendered with a different colour}
 
 \item{diffExprGenes}{Named vector}
 }
+\value{
+Scatter plot
+}
 \description{
 Render scatter plot to show a single relationship
 }

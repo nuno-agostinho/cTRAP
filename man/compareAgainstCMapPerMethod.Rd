@@ -33,6 +33,9 @@ perturbations regarding individual cell lines instead of the mean
 perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
 line perturbations are always ranked}
 }
+\value{
+Data frame containing the results per method of comparison
+}
 \description{
 Compare single method
 }

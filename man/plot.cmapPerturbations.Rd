@@ -34,6 +34,9 @@ plot top genes (\code{genes = "top"}), bottom genes
 
 \item{...}{Extra arguments currently not used}
 }
+\value{
+CMap data comparison plots
+}
 \description{
 Plot CMap data comparison
 }

@@ -390,6 +390,7 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @importFrom dplyr bind_rows
 #'
 #' @keywords internal
+#' @return Data frame containing the results per method of comparison
 compareAgainstCMapPerMethod <- function(
     method, diffExprGenes=diffExprGenes, perturbations=perturbations,
     geneSize=geneSize, cellLineMean=cellLineMean,

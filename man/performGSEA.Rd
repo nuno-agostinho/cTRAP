@@ -6,6 +6,9 @@
 \usage{
 performGSEA(pathways, stats)
 }
+\value{
+List with results of running GSEA
+}
 \description{
 Perform GSEA
 }
