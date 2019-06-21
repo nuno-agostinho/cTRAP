@@ -123,10 +123,13 @@ parseCMapID <- function(id, cellLine=FALSE) {
     if (cellLine) {
         # Retrieve cell line
         res <- gsub(".*\\_([A-Z].*)\\_.*", "\\1", id)
+        # Assign missing values to identifiers of summarised perturbation scores
+        res <- ifelse(grepl(":", res), NA, res)
     } else {
         # Remove cell line identifier
         res <- gsub("\\_[A-Z].*\\_", "\\_", id)
     }
+    names(res) <- id
     return(res)
 }
 
