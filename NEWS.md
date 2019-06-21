@@ -14,23 +14,23 @@ function names:
     - Rename function from `downloadENCODEsamples()` to `loadENCODEsamples()`
     - Allow to load ENCODE samples regarding multiple cell lines and experiment 
     targets using `loadENCODEsamples()`
-* Improve CMap metadata retrieval:
+* Improve CMap data and metadata retrieval:
     - By default, do not return control pertubation types when using
-    `getCMapPerturbationTypes()` (to do so, set argument `control=TRUE`)
+    `getCMapPerturbationTypes()` (unless if using argument `control = TRUE`)
     - Allow to parse CMap identifiers using `parseCMapID()`
     - Allow to load CMap's compound metadata using `loadCMapData()`
+    - Ask to download CMap perturbations z-scores file for differential 
+    expression if not found (avoiding downloading a huge file without user 
+    consent)
+* Improve preparation of CMap perturbations (`prepareCMapPerturbations()`):
     - Allow to load CMap metadata directly from files when using filepaths as
     arguments of `prepareCMapPerturbations()`
-    - Ask to download CMap perturbations z-scores file for differential 
-    expression if not found
-    - Show further metadata information (including compound data, if available)
-    related with a given perturbation by calling `print()` with a
-    `cmapComparison` object and a specific pertubation
-    - Show a complete table with metadata and compound information (if 
-    available) when calling `as.table()` with a `cmapComparison` object
     - Significantly decrease memory required to use cTRAP by loading chunks of
     z-scores from CMap perturbations on-demand (a slight decrease in time
-    performance is expected)
+    performance is expected), unless `prepareCMapPerturbations()` is run with
+    argument `loadZscores = TRUE`
+    - Display summary of loaded perturbations after running 
+    `prepareCMapPerturbations()`
 * Improve comparison against CMap perturbations (`compareAgainstCMap()`):
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
@@ -39,6 +39,13 @@ function names:
     `rankIndividualCellLinePerturbations`) when the mean is calculated
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
+* Improve metadata display for perturbations from CMap comparisons 
+(`cmapComparison` object, obtained after running `compareAgainstCMap()`):
+    - Show further metadata information (including compound data, if available)
+    related with a given perturbation by calling `print()` with a
+    `cmapComparison` object and a specific pertubation
+    - Show a complete table with metadata (and compound information, if 
+    available) when calling `as.table()` with a `cmapComparison` object
 * Improve plotting of CMap comparisons (`plot()`):
     - Plot comparison results against all perturbations by calling `plot()` with
     a `cmapComparison` object (non-ranked perturbations may also be plotted 

@@ -607,20 +607,29 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
                                dosage=NULL, perturbationType=NULL) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
 
-    if (!is.null(cellLine))
+    filter <- list()
+    if (!is.null(cellLine)) {
         metadata <- metadata[tolower(metadata$cell_id) %in% tolower(cellLine), ]
+        filter$cellLine <- cellLine
+    }
 
-    if (!is.null(timepoint))
+    if (!is.null(timepoint)) {
         metadata <- metadata[metadata$pert_itime %in% timepoint, ]
+        filter$timepoint <- timepoint
+    }
 
-    if (!is.null(dosage))
+    if (!is.null(dosage)) {
         metadata <- metadata[metadata$pert_idose %in% dosage, ]
+        filter$dosage <- dosage
+    }
 
     if (!is.null(perturbationType)) {
+        filter$perturbationType <- perturbationType
         tmp <- getCMapPerturbationTypes()[perturbationType]
         if (!is.na(tmp)) perturbationType <- tmp
         metadata <- metadata[metadata$pert_type %in% perturbationType, ]
     }
+    if (length(filter) > 0) attr(metadata, "filter") <- filter
 
     return(metadata)
 }
@@ -668,6 +677,25 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     class(zscores) <- c("cmapPerturbations", class(zscores))
 
     if (loadZscores) zscores <- loadCMapZscores(zscores, cmapPerturbations=TRUE)
+
+    # Display summary message of loaded perturbations
+    filters <- attr(metadata, "filter")
+    summaryMsg <- sprintf(
+        "\nSummary: %s perturbations measured across %s genes",
+        ncol(zscores), nrow(zscores))
+    if (!is.null(filters)) {
+        filterNames <- c("cellLine"="Cell lines",
+                         "perturbationType"="Perturbation types",
+                         "dosage"="Perturbation doses",
+                         "timepoint"="Time points")
+        filterNames <- filterNames[names(filters)]
+
+        filterMsg <- paste0("  - ", filterNames, ": ",
+                            sapply(filters, paste, collapse=", "),
+                            collapse="\n")
+        summaryMsg <- sprintf("%s filtered by:\n%s", summaryMsg, filterMsg)
+    }
+    message(summaryMsg)
     return(zscores)
 }
 
