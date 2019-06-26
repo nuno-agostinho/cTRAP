@@ -5,14 +5,14 @@
 \title{Plot CMap data comparison}
 \usage{
 \method{plot}{cmapComparison}(x, method = c("spearman", "pearson",
-  "gsea"), n = c(3, 3), showMetadata = TRUE,
+  "gsea", "rankProduct"), n = c(3, 3), showMetadata = TRUE,
   plotNonRankedPerturbations = FALSE, alpha = 0.3, ...)
 }
 \arguments{
 \item{x}{\code{cmapComparison} object}
 
 \item{method}{Character: method to plot results (\code{spearman},
-\code{pearson} or \code{gsea})}
+\code{pearson}, \code{gsea} or \code{rankProduct})}
 
 \item{n}{Numeric: number of top and bottom genes to label (if a vector of two
 numbers is given, the first and second numbers will be used as the number

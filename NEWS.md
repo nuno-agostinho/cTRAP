@@ -39,6 +39,7 @@ function names:
     `rankIndividualCellLinePerturbations`) when the mean is calculated
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
+    - Calculate the rank product's rank to assess ranks across multiple methods
 * Improve metadata display for perturbations from CMap comparisons 
 (`cmapComparison` object, obtained after running `compareAgainstCMap()`):
     - Show further metadata information (including compound data, if available)

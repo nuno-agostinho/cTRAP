@@ -570,6 +570,14 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
             ranked     <- rank(-data[colsToRank][[col]], na.last="keep")
             data[colsToRank, rankCol] <- ranked
         }
+        rankCols <- grep("_rank", colnames(data))
+        if (length(rankCols) > 1) {
+            # Calculate rank product's rank
+            ranks    <- data[colsToRank, rankCols, with=FALSE]
+            rankProd <- apply(ranks, 1, prod) ^ (1 / ncol(ranks))
+            data[colsToRank, "rankProduct_rank"] <- rank(rankProd,
+                                                         na.last="keep")
+        }
         return(data)
     }
     ranked <- rankPerturbations(merged, cellLineInfo, colsPerMethod)

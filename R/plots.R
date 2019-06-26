@@ -251,7 +251,7 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #' @param x \code{cmapComparison} object
 #' @param ... Extra arguments currently not used
 #' @param method Character: method to plot results (\code{spearman},
-#'   \code{pearson} or \code{gsea})
+#'   \code{pearson}, \code{gsea} or \code{rankProduct})
 #' @param n Numeric: number of top and bottom genes to label (if a vector of two
 #'   numbers is given, the first and second numbers will be used as the number
 #'   of top and bottom genes to label, respectively)
@@ -264,7 +264,7 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #' @importFrom graphics plot
 #' @importFrom R.utils capitalize
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_hline ylab theme
-#'   element_blank scale_colour_manual xlim theme_classic guides
+#'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
 #' @importFrom ggrepel geom_text_repel
 #'
 #' @return Plot illustrating the comparison with CMap data
@@ -281,7 +281,8 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #' plot(compareKD, "spearman", c(7, 3))
 #' plot(compareKD, "pearson")
 #' plot(compareKD, "gsea")
-plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
+plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea",
+                                            "rankProduct"),
                                 n=c(3, 3), showMetadata=TRUE,
                                 plotNonRankedPerturbations=FALSE,
                                 alpha=0.3, ...) {
@@ -291,6 +292,10 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
         stat     <- "GSEA"
         statRank <- "gsea_rank"
         yLabel   <- "Weighted Connectivity Score (WCTS)"
+    } else if (method == "rankProduct") {
+        stat     <- "rankProduct_rank"
+        statRank <- stat
+        yLabel   <- "Rank product's rank"
     } else {
         stat     <- paste0(method, "_coef")
         statRank <- paste0(method, "_rank")
@@ -370,6 +375,7 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea"),
               axis.text.x=element_blank(), axis.title.x=element_blank())
 
     if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour=FALSE)
+    if (method == "rankProduct") plot <- plot + scale_y_reverse()
     return(plot)
 }
 
