@@ -238,7 +238,7 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
 
     loadPerturbationsFromFile <- is.character(perturbations)
     if (loadPerturbationsFromFile) {
-        # Divide perturbations into chunks (load into memory a chunk at a time)
+        # Split perturbations into chunks to be loaded on-demand
         chunkVector <- function(x, nElems) {
             groups <- ceiling(length(x)/nElems)
             split(x, factor(sort(rank(x) %% groups)))
@@ -258,34 +258,28 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
                                      verbose=FALSE)
             data <<- unclass(data)
             cols <<- colnames(data)
+            gc()
         }
-        signature <- data[ , k]
+        signature        <- data[ , k]
         names(signature) <- rownames(data)
-        suppressWarnings(fgsea(pathways=pathways, stats=sort(signature),
-                               minSize=15, maxSize=500, nperm=1))
+        signature        <- sort(signature)
+        score            <- fgsea(pathways=pathways, stats=signature,
+                                  minSize=15, maxSize=500, nperm=1)
+        return(score)
     }
-    gsa <- pblapply(colnames(perturbations),
-                    performGSAwithPerturbationSignature,
-                    perturbations, pathways)
+    gsa <- suppressWarnings(pblapply(colnames(perturbations),
+                                     performGSAwithPerturbationSignature,
+                                     perturbations, pathways))
     # gsa <- plyr::compact(gsa) # in case of NULL elements
-    names(gsa) <- colnames(perturbations)[seq(ncol(perturbations))]
 
-    gsaRes <- cbind(identifier=rep(names(gsa), each=2), bind_rows(gsa))
+    # Calculate weighted connectivity score (WTCS) based on CMap paper (page e8)
+    gsaRes <- bind_rows(gsa)
+    isTop  <- gsaRes$pathway == "top"
+    top    <- gsaRes[["ES"]][isTop]
+    bottom <- gsaRes[["ES"]][!isTop]
+    wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
 
-    # Based on CMap paper (page e8) - weighted connectivity score (WTCS)
-    wtcs <- vapply(unique(gsaRes$identifier), function(geneID, gsaRes) {
-        geneID_GSA  <- gsaRes[gsaRes$identifier %in% geneID, ]
-        topGenes    <- geneID_GSA$ES[grepl("top", geneID_GSA$pathway)]
-        bottomGenes <- geneID_GSA$ES[grepl("bottom", geneID_GSA$pathway)]
-
-        enrichmentScore <- 0
-        if (sign(topGenes) != sign(bottomGenes))
-            enrichmentScore <- (topGenes - bottomGenes) / 2
-        return(enrichmentScore)
-    }, gsaRes=gsaRes, FUN.VALUE=numeric(1))
-
-    names(wtcs) <- unique(gsaRes[["identifier"]])
-    results <- data.table("identifier"=names(wtcs), "GSEA"=wtcs)
+    results <- data.table("identifier"=colnames(perturbations), "GSEA"=wtcs)
     return(results)
 }
 
@@ -307,6 +301,11 @@ correlateAgainstCMap <- function(diffExprGenes, perturbations, method,
                         "gsea"    ="GSEA")
     msg <- "Correlating against %s CMap perturbations (%s cell lines; %s)..."
     message(sprintf(msg, ncol(perturbations), cellLines, methodStr))
+
+    # Subset based on intersecting genes
+    genes <- intersect(names(diffExprGenes), rownames(perturbations))
+    diffExprGenes <- diffExprGenes[genes]
+    perturbations <- perturbations[genes, ]
 
     loadPerturbationsFromFile <- is.character(perturbations)
     if (loadPerturbationsFromFile) {
@@ -330,9 +329,9 @@ correlateAgainstCMap <- function(diffExprGenes, perturbations, method,
                                      verbose=FALSE)
             data <<- unclass(data)
             cols <<- colnames(data)
+            gc()
         }
-        thisPert <- data[ , k]
-        cor.test(thisPert, diffExprGenes, method=method)
+        cor.test(data[ , k], diffExprGenes, method=method)
     }
     # Suppress warnings to avoid "Cannot compute exact p-value with ties"
     cors <- suppressWarnings(pblapply(
@@ -366,8 +365,47 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
     topGenes        <- names(diffExprGenes)[head(ordered, geneSize)]
     bottomGenes     <- names(diffExprGenes)[tail(ordered, geneSize)]
     pathways        <- list(topGenes, bottomGenes)
-    names(pathways) <- paste0(c("top", "bottom"), geneSize)
+    names(pathways) <- c("top", "bottom")
     return(pathways)
+}
+
+#' Calculate cell line mean
+#'
+#' @param data Data table: comparison against CMap data
+#' @param cellLine Character: perturbation identifiers as names and respective
+#' cell lines as values
+#' @inheritParams compareAgainstCMapPerMethod
+#'
+#' @return Data table with cell line information (including mean)
+#' @keywords internal
+calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
+    scoreCol <- 2
+    # Remove cell line information from the identifier
+    allIDs <- parseCMapID(data$identifier, cellLine=FALSE)
+    idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
+    names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
+
+    res <- pblapply(
+        idsFromMultipleCellLines,
+        function(id, allIDs, score, cellLine) {
+            list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
+                 mean=mean(score[id == allIDs]))
+        }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
+
+    avg <- sapply(res, "[[", 2)
+    avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
+    colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
+    data <- bind_rows(list(data, avgDF))
+
+    isSummarised <- allIDs %in% idsFromMultipleCellLines
+    toRank <- rankCellLinePerturbations | !isSummarised
+    avgCellLines <- sapply(res, "[[", 1)
+
+    cellLineInfo <- data.table(
+        c(names(cellLine), names(avgCellLines)),
+        c(cellLine, avgCellLines),
+        c(toRank, rep(TRUE, length(avgCellLines))))
+    return(cellLineInfo)
 }
 
 #' Compare single method
@@ -400,18 +438,16 @@ compareAgainstCMapPerMethod <- function(
     metadata  <- attr(perturbations, "metadata")
     cellLine  <- unique(metadata$cell_id)
 
-
+    # Summary of intersecting genes
     genes <- intersect(names(diffExprGenes), rownames(perturbations))
     intersected <- length(genes)
     total       <- length(diffExprGenes)
     message(sprintf(
-        "Comparing %s intersecting genes (%s%% of the %s input genes)...",
+        "Subsetting %s intersecting genes (%s%% of the %s input genes)...",
         intersected, round(intersected / total * 100, 0), total))
 
     pathways <- NULL
     if (method %in% c("spearman", "pearson")) {
-        diffExprGenes <- diffExprGenes[genes]
-        perturbations <- perturbations[genes, ]
         data <- correlateAgainstCMap(
             diffExprGenes=diffExprGenes, perturbations=perturbations,
             method=method, cellLines=length(cellLine))
@@ -429,34 +465,9 @@ compareAgainstCMapPerMethod <- function(
     cellLine <- parseCMapID(data$identifier, cellLine=TRUE)
     names(cellLine) <- data$identifier
 
-    # Calculate the cell line mean if desired
     if (cellLineMean) {
-        scoreCol <- 2
-        # Remove cell line information from the identifier
-        allIDs <- parseCMapID(data$identifier, cellLine=FALSE)
-        idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
-        names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
-
-        res <- pblapply(
-            idsFromMultipleCellLines,
-            function(id, allIDs, score, cellLine) {
-                list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
-                     mean=mean(score[id == allIDs]))
-            }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
-
-        avg <- sapply(res, "[[", 2)
-        avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
-        colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
-        data <- bind_rows(list(data, avgDF))
-
-        isSummarised <- allIDs %in% idsFromMultipleCellLines
-        toRank <- rankCellLinePerturbations | !isSummarised
-        avgCellLines <- sapply(res, "[[", 1)
-
-        cellLineInfo <- data.table(
-            c(names(cellLine), names(avgCellLines)),
-            c(cellLine, avgCellLines),
-            c(toRank, rep(TRUE, length(avgCellLines))))
+        cellLineInfo <- calculateCellLineMean(data, cellLine,
+                                              rankCellLinePerturbations)
     } else {
         cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
     }
@@ -469,12 +480,13 @@ compareAgainstCMapPerMethod <- function(
         pertTypes <- getCMapPerturbationTypes()
         pertType  <- names(pertTypes[pertTypes == pertType])
 
-        if (pertType == "Compound")
+        if (pertType == "Compound") {
             id <- "compound_perturbation"
-        else if (grepl("biological agents", pertType))
+        } else if (grepl("biological agents", pertType)) {
             id <- "biological_agent_perturbation"
-        else
+        } else {
             id <- "gene_perturbation"
+        }
         colnames(data)[colnames(data) == "identifier"] <- id
     }
     rownames(data) <- data$genes
@@ -499,12 +511,6 @@ compareAgainstCMapPerMethod <- function(
 #' Weighted connectivity scores (WTCS) are calculated when
 #' \code{method = "gsea"}. For more information on WTCS, read
 #' \url{https://clue.io/connectopedia/cmap_algorithms}.
-#'
-#' @details Order results according to the mean correlation coefficient (if
-#' \code{method} is \code{spearman} or \code{pearson}) or the weighted
-#' connectivity score (WTCS) score (if \code{method = "gsea"}) across cell lines
-#' (if \code{cellLineMean = TRUE}; otherwise results are ordered based on the
-#' first cell line alone).
 #'
 #' @inheritParams compareAgainstCMapPerMethod
 #'

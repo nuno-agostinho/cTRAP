@@ -42,13 +42,6 @@ Weighted connectivity scores (WTCS) are calculated when
 \code{method = "gsea"}. For more information on WTCS, read
 \url{https://clue.io/connectopedia/cmap_algorithms}.
 }
-\details{
-Order results according to the mean correlation coefficient (if
-\code{method} is \code{spearman} or \code{pearson}) or the weighted
-connectivity score (WTCS) score (if \code{method = "gsea"}) across cell lines
-(if \code{cellLineMean = TRUE}; otherwise results are ordered based on the
-first cell line alone).
-}
 \examples{
 data("cmapPerturbationsCompounds")
 perturbations <- cmapPerturbationsCompounds
