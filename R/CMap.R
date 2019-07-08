@@ -392,19 +392,23 @@ calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
                  mean=mean(score[id == allIDs]))
         }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
 
-    avg <- sapply(res, "[[", 2)
-    avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
-    colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
-    data <- bind_rows(list(data, avgDF))
+    if (length(idsFromMultipleCellLines) > 0) {
+        avg <- sapply(res, "[[", 2)
+        avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
+        colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
+        data <- bind_rows(list(data, avgDF))
 
-    isSummarised <- allIDs %in% idsFromMultipleCellLines
-    toRank <- rankCellLinePerturbations | !isSummarised
-    avgCellLines <- sapply(res, "[[", 1)
+        isSummarised <- allIDs %in% idsFromMultipleCellLines
+        toRank <- rankCellLinePerturbations | !isSummarised
+        avgCellLines <- sapply(res, "[[", 1)
 
-    cellLineInfo <- data.table(
-        c(names(cellLine), names(avgCellLines)),
-        c(cellLine, avgCellLines),
-        c(toRank, rep(TRUE, length(avgCellLines))))
+        cellLineInfo <- data.table(
+            c(names(cellLine), names(avgCellLines)),
+            c(cellLine, avgCellLines),
+            c(toRank, rep(TRUE, length(avgCellLines))))
+    } else {
+        cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
+    }
     return(cellLineInfo)
 }
 

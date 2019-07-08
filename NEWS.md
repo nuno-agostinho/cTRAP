@@ -80,6 +80,8 @@ function names:
     - Report run time and settings used
     - Perform comparisons against perturbations disregarding their cell lines
     (faster runtime)
+    - Fix error when trying to calculate the mean for cell lines with no 
+    intersecting conditions available
 * Minor improvements to `plot()`:
     - Improve rendering performance of the GSEA plot
     - Fix disproportion between top and bottom enrichment score panels in GSEA
