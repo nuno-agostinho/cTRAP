@@ -186,9 +186,11 @@ compareCompounds <- compareAgainstCMap(diffExprStat, cmapPerturbationsCompounds)
 ```
 
 The output table contains the results of the comparison with each perturbation 
-tested,  including the test statistics (Spearman's correlation coefficient, 
+tested, including the test statistics (Spearman's correlation coefficient, 
 Pearson's correlation coefficient and/or GSEA score), the respective p-value and
-the Benjamini-Hochberg-adjusted p-value.
+the Benjamini-Hochberg-adjusted p-value (for correlation statistics only). When
+performing multiple methods, the [rank product][]'s rank will be included to
+summarise other method's rankings.
 
 ```{r order knockdown perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively associated perturbations (note that EIF4G1 knockdown is the
@@ -197,29 +199,27 @@ the Benjamini-Hochberg-adjusted p-value.
 head(compareKD[order(spearman_rank, na.last=NA)], n=10)
 head(compareKD[order(pearson_rank, na.last=NA)])
 head(compareKD[order(gsea_rank, na.last=NA)])
+head(compareKD[order(rankProduct_rank, na.last=NA)])
 
 # Most negatively associated perturbations
 tail(compareKD[order(spearman_rank, na.last=NA)])
 tail(compareKD[order(pearson_rank, na.last=NA)])
 tail(compareKD[order(gsea_rank, na.last=NA)])
+tail(compareKD[order(rankProduct_rank, na.last=NA)])
 
 # Plot list of compared pertubations
 plot(compareKD, "spearman", n=c(10, 3))
 plot(compareKD, "pearson")
 plot(compareKD, "gsea")
+plot(compareKD, "rankProduct")
 ```
 
 For small molecules:
 
 ```{r order small molecule perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively and negatively associated perturbations
-compareCompounds[order(spearman_rank, na.last=NA)]
-compareCompounds[order(pearson_rank, na.last=NA)]
-compareCompounds[order(gsea_rank, na.last=NA)]
-
-plot(compareCompounds, "spearman")
-plot(compareCompounds, "pearson")
-plot(compareCompounds, "gsea")
+compareCompounds[order(rankProduct_rank, na.last=NA)]
+plot(compareCompounds, "rankProduct")
 ```
 
 > The Gene Set Enrichment Analysis (GSEA) score is based on the Weighted
@@ -246,7 +246,7 @@ print(compareKD, EIF4G1knockdown)
 
 # Information on the most similar compound perturbation (based on Spearman's 
 # correlation)
-print(compareCompounds[order(spearman_rank, na.last=NA)], 1)
+print(compareCompounds[order(rankProduct_rank, na.last=NA)], 1)
 ```
 
 # Relationship plots
@@ -322,3 +322,4 @@ this tutorial) is welcome. Please send any suggestions and comments to:
 [limma]: https://www.ncbi.nlm.nih.gov/pubmed/25605792
 [voom]: https://www.ncbi.nlm.nih.gov/pubmed/24485249
 [subramanian2017]: https://doi.org/10.1016/j.cell.2017.10.049
+[rank product]: https://en.wikipedia.org/wiki/Rank_product
