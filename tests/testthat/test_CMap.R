@@ -28,7 +28,7 @@ test_that("Perturbation types are retrievable", {
     expect_true(all(c("trt_cp", "trt_sh.cgs") %in% pertTypes))
 })
 
-test_that("Subsetting a cmapPerturbations object", {
+test_that("Subsetting a perturbationChanges object", {
     ncol <- 22
     nrow <- 12328
     expect_equal(dim(perturbations), c(nrow, ncol))
@@ -112,8 +112,9 @@ test_that("Subsetting a cmapPerturbations object", {
 })
 
 test_that("Compare using Spearman correlation", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, method="spearman")
-    expect_is(data, "cmapComparison")
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     method="spearman")
+    expect_is(data, "similarPerturbations")
     expect_identical(colnames(data), c(
         "compound_perturbation", "spearman_coef", "spearman_pvalue",
         "spearman_qvalue", "spearman_rank"))
@@ -136,8 +137,9 @@ test_that("Compare using Spearman correlation", {
 })
 
 test_that("Compare using Pearson correlation", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, method="pearson")
-    expect_is(data, "cmapComparison")
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     method="pearson")
+    expect_is(data, "similarPerturbations")
     expect_identical(colnames(data), c(
         "compound_perturbation", "pearson_coef", "pearson_pvalue",
         "pearson_qvalue", "pearson_rank"))
@@ -160,8 +162,8 @@ test_that("Compare using Pearson correlation", {
 })
 
 test_that("Compare using GSEA", {
-    data <- compareAgainstCMap(diffExprStat, perturbations, method="gsea")
-    expect_is(data, "cmapComparison")
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea")
+    expect_is(data, "similarPerturbations")
     expect_identical(colnames(data),
                      c("compound_perturbation", "GSEA", "gsea_rank"))
     expect_equal(head(data$compound_perturbation),
@@ -182,7 +184,7 @@ test_that("Compare using GSEA", {
 
 test_that("Compare against CMap using multiple methods simultaneously", {
     method <- c("pearson", "spearman", "gsea")
-    data <- compareAgainstCMap(diffExprStat, perturbations, method=method)
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method=method)
 
     checkIfAnyColsHaveMethodsName <- function(col, data) {
         any(startsWith(colnames(data), col))
@@ -202,25 +204,25 @@ test_that("Compare against CMap by also ranking individual cell lines", {
 
     # Expect missing values in rankings when individual cell lines are not
     # ranked and if means across cell lines are calculated
-    data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankCellLinePerturbations=FALSE,
-                               cellLineMean=TRUE)
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     rankCellLinePerturbations=FALSE,
+                                     cellLineMean=TRUE)
     expect_true(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings when individual cell lines are
     # ranked as well
-    data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankCellLinePerturbations=TRUE)
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     rankCellLinePerturbations=TRUE)
     expect_false(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings if cell line means are NOT calculated
-    data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankCellLinePerturbations=FALSE,
-                               cellLineMean=FALSE)
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     rankCellLinePerturbations=FALSE,
+                                     cellLineMean=FALSE)
     expect_false(areNAsIncludedInRanks(data))
 
-    data <- compareAgainstCMap(diffExprStat, perturbations,
-                               rankCellLinePerturbations=TRUE,
-                               cellLineMean=FALSE)
+    data <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                     rankCellLinePerturbations=TRUE,
+                                     cellLineMean=FALSE)
     expect_false(areNAsIncludedInRanks(data))
 })

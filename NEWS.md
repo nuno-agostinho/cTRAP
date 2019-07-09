@@ -1,14 +1,14 @@
 # 1.2.1 (10 June, 2019)
 
 * Update the tutorial and function documentation
-* Replace all `L1000` references with `CMap`, as appropriate, including in
-function names:
+* Remove most `L1000` instances (some of its references were replaced with
+`CMap`, as appropriate), including in function names:
     - `getL1000perturbationTypes()` -> `getCMapPerturbationTypes()`
     - `getL1000conditions()`        -> `getCMapConditions()`
     - `downloadL1000data()`         -> `loadCMapData()`
     - `filterL1000metadata()`       -> `filterCMapMetadata()`
     - `loadL1000perturbations()`    -> `prepareCMapPerturbations()`
-    - `compareAgainstL1000()`       -> `compareAgainstCMap()`
+    - `compareAgainstL1000()`       -> `rankSimilarPerturbations()`
     - `plotL1000comparison()`       -> `plot()`
 * Improve loading of ENCODE samples (`loadENCODEsamples()`):
     - Rename function from `downloadENCODEsamples()` to `loadENCODEsamples()`
@@ -31,7 +31,7 @@ function names:
     argument `loadZscores = TRUE`
     - Display summary of loaded perturbations after running 
     `prepareCMapPerturbations()`
-* Improve comparison against CMap perturbations (`compareAgainstCMap()`):
+* Improve ranking of similar perturbations (`rankSimilarPerturbation()`):
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
     cell line available; disabled if argument `cellLineMean = FALSE`
@@ -40,20 +40,20 @@ function names:
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
     - Calculate the rank product's rank to assess ranks across multiple methods
-* Improve metadata display for perturbations from CMap comparisons 
-(`cmapComparison` object, obtained after running `compareAgainstCMap()`):
+* Improve metadata display for a `similarPerturbations` object, obtained after
+running `rankSimilarPerturbations()`:
     - Show further metadata information (including compound data, if available)
     related with a given perturbation by calling `print()` with a
-    `cmapComparison` object and a specific pertubation
+    `similarPerturbations` object and a specific pertubation identifier
     - Show a complete table with metadata (and compound information, if 
-    available) when calling `as.table()` with a `cmapComparison` object
-* Improve plotting of CMap comparisons (`plot()`):
+    available) when calling `as.table()` with a `similarPerturbations` object
+* Improve plotting of perturbations (`plot()`):
     - Plot comparison results against all perturbations by calling `plot()` with
-    a `cmapComparison` object (non-ranked perturbations may also be plotted 
-    with `plotNonRankedPerturbations = TRUE`)
+    a `similarPerturbations` object (non-ranked perturbations may also be
+    plotted by setting the argument `plotNonRankedPerturbations = TRUE`)
     - Plot scatter and Gene Set Enrichment Analysis (GSEA) plots between 
     differential expression results and a single perturbation by calling 
-    `plot()` with a `cmapPerturbations` object (if an identifier regarding the
+    `plot()` with a `perturbationChanges` object (if an identifier regarding the 
     summary of multiple perturbations scores across cell lines is given, the
     plots are coloured by cell line)
     - When displaying GSEA plots, automatically render results for both top and 
@@ -68,9 +68,9 @@ function names:
     fix specific issues with metadata (such as doses displayed as
     `300 ng|300 ng`)
 * CMap perturbation minor improvements:
-    - Fix error when subsetting a `cmapPerturbations` object with only one row
-    - Improve performance when subsetting `cmapPerturbations` objects
-* Minor improvements to `compareAgainstCMap()`:
+    - Fix error when subsetting a `perturbationChanges` object with only one row
+    - Improve performance when subsetting `perturbationChanges` objects
+* Minor improvements to `rankSimilarPerturbations()`:
     - Correctly set name of perturbagens depending on the perturbation type
     (genes, biological agents or compounds)
     - Improve performance when correlating against multiple cell lines

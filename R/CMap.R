@@ -26,8 +26,9 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 
 #' Load matrix of CMap zscores
 #'
-#' @param data cmapPerturbations object
-#' @param cmapPerturbations Boolean: convert to \code{cmapPerturbations} object?
+#' @param data \code{perturbationChanges} object
+#' @param perturbationChanges Boolean: convert to \code{perturbationChanges}
+#'   object?
 #' @param verbose Boolean: print messages?
 #'
 #' @return Matrix containing CMap perturbation z-scores (genes as rows,
@@ -43,7 +44,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #'                                     "cmapGeneInfo.txt")
 #'   zscores <- loadCMapZscores(perts[ , 1:10])
 #' }
-loadCMapZscores <- function(data, cmapPerturbations=FALSE, verbose=TRUE) {
+loadCMapZscores <- function(data, perturbationChanges=FALSE, verbose=TRUE) {
     if (verbose) message(sprintf("Loading data from %s...", data))
     zscores  <- new("GCT", src=data, cid=colnames(data), verbose=verbose)@mat
     geneInfo <- attr(data, "geneInfo")
@@ -54,8 +55,8 @@ loadCMapZscores <- function(data, cmapPerturbations=FALSE, verbose=TRUE) {
             zscores <- zscores[attr(data, "genes"), , drop=FALSE]
     }
 
-    if (cmapPerturbations) {
-        class(zscores) <- c("cmapPerturbations", class(zscores))
+    if (perturbationChanges) {
+        class(zscores) <- c("perturbationChanges", class(zscores))
         # Inherit input's attributes
         attrs <- attributes(data)
         attrs <- attrs[!names(attrs) %in% c(names(attributes(zscores)),
@@ -220,7 +221,7 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 
 #' Perform gene set enrichment (GSA) against CMap perturbations
 #'
-#' @inheritParams compareAgainstCMap
+#' @inheritParams rankSimilarPerturbations
 #' @inheritParams fgsea::fgsea
 #'
 #' @importFrom fgsea fgsea
@@ -285,7 +286,7 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
 
 #' Correlate against CMap perturbations
 #'
-#' @inheritParams compareAgainstCMap
+#' @inheritParams rankSimilarPerturbations
 #' @param pAdjust Character: method to use for p-value adjustment
 #'
 #' @importFrom stats p.adjust cor.test
@@ -417,7 +418,7 @@ calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
 #' @inheritParams prepareGSEApathways
 #' @param method Character: comparison method (\code{spearman}, \code{pearson}
 #'   or \code{gsea}; multiple methods may be selected at once)
-#' @param perturbations \code{cmapPerturbations} object: CMap perturbations
+#' @param perturbations \code{perturbationChanges} object: CMap perturbations
 #'   (check \code{\link{prepareCMapPerturbations}})
 #' @param cellLineMean Boolean: add a column with the mean score across cell
 #'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
@@ -502,8 +503,7 @@ compareAgainstCMapPerMethod <- function(
 
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
-    msg <- paste0("Comparison against %s perturbations using '%s' method %s",
-                  "performed in %s")
+    msg <- "Comparison against %s perturbations using '%s' %s performed in %s\n"
     extra <- ifelse(method == "gsea",
                     sprintf("(gene size of %s) ", geneSize), "")
     message(sprintf(msg, ncol(perturbations), method, extra, diffTime))
@@ -530,14 +530,14 @@ compareAgainstCMapPerMethod <- function(
 #' data("diffExprStat")
 #'
 #' # Compare differential expression results against CMap perturbations
-#' compareAgainstCMap(diffExprStat, perturbations)
+#' rankSimilarPerturbations(diffExprStat, perturbations)
 #'
 #' # Compare using only Spearman's correlation
-#' compareAgainstCMap(diffExprStat, perturbations, method="spearman")
-compareAgainstCMap <- function(diffExprGenes, perturbations,
-                               method=c("spearman", "pearson", "gsea"),
-                               geneSize=150, cellLineMean="auto",
-                               rankCellLinePerturbations=FALSE) {
+#' rankSimilarPerturbations(diffExprStat, perturbations, method="spearman")
+rankSimilarPerturbations <- function(diffExprGenes, perturbations,
+                                     method=c("spearman", "pearson", "gsea"),
+                                     geneSize=150, cellLineMean="auto",
+                                     rankCellLinePerturbations=FALSE) {
     supported <- c("spearman", "pearson", "gsea")
     method <- unique(method)
     method <- method[method %in% supported]
@@ -600,7 +600,7 @@ compareAgainstCMap <- function(diffExprGenes, perturbations,
     attr(ranked, "cellLineInfo")  <- cellLineInfo
     attr(ranked, "pathways")      <- pathways
 
-    class(ranked) <- c("cmapComparison", class(ranked))
+    class(ranked) <- c("similarPerturbations", class(ranked))
     return(ranked)
 }
 
@@ -692,9 +692,10 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     attr(zscores, "metadata") <- metadata
     attr(zscores, "geneInfo") <- geneInfo
     attr(zscores, "compoundInfo") <- compoundInfo
-    class(zscores) <- c("cmapPerturbations", class(zscores))
+    class(zscores) <- c("perturbationChanges", class(zscores))
 
-    if (loadZscores) zscores <- loadCMapZscores(zscores, cmapPerturbations=TRUE)
+    if (loadZscores) zscores <- loadCMapZscores(zscores,
+                                                perturbationChanges=TRUE)
 
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")

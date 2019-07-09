@@ -4,10 +4,10 @@ data("cmapPerturbationsCompounds")
 perturbations <- cmapPerturbationsCompounds
 data("diffExprStat")
 
-cmp <- compareAgainstCMap(diffExprStat, perturbations)
+cmp <- rankSimilarPerturbations(diffExprStat, perturbations)
 condition <- cmp[1, 1]
 
-# Plot cmapComparison object ---------------------------------------------------
+# Plot similarPerturbations object ---------------------------------------------
 
 test_that("Plot similar perturbations according to selected method", {
     plot <- plot(cmp, method="pearson")
@@ -22,9 +22,9 @@ test_that("Plot similar perturbations according to selected method", {
     expect_s3_class(plot, "ggplot")
     expect_match(plot$labels$y, "WCTS")
 
-    # Avoid plotting based on methods not available in the cmapComparison object
-    cmpPearson <- compareAgainstCMap(diffExprStat, perturbations,
-                                     method="pearson")
+    # Avoid plots based on inexisting methods in the similarPerturbations object
+    cmpPearson <- rankSimilarPerturbations(diffExprStat, perturbations,
+                                           method="pearson")
     expect_error(plot(cmpPearson, method="gsea"))
 })
 
@@ -69,7 +69,7 @@ test_that("Plot non-ranked perturbations", {
     expect_null(plot$guides$colour)
 })
 
-# Plot cmapPerturbations object ------------------------------------------------
+# Plot perturbationChanges object ----------------------------------------------
 
 test_that("Plot Spearman's correlation for a single perturbation", {
     plot <- plot(perturbations, colnames(perturbations)[[1]], diffExprStat,

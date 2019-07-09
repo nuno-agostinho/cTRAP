@@ -20,7 +20,7 @@ cmapPerturbationsKD <- prepareCMapPerturbations(
   loadZscores=TRUE)
 
 data("diffExprStat")
-compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 
 # Select only some perturbations (to reduce file size)
 filter <- c(head(order(compareKD$spearman_rank)),

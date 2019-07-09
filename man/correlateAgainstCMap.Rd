@@ -13,7 +13,7 @@ where the name of the vector are gene names and the values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
-\item{perturbations}{\code{cmapPerturbations} object: CMap perturbations
+\item{perturbations}{\code{perturbationChanges} object: CMap perturbations
 (check \code{\link{prepareCMapPerturbations}})}
 
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}

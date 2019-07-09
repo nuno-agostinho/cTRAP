@@ -14,10 +14,10 @@
 #' \itemize{
 #'     \item{Spearman or Pearson correlation with z-scores of differentially
 #'     expressed genes after perturbations from CMap. Use function
-#'     \code{compareAgainstCMap} with \code{method = "spearman"} or
+#'     \code{\link{rankSimilarPerturbations}} with \code{method = "spearman"} or
 #'     \code{method = "pearson"}}
 #'     \item{Gene set enrichment analysis (GSEA) using the (around) 12 000 genes
-#'     from CMap. Use function \code{compareAgainstCMap} with
+#'     from CMap. Use function \code{\link{rankSimilarPerturbations}} with
 #'     \code{method = gsea}.}
 #' }
 #'
@@ -145,7 +145,7 @@ NULL
 #'   loadZscores=TRUE)
 #'
 #' data("diffExprStat")
-#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #'
 #' # Select only some perturbations (to reduce file size)
 #' filter <- c(head(order(compareKD$spearman_rank)),

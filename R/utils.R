@@ -133,18 +133,18 @@ parseCMapID <- function(id, cellLine=FALSE) {
     return(res)
 }
 
-# cmapPerturbations object -----------------------------------------------------
+# perturbationChanges object ---------------------------------------------------
 
-#' Subset a \code{cmapPerturbations} object
+#' Subset a \code{perturbationChanges} object
 #'
-#' @param x \code{cmapPerturbations} object
+#' @param x \code{perturbationChanges} object
 #' @param i,j Character or numeric indexes specifying elements to extract
 #' @param drop Boolean: coerce result to the lowest possible dimension?
 #' @param ... Extra parameters passed to \code{`[`}
 #'
-#' @return \code{cmapPerturbations} object with subset data
+#' @return \code{perturbationChanges} object with subset data
 #' @export
-`[.cmapPerturbations` <- function(x, i, j, drop=FALSE, ...) {
+`[.perturbationChanges` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
         out <- x
         nargs <- nargs() - length(list(...)) - 1
@@ -184,13 +184,13 @@ parseCMapID <- function(id, cellLine=FALSE) {
     return(out)
 }
 
-#' Dimensions of a \code{cmapPerturbations} object
+#' Dimensions of a \code{perturbationChanges} object
 #'
-#' @param x \code{cmapPerturbations} object
+#' @param x \code{perturbationChanges} object
 #'
-#' @return Dimensions of a \code{cmapPerturbations} object
+#' @return Dimensions of a \code{perturbationChanges} object
 #' @export
-dim.cmapPerturbations <- function(x) {
+dim.perturbationChanges <- function(x) {
     if (is.character(x)) {
         res <- vapply(dimnames(x), length, numeric(1))
     } else {
@@ -199,13 +199,13 @@ dim.cmapPerturbations <- function(x) {
     return(res)
 }
 
-#' Dimnames of a \code{cmapPerturbations} object
+#' Dimnames of a \code{perturbationChanges} object
 #'
-#' @param x \code{cmapPerturbations} object
+#' @param x \code{perturbationChanges} object
 #'
-#' @return Retrieve dimnames of a \code{cmapPerturbations} object
+#' @return Retrieve dimnames of a \code{perturbationChanges} object
 #' @export
-dimnames.cmapPerturbations <- function(x) {
+dimnames.perturbationChanges <- function(x) {
     if (is.character(x)) {
         res <- list(attr(x, "genes"), attr(x, "perturbations"))
     } else {
@@ -214,19 +214,19 @@ dimnames.cmapPerturbations <- function(x) {
     return(res)
 }
 
-# cmapComparison object --------------------------------------------------------
+# similarPerturbations object --------------------------------------------------
 
-#' Print a \code{cmapComparison} object
+#' Print a \code{similarPerturbations} object
 #'
-#' @param x \code{cmapComparison} object
+#' @param x \code{similarPerturbations} object
 #' @param perturbation Character (perturbation identifier) or numeric
 #'   (perturbation index)
 #' @param ... Extra parameters passed to \code{print}
 #'
-#' @return Information on \code{cmapPerturbations} object or on specific
+#' @return Information on \code{perturbationChanges} object or on specific
 #'   perturbations (if \code{perturbation} is set)
 #' @export
-print.cmapComparison <- function(x, perturbation=NULL, ...) {
+print.similarPerturbations <- function(x, perturbation=NULL, ...) {
     if (is.null(perturbation)) {
         NextMethod("print")
     } else {
@@ -258,12 +258,13 @@ print.cmapComparison <- function(x, perturbation=NULL, ...) {
 
 #' Cross Tabulation and Table Creation
 #'
-#' @param x \code{cmapComparison} object
+#' @param x \code{similarPerturbations} object
 #' @param ... Extra parameters passed to \code{table}
 #' @param clean Boolean: only show certain columns (to avoid redundancy)?
 #'
-#' @return Complete table with metadata based on a \code{cmapComparison} object
-as.table.cmapComparison <- function(x, ..., clean=TRUE) {
+#' @return Complete table with metadata based on a \code{similarPerturbations}
+#'   object
+as.table.similarPerturbations <- function(x, ..., clean=TRUE) {
     metadata <- attr(x, "metadata")
     if (!is.null(metadata)) {
         nonCellID <- "non_cell_id"

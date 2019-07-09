@@ -248,7 +248,7 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 
 #' Plot CMap data comparison
 #'
-#' @param x \code{cmapComparison} object
+#' @param x \code{similarPerturbations} object
 #' @param ... Extra arguments currently not used
 #' @param method Character: method to plot results (\code{spearman},
 #'   \code{pearson}, \code{gsea} or \code{rankProduct})
@@ -276,12 +276,12 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #' # Compare against CMap using Spearman's correlation, Pearson's correlation
 #' # and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
 #' # as gene sets
-#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #'
 #' plot(compareKD, "spearman", c(7, 3))
 #' plot(compareKD, "pearson")
 #' plot(compareKD, "gsea")
-plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea",
+plot.similarPerturbations <- function(x, method=c("spearman", "pearson", "gsea",
                                             "rankProduct"),
                                 n=c(3, 3), showMetadata=TRUE,
                                 plotNonRankedPerturbations=FALSE,
@@ -381,10 +381,10 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea",
 
 #' Plot CMap data comparison
 #'
-#' @param x \code{cmapPerturbations} object
+#' @param x \code{perturbationChanges} object
 #' @param ... Extra arguments currently not used
 #' @param perturbation Character (perturbation identifier) or a
-#'   \code{cmapComparison} table (from which the respective perturbation
+#'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
 #' @inheritParams prepareGSEApathways
 #' @param method Character: method to plot results (\code{spearman},
@@ -404,7 +404,7 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea",
 #' data("diffExprStat")
 #' data("cmapPerturbationsKD")
 #'
-#' compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #' EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 #' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
 #' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
@@ -423,13 +423,14 @@ plot.cmapComparison <- function(x, method=c("spearman", "pearson", "gsea",
 #'
 #' # Currently unsupported!
 #' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
-plot.cmapPerturbations <- function(x, perturbation, diffExprGenes,
-                                   method=c("spearman", "pearson", "gsea"),
-                                   geneSize=150,
-                                   genes=c("both", "top", "bottom"), ...) {
+plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
+                                     method=c("spearman", "pearson", "gsea"),
+                                     geneSize=150,
+                                     genes=c("both", "top", "bottom"), ...) {
     method <- match.arg(method)
 
-    if (is(perturbation, "cmapComparison")) perturbation <- perturbation[[1]]
+    if (is(perturbation, "similarPerturbations"))
+        perturbation <- perturbation[[1]]
 
     cellLinePerts <- colnames(x)[
         parseCMapID(colnames(x), cellLine=FALSE) %in% perturbation]

@@ -4,12 +4,13 @@
 \alias{loadCMapZscores}
 \title{Load matrix of CMap zscores}
 \usage{
-loadCMapZscores(data, cmapPerturbations = FALSE, verbose = TRUE)
+loadCMapZscores(data, perturbationChanges = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{data}{cmapPerturbations object}
+\item{data}{\code{perturbationChanges} object}
 
-\item{cmapPerturbations}{Boolean: convert to \code{cmapPerturbations} object?}
+\item{perturbationChanges}{Boolean: convert to \code{perturbationChanges}
+object?}
 
 \item{verbose}{Boolean: print messages?}
 }

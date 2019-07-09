@@ -164,25 +164,29 @@ cmapPerturbationsCompounds <- cmapPerturbationsCompounds[
 
 # Comparison with CMap's perturbations
 
-The `compareAgainstCMap` function compares the statistic for differential
+The `rankSimilarPerturbations` function compares the statistic for differential
 expression (the t-statistic, in this case) with the z-scores for the loaded 
-perturbations using the available methods (Spearman's correlation, Pearson's 
-correlation and Gene Set Enrichment Analysis (GSEA)). For GSEA, the top and 
-bottom *n* genes from the user's differential expression profile are used as
-gene sets (by default, *n* = 150 genes).
+perturbations using the available methods:
+
+* Spearman's correlation
+* Pearson's correlation
+* Gene Set Enrichment Analysis (GSEA), where the most up- and down-regulated *n*
+genes from the user's differential expression profile are used as gene sets (by 
+default, *n* = 150 genes)
 
 ```{r compare knockdown, message=FALSE}
 # Compare against CMap using Spearman's and Pearson's correlation and gene set
-# enrichment analysis (GSEA) with the top and bottom 150 genes
-compareKD <- compareAgainstCMap(diffExprStat, cmapPerturbationsKD)
+# enrichment analysis (GSEA) with the most up- and down-regulated 150 genes
+compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 ```
 
 For small molecules:
 
 ```{r compare small molecules, message=FALSE}
 # Compare against CMap using Spearman's and Pearson's correlation and gene set
-# enrichment analysis (GSEA) with the top and bottom 150 genes
-compareCompounds <- compareAgainstCMap(diffExprStat, cmapPerturbationsCompounds)
+# enrichment analysis (GSEA) with the most up- and down-regulated 150 genes
+compareCompounds <- rankSimilarPerturbations(diffExprStat, 
+                                             cmapPerturbationsCompounds)
 ```
 
 The output table contains the results of the comparison with each perturbation 
@@ -227,14 +231,14 @@ Connectivity Score (WTCS), a composite and bi-directional version of the
 weighted Kolmogorov-Smirnov enrichment statistic (ES)
 ([Subramanian et al., Cell 2017][subramanian2017]).
 
-> To calculate the GSEA score, GSEA is run for top and bottom ranked genes from 
-the user's differential expression profile. The GSEA score is the mean between 
-ES~top~ and ES~bottom~ (however, if ES~top~ and ES~bottom~ have the same sign, 
-the GSEA score is 0).
+> To calculate the GSEA score, GSEA is run for the most up- and down-regulated
+genes fromthe user's differential expression profile. The GSEA score is the mean 
+between ES~top~ and ES~bottom~ (however, if ES~top~ and ES~bottom~ have the same
+sign, the GSEA score is 0).
 
 > If a perturbation has a similar differential expression profile to our data 
-(higher GSEA score), we expect to see the top (bottom) ranked genes in the
-perturbation enriched in the top (bottom) *n* differentially expressed genes
+(higher GSEA score), we expect to see the most up-regulated (down-regulated) 
+genes in the perturbation enriched in the top (bottom) *n* differentially expressed genes
 from our data.
 
 # Information on perturbations
@@ -276,8 +280,8 @@ plot(cmapPerturbationsKD,
      diffExprStat, "gsea")
 ```
 
-> By default, `plot()` plots both the top and bottom genes based on the
-`compareAgainstCMap()` arguments.
+> By default, `plot()` plots both the up- and down-regulated genes based on the
+`rankSimilarPerturbations()` arguments.
 
 For small molecules:
 
