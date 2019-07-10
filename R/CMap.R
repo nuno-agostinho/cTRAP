@@ -219,6 +219,65 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
          "timepoint"=timepoint)
 }
 
+#' Process perturbation changes per chunk
+#'
+#' Perturbations will be processed per chunk if argument \code{perturbations} is
+#' a file path instead of a data matrix. Otherwise, the data will be processed
+#' in full (i.e., as a single chunk).
+#'
+#' Loading a chunk of 10000 CMap pertubations requires ~1GB of RAM.
+#'
+#' @inheritParams performGSEAagainstCMap
+#' @param FUN Function: function to run for each chunk
+#' @param ... Arguments passed to \code{FUN}
+#' @param chunkSize Integer: number of perturbations to load on-demand (a higher
+#'   value increases RAM usage, but also time-wise performance)
+#'
+#' @return Results of running \code{FUN}
+#' @keywords internal
+processPertsPerChunk <- function(perturbations, FUN, ..., chunkSize=10000) {
+    processPertCall <- function(data, perts, pertFUN, ..., progress) {
+        data <- unclass(data)
+        gc()
+
+        pertFUNprogress <- function(pert, data, ..., progress, pertFUN) {
+            res <- pertFUN(pert, data, ...)
+            setpb(progress, getpb(progress) + 1)
+            return(res)
+        }
+
+        # Suppress warnings to avoid "Cannot compute exact p-value with ties"
+        res <- suppressWarnings(lapply(perts, pertFUNprogress, data, ...,
+                                       progress=progress, pertFUN=pertFUN))
+        # res <- plyr::compact(res) # in case of NULL elements for GSEA
+        return(res)
+    }
+
+    pb <- startpb(max=ncol(perturbations))
+    loadPerturbationsFromFile <- is.character(perturbations)
+    if (loadPerturbationsFromFile) {
+        # Divide perturbations into chunks (load into memory a chunk at a time)
+        chunkVector <- function(x, nElems) {
+            groups <- ceiling(length(x)/nElems)
+            split(x, factor(sort(rank(x) %% groups)))
+        }
+        chunks <- chunkVector(colnames(perturbations), chunkSize)
+
+        processChunk <- function(chunk, perturbations, FUN, ..., progress) {
+            data <- loadCMapZscores(perturbations[ , chunk], verbose=FALSE)
+            processPertCall(data, chunk, FUN, ..., progress=progress)
+        }
+        res <- lapply(chunks, processChunk, perturbations, FUN, ...,
+                      progress=pb)
+        res <- unlist(res, recursive=FALSE, use.names=FALSE)
+    } else {
+        res <- processPertCall(perturbations, colnames(perturbations), FUN, ...,
+                               progress=pb)
+    }
+    closepb(pb)
+    return(res)
+}
+
 #' Perform gene set enrichment (GSA) against CMap perturbations
 #'
 #' @inheritParams rankSimilarPerturbations
@@ -226,7 +285,6 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'
 #' @importFrom fgsea fgsea
 #' @importFrom data.table data.table
-#' @importFrom pbapply pblapply
 #' @importFrom dplyr bind_rows
 #'
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
@@ -237,30 +295,8 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
     msg <- "Performing GSEA against %s CMap perturbations (%s cell lines)..."
     message(sprintf(msg, ncol(perturbations), cellLines))
 
-    loadPerturbationsFromFile <- is.character(perturbations)
-    if (loadPerturbationsFromFile) {
-        # Split perturbations into chunks to be loaded on-demand
-        chunkVector <- function(x, nElems) {
-            groups <- ceiling(length(x)/nElems)
-            split(x, factor(sort(rank(x) %% groups)))
-        }
-        chunks      <- chunkVector(colnames(perturbations), 10000)
-        chunkIndex  <- 0
-        data        <- NULL
-        cols        <- NULL
-    } else {
-        data <- unclass(perturbations)
-    }
-
-    performGSAwithPerturbationSignature <- function(k, perturbation, pathways) {
-        if (loadPerturbationsFromFile && !k %in% cols) {
-            chunkIndex <<- chunkIndex + 1
-            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
-                                     verbose=FALSE)
-            data <<- unclass(data)
-            cols <<- colnames(data)
-            gc()
-        }
+    # Calculate GSEA per perturbation
+    gseaPert <- function(k, data, pathways) {
         signature        <- data[ , k]
         names(signature) <- rownames(data)
         signature        <- sort(signature)
@@ -268,10 +304,7 @@ performGSEAagainstCMap <- function(diffExprGenes, perturbations, pathways,
                                   minSize=15, maxSize=500, nperm=1)
         return(score)
     }
-    gsa <- suppressWarnings(pblapply(colnames(perturbations),
-                                     performGSAwithPerturbationSignature,
-                                     perturbations, pathways))
-    # gsa <- plyr::compact(gsa) # in case of NULL elements
+    gsa <- processPertsPerChunk(perturbations, gseaPert, pathways=pathways)
 
     # Calculate weighted connectivity score (WTCS) based on CMap paper (page e8)
     gsaRes <- bind_rows(gsa)
@@ -308,36 +341,12 @@ correlateAgainstCMap <- function(diffExprGenes, perturbations, method,
     diffExprGenes <- diffExprGenes[genes]
     perturbations <- perturbations[genes, ]
 
-    loadPerturbationsFromFile <- is.character(perturbations)
-    if (loadPerturbationsFromFile) {
-        # Divide perturbations into chunks (load into memory a chunk at a time)
-        chunkVector <- function(x, nElems) {
-            groups <- ceiling(length(x)/nElems)
-            split(x, factor(sort(rank(x) %% groups)))
-        }
-        chunks      <- chunkVector(colnames(perturbations), 10000)
-        chunkIndex  <- 0
-        data        <- NULL
-        cols        <- NULL
-    } else {
-        data <- unclass(perturbations)
-    }
-
-    corPert <- function(k, perturbation, diffExprGenes, method) {
-        if (loadPerturbationsFromFile && !k %in% cols) {
-            chunkIndex <<- chunkIndex + 1
-            data <<- loadCMapZscores(perturbation[ , chunks[[chunkIndex]]],
-                                     verbose=FALSE)
-            data <<- unclass(data)
-            cols <<- colnames(data)
-            gc()
-        }
+    # Correlate per perturbation
+    corPert <- function(k, data, diffExprGenes, method) {
         cor.test(data[ , k], diffExprGenes, method=method)
     }
-    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    cors <- suppressWarnings(pblapply(
-        colnames(perturbations), corPert, perturbations, diffExprGenes, method))
-
+    cors <- processPertsPerChunk(perturbations, corPert,
+                                 diffExprGenes=diffExprGenes, method=method)
     cor  <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
     qval <- p.adjust(pval, pAdjust)
@@ -377,7 +386,12 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' cell lines as values
 #' @inheritParams compareAgainstCMapPerMethod
 #'
-#' @return Data table with cell line information (including mean)
+#' @return A list with two items:
+#' \describe{
+#' \item{\code{data}}{input \code{data} with extra rows containing cell line
+#'   average scores (if calculated)}
+#' \item{\code{cellLineInfo}}{data table with cell line information}
+#' }
 #' @keywords internal
 calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
     scoreCol <- 2
@@ -386,7 +400,7 @@ calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
     idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
     names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
 
-    res <- pblapply(
+    res <- lapply(
         idsFromMultipleCellLines,
         function(id, allIDs, score, cellLine) {
             list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
@@ -410,7 +424,8 @@ calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
     } else {
         cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
     }
-    return(cellLineInfo)
+    res <- list("data"=data, "cellLineInfo"=cellLineInfo)
+    return(res)
 }
 
 #' Compare single method
@@ -471,8 +486,10 @@ compareAgainstCMapPerMethod <- function(
     names(cellLine) <- data$identifier
 
     if (cellLineMean) {
-        cellLineInfo <- calculateCellLineMean(data, cellLine,
-                                              rankCellLinePerturbations)
+        meanInfo <- calculateCellLineMean(data, cellLine,
+                                          rankCellLinePerturbations)
+        data         <- meanInfo$data
+        cellLineInfo <- meanInfo$cellLineInfo
     } else {
         cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
     }

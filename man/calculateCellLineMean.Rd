@@ -18,7 +18,12 @@ perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
 line perturbations are always ranked}
 }
 \value{
-Data table with cell line information (including mean)
+A list with two items:
+\describe{
+\item{\code{data}}{input \code{data} with extra rows containing cell line
+  average scores (if calculated)}
+\item{\code{cellLineInfo}}{data table with cell line information}
+}
 }
 \description{
 Calculate cell line mean
