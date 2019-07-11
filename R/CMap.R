@@ -233,6 +233,8 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @param chunkSize Integer: number of perturbations to load on-demand (a higher
 #'   value increases RAM usage, but also time-wise performance)
 #'
+#' @importFrom pbapply startpb getpb setpb closepb
+#'
 #' @return Results of running \code{FUN}
 #' @keywords internal
 processPertsPerChunk <- function(perturbations, FUN, ..., chunkSize=10000) {
