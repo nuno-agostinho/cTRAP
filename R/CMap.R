@@ -386,6 +386,7 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @param data Data table: comparison against CMap data
 #' @param cellLine Character: perturbation identifiers as names and respective
 #' cell lines as values
+#' @param metadata Data table: \code{data} metadata
 #' @inheritParams compareAgainstCMapPerMethod
 #'
 #' @return A list with two items:
@@ -393,40 +394,57 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' \item{\code{data}}{input \code{data} with extra rows containing cell line
 #'   average scores (if calculated)}
 #' \item{\code{cellLineInfo}}{data table with cell line information}
+#' \item{\code{metadata}{metadata associated with output \code{data}, including
+#'   for identifiers regarding mean cell line scores}}
 #' }
 #' @keywords internal
-calculateCellLineMean <- function(data, cellLine, rankCellLinePerturbations) {
+calculateCellLineMean <- function(data, cellLine, metadata,
+                                  rankCellLinePerturbations) {
     scoreCol <- 2
     # Remove cell line information from the identifier
     allIDs <- parseCMapID(data$identifier, cellLine=FALSE)
     idsFromMultipleCellLines <- names(table(allIDs)[table(allIDs) > 1])
     names(idsFromMultipleCellLines) <- idsFromMultipleCellLines
 
-    res <- lapply(
-        idsFromMultipleCellLines,
-        function(id, allIDs, score, cellLine) {
-            list(cellLines=paste(cellLine[id == allIDs], collapse=", "),
-                 mean=mean(score[id == allIDs]))
-        }, allIDs=allIDs, score=data[[scoreCol]], cellLine=cellLine)
+    # Calculate mean scores across cell lines
+    calcMeanScores <- function(id, allIDs, score, cellLine) {
+        matches <- id == allIDs
+        list(cellLines=paste(cellLine[matches], collapse=", "),
+             mean=mean(score[matches]))
+    }
+    res <- lapply(idsFromMultipleCellLines, calcMeanScores, allIDs=allIDs,
+                  score=data[[scoreCol]], cellLine=cellLine)
 
     if (length(idsFromMultipleCellLines) > 0) {
-        avg <- sapply(res, "[[", 2)
+        # Prepare data including for mean perturbation scores
+        avg <- sapply(res, "[[", "mean")
         avgDF <- data.frame(names(avg), avg, stringsAsFactors=FALSE)
         colnames(avgDF) <- colnames(data)[c(1, scoreCol)]
-        data <- bind_rows(list(data, avgDF))
+        dataJoint <- bind_rows(list(data, avgDF))
 
+        # Prepare cell line information for mean perturbation scores
         isSummarised <- allIDs %in% idsFromMultipleCellLines
         toRank <- rankCellLinePerturbations | !isSummarised
-        avgCellLines <- sapply(res, "[[", 1)
+        avgCellLines <- sapply(res, "[[", "cellLines")
 
         cellLineInfo <- data.table(
             c(names(cellLine), names(avgCellLines)),
             c(cellLine, avgCellLines),
             c(toRank, rep(TRUE, length(avgCellLines))))
+
+        # Append metadata associated with mean perturbation scores
+        avgCellLinesMetadata <- metadata[
+            match(names(avgCellLines), parseCMapID(metadata$sig_id)), ]
+        avgCellLinesMetadata$sig_id <- names(avgCellLines)
+        avgCellLinesMetadata$distil_id <- NA
+        metadataJoint <- rbind(avgCellLinesMetadata, metadata)
     } else {
-        cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
+        cellLineInfo  <- data.table(names(cellLine), cellLine, TRUE)
+        dataJoint     <- data
+        metadataJoint <- metadata
     }
-    res <- list("data"=data, "cellLineInfo"=cellLineInfo)
+    res <- list("data"=dataJoint, "cellLineInfo"=cellLineInfo,
+                "metadata"=metadataJoint)
     return(res)
 }
 
@@ -488,15 +506,17 @@ compareAgainstCMapPerMethod <- function(
     names(cellLine) <- data$identifier
 
     if (cellLineMean) {
-        meanInfo <- calculateCellLineMean(data, cellLine,
-                                          rankCellLinePerturbations)
-        data         <- meanInfo$data
-        cellLineInfo <- meanInfo$cellLineInfo
+        aggregated <- calculateCellLineMean(data, cellLine, metadata,
+                                            rankCellLinePerturbations)
+        data         <- aggregated$data
+        cellLineInfo <- aggregated$cellLineInfo
+        metadata     <- aggregated$metadata
     } else {
         cellLineInfo <- data.table(names(cellLine), cellLine, TRUE)
     }
     names(cellLineInfo) <- c("cTRAP_id", "cellLines", paste0(method, "_rank"))
     attr(data, "cellLineInfo") <- cellLineInfo
+    attr(data, "metadata") <- metadata
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -522,7 +542,7 @@ compareAgainstCMapPerMethod <- function(
 
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
-    msg <- "Comparison against %s perturbations using '%s' %s performed in %s\n"
+    msg <- "Comparison against %s perturbations using '%s' %sperformed in %s\n"
     extra <- ifelse(method == "gsea",
                     sprintf("(gene size of %s) ", geneSize), "")
     message(sprintf(msg, ncol(perturbations), method, extra, diffTime))
@@ -572,6 +592,11 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
                   diffExprGenes=diffExprGenes, perturbations=perturbations,
                   geneSize=geneSize, cellLineMean=cellLineMean,
                   rankCellLinePerturbations=rankCellLinePerturbations)
+
+    # Merge metadata
+    metadata <- Reduce(merge, lapply(res, attr, "metadata"))
+
+    # Merge cell line information
     colsPerMethod <- sapply(res, length) - 1
     cellLineInfo  <- Reduce(merge, lapply(res, attr, "cellLine"))
     replaceNAsWithFALSE <- function(DT) {
@@ -612,7 +637,7 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
     ranked <- rankPerturbations(merged, cellLineInfo, colsPerMethod)
 
     # Inherit metadata from perturbations and other useful information
-    attr(ranked, "metadata")      <- attr(perturbations, "metadata")
+    attr(ranked, "metadata")      <- metadata
     attr(ranked, "geneInfo")      <- attr(perturbations, "geneInfo")
     attr(ranked, "compoundInfo")  <- attr(perturbations, "compoundInfo")
     attr(ranked, "diffExprGenes") <- diffExprGenes

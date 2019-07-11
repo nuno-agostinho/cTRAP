@@ -118,6 +118,7 @@ test_that("Compare using Spearman correlation", {
     expect_identical(colnames(data), c(
         "compound_perturbation", "spearman_coef", "spearman_pvalue",
         "spearman_qvalue", "spearman_rank"))
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
 
     expect_equal(head(data$compound_perturbation),
                  c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
@@ -143,6 +144,7 @@ test_that("Compare using Pearson correlation", {
     expect_identical(colnames(data), c(
         "compound_perturbation", "pearson_coef", "pearson_pvalue",
         "pearson_qvalue", "pearson_rank"))
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
 
     expect_equal(head(data$compound_perturbation),
                  c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
@@ -166,6 +168,8 @@ test_that("Compare using GSEA", {
     expect_is(data, "similarPerturbations")
     expect_identical(colnames(data),
                      c("compound_perturbation", "GSEA", "gsea_rank"))
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+
     expect_equal(head(data$compound_perturbation),
                  c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
                    "CVD001_24H:BRD-A65142661-034-01-8:5.35",
@@ -185,6 +189,7 @@ test_that("Compare using GSEA", {
 test_that("Compare against CMap using multiple methods simultaneously", {
     method <- c("pearson", "spearman", "gsea")
     data <- rankSimilarPerturbations(diffExprStat, perturbations, method=method)
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
 
     checkIfAnyColsHaveMethodsName <- function(col, data) {
         any(startsWith(colnames(data), col))
@@ -207,22 +212,26 @@ test_that("Compare against CMap by also ranking individual cell lines", {
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankCellLinePerturbations=FALSE,
                                      cellLineMean=TRUE)
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
     expect_true(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings when individual cell lines are
     # ranked as well
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankCellLinePerturbations=TRUE)
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
     expect_false(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings if cell line means are NOT calculated
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankCellLinePerturbations=FALSE,
                                      cellLineMean=FALSE)
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
     expect_false(areNAsIncludedInRanks(data))
 
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankCellLinePerturbations=TRUE,
                                      cellLineMean=FALSE)
+    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
     expect_false(areNAsIncludedInRanks(data))
 })

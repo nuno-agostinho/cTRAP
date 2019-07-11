@@ -40,6 +40,7 @@
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
     - Calculate the rank product's rank to assess ranks across multiple methods
+    - Include information for calculated means across cell lines in metadata
 * Improve metadata display for a `similarPerturbations` object, obtained after
 running `rankSimilarPerturbations()`:
     - Show further metadata information (including compound data, if available)
