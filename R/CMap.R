@@ -104,8 +104,9 @@ loadCMapCompoundInfo <- function(file, nas) {
                               "InChIKey", "pubchem_cid")]
     pertData <- unique(pertData)
     pertData <- aggregate(pertData, by=list(pertData$pert_iname),
-                          function(x) paste(unique(x), collapse=", "))
+                          function(x) paste(unique(na.omit(x)), collapse=", "))
     data <- merge(drugData, pertData, all=TRUE)
+    data[data == ""] <- NA # Fix missing values
     return(data)
 }
 
@@ -162,8 +163,8 @@ loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
     if (is.null(file)) stop("File cannot be NULL, please provide a filename")
 
     type <- match.arg(type)
-    nas  <- c("NA", "na", "-666", "-666.0", "-666 -666", "-666 -666|-666 -666",
-              "-666.000000", "-666.0|-666.000000")
+    nas  <- c("", "NA", "na", "-666", "-666.0", "-666 -666",
+              "-666 -666|-666 -666", "-666.000000", "-666.0|-666.000000")
     if (type == "metadata") {
         data <- loadCMapMetadata(file, nas)
     } else if (type == "geneInfo") {

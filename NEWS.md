@@ -68,6 +68,7 @@ running `rankSimilarPerturbations()`:
     - Correctly set instances of `-666` in CMap metadata as missing values and 
     fix specific issues with metadata (such as doses displayed as
     `300 ng|300 ng`)
+    - In compound metadata, fix missing values showing as literal "NA" values
 * CMap perturbation minor improvements:
     - Fix error when subsetting a `perturbationChanges` object with only one row
     - Improve performance when subsetting `perturbationChanges` objects
