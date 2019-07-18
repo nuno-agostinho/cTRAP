@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot.perturbationChanges}
 \alias{plot.perturbationChanges}
-\title{Plot CMap data comparison}
+\title{Plot perturbation comparison against a differential expression profile}
 \usage{
 \method{plot}{perturbationChanges}(x, perturbation, diffExprGenes,
   method = c("spearman", "pearson", "gsea"), geneSize = 150,
@@ -16,7 +16,7 @@
 identifiers are retrieved)}
 
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-where the name of the vector are gene names and the values are a statistic
+whose names are gene identifiers and respective values are a statistic
 that represents significance and magnitude of differentially expressed
 genes (e.g. t-statistics)}
 
@@ -24,21 +24,20 @@ genes (e.g. t-statistics)}
 \code{pearson} or \code{gsea})}
 
 \item{geneSize}{Number: top and bottom number of differentially expressed
-genes to use for gene set enrichment (GSE) (only used if
-\code{method = gsea})}
+genes for gene set enrichment (only used if \code{method = gsea})}
 
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
 plot top genes (\code{genes = "top"}), bottom genes
 (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
 \code{method = "gsea"}}
 
-\item{...}{Extra arguments currently not used}
+\item{...}{Extra arguments (currently undocumented)}
 }
 \value{
 CMap data comparison plots
 }
 \description{
-Plot CMap data comparison
+Plot perturbation comparison against a differential expression profile
 }
 \examples{
 data("diffExprStat")

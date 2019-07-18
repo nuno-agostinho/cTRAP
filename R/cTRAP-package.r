@@ -76,13 +76,7 @@ NULL
 #' counts <- counts[filter, ]
 #'
 #' # Convert ENSEMBL identifier to gene symbol
-#' library(biomaRt)
-#' mart  <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-#' genes <- sapply(strsplit(counts$gene_id, "\\\."), `[`, 1)
-#' geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
-#'                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
-#' counts$gene_id <- geneConversion$hgnc_symbol[
-#'     match(genes, geneConversion$ensembl_gene_id)]
+#' counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
 #' }
 #'
 #' @name counts
@@ -183,7 +177,7 @@ NULL
 #'
 #' cmapPerturbationsCompounds <- prepareCMapPerturbations(
 #'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
-#'     loadZscores=TRUE)
+#'     "cmapCompoundInfo_drugs.txt", loadZscores=TRUE)
 #'
 #' # Remove non-ASCII characters for portability reasons
 #' metadata <- attr(cmapPerturbationsCompounds, "metadata")

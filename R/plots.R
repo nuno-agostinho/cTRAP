@@ -1,3 +1,5 @@
+# Internal plot functions ------------------------------------------------------
+
 #' Perform GSEA
 #'
 #' @importFrom fgsea calcGseaStat
@@ -117,9 +119,10 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 #' Plot gene set enrichment analysis (GSEA)
 #'
 #' @inheritParams plotSingleCorr
-#' @inheritParams fgsea::fgsea
-#' @param title Character: plot title
-#' @param titleSize Integer: plot title size
+#' @param pathways Named list of characters: up-regulated (named \code{top}) and
+#'   down-regulated (\code{bottom}) genes
+#' @param title Character: title
+#' @param titleSize Integer: title size
 #' @param gseaParam Numeric: GSEA-like parameter
 #'
 #' @importFrom ggplot2 ggtitle theme unit
@@ -129,8 +132,8 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
 plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
-                     titleSize=14, axisTitleSize=12, axisTextSize=10,
-                     enrichmentPlotPointSize=0.1, gseaParam=1) {
+                     title="GSEA plot", titleSize=14, axisTitleSize=12,
+                     axisTextSize=10, gseaParam=1) {
     if (length(perturbation) > 1) {
         stop("Plotting GSEA of multiple perturbations is currently unsupported")
     }
@@ -174,7 +177,7 @@ plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
                                              id="bottom genes")
     }
 
-    title <- ggdraw() + draw_label("GSEA plot")
+    title <- ggdraw() + draw_label(title, size=titleSize)
     if (genes == "both") {
         plotHeights <- c(1, 6, 1, 6, 1, 6)
         grid <- plot_grid(title, topPlot$enrichmentPlot,
@@ -246,9 +249,13 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
     return(plot)
 }
 
-#' Plot CMap data comparison
+# Exported plot functions ------------------------------------------------------
+
+#' Plot data comparison
 #'
-#' @param x \code{similarPerturbations} object
+#' @param x \code{referenceComparison} object (obtained after running
+#'   \code{\link{rankSimilarPerturbations}} or
+#'   \code{\link{predictTargetingDrugs}})
 #' @param ... Extra arguments currently not used
 #' @param method Character: method to plot results (\code{spearman},
 #'   \code{pearson}, \code{gsea} or \code{rankProduct})
@@ -256,10 +263,9 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #'   numbers is given, the first and second numbers will be used as the number
 #'   of top and bottom genes to label, respectively)
 #' @param showMetadata Boolean: show available metadata information instead of
-#'   perturbation identifiers?
+#'   identifiers (if available)?
 #' @param alpha Numeric: transparency
-#' @param plotNonRankedPerturbations Boolean: plot non-ranked perturbations in
-#'   grey?
+#' @param plotNonRankedPerturbations Boolean: plot non-ranked data in grey?
 #'
 #' @importFrom graphics plot
 #' @importFrom R.utils capitalize
@@ -267,30 +273,39 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
 #' @importFrom ggrepel geom_text_repel
 #'
-#' @return Plot illustrating the comparison with CMap data
+#' @return Plot illustrating the reference comparison
 #' @export
 #'
 #' @examples
-#' data("cmapPerturbationsKD")
+#' # Example of a differential expression profile
+#' data("diffExprStat")
 #'
-#' # Compare against CMap using Spearman's correlation, Pearson's correlation
-#' # and gene set enrichment analysis (GSEA) with the top and bottom 150 genes
-#' # as gene sets
+#' \dontrun{
+#' # Download and load CMap perturbations to compare with
+#' cellLine <- "HepG2"
+#' cmapMetadataKD <- filterCMapMetadata(
+#'   "cmapMetadata.txt", cellLine=cellLine,
+#'   perturbationType="Consensus signature from shRNAs targeting the same gene")
+#'
+#' cmapPerturbationsKD <- prepareCMapPerturbations(
+#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt", loadZscores=TRUE)
+#' }
+#'
+#' # Rank similar CMap perturbations
 #' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #'
 #' plot(compareKD, "spearman", c(7, 3))
 #' plot(compareKD, "pearson")
 #' plot(compareKD, "gsea")
-plot.similarPerturbations <- function(x, method=c("spearman", "pearson", "gsea",
-                                            "rankProduct"),
-                                n=c(3, 3), showMetadata=TRUE,
-                                plotNonRankedPerturbations=FALSE,
-                                alpha=0.3, ...) {
+plot.referenceComparison <- function(x, method=c("spearman", "pearson", "gsea",
+                                                 "rankProduct"),
+                                     n=c(3, 3), showMetadata=TRUE,
+                                     plotNonRankedPerturbations=FALSE,
+                                     alpha=0.3, ...) {
     method <- match.arg(method)
-
     if (method == "gsea") {
         stat     <- "GSEA"
-        statRank <- "gsea_rank"
+        statRank <- "GSEA_rank"
         yLabel   <- "Weighted Connectivity Score (WCTS)"
     } else if (method == "rankProduct") {
         stat     <- "rankProduct_rank"
@@ -351,7 +366,7 @@ plot.similarPerturbations <- function(x, method=c("spearman", "pearson", "gsea",
         return(res)
     }
 
-    if (showMetadata){
+    if (showMetadata && is(x, "similarPerturbations")){
         x$label[index] <- sapply(index, prepareLabel, x)
     } else {
         x$label[index] <- x[[1]][index]
@@ -379,10 +394,10 @@ plot.similarPerturbations <- function(x, method=c("spearman", "pearson", "gsea",
     return(plot)
 }
 
-#' Plot CMap data comparison
+#' Plot perturbation comparison against a differential expression profile
 #'
 #' @param x \code{perturbationChanges} object
-#' @param ... Extra arguments currently not used
+#' @param ... Extra arguments (currently undocumented)
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
@@ -458,11 +473,131 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
     }, zscores)
 
     if (method != "gsea") {
-        plotSingleCorr(data, perturbation, diffExprGenes)
+        plotSingleCorr(data, perturbation, diffExprGenes, ...)
     } else {
         pathways <- prepareGSEApathways(diffExprGenes=diffExprGenes,
                                         geneSize=geneSize)
         genes <- match.arg(genes)
-        plotGSEA(data, pathways, genes)
+        plotGSEA(data, pathways, genes, ...)
     }
+}
+
+#' Compare vector against its quantile
+#'
+#' Check which elements of the vector are lower/greater than or equal to the
+#' quantile of a given vector.
+#'
+#' @param vec Numeric vector
+#' @param prob Numeric: probability value between [0,1] to produce sample
+#'   quantiles
+#' @param lte Boolean: check if values are <= quantile? If \code{FALSE}, checks
+#'   if values are >= quantile
+#'
+#' @return Boolean vector regarding compared elements
+#' @keywords internal
+compareQuantile <- function(vec, prob, lte=FALSE) {
+    if (lte) {
+        cmp  <- `<=`
+    } else {
+        cmp  <- `>=`
+        prob <- 1 - prob
+    }
+    res <- cmp(vec, quantile(vec, prob))
+    return(res)
+}
+
+#' Plot similar perturbations against predicted targeting drugs
+#'
+#' @param x \code{targetingDrugs} object
+#' @param similarPerturbations \code{similarPerturbations} object
+#' @param column Character: column to plot (must be available in both databases)
+#' @param labelColumn Character: column in \code{similarPerturbations}, its
+#'   metadata or compound information to be used for labelling
+#' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
+#'   best score per compound will be plotted
+#'
+#' @importFrom ggplot2 ggplot geom_point xlab ylab theme_light
+#' @importFrom ggrepel geom_text_repel
+#'
+#' @return \code{ggplot2} plot
+#' @export
+plotTargetingDrugsVSsimilarPerturbations <- function(
+    targetingDrugs, similarPerturbations, column, labelColumn="pert_iname",
+    quantileThreshold=0.25, showAllScores=FALSE, ...) {
+
+    if (!column %in% colnames(targetingDrugs) &&
+        !column %in% colnames(similarPerturbations)) {
+        error <- paste0("Selected column ('%s') not available in the columns",
+                        "names of provided datasets")
+        stop(sprintf(error, column))
+    }
+
+    metadata     <- attr(similarPerturbations, "metadata")
+    compoundInfo <- attr(similarPerturbations, "compoundInfo")
+    merged <- merge(similarPerturbations, metadata,
+                    by.x=colnames(similarPerturbations)[[1]],
+                    by.y=colnames(metadata)[[1]], all.x=TRUE)
+    merged <- merge(merged, compoundInfo, by="pert_iname", all.x=TRUE)
+
+    # Strip non-alpha-numeric characters from a string
+    stripStr <- function(str) gsub("[^[:alnum:] ]", "", as.character(str))
+
+    # Check for intersecting compounds across identifying columns
+    keys <- c("pert_iname", "pert_id", "smiles", "InChIKey", "pubchem_cid")
+    commonValues <- lapply(keys, function(k, data, comp) {
+        values <- stripStr(data[[k]])
+        return(data[[k]][which(values %in% comp)])
+    }, data=merged, comp=stripStr(targetingDrugs[[1]]))
+    mostCommonValuesKey <- which.max(vapply(commonValues, length, numeric(1)))
+    commonCompounds <- unique(commonValues[[mostCommonValuesKey]])
+    keyCol <- keys[[mostCommonValuesKey]]
+
+    # Prepare data to plot
+    yData <- merged[stripStr(merged[[keyCol]]) %in% stripStr(commonCompounds)]
+    yAxis <- setNames(yData[[column]],       yData[[keyCol]])
+    id    <- setNames(yData[["pert_iname"]], yData[[keyCol]])
+
+    if (!is.null(labelColumn)) {
+        label <- setNames(yData[[labelColumn]],  yData[[keyCol]])
+    } else {
+        label <- NULL
+    }
+
+    xData <- targetingDrugs[match(stripStr(commonCompounds),
+                                  stripStr(targetingDrugs[[1]]))]
+    xAxis <- setNames(xData[[column]], stripStr(xData[[1]]))
+    xAxis <- xAxis[stripStr(names(yAxis))]
+
+    # Discard missing values
+    df <- data.table(id=id, x=xAxis, y=yAxis, label=label)
+    df <- df[!is.na(df$x) & !is.na(df$y), ]
+
+    # Only show the best (instead of all) scores
+    isRank <- endsWith(column, "rank")
+    if (!showAllScores) {
+        df <- df[order(df$y, decreasing=isRank)]
+        df <- df[unique(match(df$id, df$id))]
+    }
+
+    df$highlight <- compareQuantile(df$x, quantileThreshold, lte=TRUE) &
+        compareQuantile(df$y, quantileThreshold, lte=!isRank)
+    if (!is.null(label)) df$label[!df$highlight] <- NA
+
+    xlabel <- "Gene expression and drug sensitivity association"
+    source <- attr(targetingDrugs, "expressionDrugSensitivityCor")$source
+    if (!is.null(source)) xlabel <- sprintf("%s (%s)", xlabel, source)
+    xlabel <- sprintf("%s: %s", xlabel, column)
+    ylabel <- paste("CMap comparison:", column)
+
+    plot <- ggplot(df, aes_string("x", "y")) +
+        geom_point(data=df[df$highlight], colour="orange", show.legend=FALSE) +
+        geom_point(data=df[!df$highlight], colour="grey",
+                   show.legend=FALSE, alpha=0.7) +
+        xlab(xlabel) +
+        ylab(ylabel) +
+        theme_light()
+
+    if (!is.null(label))
+        plot <- plot + geom_text_repel(label=df$label, na.rm=TRUE)
+    return(plot)
 }

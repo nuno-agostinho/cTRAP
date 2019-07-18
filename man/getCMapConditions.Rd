@@ -28,7 +28,8 @@ List of conditions in CMap datasets
 Downloads metadata if not available
 }
 \examples{
-data("cmapMetadata")
-# cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+\dontrun{
+cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
+}
 getCMapConditions(cmapMetadata)
 }

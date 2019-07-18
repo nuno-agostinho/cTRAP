@@ -14,7 +14,7 @@ loadCMapData(file, type = c("metadata", "geneInfo", "zscores",
 \code{geneInfo}, \code{zscores} or \code{compoundInfo})}
 
 \item{zscoresID}{Character: identifiers to partially load z-scores file
-(for performance reasons)}
+(for performance reasons; if \code{NULL}, all identifiers will be loaded)}
 }
 \value{
 Metadata as a data table
@@ -29,6 +29,7 @@ about drugs and perturbations. The files will be named \code{file} with
 \code{_drugs} and \code{_samples} before their extension, respectively.
 }
 \examples{
+\donttest{
 # Load CMap metadata (data is automatically downloaded if not available)
 cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 
@@ -39,9 +40,6 @@ loadCMapData("cmapGeneInfo.txt", "geneInfo")
 cmapMetadataKnockdown <- filterCMapMetadata(
   cmapMetadata, cellLine="HepG2",
   perturbationType="Consensus signature from shRNAs targeting the same gene")
-
-\donttest{
-loadCMapData("cmapZscores.gctx.gz", "zscores",
-             cmapMetadataKnockdown$sig_id)
+loadCMapData("cmapZscores.gctx.gz", "zscores", cmapMetadataKnockdown$sig_id)
 }
 }

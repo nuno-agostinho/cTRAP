@@ -2,7 +2,7 @@
 % Please edit documentation in R/CMap.R
 \name{loadCMapZscores}
 \alias{loadCMapZscores}
-\title{Load matrix of CMap zscores}
+\title{Load matrix of CMap perturbation's differential expression z-scores}
 \usage{
 loadCMapZscores(data, perturbationChanges = FALSE, verbose = TRUE)
 }
@@ -19,14 +19,14 @@ Matrix containing CMap perturbation z-scores (genes as rows,
   perturbations as columns)
 }
 \description{
-Load matrix of CMap zscores
+Load matrix of CMap perturbation's differential expression z-scores
 }
 \examples{
 \donttest{
-  metadata <- loadCMapData("cmapMetadata.txt", "metadata")
-  metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
-  perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
-                                    "cmapGeneInfo.txt")
-  zscores <- loadCMapZscores(perts[ , 1:10])
+metadata <- loadCMapData("cmapMetadata.txt", "metadata")
+metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
+                                  "cmapGeneInfo.txt")
+zscores <- loadCMapZscores(perts[ , 1:10])
 }
 }

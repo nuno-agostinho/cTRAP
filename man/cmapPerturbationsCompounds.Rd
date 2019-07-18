@@ -16,7 +16,7 @@ cmapMetadataCompounds <- filterCMapMetadata(
 
 cmapPerturbationsCompounds <- prepareCMapPerturbations(
     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
-    loadZscores=TRUE)
+    "cmapCompoundInfo_drugs.txt", loadZscores=TRUE)
 
 # Remove non-ASCII characters for portability reasons
 metadata <- attr(cmapPerturbationsCompounds, "metadata")

@@ -2,23 +2,26 @@
 % Please edit documentation in R/utils.R
 \name{downloadIfNotFound}
 \alias{downloadIfNotFound}
-\title{Download data if file is not found}
+\title{Download data if given file is not found}
 \usage{
-downloadIfNotFound(file, link, ask = FALSE, gz = TRUE)
+downloadIfNotFound(link, file, ask = FALSE, toExtract = NULL,
+  forceCorrectExtension = TRUE)
 }
 \arguments{
-\item{file}{Character: filepath}
-
 \item{link}{Character: link to download file}
+
+\item{file}{Character: filepath}
 
 \item{ask}{Boolean: ask to download file?}
 
-\item{gz}{Boolean: is downloaded file compressed?}
+\item{toExtract}{Character: files to extract (if \code{NULL}, extract all)}
+
+\item{fixExtension}{Boolean: fix extension used based on link}
 }
 \value{
 Download file if file is not found
 }
 \description{
-Download data if file is not found
+Download data if given file is not found
 }
 \keyword{internal}

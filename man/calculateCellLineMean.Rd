@@ -4,7 +4,7 @@
 \alias{calculateCellLineMean}
 \title{Calculate cell line mean}
 \usage{
-calculateCellLineMean(data, cellLine, metadata, rankCellLinePerturbations)
+calculateCellLineMean(data, cellLine, metadata, rankPerCellLine)
 }
 \arguments{
 \item{data}{Data table: comparison against CMap data}
@@ -14,19 +14,19 @@ cell lines as values}
 
 \item{metadata}{Data table: \code{data} metadata}
 
-\item{rankCellLinePerturbations}{Boolean: when ranking results, also rank
-perturbations regarding individual cell lines instead of the mean
-perturbation score alone; if \code{cellLineMean = FALSE}, individual cell
-line perturbations are always ranked}
+\item{rankPerCellLine}{Boolean: when ranking results, also rank them based on
+individual cell lines instead of only focusing on the mean score across
+cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
+are always ranked}
 }
 \value{
 A list with two items:
 \describe{
 \item{\code{data}}{input \code{data} with extra rows containing cell line
   average scores (if calculated)}
-\item{\code{cellLineInfo}}{data table with cell line information}
-\item{\code{metadata}{metadata associated with output \code{data}, including
-  for identifiers regarding mean cell line scores}}
+\item{\code{rankingInfo}}{data table with ranking information}
+\item{\code{metadata}}{metadata associated with output \code{data}, including
+  for identifiers regarding mean cell line scores}
 }
 }
 \description{

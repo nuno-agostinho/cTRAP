@@ -1,8 +1,25 @@
-# 1.2.1 (10 June, 2019)
+# 1.2.1 (5 August, 2019)
+
+## New features
+
+* Predict targeting drugs (`predictTargetingDrug()`):
+    - Based on genomics and drug sensitivity associations derived from NCI60, 
+    CTRP and GDSC data (loaded using `loadGenomicsDrugSensitivityAssociation`)
+    - Compare user-provided differential expression profile with genomics and
+    drug sensitivity associations to predict targeting drugs and their targeted
+    genes
+    - Compounds are ranked based on their relative targeting potential
+    - Plot candidate targeting drugs against ranked compound perturbations using
+    `plotTargetingDrugsVSsimilarPerturbations()`, highlighting compounds that
+    selectively select against cells with a similar differential gene expression
+    profile
+* Convert ENSEMBL identifiers to gene symbols using
+`convertENSEMBLtoGeneSymbols()`
+
+## Major changes
 
 * Update the tutorial and function documentation
-* Remove most `L1000` instances (some of its references were replaced with
-`CMap`, as appropriate), including in function names:
+* Remove most `L1000` instances, including in function names:
     - `getL1000perturbationTypes()` -> `getCMapPerturbationTypes()`
     - `getL1000conditions()`        -> `getCMapConditions()`
     - `downloadL1000data()`         -> `loadCMapData()`
@@ -12,18 +29,18 @@
     - `plotL1000comparison()`       -> `plot()`
 * Improve loading of ENCODE samples (`loadENCODEsamples()`):
     - Rename function from `downloadENCODEsamples()` to `loadENCODEsamples()`
-    - Allow to load ENCODE samples regarding multiple cell lines and experiment 
-    targets using `loadENCODEsamples()`
+    - Load ENCODE samples regarding multiple cell lines and experiment targets
+    using `loadENCODEsamples()`
 * Improve CMap data and metadata retrieval:
-    - By default, do not return control pertubation types when using
+    - By default, do not return control perturbation types when using
     `getCMapPerturbationTypes()` (unless if using argument `control = TRUE`)
-    - Allow to parse CMap identifiers using `parseCMapID()`
-    - Allow to load CMap's compound metadata using `loadCMapData()`
+    - Parse CMap identifiers using `parseCMapID()`
+    - Load CMap's compound metadata using `loadCMapData()`
     - Ask to download CMap perturbations z-scores file for differential 
     expression if not found (avoiding downloading a huge file without user 
     consent)
 * Improve preparation of CMap perturbations (`prepareCMapPerturbations()`):
-    - Allow to load CMap metadata directly from files when using filepaths as
+    - Allow to load CMap metadata directly from files when using file paths as
     arguments of `prepareCMapPerturbations()`
     - Significantly decrease memory required to use cTRAP by loading chunks of
     z-scores from CMap perturbations on-demand (a slight decrease in time
@@ -40,25 +57,31 @@
     - Allow to perform multiple comparison methods if desired (by providing a 
     vector of supported methods via the `method` argument)
     - Calculate the rank product's rank to assess ranks across multiple methods
+    - Sort results based on rank product's rank (or the rank of the only
+    comparison method performed, otherwise)
     - Include information for calculated means across cell lines in metadata
+    - Include run time as an attribute
 * Improve metadata display for a `similarPerturbations` object, obtained after
 running `rankSimilarPerturbations()`:
     - Show further metadata information (including compound data, if available)
     related with a given perturbation by calling `print()` with a
-    `similarPerturbations` object and a specific pertubation identifier
+    `similarPerturbations` object and a specific perturbation identifier
     - Show a complete table with metadata (and compound information, if 
     available) when calling `as.table()` with a `similarPerturbations` object
-* Improve plotting of perturbations (`plot()`):
-    - Plot comparison results against all perturbations by calling `plot()` with
-    a `similarPerturbations` object (non-ranked perturbations may also be
-    plotted by setting the argument `plotNonRankedPerturbations = TRUE`)
-    - Plot scatter and Gene Set Enrichment Analysis (GSEA) plots between 
+* Improve plotting (`plot()`):
+    - Plot comparison results against all compared data by calling `plot()` with
+    the results obtained after running `rankSimilarPerturbations()` or
+    `predictTargetingDrugs()`; non-ranked compared data can also be plotted with
+    argument `plotNonRankedPerturbations = TRUE`
+    - Render scatter and Gene Set Enrichment Analysis (GSEA) plots between
     differential expression results and a single perturbation by calling 
     `plot()` with a `perturbationChanges` object (if an identifier regarding the 
     summary of multiple perturbations scores across cell lines is given, the
     plots are coloured by cell line)
-    - When displaying GSEA plots, automatically render results for both top and 
-    bottom genes by default
+    - When displaying GSEA plots, plot results for most up- and down-regulated
+    user-provided differentially expressed genes (by default)
+    - Improve GSEA plot style, including rug plot in enrichment score plot
+    (replacing the gene hit plot)
 
 ## Bug fixes and minor changes
 
@@ -73,8 +96,8 @@ running `rankSimilarPerturbations()`:
     - Fix error when subsetting a `perturbationChanges` object with only one row
     - Improve performance when subsetting `perturbationChanges` objects
 * Minor improvements to `rankSimilarPerturbations()`:
-    - Correctly set name of perturbagens depending on the perturbation type
-    (genes, biological agents or compounds)
+    - Correctly set name of perturbations depending on their type (genes,
+    biological agents or compounds)
     - Improve performance when correlating against multiple cell lines
     - Remove `cellLine` argument (please filter conditions with upstream
     functions such as `filterCMapMetadata()`)
@@ -84,10 +107,12 @@ running `rankSimilarPerturbations()`:
     (faster runtime)
     - Fix error when trying to calculate the mean for cell lines with no 
     intersecting conditions available
+    - Clearly state to the user when no intersecting genes were found between
+    input dataset and CMap data
 * Minor improvements to `plot()`:
     - Improve rendering performance of the GSEA plot
-    - Fix disproportion between top and bottom enrichment score panels in GSEA
-    plots
+    - Fix disproportionate height between top and bottom enrichment score panels
+    in GSEA plots
 * Update demo datasets:
     - Update the `cmapPerturbationsCompounds` and `cmapPerturbationsKD` datasets 
     according to new internal changes and fix their respective code in the 
