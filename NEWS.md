@@ -13,6 +13,12 @@
     `plotTargetingDrugsVSsimilarPerturbations()`, highlighting compounds that
     selectively select against cells with a similar differential gene expression
     profile
+* Analyse drug set enrichment (`performDSEA()`):
+    - Prepare drug sets based on a table with compound identifiers and 
+    respective 2D and 3D molecular descriptors using `prepareDrugSets()`
+    - Test drug set enrichment on results from
+    `rankSimilarPerturbations()` (when ranking against compound perturbations)
+    and `predictTargetingDrugs()`
 * Convert ENSEMBL identifiers to gene symbols using
 `convertENSEMBLtoGeneSymbols()`
 

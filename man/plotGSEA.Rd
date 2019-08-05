@@ -4,21 +4,17 @@
 \alias{plotGSEA}
 \title{Plot gene set enrichment analysis (GSEA)}
 \usage{
-plotGSEA(perturbation, pathways, genes = c("both", "top", "bottom"),
-  title = "GSEA plot", titleSize = 14, axisTitleSize = 12,
-  axisTextSize = 10, gseaParam = 1)
+plotGSEA(stats, topGenes = NULL, bottomGenes = NULL,
+  title = "GSEA plot", gseaParam = 1)
 }
 \arguments{
-\item{perturbation}{List of named numeric vectors containing the differential
-expression profile score per gene for a perturbation; each perturbation of
-the list will be rendered with a different colour}
+\item{stats}{Named numeric vector: statistics}
 
-\item{pathways}{Named list of characters: up-regulated (named \code{top}) and
-down-regulated (\code{bottom}) genes}
+\item{topGenes}{Named list of characters: up-regulated genes}
+
+\item{bottomGenes}{Named list of characters: down-regulated genes}
 
 \item{title}{Character: title}
-
-\item{titleSize}{Integer: title size}
 
 \item{gseaParam}{Numeric: GSEA-like parameter}
 }

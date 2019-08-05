@@ -350,6 +350,15 @@ plotTargetingDrugsVSsimilarPerturbations(
   predicted, compareCompounds, column="spearman_rank", labelColumn="moa")
 ```
 
+# Drug set enrichment analysis
+
+```{r}
+drugSets <- prepareDrugSets(descriptors2D, "id")
+dsea     <- analyseDrugSetEnrichment(drugSets, predicted)
+# Plot the 6 most significant drug set enrichment results
+plotDrugSetEnrichment(drugSets[head(dsea$pathway)], predicted)
+```
+
 # Contact information
 
 All feedback on the program, documentation and associated material (including

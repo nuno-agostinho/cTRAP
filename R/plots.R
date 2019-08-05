@@ -1,4 +1,4 @@
-# Internal plot functions ------------------------------------------------------
+# Internal GSEA plot -----------------------------------------------------------
 
 #' Perform GSEA
 #'
@@ -9,7 +9,6 @@
 performGSEA <- function(pathways, stats) {
     pathway <- unname(as.vector(na.omit(match(pathways, names(stats)))))
     pathway <- sort(pathway)
-
     gseaStat <- calcGseaStat(stats, selectedStats=pathway,
                              returnAllExtremes=TRUE)
     enrichment <- data.frame(
@@ -27,56 +26,24 @@ performGSEA <- function(pathways, stats) {
 #'
 #' @keywords internal
 #' @return GSEA enrichment plot
-plotGSEAenrichment <- function(enrichmentScore, gseaStat, titleSize=14,
-                               axisTitleSize=12, axisTextSize=10,
-                               pointSize=0.1) {
+plotESplot <- function(enrichmentScore, gseaStat) {
     enrichmentPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
                                                   y=enrichmentScore$score)) +
-        geom_point(colour="green", size=pointSize, na.rm=TRUE) +
-        geom_hline(yintercept=0, colour="black", size=0.3) +
-        geom_line(colour="green", size=1, na.rm=TRUE) +
+        geom_rug(alpha=0.2, sides="b", length = unit(0.1, "npc")) +
+        geom_line(colour="orange", na.rm=TRUE, size=0.7) +
+        geom_hline(yintercept=0, colour="grey", linetype="longdash") +
         scale_x_continuous(expand=c(0,0)) +
-        scale_y_continuous(limits=range(c(gseaStat$bottoms, gseaStat$tops)),
-                           expand=c(0,0)) +
-        theme_bw(base_size=18) +
-        theme(panel.border=element_rect(colour="black"),
-              axis.title.x=element_blank(),
+        scale_y_continuous(expand=expand_scale(mult = c(0.2, 0.1))) +
+        labs(y="Enrichment score") +
+        theme_bw() +
+        theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank(),
-              axis.title.y=element_text(size=axisTitleSize, colour="black"),
-              axis.text.y=element_text(size=axisTextSize, colour="black"),
-              plot.title=element_text(size=titleSize, colour="black",
-                                      hjust=0.5)) +
-        labs(y="Enrichment score")
-
-    # enrichmentPlot <- enrichmentPlot +
-    #     geom_hline(yintercept=max(gseaStat$tops), colour="red",
-    #                linetype="dashed")
+              panel.grid.major.x=element_blank(),
+              panel.grid.minor=element_blank(),
+              axis.text=element_text(size=10),
+              axis.title=element_text(size=12))
     return(enrichmentPlot)
-}
-
-#' Render gene hit plot
-#'
-#' @importFrom ggplot2 ggplot geom_line aes geom_segment scale_x_continuous
-#' scale_y_continuous theme theme_bw element_rect element_blank
-#'
-#' @keywords internal
-#' @return Gene hit plot
-plotGeneHits <- function(enrichmentScore, gseaStat, pathway) {
-    geneHitsPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
-                                                y=enrichmentScore$score)) +
-        geom_line(colour=NA, na.rm=TRUE) +
-        geom_segment(data=data.frame(pathway), size=0.4, na.rm=TRUE,
-                     mapping=aes(
-                         x=pathway, xend=pathway,
-                         y=min(gseaStat$bottoms), yend=max(gseaStat$tops)))+
-        scale_y_continuous(expand=c(0, 0)) +
-        scale_x_continuous(expand=c(0, 0), breaks=seq(0, 50000, 2500)) +
-        theme_bw() +
-        theme(panel.border=element_rect(colour="black"),
-              panel.grid=element_blank(), axis.title=element_blank(),
-              axis.text=element_blank(), axis.ticks=element_blank())
-    return(geneHitsPlot)
 }
 
 #' Plot metric distribution
@@ -86,43 +53,35 @@ plotGeneHits <- function(enrichmentScore, gseaStat, pathway) {
 #'
 #' @keywords internal
 #' @return Metric distribution plot
-plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
-                                   axisTextSize=10) {
-    rankedMetric <- data.frame(sort=seq(statsOrd), stat=statsOrd)
-    rankedMetric$quantile <- cut(rankedMetric$stat, breaks=breaks, labels=FALSE)
-    rankedMetric$quantile <- seq(min(rankedMetric$stat), max(rankedMetric$stat),
-                                 length.out=breaks)[rankedMetric$quantile]
+plotMetricDistribution <- function(stat, breaks=100) {
+    quantile <- cut(stat, breaks=breaks, labels=FALSE)
+    quantile <- seq(min(stat), max(stat), length.out=breaks)[quantile]
+    rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
-    metricPlot <- ggplot(rankedMetric, aes(rankedMetric$sort,
-                                           rankedMetric$stat)) +
-        scale_x_continuous(expand=c(0, 0), breaks = seq(0, 50000, 2500)) +
+    metricPlot <- ggplot(rankedMetric, aes_string("sort", "stat")) +
+        scale_x_continuous(expand=c(0, 0)) +
         scale_y_continuous(expand=c(0, 0)) +
-        theme_bw() +
-        theme(panel.border=element_rect(colour="black"),
-              axis.title=element_text(size=axisTitleSize, colour="black"),
-              axis.text=element_text(size=axisTextSize, colour="black")) +
-        labs(y="Ranked metric", x="Rank") +
-        guides(colour=FALSE, fill=FALSE)
-
-    # metricPlot <- metricPlot +
-    #     geom_bar(stat="identity", aes(colour=y), size=0.1) +
-    #     scale_colour_gradient2(low="dodgerblue", mid="white",
-    #                            high="orangered", midpoint=0)
-    metricPlot <- metricPlot +
-        geom_area(position="identity",
-                  aes_string(group="quantile", fill="quantile"), na.rm=TRUE) +
+        labs(x="Rank", y="Ranked metric") +
+        guides(colour=FALSE, fill=FALSE) +
+        geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
+                  position="identity") +
         scale_fill_gradient2(low="dodgerblue", mid="grey95", high="orangered",
-                             midpoint=0)
+                             midpoint=0) +
+        theme_bw() +
+        theme(plot.margin=unit(c(0, 0, 5.5, 0), "pt"),
+              panel.grid.major.x=element_blank(),
+              panel.grid.minor=element_blank(),
+              axis.text=element_text(size=10),
+              axis.title=element_text(size=12))
     return(metricPlot)
 }
 
 #' Plot gene set enrichment analysis (GSEA)
 #'
-#' @inheritParams plotSingleCorr
-#' @param pathways Named list of characters: up-regulated (named \code{top}) and
-#'   down-regulated (\code{bottom}) genes
+#' @param stats Named numeric vector: statistics
+#' @param topGenes Named list of characters: up-regulated genes
+#' @param bottomGenes Named list of characters: down-regulated genes
 #' @param title Character: title
-#' @param titleSize Integer: title size
 #' @param gseaParam Numeric: GSEA-like parameter
 #'
 #' @importFrom ggplot2 ggtitle theme unit
@@ -131,72 +90,35 @@ plotMetricDistribution <- function(statsOrd, breaks=50, axisTitleSize=12,
 #'
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
-plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
-                     title="GSEA plot", titleSize=14, axisTitleSize=12,
-                     axisTextSize=10, gseaParam=1) {
-    if (length(perturbation) > 1) {
-        stop("Plotting GSEA of multiple perturbations is currently unsupported")
+plotGSEA <- function(stats, topGenes=NULL, bottomGenes=NULL, title="GSEA plot",
+                     gseaParam=1) {
+    statsOrd <- stats[order(stats, decreasing=TRUE)]
+    statsAdj <- abs(statsOrd ^ gseaParam)
+    statsAdj <- sign(statsOrd) * statsAdj / max(statsAdj)
+
+    plotOneESplot <- function(end, genes, stats) {
+        if (is.null(genes)) return(NULL)
+        gseaRes        <- performGSEA(genes, stats)
+        enrichmentPlot <- plotESplot(gseaRes$enrichmentScore, gseaRes$stat)
+        return(enrichmentPlot)
     }
-    stats <- perturbation[[1]]
+    title        <- ggdraw() + draw_label(title, size=14)
+    topESplot    <- plotOneESplot("top",    topGenes,    statsAdj)
+    bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj)
+    metricPlot   <- plotMetricDistribution(statsOrd)
 
-    stats <- unclass(stats)
-    statsOrd <- stats[order(rank(-stats))]
-    statsAdj <- sign(statsOrd) * (abs(statsOrd) ^ gseaParam)
-    statsAdj <- statsAdj / max(abs(statsAdj))
+    plots <- list(topESplot, bottomESplot, metricPlot)
+    plots <- Filter(length, plots)
+    plotHeights <- c(1, 6,
+                     if (!is.null(topGenes))    6,
+                     if (!is.null(bottomGenes)) 6)
 
-    prepareOneEndGseaPlot <- function(pathways, stats, ..., id="") {
-        gseaRes <- performGSEA(pathways, stats)
-
-        if (id != "") id <- sprintf(" for %s", id)
-        message(sprintf("Preparing enrichment plot%s...", id))
-        enrichmentPlot <- plotGSEAenrichment(gseaRes$enrichmentScore,
-                                             gseaRes$stat, ...) +
-            theme(plot.margin=unit(c(5.5, 5.5, 0, 5.5), "pt"))
-
-        message(sprintf("Preparing gene hits plot%s...", id))
-        geneHitsPlot <- plotGeneHits(gseaRes$enrichmentScore, gseaRes$stat,
-                                     gseaRes$pathway) +
-            theme(plot.margin=unit(c(0, 5.5, 0, 5.5), "pt"))
-        return(list(enrichmentPlot=enrichmentPlot, geneHitsPlot=geneHitsPlot))
-    }
-
-    message("Preparing metric distribution plot...")
-    metricPlot <- plotMetricDistribution(statsOrd, breaks=100,
-                                         axisTitleSize=axisTitleSize,
-                                         axisTextSize=axisTextSize) +
-        theme(plot.margin=unit(c(0, 5.5, 5.5, 5.5), "pt"))
-
-    if (genes %in% c("both", "top")) {
-        topGenes <- pathways[[grep("top", names(pathways), value=TRUE)]]
-        topPlot  <- prepareOneEndGseaPlot(topGenes, statsAdj, id="top genes")
-    }
-
-    if (genes %in% c("both", "bottom")) {
-        bottomGenes <- pathways[[grep("bottom", names(pathways), value=TRUE)]]
-        bottomPlot  <- prepareOneEndGseaPlot(bottomGenes, statsAdj,
-                                             id="bottom genes")
-    }
-
-    title <- ggdraw() + draw_label(title, size=titleSize)
-    if (genes == "both") {
-        plotHeights <- c(1, 6, 1, 6, 1, 6)
-        grid <- plot_grid(title, topPlot$enrichmentPlot,
-                          topPlot$geneHitsPlot, bottomPlot$enrichmentPlot,
-                          bottomPlot$geneHitsPlot, metricPlot,
-                          align="v", ncol=1, rel_heights=plotHeights)
-    } else if (genes == "top") {
-        plotHeights <- c(1, 6, 1, 6)
-        grid <- plot_grid(title, topPlot$enrichmentPlot,
-                          topPlot$geneHitsPlot, metricPlot,
-                          align="v", ncol=1, rel_heights=plotHeights)
-    } else if (genes == "bottom") {
-        plotHeights <- c(1, 6, 1, 6)
-        grid <- plot_grid(title, bottomPlot$enrichmentPlot,
-                          bottomPlot$geneHitsPlot, metricPlot,
-                          align="v", ncol=1, rel_heights=plotHeights)
-    }
+    grid <- plot_grid(title, plotlist=plots, align="v", ncol=1,
+                      rel_heights=plotHeights)
     return(grid)
 }
+
+# Internal scatter plot for correlations ---------------------------------------
 
 #' Render scatter plot to show a single relationship
 #'
@@ -206,8 +128,8 @@ plotGSEA <- function(perturbation, pathways, genes=c("both", "top", "bottom"),
 #' @param ylabel Character: Y axis label
 #' @param diffExprGenes Named vector
 #'
-#' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab theme_bw
-#' geom_density_2d theme guides guide_legend
+#' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab
+#' geom_density_2d theme guides guide_legend theme_bw
 #'
 #' @keywords internal
 #' @return Scatter plot
@@ -516,7 +438,7 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
 #'   best score per compound will be plotted
 #'
-#' @importFrom ggplot2 ggplot geom_point xlab ylab theme_light
+#' @importFrom ggplot2 ggplot geom_point xlab ylab theme_bw
 #' @importFrom ggrepel geom_text_repel
 #'
 #' @return \code{ggplot2} plot
@@ -595,7 +517,7 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
                    show.legend=FALSE, alpha=0.7) +
         xlab(xlabel) +
         ylab(ylabel) +
-        theme_light()
+        theme_bw()
 
     if (!is.null(label))
         plot <- plot + geom_text_repel(label=df$label, na.rm=TRUE)
