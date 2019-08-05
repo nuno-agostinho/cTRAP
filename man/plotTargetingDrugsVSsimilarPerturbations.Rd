@@ -9,6 +9,8 @@ plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
   quantileThreshold = 0.25, showAllScores = FALSE, ...)
 }
 \arguments{
+\item{targetingDrugs}{\code{targetingDrugs} object}
+
 \item{similarPerturbations}{\code{similarPerturbations} object}
 
 \item{column}{Character: column to plot (must be available in both databases)}
@@ -16,10 +18,11 @@ plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
 \item{labelColumn}{Character: column in \code{similarPerturbations}, its
 metadata or compound information to be used for labelling}
 
+\item{quantileThreshold}{Numeric: quantile to use for highlight values within
+[0, 1]}
+
 \item{showAllScores}{Boolean: showl all scores? If \code{FALSE}, only the
 best score per compound will be plotted}
-
-\item{x}{\code{targetingDrugs} object}
 }
 \value{
 \code{ggplot2} plot
@@ -27,3 +30,25 @@ best score per compound will be plotted}
 \description{
 Plot similar perturbations against predicted targeting drugs
 }
+\seealso{
+Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
+  \code{\link{as.table.similarPerturbations}},
+  \code{\link{dim.perturbationChanges}},
+  \code{\link{dimnames.perturbationChanges}},
+  \code{\link{filterCMapMetadata}},
+  \code{\link{getCMapConditions}},
+  \code{\link{getCMapPerturbationTypes}},
+  \code{\link{loadCMapData}},
+  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
+  \code{\link{plot.perturbationChanges}},
+  \code{\link{plot.referenceComparison}},
+  \code{\link{prepareCMapPerturbations}},
+  \code{\link{print.similarPerturbations}},
+  \code{\link{rankSimilarPerturbations}}
+
+Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
+  \code{\link{plot.referenceComparison}},
+  \code{\link{predictTargetingDrugs}}
+}
+\concept{functions related with the prediction of targeting drugs}
+\concept{functions related with the ranking of CMap perturbations}

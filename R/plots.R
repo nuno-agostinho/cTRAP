@@ -22,7 +22,7 @@ performGSEA <- function(pathways, stats) {
 #'
 #' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line
 #' scale_x_continuous scale_y_continuous theme theme_bw ggtitle labs
-#' element_text element_blank element_rect
+#' element_text element_blank element_rect expand_scale
 #'
 #' @keywords internal
 #' @return GSEA enrichment plot
@@ -175,9 +175,9 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 
 #' Plot data comparison
 #'
-#' @param x \code{referenceComparison} object (obtained after running
+#' @param x \code{referenceComparison} object: obtained after running
 #'   \code{\link{rankSimilarPerturbations}} or
-#'   \code{\link{predictTargetingDrugs}})
+#'   \code{\link{predictTargetingDrugs}}
 #' @param ... Extra arguments currently not used
 #' @param method Character: method to plot results (\code{spearman},
 #'   \code{pearson}, \code{gsea} or \code{rankProduct})
@@ -195,6 +195,8 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 #'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
 #' @importFrom ggrepel geom_text_repel
 #'
+#' @family functions related with the ranking of CMap perturbations
+#' @family functions related with the prediction of targeting drugs
 #' @return Plot illustrating the reference comparison
 #' @export
 #'
@@ -316,94 +318,6 @@ plot.referenceComparison <- function(x, method=c("spearman", "pearson", "gsea",
     return(plot)
 }
 
-#' Plot perturbation comparison against a differential expression profile
-#'
-#' @param x \code{perturbationChanges} object
-#' @param ... Extra arguments (currently undocumented)
-#' @param perturbation Character (perturbation identifier) or a
-#'   \code{similarPerturbations} table (from which the respective perturbation
-#'   identifiers are retrieved)
-#' @inheritParams prepareGSEApathways
-#' @param method Character: method to plot results (\code{spearman},
-#'   \code{pearson} or \code{gsea})
-#' @param genes Character: when plotting gene set enrichment analysis (GSEA),
-#'   plot top genes (\code{genes = "top"}), bottom genes
-#'   (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-#'   \code{method = "gsea"}
-#'
-#' @importFrom methods is
-#' @importFrom stats setNames
-#'
-#' @return CMap data comparison plots
-#' @export
-#'
-#' @examples
-#' data("diffExprStat")
-#' data("cmapPerturbationsKD")
-#'
-#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
-#' EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
-#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="spearman")
-#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="pearson")
-#' plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, method="gsea")
-#'
-#' data("cmapPerturbationsCompounds")
-#' pert <- "CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1"
-#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
-#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
-#'
-#' # Multiple cell line perturbations
-#' pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
-#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
-#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-#'
-#' # Currently unsupported!
-#' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
-plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
-                                     method=c("spearman", "pearson", "gsea"),
-                                     geneSize=150,
-                                     genes=c("both", "top", "bottom"), ...) {
-    method <- match.arg(method)
-
-    if (is(perturbation, "similarPerturbations"))
-        perturbation <- perturbation[[1]]
-
-    cellLinePerts <- colnames(x)[
-        parseCMapID(colnames(x), cellLine=FALSE) %in% perturbation]
-    isSummaryPert <- length(cellLinePerts) > 0
-
-    if (length(perturbation) == 0) {
-        stop("One perturbation ID must be provided")
-    } else if (length(perturbation) > 1) {
-        stop("Only one perturbation ID is currently supported")
-    } else if (!perturbation %in% colnames(x) && !isSummaryPert) {
-        stop("Perturbation not found in the columns of the given dataset")
-    }
-
-    if (!isSummaryPert) cellLinePerts <- perturbation
-    names(cellLinePerts) <- cellLinePerts
-    if (is.character(x)) {
-        zscores <- loadCMapZscores(x[cellLinePerts])
-    } else {
-        zscores <- unclass(x)
-    }
-
-    data <- lapply(cellLinePerts, function(pert, zscores) {
-        sub <- zscores[ , pert, drop=FALSE]
-        setNames(as.numeric(sub), rownames(sub))
-    }, zscores)
-
-    if (method != "gsea") {
-        plotSingleCorr(data, perturbation, diffExprGenes, ...)
-    } else {
-        pathways <- prepareGSEApathways(diffExprGenes=diffExprGenes,
-                                        geneSize=geneSize)
-        genes <- match.arg(genes)
-        plotGSEA(data, pathways, genes, ...)
-    }
-}
-
 #' Compare vector against its quantile
 #'
 #' Check which elements of the vector are lower/greater than or equal to the
@@ -414,6 +328,8 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
 #'   quantiles
 #' @param lte Boolean: check if values are <= quantile? If \code{FALSE}, checks
 #'   if values are >= quantile
+#'
+#' @importFrom stats quantile
 #'
 #' @return Boolean vector regarding compared elements
 #' @keywords internal
@@ -430,17 +346,21 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 
 #' Plot similar perturbations against predicted targeting drugs
 #'
-#' @param x \code{targetingDrugs} object
+#' @param targetingDrugs \code{targetingDrugs} object
 #' @param similarPerturbations \code{similarPerturbations} object
 #' @param column Character: column to plot (must be available in both databases)
 #' @param labelColumn Character: column in \code{similarPerturbations}, its
 #'   metadata or compound information to be used for labelling
 #' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
 #'   best score per compound will be plotted
+#' @param quantileThreshold Numeric: quantile to use for highlight values within
+#'   [0, 1]
 #'
 #' @importFrom ggplot2 ggplot geom_point xlab ylab theme_bw
 #' @importFrom ggrepel geom_text_repel
 #'
+#' @family functions related with the ranking of CMap perturbations
+#' @family functions related with the prediction of targeting drugs
 #' @return \code{ggplot2} plot
 #' @export
 plotTargetingDrugsVSsimilarPerturbations <- function(

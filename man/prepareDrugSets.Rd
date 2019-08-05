@@ -21,3 +21,8 @@ Named list of characters: named drug sets with respective compound
 \description{
 Prepare drug sets from a table with compound descriptors
 }
+\seealso{
+Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
+  \code{\link{plotDrugSetEnrichment}}
+}
+\concept{functions for drug set enrichment analysis}

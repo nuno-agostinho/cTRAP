@@ -14,6 +14,8 @@ identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 \code{similarPerturbations} or a \code{targetingDrugs} object (obtained
 after running \code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
+
+\item{col}{Character: name of the column to use for statistics}
 }
 \value{
 List of GSEA plots per drug set
@@ -21,3 +23,8 @@ List of GSEA plots per drug set
 \description{
 Plot drug set enrichment
 }
+\seealso{
+Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
+  \code{\link{prepareDrugSets}}
+}
+\concept{functions for drug set enrichment analysis}

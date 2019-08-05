@@ -33,3 +33,20 @@ cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 }
 getCMapConditions(cmapMetadata)
 }
+\seealso{
+Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
+  \code{\link{as.table.similarPerturbations}},
+  \code{\link{dim.perturbationChanges}},
+  \code{\link{dimnames.perturbationChanges}},
+  \code{\link{filterCMapMetadata}},
+  \code{\link{getCMapPerturbationTypes}},
+  \code{\link{loadCMapData}},
+  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
+  \code{\link{plot.perturbationChanges}},
+  \code{\link{plot.referenceComparison}},
+  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
+  \code{\link{prepareCMapPerturbations}},
+  \code{\link{print.similarPerturbations}},
+  \code{\link{rankSimilarPerturbations}}
+}
+\concept{functions related with the ranking of CMap perturbations}

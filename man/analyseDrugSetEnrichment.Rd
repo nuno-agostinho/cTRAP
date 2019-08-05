@@ -16,10 +16,15 @@ identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 after running \code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
 
+\item{col}{Character: name of the column to use for statistics}
+
+\item{nperm}{Number of permutations to do. Minimial possible nominal p-value is about 1/nperm}
+
+\item{maxSize}{Maximal size of a gene set to test. All pathways above the threshold are excluded.}
+
 \item{...}{Arguments passed on to \code{fgsea::fgsea}
 \describe{
   \item{minSize}{Minimal size of a gene set to test. All pathways below the threshold are excluded.}
-  \item{maxSize}{Maximal size of a gene set to test. All pathways above the threshold are excluded.}
   \item{nproc}{If not equal to zero sets BPPARAM to use nproc workers (default = 0).}
   \item{gseaParam}{GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
 before calculation of GSEA enrichment scores.}
@@ -34,3 +39,8 @@ Enrichment analysis based on GSEA
 \description{
 Analyse drug set enrichment
 }
+\seealso{
+Other functions for drug set enrichment analysis: \code{\link{plotDrugSetEnrichment}},
+  \code{\link{prepareDrugSets}}
+}
+\concept{functions for drug set enrichment analysis}

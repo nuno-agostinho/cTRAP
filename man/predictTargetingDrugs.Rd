@@ -50,3 +50,9 @@ gdsc <- loadExpressionDrugSensitivityAssociation("GDSC")
 # Predict targeting drugs on a differential expression profile
 predictTargetingDrugs(diffExprStat, gdsc)
 }
+\seealso{
+Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
+  \code{\link{plot.referenceComparison}},
+  \code{\link{plotTargetingDrugsVSsimilarPerturbations}}
+}
+\concept{functions related with the prediction of targeting drugs}

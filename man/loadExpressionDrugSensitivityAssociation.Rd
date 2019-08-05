@@ -22,3 +22,9 @@ Load gene expression and drug sensitivity correlation matrix
 \examples{
 loadExpressionDrugSensitivityAssociation("GDSC")
 }
+\seealso{
+Other functions related with the prediction of targeting drugs: \code{\link{plot.referenceComparison}},
+  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
+  \code{\link{predictTargetingDrugs}}
+}
+\concept{functions related with the prediction of targeting drugs}

@@ -23,10 +23,10 @@ URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat,
     knitr,
-    covr,
-    biomaRt
+    covr
 RoxygenNote: 6.1.1
-Imports: cowplot,
+Imports: biomaRt,
+    cowplot,
     data.table,
     dplyr,
     fgsea,
@@ -39,6 +39,8 @@ Imports: cowplot,
     pbapply,
     R.utils,
     readr,
+    readxl,
+    reshape2,
     rhdf5,
     stats,
     tidyr,

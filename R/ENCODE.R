@@ -20,6 +20,7 @@ getENCODEcontrols <- function(control, table) {
 #' @importFrom httr content GET
 #' @importFrom readr read_tsv
 #'
+#' @family functions related with using ENCODE expression data
 #' @return Data frame containing ENCODE knockdown experiment metadata
 #' @export
 #' @examples
@@ -119,6 +120,7 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #'
 #' @importFrom pbapply pblapply
 #'
+#' @family functions related with using ENCODE expression data
 #' @return List of loaded ENCODE samples
 #' @export
 #'
@@ -145,11 +147,10 @@ loadENCODEsamples <- function(metadata) {
         return(gene)
     }
 
-    metadataPerGene <- split(metadata,
-                             sprintf("%s_%s_%s",
-                                     metadata$`Biosample term name`,
-                                     metadata$`Experiment target`,
-                                     metadata$`Experiment accession`))
+    metadataPerGene <- split(metadata, sprintf("%s_%s_%s",
+                                               metadata$`Biosample term name`,
+                                               metadata$`Experiment target`,
+                                               metadata$`Experiment accession`))
     res <- pblapply(metadataPerGene, loadENCODEsamplePerGene)
     return(res)
 }
@@ -158,6 +159,9 @@ loadENCODEsamples <- function(metadata) {
 #'
 #' @param samples List of loaded ENCODE samples
 #'
+#' @seealso convertENSEMBLtoGeneSymbols
+#'
+#' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
 #' @export
 #'
@@ -187,4 +191,70 @@ prepareENCODEgeneExpression <- function(samples) {
     names(countTable)[3:6] <- c("shRNA1", "shRNA2", "control1", "control2")
     rownames(countTable) <- countTable$gene_id
     return(countTable)
+}
+
+#' Perform differential gene expression based on ENCODE data
+#'
+#' @param counts Data frame: gene expression
+#'
+#' @importFrom stats model.matrix aggregate
+#' @importFrom limma voom lmFit eBayes topTable
+#'
+#' @family functions related with using ENCODE expression data
+#' @return Data frame with differential gene expression results between
+#' knockdown and control
+#' @export
+#'
+#' @examples
+#' if (interactive()) {
+#'   # Download ENCODE metadata for a specific cell line and gene
+#'   cellLine <- "HepG2"
+#'   gene <- "EIF4G1"
+#'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#'
+#'   # Download samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+#'
+#'   counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#'
+#'   # Remove low coverage (at least 10 counts shared across two samples)
+#'   minReads   <- 10
+#'   minSamples <- 2
+#'   filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
+#'   counts <- counts[filter, ]
+#'
+#'   # Convert ENSEMBL identifier to gene symbol
+#'   counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+#'
+#'   # Perform differential gene expression analysis
+#'   diffExpr <- performDifferentialExpression(counts)
+#' }
+performDifferentialExpression <- function(counts) {
+    counts <- data.frame(counts)
+
+    # Design matrix
+    Sample_info <- data.frame(
+        sample = c("shRNA1", "shRNA2", "control1", "control2"),
+        condition = c("shRNA", "shRNA", "control", "control"))
+    design <- model.matrix(~ condition, Sample_info)
+    rownames(design) <- Sample_info$sample
+
+    # Check: identical(names(counts[ , 3:6]), rownames(design_matrix))
+    voom <- voom(counts[ , -c(1, 2)], design=design, plot=FALSE,
+                 normalize.method="quantile")
+
+    # Fit linear model
+    fit <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)], design=design)
+    ebayes <- eBayes(fit)
+    results <- topTable(ebayes, coef=2, number=nrow(ebayes),
+                        genelist=counts$gene_id)
+
+    # Mean-aggregation per gene symbol to compare unique gene knockdowns
+    meanAggr <- aggregate(results[ , -1], data=results, FUN=mean,
+                          by=list(Gene_symbol=results$ID))
+
+    # Remove non-matching genes (if any)
+    meanAggr           <- meanAggr[meanAggr$Gene_symbol != "", ]
+    rownames(meanAggr) <- meanAggr$Gene_symbol
+    return(meanAggr)
 }

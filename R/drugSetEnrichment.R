@@ -5,6 +5,7 @@
 #' @param maxUniqueElems Numeric: maximum number of unique elements in a
 #'   descriptor to consider when creating discrete drug sets
 #'
+#' @family functions for drug set enrichment analysis
 #' @return Named list of characters: named drug sets with respective compound
 #'   identifiers as list elements
 #' @export
@@ -30,8 +31,11 @@ prepareDrugSets <- function(table, id, maxUniqueElems=15) {
 #'   \code{\link{predictTargetingDrugs}}, respectively)
 #' @param sets Named list of characters: named sets containing compound
 #'   identifiers (obtain drug sets by running \code{prepareDrugSets()})
-#' @inheritDotParams fgsea::fgsea -pathways -stats -nperm
+#' @param col Character: name of the column to use for statistics
+#' @inheritParams fgsea::fgsea
+#' @inheritDotParams fgsea::fgsea -pathways -stats -nperm -maxSize
 #'
+#' @family functions for drug set enrichment analysis
 #' @return Enrichment analysis based on GSEA
 #' @export
 analyseDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank",
@@ -74,6 +78,7 @@ analyseDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank",
 #'
 #' @inheritParams analyseDrugSetEnrichment
 #'
+#' @family functions for drug set enrichment analysis
 #' @return List of GSEA plots per drug set
 #' @export
 plotDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank") {

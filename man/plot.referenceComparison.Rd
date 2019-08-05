@@ -9,9 +9,9 @@
   plotNonRankedPerturbations = FALSE, alpha = 0.3, ...)
 }
 \arguments{
-\item{x}{\code{referenceComparison} object (obtained after running
+\item{x}{\code{referenceComparison} object: obtained after running
 \code{\link{rankSimilarPerturbations}} or
-\code{\link{predictTargetingDrugs}})}
+\code{\link{predictTargetingDrugs}}}
 
 \item{method}{Character: method to plot results (\code{spearman},
 \code{pearson}, \code{gsea} or \code{rankProduct})}
@@ -57,3 +57,25 @@ plot(compareKD, "spearman", c(7, 3))
 plot(compareKD, "pearson")
 plot(compareKD, "gsea")
 }
+\seealso{
+Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
+  \code{\link{as.table.similarPerturbations}},
+  \code{\link{dim.perturbationChanges}},
+  \code{\link{dimnames.perturbationChanges}},
+  \code{\link{filterCMapMetadata}},
+  \code{\link{getCMapConditions}},
+  \code{\link{getCMapPerturbationTypes}},
+  \code{\link{loadCMapData}},
+  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
+  \code{\link{plot.perturbationChanges}},
+  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
+  \code{\link{prepareCMapPerturbations}},
+  \code{\link{print.similarPerturbations}},
+  \code{\link{rankSimilarPerturbations}}
+
+Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
+  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
+  \code{\link{predictTargetingDrugs}}
+}
+\concept{functions related with the prediction of targeting drugs}
+\concept{functions related with the ranking of CMap perturbations}

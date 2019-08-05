@@ -37,8 +37,8 @@ loadCTRPgeneExpression <- function(geneExpressionFile="CTRP/geneExpr.txt",
     message(sprintf("Loading CTRP gene expression from %s...",
                     geneExpressionFile))
     geneExpr <- fread(geneExpressionFile)
-    wide     <- dcast(geneExpr, master_ccl_id ~ idx_gene_feature, fun=mean,
-                      value.var="mrna_expression_avg_log2")
+    wide     <- dcast(geneExpr, master_ccl_id ~ idx_gene_feature,
+                      fun.aggregate=mean, value.var="mrna_expression_avg_log2")
     colnames(wide)[1] <- "cellLine"
 
     # Correctly set gene names
@@ -97,7 +97,7 @@ loadCTRPdrugSensitivity <- function(
     experimentInfo$run_id <- experimentInfo$experiment_date <- NULL
 
     merged <- merge(drugSensitivity, unique(experimentInfo))
-    wide   <- dcast(merged, master_ccl_id ~ master_cpd_id, fun=mean,
+    wide   <- dcast(merged, master_ccl_id ~ master_cpd_id, fun.aggregate=mean,
                     value.var="area_under_curve")
     attr(wide, "drugActivityMetric") <- "z-score(-log10(GI50))"
     colnames(wide)[1] <- "cellLine"
@@ -128,7 +128,7 @@ loadCTRPcompoundInfo <- function(compoundFile="CTRP/compoundInfo.txt") {
 # Data loading from NCI60 ------------------------------------------------------
 
 #' @rdname loadCTRPgeneExpression
-#' @importFrom readxl read_xls
+#' @importFrom readxl read_excel
 #' @importFrom data.table data.table transpose
 #' @importFrom R.utils renameFile
 loadNCI60geneExpression <- function(file="NCI60/geneExpr.xls",
@@ -157,7 +157,7 @@ loadNCI60geneExpression <- function(file="NCI60/geneExpr.xls",
 
     # Cell line metadata
     message(sprintf("Loading NCI60 cell line metadata from %s...", file))
-    cellLineInfo <- read_xls(cellLineInfoFile, skip=7, n_max=60)
+    cellLineInfo <- read_excel(cellLineInfoFile, skip=7, n_max=60)
     # Remove footnote letters
     colnames(cellLineInfo) <- gsub(" .(,.)?$", "", colnames(cellLineInfo))
     colnames(cellLineInfo)[1] <- "cellLine"
@@ -300,6 +300,7 @@ loadGDSCdrugSensitivity <- function(file="GDSC/drugs.xlsx") {
 
 # Correlate gene expression and drug sensitivity -------------------------------
 
+#' @importFrom stats cor
 correlateGEandDrugSensitivity <- function(geneExpr, drugSensitivity,
                                           method="spearman") {
     message("Correlating gene expression and drug sensitivity...")
@@ -380,6 +381,7 @@ prepareExpressionDrugSensitivityAssociation <- function(
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
 #'
+#' @family functions related with the prediction of targeting drugs
 #' @return Correlation matrix between gene expression (rows) and drug
 #'   sensitivity (columns)
 #' @export
@@ -426,6 +428,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #'
 #' @inheritSection rankSimilarPerturbations GSEA score
 #'
+#' @family functions related with the prediction of targeting drugs
 #' @return Data table with correlation or GSEA results comparing differential
 #'   expression values against gene expression and drug sensitivity associations
 #' @export
