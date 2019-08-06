@@ -111,85 +111,55 @@ test_that("Subsetting a perturbationChanges object", {
     expect_error(perturbations[ , c(cols, "test")])
 })
 
+checkPerturbationIdentifierInformationInMetadata <- function(data) {
+    # All information for perturbation identifiers are available in metadata
+    metadata <- attr(data, "metadata")
+    expect_true(!is.null(metadata))
+    expect_true(all(data$compound_perturbation %in% metadata$sig_id))
+    expect_equal(length(data$compound_perturbation),
+                 length(metadata$sig_id))
+}
+
+testSimilarPerturbationsResult <- function(data, col, cols) {
+    expect_is(data, "similarPerturbations")
+    expect_identical(colnames(data), cols)
+    checkPerturbationIdentifierInformationInMetadata(data)
+
+    # Data is ordered based on Spearman's rank
+    expect_equal(data[order(data[[col]])]$compound_perturbation,
+                 data$compound_perturbation)
+
+    # Expect average perturbations across cell lines
+    expect_true(all(parseCMapID(data$compound_perturbation) %in%
+                        data$compound_perturbation))
+}
+
 test_that("Compare using Spearman correlation", {
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      method="spearman")
-    expect_is(data, "similarPerturbations")
-    expect_identical(colnames(data), c(
-        "compound_perturbation", "spearman_coef", "spearman_pvalue",
-        "spearman_qvalue", "spearman_rank"))
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
-
-    expect_equal(head(data$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-A65142661-034-01-8:5.35",
-                   "CVD001_24H:BRD-K31030218-001-01-1:4.25",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K60476892-001-02-1:4.1072",
-                   "CVD001_24H:BRD-K62810658-001-05-6:4.6768"))
-
-    expect_equal(head(data[order(data$spearman_rank)]$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-K84595254-001-03-0:4.9444",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K84389640-001-01-5:4.225",
-                   "CVD001_24H:BRD-K96188950-001-04-5:4.3967",
-                   "CVD001_24H:BRD-K60476892-001-02-1:4.1072"))
+    cols <- c("compound_perturbation", "spearman_coef", "spearman_pvalue",
+              "spearman_qvalue", "spearman_rank")
+    testSimilarPerturbationsResult(data, col="spearman_rank", cols=cols)
 })
 
 test_that("Compare using Pearson correlation", {
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      method="pearson")
-    expect_is(data, "similarPerturbations")
-    expect_identical(colnames(data), c(
-        "compound_perturbation", "pearson_coef", "pearson_pvalue",
-        "pearson_qvalue", "pearson_rank"))
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
-
-    expect_equal(head(data$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-A65142661-034-01-8:5.35",
-                   "CVD001_24H:BRD-K31030218-001-01-1:4.25",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K60476892-001-02-1:4.1072",
-                   "CVD001_24H:BRD-K62810658-001-05-6:4.6768"))
-
-    expect_equal(head(data[order(data$pearson_rank), ]$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-K84595254-001-03-0:4.9444",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K84389640-001-01-5:4.225",
-                   "CVD001_24H:BRD-K96188950-001-04-5:4.3967",
-                   "CVD001_24H:BRD-K77508012-001-01-9:6.025"))
+    cols <- c("compound_perturbation", "pearson_coef", "pearson_pvalue",
+              "pearson_qvalue", "pearson_rank")
+    testSimilarPerturbationsResult(data, col="pearson_rank", cols=cols)
 })
 
 test_that("Compare using GSEA", {
     data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea")
-    expect_is(data, "similarPerturbations")
-    expect_identical(colnames(data),
-                     c("compound_perturbation", "GSEA", "GSEA_rank"))
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
-
-    expect_equal(head(data$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-A65142661-034-01-8:5.35",
-                   "CVD001_24H:BRD-K31030218-001-01-1:4.25",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K60476892-001-02-1:4.1072",
-                   "CVD001_24H:BRD-K62810658-001-05-6:4.6768"))
-    expect_equal(head(data[order(data$GSEA_rank), ]$compound_perturbation),
-                 c("CVD001_24H:BRD-A14014306-001-01-1:4.1",
-                   "CVD001_24H:BRD-K84595254-001-03-0:4.9444",
-                   "CVD001_24H:BRD-K31030218-001-01-1:4.25",
-                   "CVD001_24H:BRD-K41172353-001-01-4:4.7",
-                   "CVD001_24H:BRD-K84389640-001-01-5:4.225",
-                   "CVD001_24H:BRD-K62810658-001-05-6:4.6768"))
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
 })
 
 test_that("Compare against CMap using multiple methods simultaneously", {
     method <- c("pearson", "spearman", "gsea")
     data <- rankSimilarPerturbations(diffExprStat, perturbations, method=method)
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+    checkPerturbationIdentifierInformationInMetadata(data)
 
     checkIfAnyColsHaveMethodsName <- function(col, data) {
         any(startsWith(tolower(colnames(data)), col))
@@ -211,25 +181,25 @@ test_that("Compare against CMap by also ranking individual cell lines", {
     # ranked and if means across cell lines are calculated
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankPerCellLine=FALSE, cellLineMean=TRUE)
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+    checkPerturbationIdentifierInformationInMetadata(data)
     expect_true(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings when individual cell lines are
     # ranked as well
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankPerCellLine=TRUE)
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+    checkPerturbationIdentifierInformationInMetadata(data)
     expect_false(areNAsIncludedInRanks(data))
 
     # Expect NO missing values in rankings if cell line means are NOT calculated
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankPerCellLine=FALSE, cellLineMean=FALSE)
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+    checkPerturbationIdentifierInformationInMetadata(data)
     expect_false(areNAsIncludedInRanks(data))
 
     data <- rankSimilarPerturbations(diffExprStat, perturbations,
                                      rankPerCellLine=TRUE,
                                      cellLineMean=FALSE)
-    expect_identical(attr(data, "metadata")$sig_id, data$compound_perturbation)
+    checkPerturbationIdentifierInformationInMetadata(data)
     expect_false(areNAsIncludedInRanks(data))
 })
