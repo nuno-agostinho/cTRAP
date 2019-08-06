@@ -365,7 +365,7 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @export
 plotTargetingDrugsVSsimilarPerturbations <- function(
     targetingDrugs, similarPerturbations, column, labelColumn="pert_iname",
-    quantileThreshold=0.25, showAllScores=FALSE, ...) {
+    quantileThreshold=0.25, showAllScores=FALSE) {
 
     if (!column %in% colnames(targetingDrugs) &&
         !column %in% colnames(similarPerturbations)) {

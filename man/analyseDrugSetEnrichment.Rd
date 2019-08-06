@@ -16,7 +16,9 @@ identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 after running \code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
 
-\item{col}{Character: name of the column to use for statistics}
+\item{col}{Character: name of the column to use for statistics (only required
+if class of \code{stats} is either \code{similarPerturbations} or
+\code{targetingDrugs})}
 
 \item{nperm}{Number of permutations to do. Minimial possible nominal p-value is about 1/nperm}
 
@@ -38,6 +40,18 @@ Enrichment analysis based on GSEA
 }
 \description{
 Analyse drug set enrichment
+}
+\examples{
+descriptors <- loadDrugDescriptors()
+drugSets <- prepareDrugSets(descriptors)
+
+# Analyse drug set enrichment in ranked targeting drugs for a differential
+# expression profile
+data("diffExprStat")
+gdsc      <- loadExpressionDrugSensitivityAssociation("GDSC")
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
+analyseDrugSetEnrichment(drugSets, predicted)
 }
 \seealso{
 Other functions for drug set enrichment analysis: \code{\link{plotDrugSetEnrichment}},

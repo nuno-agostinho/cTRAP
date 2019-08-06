@@ -4,12 +4,12 @@
 \alias{prepareDrugSets}
 \title{Prepare drug sets from a table with compound descriptors}
 \usage{
-prepareDrugSets(table, id, maxUniqueElems = 15)
+prepareDrugSets(table, id = 1, maxUniqueElems = 15)
 }
 \arguments{
 \item{table}{Data frame: drug descriptors}
 
-\item{id}{Character: column name containing compound identifiers}
+\item{id}{Integer or character: column index or name containing identifiers}
 
 \item{maxUniqueElems}{Numeric: maximum number of unique elements in a
 descriptor to consider when creating discrete drug sets}
@@ -20,6 +20,10 @@ Named list of characters: named drug sets with respective compound
 }
 \description{
 Prepare drug sets from a table with compound descriptors
+}
+\examples{
+descriptors <- loadDrugDescriptors()
+prepareDrugSets(descriptors)
 }
 \seealso{
 Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},

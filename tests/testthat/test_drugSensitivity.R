@@ -11,12 +11,15 @@ test_that("Correctly load expression and drug sensitivity association", {
     expect_equal(length(attr(gdsc, "cellLines")), 983)
 })
 
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
 test_that("Predict targeting drug", {
-    predicted <- predictTargetingDrugs(diffExprStat, gdsc)
-    expect_is(predicted, "dataComparison")
+    expect_is(predicted, "referenceComparison")
     expect_is(predicted, "targetingDrugs")
     expect_equal(colnames(predicted)[1], "compound")
+})
 
+test_that("Plot predicted targeting drugs", {
     plot <- plot(predicted, method="spearman")
     expect_is(plot, "ggplot")
     expect_equal(plot$labels$y, "Spearman's correlation coefficient")

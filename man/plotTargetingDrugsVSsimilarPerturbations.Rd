@@ -6,7 +6,7 @@
 \usage{
 plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
   similarPerturbations, column, labelColumn = "pert_iname",
-  quantileThreshold = 0.25, showAllScores = FALSE, ...)
+  quantileThreshold = 0.25, showAllScores = FALSE)
 }
 \arguments{
 \item{targetingDrugs}{\code{targetingDrugs} object}

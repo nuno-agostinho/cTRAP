@@ -121,6 +121,7 @@ checkPerturbationIdentifierInformationInMetadata <- function(data) {
 }
 
 testSimilarPerturbationsResult <- function(data, col, cols) {
+    expect_is(data, "referenceComparison")
     expect_is(data, "similarPerturbations")
     expect_identical(colnames(data), cols)
     checkPerturbationIdentifierInformationInMetadata(data)

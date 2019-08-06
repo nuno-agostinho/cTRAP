@@ -353,8 +353,9 @@ plotTargetingDrugsVSsimilarPerturbations(
 # Drug set enrichment analysis
 
 ```{r}
-drugSets <- prepareDrugSets(descriptors2D, "id")
-dsea     <- analyseDrugSetEnrichment(drugSets, predicted)
+descriptors <- loadDrugDescriptors()
+drugSets    <- prepareDrugSets(descriptors, "NSC number")
+dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
 # Plot the 6 most significant drug set enrichment results
 plotDrugSetEnrichment(drugSets[head(dsea$pathway)], predicted)
 ```

@@ -15,7 +15,9 @@ identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 after running \code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
 
-\item{col}{Character: name of the column to use for statistics}
+\item{col}{Character: name of the column to use for statistics (only required
+if class of \code{stats} is either \code{similarPerturbations} or
+\code{targetingDrugs})}
 }
 \value{
 List of GSEA plots per drug set
