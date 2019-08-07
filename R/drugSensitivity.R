@@ -339,13 +339,16 @@ correlateGEandDrugSensitivity <- function(geneExpr, drugSensitivity,
 prepareExpressionDrugSensitivityAssociation <- function(
     dataset=c("GDSC", "CTRP", "NCI60"), method="spearman") {
 
+    source <- dataset
     if (dataset == "GDSC") {
+        source          <- "GDSC release-7.0" # Version currently in use
         geneExpr        <- loadGDSCgeneExpression()
         geneInfo        <- NULL
         cellLineInfo    <- loadGDSCcellLineInfo()
         drugSensitivity <- loadGDSCdrugSensitivity()
         compoundInfo    <- loadGDSCcompoundInfo()
     } else if (dataset == "CTRP") {
+        source          <- "CTRP v2.0/2.1" # Version currently in use
         geneExpr        <- loadCTRPgeneExpression()
         geneInfo        <- attr(geneExpr, "geneInfo")
         cellLineInfo    <- attr(geneExpr, "cellLineInfo")
@@ -367,7 +370,7 @@ prepareExpressionDrugSensitivityAssociation <- function(
 
     attr(cor, "geneInfo")     <- geneInfo
     attr(cor, "compoundInfo") <- compoundInfo
-    attr(cor, "source")       <- dataset
+    attr(cor, "source")       <- source
     attr(cor, "drugActivityMetric") <- attr(drugSensitivity,
                                             "drugActivityMetric")
     return(cor)

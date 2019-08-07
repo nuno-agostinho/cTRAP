@@ -7,7 +7,7 @@ test_that("Correctly load expression and drug sensitivity association", {
     expect_is(gdsc, "matrix")
     attrs <- c("cellLines", "cellLineInfo", "compoundInfo", "source")
     expect_true(all(attrs %in% names(attributes(gdsc))))
-    expect_equal(attr(gdsc, "source"), "GDSC")
+    expect_equal(attr(gdsc, "source"), "GDSC release-7.0")
     expect_equal(length(attr(gdsc, "cellLines")), 983)
 })
 
