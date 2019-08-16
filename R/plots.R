@@ -20,20 +20,24 @@ performGSEA <- function(pathways, stats) {
 
 #' Render GSEA enrichment plot
 #'
-#' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line
+#' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line annotate
 #' scale_x_continuous scale_y_continuous theme theme_bw ggtitle labs
 #' element_text element_blank element_rect expand_scale
 #'
 #' @keywords internal
 #' @return GSEA enrichment plot
 plotESplot <- function(enrichmentScore, gseaStat) {
+    amp <- range(enrichmentScore$score)
+    ES  <- amp[which.max(abs(amp))]
     enrichmentPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
                                                   y=enrichmentScore$score)) +
         geom_rug(alpha=0.2, sides="b", length = unit(0.1, "npc")) +
         geom_line(colour="orange", na.rm=TRUE, size=0.7) +
-        geom_hline(yintercept=0, colour="grey", linetype="longdash") +
+        geom_hline(yintercept=0, colour="darkgrey", linetype="longdash") +
+        geom_hline(yintercept=ES, colour="#3895D3") +
         scale_x_continuous(expand=c(0,0)) +
         scale_y_continuous(expand=expand_scale(mult = c(0.2, 0.1))) +
+                           # breaks=c(round(ES, 2), seq(-20, 20, .1))) +
         labs(y="Enrichment score") +
         theme_bw() +
         theme(axis.title.x=element_blank(),
@@ -43,6 +47,19 @@ plotESplot <- function(enrichmentScore, gseaStat) {
               panel.grid.minor=element_blank(),
               axis.text=element_text(size=10),
               axis.title=element_text(size=12))
+
+    if (ES > 0) {
+        label_x     <- max(enrichmentScore$rank)
+        label_hjust <- 1.2
+        label_vjust <- 1.5
+    } else {
+        label_x     <- 0
+        label_hjust <- -0.2
+        label_vjust <- -0.5
+    }
+    enrichmentPlot <- enrichmentPlot +
+        annotate("text", y=ES, colour="#3895D3", label=round(ES, 3),
+                 x=label_x, hjust=label_hjust, vjust=label_vjust)
     return(enrichmentPlot)
 }
 
@@ -53,9 +70,11 @@ plotESplot <- function(enrichmentScore, gseaStat) {
 #'
 #' @keywords internal
 #' @return Metric distribution plot
-plotMetricDistribution <- function(stat, breaks=100) {
-    quantile <- cut(stat, breaks=breaks, labels=FALSE)
-    quantile <- seq(min(stat), max(stat), length.out=breaks)[quantile]
+plotMetricDistribution <- function(stat) {
+    # Scale number of breaks according to number of ranked elements
+    breaks       <- round(-120 + 55 * log10(length(stat)))
+    quantile     <- cut(stat, breaks=breaks, labels=FALSE)
+    quantile     <- seq(min(stat), max(stat), length.out=breaks)[quantile]
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
     metricPlot <- ggplot(rankedMetric, aes_string("sort", "stat")) +
@@ -92,7 +111,7 @@ plotMetricDistribution <- function(stat, breaks=100) {
 #' @keywords internal
 plotGSEA <- function(stats, topGenes=NULL, bottomGenes=NULL, title="GSEA plot",
                      gseaParam=1) {
-    statsOrd <- stats[order(stats, decreasing=TRUE)]
+    statsOrd <- sort(stats, decreasing=TRUE)
     statsAdj <- abs(statsOrd ^ gseaParam)
     statsAdj <- sign(statsOrd) * statsAdj / max(statsAdj)
 
@@ -172,6 +191,62 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
 }
 
 # Exported plot functions ------------------------------------------------------
+
+prepareLabel <- function(data) {
+    prepareLabel_similarPerturbations <- function(k, pert) {
+        info <- print(pert, pert[[1]][[k]])
+        collapse <- function(var) paste(unique(var), collapse="/")
+
+        name <- collapse(info$metadata$pert_iname)
+        type <- collapse(info$metadata$pert_type)
+
+        isOverexpression <- startsWith(type, "trt_oe")
+        isLossOfFunction <- startsWith(type, "trt_sh") ||
+            startsWith(type, "trt_xpr")
+
+        if (isOverexpression) {
+            name <- paste(name, "OE")
+        } else if (isLossOfFunction) {
+            name <- paste(name, "KD")
+        }
+
+        cellLine <- unique(info$metadata$cell_id)
+        if (length(unique(cellLine)) > 1) cellLine <- "mean"
+
+        dose       <- collapse(info$metadata$pert_idose)
+        timepoint  <- collapse(info$metadata$pert_itime)
+        res <- sprintf("%s (%s, %s at %s)", name, cellLine, dose, timepoint)
+        return(res)
+    }
+
+    prepareLabel_targetingDrugs <- function(k, data) {
+        compoundInfo    <- attr(data, "compoundInfo")
+        data$compound   <- as.character(data$compound)
+        compoundInfo$id <- as.character(compoundInfo$id)
+
+        merged          <- merge(data, compoundInfo, by.x="compound", by.y="id")
+        compound        <- merged[k]
+        name            <- compound[["name"]]
+        if (is.null(name) || is.na(name) || name == "") {
+            name <- compound[["compound"]]
+            if (is.na(name)) name <- "NA"
+        }
+        target <- compound[["target"]]
+        target <- gsub(", ", "/", target)
+        res    <- sprintf("%s (%s: %s)", name, target,
+                          compound[["target pathway"]])
+        return(res)
+    }
+
+    if (is(data, "similarPerturbations")) {
+        FUN <- prepareLabel_similarPerturbations
+    } else if (is(data, "targetingDrugs")) {
+        FUN <- prepareLabel_targetingDrugs
+    }
+
+    res <- sapply(seq(nrow(data)), FUN, data)
+    return(res)
+}
 
 #' Plot data comparison
 #'
@@ -262,36 +337,8 @@ plot.referenceComparison <- function(x, method=c("spearman", "pearson", "gsea",
     index   <- unique(c(head(sortedPert, top), tail(sortedPert, bottom)))
     x$label <- ""
 
-    prepareLabel <- function(k, perturbations) {
-        info <- print(perturbations, perturbations[[1]][[k]])
-
-        collapse <- function(var) paste(unique(var), collapse="/")
-
-        name <- collapse(info$metadata$pert_iname)
-        type <- collapse(info$metadata$pert_type)
-
-        isOverexpression <- startsWith(type, "trt_oe")
-        isLossOfFunction <- startsWith(type, "trt_sh") ||
-            startsWith(type, "trt_xpr")
-
-        if (isOverexpression) {
-            name <- paste(name, "OE")
-        } else if (isLossOfFunction) {
-            name <- paste(name, "KD")
-        }
-
-        # cellLine   <- collapse(info$metadata$cell_id)
-        cellLine <- unique(info$metadata$cell_id)
-        if (length(unique(cellLine)) > 1) cellLine <- "mean"
-
-        dose       <- collapse(info$metadata$pert_idose)
-        timepoint  <- collapse(info$metadata$pert_itime)
-        res <- sprintf("%s (%s, %s at %s)", name, cellLine, dose, timepoint)
-        return(res)
-    }
-
-    if (showMetadata && is(x, "similarPerturbations")){
-        x$label[index] <- sapply(index, prepareLabel, x)
+    if (showMetadata && is(x, "referenceComparison")){
+        x$label[index] <- prepareLabel(x[index])
     } else {
         x$label[index] <- x[[1]][index]
     }
@@ -349,8 +396,8 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @param targetingDrugs \code{targetingDrugs} object
 #' @param similarPerturbations \code{similarPerturbations} object
 #' @param column Character: column to plot (must be available in both databases)
-#' @param labelColumn Character: column in \code{similarPerturbations}, its
-#'   metadata or compound information to be used for labelling
+#' @param labelBy Character: column in \code{similarPerturbations}, its metadata
+#'   or compound information to be used for labelling
 #' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
 #'   best score per compound will be plotted
 #' @param quantileThreshold Numeric: quantile to use for highlight values within
@@ -364,7 +411,7 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @return \code{ggplot2} plot
 #' @export
 plotTargetingDrugsVSsimilarPerturbations <- function(
-    targetingDrugs, similarPerturbations, column, labelColumn="pert_iname",
+    targetingDrugs, similarPerturbations, column, labelBy="pert_iname",
     quantileThreshold=0.25, showAllScores=FALSE) {
 
     if (!column %in% colnames(targetingDrugs) &&
@@ -381,9 +428,6 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
                     by.y=colnames(metadata)[[1]], all.x=TRUE)
     merged <- merge(merged, compoundInfo, by="pert_iname", all.x=TRUE)
 
-    # Strip non-alpha-numeric characters from a string
-    stripStr <- function(str) gsub("[^[:alnum:] ]", "", as.character(str))
-
     # Check for intersecting compounds across identifying columns
     keys <- c("pert_iname", "pert_id", "smiles", "InChIKey", "pubchem_cid")
     commonValues <- lapply(keys, function(k, data, comp) {
@@ -399,8 +443,8 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
     yAxis <- setNames(yData[[column]],       yData[[keyCol]])
     id    <- setNames(yData[["pert_iname"]], yData[[keyCol]])
 
-    if (!is.null(labelColumn)) {
-        label <- setNames(yData[[labelColumn]],  yData[[keyCol]])
+    if (!is.null(labelBy)) {
+        label <- setNames(yData[[labelBy]], yData[[keyCol]])
     } else {
         label <- NULL
     }
@@ -432,9 +476,9 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
     ylabel <- paste("CMap comparison:", column)
 
     plot <- ggplot(df, aes_string("x", "y")) +
-        geom_point(data=df[df$highlight], colour="orange", show.legend=FALSE) +
-        geom_point(data=df[!df$highlight], colour="grey",
-                   show.legend=FALSE, alpha=0.7) +
+        geom_point(data=df[df$highlight],  colour="orange", show.legend=FALSE) +
+        geom_point(data=df[!df$highlight], colour="grey",   show.legend=FALSE,
+                   alpha=0.7) +
         xlab(xlabel) +
         ylab(ylabel) +
         theme_bw()

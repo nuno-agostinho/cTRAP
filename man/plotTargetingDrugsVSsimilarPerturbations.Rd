@@ -5,7 +5,7 @@
 \title{Plot similar perturbations against predicted targeting drugs}
 \usage{
 plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
-  similarPerturbations, column, labelColumn = "pert_iname",
+  similarPerturbations, column, labelBy = "pert_iname",
   quantileThreshold = 0.25, showAllScores = FALSE)
 }
 \arguments{
@@ -15,8 +15,8 @@ plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
 
 \item{column}{Character: column to plot (must be available in both databases)}
 
-\item{labelColumn}{Character: column in \code{similarPerturbations}, its
-metadata or compound information to be used for labelling}
+\item{labelBy}{Character: column in \code{similarPerturbations}, its metadata
+or compound information to be used for labelling}
 
 \item{quantileThreshold}{Numeric: quantile to use for highlight values within
 [0, 1]}

@@ -1,3 +1,15 @@
+#' Strip non-alpha-numeric characters from a string
+#'
+#' @param str Character
+#'
+#' @return Character without non-alphanumeric values
+#' @keywords internal
+stripStr <- function(str) {
+    str <- as.character(str)
+    str <- gsub("[^[:alnum:]]", "", str)
+    return(str)
+}
+
 #' Download data if given file is not found
 #'
 #' @param file Character: filepath

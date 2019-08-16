@@ -3,11 +3,11 @@
 ## New features
 
 * Predict targeting drugs (`predictTargetingDrug()`):
-    - Based on genomics and drug sensitivity associations derived from NCI60, 
-    CTRP and GDSC data (loaded using `loadGenomicsDrugSensitivityAssociation`)
-    - Compare user-provided differential expression profile with genomics and
-    drug sensitivity associations to predict targeting drugs and their targeted
-    genes
+    - Based on expression and drug sensitivity associations derived from NCI60,
+    CTRP and GDSC data (see `loadExpressionDrugSensitivityAssociation()`)
+    - Compare user-provided differential expression profile with gene expression
+    and drug sensitivity associations to predict targeting drugs and their
+    targeted genes
     - Compounds are ranked based on their relative targeting potential
     - Plot candidate targeting drugs against ranked compound perturbations using
     `plotTargetingDrugsVSsimilarPerturbations()`, highlighting compounds that

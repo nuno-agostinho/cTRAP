@@ -4,20 +4,23 @@
 \alias{plotDrugSetEnrichment}
 \title{Plot drug set enrichment}
 \usage{
-plotDrugSetEnrichment(sets, stats, col = "rankProduct_rank")
+plotDrugSetEnrichment(sets, stats, col = "rankProduct_rank",
+  selectedSets = NULL)
 }
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
 identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 
-\item{stats}{Named vector of characters or either a
-\code{similarPerturbations} or a \code{targetingDrugs} object (obtained
-after running \code{\link{rankSimilarPerturbations}} or
+\item{stats}{Named numeric vector or either a \code{similarPerturbations} or
+a \code{targetingDrugs} object (obtained after running
+\code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
 
 \item{col}{Character: name of the column to use for statistics (only required
 if class of \code{stats} is either \code{similarPerturbations} or
 \code{targetingDrugs})}
+
+\item{selectedSets}{Character: drug sets to plot (if \code{NULL}, plot all)}
 }
 \value{
 List of GSEA plots per drug set
@@ -25,8 +28,21 @@ List of GSEA plots per drug set
 \description{
 Plot drug set enrichment
 }
+\examples{
+descriptors <- loadDrugDescriptors()
+drugSets <- prepareDrugSets(descriptors)
+
+# Analyse drug set enrichment in ranked targeting drugs for a differential
+# expression profile
+data("diffExprStat")
+gdsc      <- loadExpressionDrugSensitivityAssociation("GDSC")
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
+plotDrugSetEnrichment(drugSets, predicted)
+}
 \seealso{
 Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
+  \code{\link{loadDrugDescriptors}},
   \code{\link{prepareDrugSets}}
 }
 \concept{functions for drug set enrichment analysis}

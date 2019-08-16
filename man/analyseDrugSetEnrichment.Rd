@@ -4,16 +4,16 @@
 \alias{analyseDrugSetEnrichment}
 \title{Analyse drug set enrichment}
 \usage{
-analyseDrugSetEnrichment(sets, stats, col = "rankProduct_rank",
-  nperm = 10000, maxSize = 500, ...)
+analyseDrugSetEnrichment(sets, stats, col = NULL, nperm = 10000,
+  maxSize = 500, ...)
 }
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
 identifiers (obtain drug sets by running \code{prepareDrugSets()})}
 
-\item{stats}{Named vector of characters or either a
-\code{similarPerturbations} or a \code{targetingDrugs} object (obtained
-after running \code{\link{rankSimilarPerturbations}} or
+\item{stats}{Named numeric vector or either a \code{similarPerturbations} or
+a \code{targetingDrugs} object (obtained after running
+\code{\link{rankSimilarPerturbations}} or
 \code{\link{predictTargetingDrugs}}, respectively)}
 
 \item{col}{Character: name of the column to use for statistics (only required
@@ -54,7 +54,8 @@ predicted <- predictTargetingDrugs(diffExprStat, gdsc)
 analyseDrugSetEnrichment(drugSets, predicted)
 }
 \seealso{
-Other functions for drug set enrichment analysis: \code{\link{plotDrugSetEnrichment}},
+Other functions for drug set enrichment analysis: \code{\link{loadDrugDescriptors}},
+  \code{\link{plotDrugSetEnrichment}},
   \code{\link{prepareDrugSets}}
 }
 \concept{functions for drug set enrichment analysis}
