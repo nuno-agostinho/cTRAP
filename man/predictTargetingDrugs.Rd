@@ -5,7 +5,8 @@
 \title{Predict targeting drugs}
 \usage{
 predictTargetingDrugs(diffExprGenes, expressionDrugSensitivityCor,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150)
+  method = c("spearman", "pearson", "gsea"), geneSize = 150,
+  isDrugActivityDirectlyProportionalToSensitivity = NULL)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -24,6 +25,10 @@ available to download using
 
 \item{geneSize}{Number: top and bottom number of differentially expressed
 genes for gene set enrichment (only used if \code{method = gsea})}
+
+\item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
+values used for drug activity directly proportional to drug sensitivity?
+See details.}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
@@ -33,6 +38,14 @@ Data table with correlation or GSEA results comparing differential
 Identify compounds that may target the phenotype associated with a
 user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
+}
+\details{
+If \code{isDrugActivityDirectlyProportionalToSensitivity} is set to
+  \code{NULL} (as by default), the attribute
+  \code{isDrugMetricDirectlyProportionalToSensitivity} on the object passed
+  as argument \code{expressionDrugSensitivityCor} is used (objects obtained
+  via \code{\link{loadExpressionDrugSensitivityAssociation}} have the
+  mentioned attribute set).
 }
 \section{GSEA score}{
 
@@ -45,7 +58,7 @@ Weighted connectivity scores (WTCS) are calculated when \code{method
 data("diffExprStat")
 
 # Load expression and drug sensitivity association derived from GDSC data
-gdsc <- loadExpressionDrugSensitivityAssociation("GDSC")
+gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
 
 # Predict targeting drugs on a differential expression profile
 predictTargetingDrugs(diffExprStat, gdsc)

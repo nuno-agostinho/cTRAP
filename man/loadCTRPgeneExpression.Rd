@@ -5,36 +5,36 @@
 \alias{loadCTRPdrugSensitivity}
 \alias{loadCTRPcompoundInfo}
 \alias{loadNCI60geneExpression}
-\alias{loadGDSCfile}
-\alias{loadGDSCcellLineInfo}
-\alias{loadGDSCcompoundInfo}
-\alias{loadGDSCgeneExpression}
-\alias{loadGDSCdrugSensitivity}
+\alias{loadGDSC7file}
+\alias{loadGDSC7cellLineInfo}
+\alias{loadGDSC7compoundInfo}
+\alias{loadGDSC7geneExpression}
+\alias{loadGDSC7drugSensitivity}
 \title{Load CTRP data}
 \usage{
-loadCTRPgeneExpression(geneExpressionFile = "CTRP/geneExpr.txt",
-  geneInfoFile = "CTRP/geneInfo.txt",
-  cellLineInfoFile = "CTRP/cellLineInfo.txt")
+loadCTRPgeneExpression(geneExpressionFile = "CTRP 2.1/geneExpr.txt",
+  geneInfoFile = "CTRP 2.1/geneInfo.txt",
+  cellLineInfoFile = "CTRP 2.1/cellLineInfo.txt")
 
 
-  loadCTRPdrugSensitivity(drugSensitivityFile = "CTRP/drugSensitivity.txt",
-  experimentFile = "CTRP/experimentInfo.txt",
-  compoundFile = "CTRP/compoundInfo.txt")
+  loadCTRPdrugSensitivity(drugSensitivityFile = "CTRP 2.1/drugSensitivity.txt",
+  experimentFile = "CTRP 2.1/experimentInfo.txt",
+  compoundFile = "CTRP 2.1/compoundInfo.txt")
 
-loadCTRPcompoundInfo(compoundFile = "CTRP/compoundInfo.txt")
+loadCTRPcompoundInfo(compoundFile = "CTRP 2.1/compoundInfo.txt")
 
 loadNCI60geneExpression(file = "NCI60/geneExpr.xls",
   cellLineInfoFile = "cellLineInfo.xls")
 
-loadGDSCfile(file, filename, type, ...)
+loadGDSC7file(file, filename, type, ...)
 
-loadGDSCcellLineInfo(file = "GDSC/cellLineInfo.xlsx")
+loadGDSC7cellLineInfo(file = "GDSC_7/cellLineInfo.xlsx")
 
-loadGDSCcompoundInfo(file = "GDSC/compoundInfo.xlsx")
+loadGDSC7compoundInfo(file = "GDSC_7/compoundInfo.xlsx")
 
-loadGDSCgeneExpression(file = "GDSC/geneExpr.txt")
+loadGDSC7geneExpression(file = "GDSC_7/geneExpr.txt")
 
-loadGDSCdrugSensitivity(file = "GDSC/drugs.xlsx")
+loadGDSC7drugSensitivity(file = "GDSC_7/drugs.xlsx")
 }
 \arguments{
 \item{geneExpressionFile}{Character: path to file with gene expression}

@@ -15,9 +15,11 @@
 #'
 #' @return Data frame
 #' @keywords internal
-loadCTRPgeneExpression <- function(geneExpressionFile="CTRP/geneExpr.txt",
-                                   geneInfoFile="CTRP/geneInfo.txt",
-                                   cellLineInfoFile="CTRP/cellLineInfo.txt") {
+loadCTRPgeneExpression <- function(
+    geneExpressionFile="CTRP 2.1/geneExpr.txt",
+    geneInfoFile="CTRP 2.1/geneInfo.txt",
+    cellLineInfoFile="CTRP 2.1/cellLineInfo.txt") {
+
     if (!any(file.exists(geneExpressionFile, geneInfoFile))) {
         url <- file.path("ftp://caftpd.nci.nih.gov/pub/OCG-DCC/CTD2/Broad",
                          "CTRPv2.1_2016_pub_NatChemBiol_12_109",
@@ -67,9 +69,9 @@ loadCTRPgeneExpression <- function(geneExpressionFile="CTRP/geneExpr.txt",
 #' @importFrom stats setNames
 #' @importFrom R.utils renameFile
 loadCTRPdrugSensitivity <- function(
-    drugSensitivityFile="CTRP/drugSensitivity.txt",
-    experimentFile="CTRP/experimentInfo.txt",
-    compoundFile="CTRP/compoundInfo.txt") {
+    drugSensitivityFile="CTRP 2.1/drugSensitivity.txt",
+    experimentFile="CTRP 2.1/experimentInfo.txt",
+    compoundFile="CTRP 2.1/compoundInfo.txt") {
 
     if (!any(file.exists(drugSensitivityFile, experimentFile, compoundFile))) {
         url <- paste0("ftp://caftpd.nci.nih.gov/pub/OCG-DCC/CTD2/Broad/",
@@ -100,6 +102,7 @@ loadCTRPdrugSensitivity <- function(
     wide   <- dcast(merged, master_ccl_id ~ master_cpd_id, fun.aggregate=mean,
                     value.var="area_under_curve")
     attr(wide, "drugActivityMetric") <- "z-score(-log10(GI50))"
+    attr(wide, "isDrugActivityDirectlyProportionalToSensitivity") <- TRUE
     colnames(wide)[1] <- "cellLine"
 
     # Correctly set compound names
@@ -111,7 +114,7 @@ loadCTRPdrugSensitivity <- function(
 
 #' @rdname loadCTRPgeneExpression
 #' @keywords internal
-loadCTRPcompoundInfo <- function(compoundFile="CTRP/compoundInfo.txt") {
+loadCTRPcompoundInfo <- function(compoundFile="CTRP 2.1/compoundInfo.txt") {
     compoundInfo <- fread(compoundFile)
     cols <- c("master_cpd_id"="id",
               "cpd_name"="name",
@@ -201,12 +204,14 @@ loadNCI60drugSensitivity <- function(file="NCI60/drugSensitivity.xls") {
 
     # Convert data to numeric
     mat <- data.matrix(drugSensitivity[7:66])
+    mat <- -mat # Additive inverse of AUC values
     df  <- data.table(mat)
 
     # Transpose data
     trans <- cbind(colnames(mat), transpose(df))
     colnames(trans) <- c("cellLine", drugSensitivity[[1]])
-    attr(trans, "drugActivityMetric") <- "area under dose-response curve (AUC)"
+    attr(trans, "drugActivityMetric") <- "-AUC (area under dose-response curve)"
+    attr(trans, "isDrugActivityDirectlyProportionalToSensitivity") <- TRUE
 
     # Prepare compound information
     loadNCI60compoundInfo <- function(drugSensitivity) {
@@ -233,7 +238,7 @@ loadNCI60drugSensitivity <- function(file="NCI60/drugSensitivity.xls") {
 #' @importFrom readxl read_excel
 #'
 #' @param file Character: file path
-loadGDSCfile <- function(file, filename, type, ...) {
+loadGDSC7file <- function(file, filename, type, ...) {
     if (!file.exists(file)) {
         url <- paste0(
             "ftp://ftp.sanger.ac.uk/pub/project/cancerrxgene/releases/",
@@ -246,16 +251,16 @@ loadGDSCfile <- function(file, filename, type, ...) {
 }
 
 #' @rdname loadCTRPgeneExpression
-loadGDSCcellLineInfo <- function(file="GDSC/cellLineInfo.xlsx") {
-    cellLineInfo <- loadGDSCfile(file, "Cell_Lines_Details.xlsx",
-                                 "cell line information", sheet=2)
+loadGDSC7cellLineInfo <- function(file="GDSC_7/cellLineInfo.xlsx") {
+    cellLineInfo <- loadGDSC7file(file, "Cell_Lines_Details.xlsx",
+                                  "cell line information", sheet=2)
     colnames(cellLineInfo)[2] <- "cellLine"
     return(cellLineInfo)
 }
 
 #' @rdname loadCTRPgeneExpression
-loadGDSCcompoundInfo <- function(file="GDSC/compoundInfo.xlsx") {
-    compoundInfo <- loadGDSCfile(file, "Screened_Compounds.xlsx",
+loadGDSC7compoundInfo <- function(file="GDSC_7/compoundInfo.xlsx") {
+    compoundInfo <- loadGDSC7file(file, "Screened_Compounds.xlsx",
                                  "compound information")
     cols <- c("DRUG_ID"="id", "DRUG_NAME"="name")
     colnames(compoundInfo)[match(names(cols), colnames(compoundInfo))] <- cols
@@ -265,7 +270,7 @@ loadGDSCcompoundInfo <- function(file="GDSC/compoundInfo.xlsx") {
 
 #' @rdname loadCTRPgeneExpression
 #' @importFrom data.table fread transpose
-loadGDSCgeneExpression <- function(file="GDSC/geneExpr.txt") {
+loadGDSC7geneExpression <- function(file="GDSC_7/geneExpr.txt") {
     if (!file.exists(file)) {
         url <- paste0(
             "ftp://ftp.sanger.ac.uk/pub/project/cancerrxgene/releases/",
@@ -286,15 +291,16 @@ loadGDSCgeneExpression <- function(file="GDSC/geneExpr.txt") {
 
 #' @rdname loadCTRPgeneExpression
 #' @importFrom reshape2 dcast
-loadGDSCdrugSensitivity <- function(file="GDSC/drugs.xlsx") {
-    drugSensitivity <- loadGDSCfile(file, "v17.3_fitted_dose_response.xlsx",
-                                    "drug sensitivity")
+loadGDSC7drugSensitivity <- function(file="GDSC_7/drugs.xlsx") {
+    drugSensitivity <- loadGDSC7file(file, "v17.3_fitted_dose_response.xlsx",
+                                     "drug sensitivity")
     # Convert to wide format: compound (rows) vs cell lines (columns)
     drugSensitivity$minus_LN_IC50 <- -drugSensitivity$LN_IC50
     wide <- dcast(drugSensitivity, COSMIC_ID ~ DRUG_ID, fun.aggregate=mean,
                   value.var="minus_LN_IC50")
     colnames(wide)[1] <- "cellLine"
     attr(wide, "drugActivityMetric") <- "-log(IC50)"
+    attr(wide, "isDrugActivityDirectlyProportionalToSensitivity") <- TRUE
     return(wide)
 }
 
@@ -337,18 +343,18 @@ correlateGEandDrugSensitivity <- function(geneExpr, drugSensitivity,
 #' @return Correlation matrix between gene expression and drug sensitivity
 #' @keywords internal
 prepareExpressionDrugSensitivityAssociation <- function(
-    dataset=c("GDSC", "CTRP", "NCI60"), method="spearman") {
+    dataset=c("GDSC 7", "CTRP 2.1", "NCI60"), method="spearman") {
+
+    dataset <- match.arg(dataset)
 
     source <- dataset
-    if (dataset == "GDSC") {
-        source          <- "GDSC release-7.0" # Version currently in use
-        geneExpr        <- loadGDSCgeneExpression()
+    if (dataset == "GDSC 7") {
+        geneExpr        <- loadGDSC7geneExpression()
         geneInfo        <- NULL
-        cellLineInfo    <- loadGDSCcellLineInfo()
-        drugSensitivity <- loadGDSCdrugSensitivity()
-        compoundInfo    <- loadGDSCcompoundInfo()
-    } else if (dataset == "CTRP") {
-        source          <- "CTRP v2.0/2.1" # Version currently in use
+        cellLineInfo    <- loadGDSC7cellLineInfo()
+        drugSensitivity <- loadGDSC7drugSensitivity()
+        compoundInfo    <- loadGDSC7compoundInfo()
+    } else if (dataset == "CTRP 2.1") {
         geneExpr        <- loadCTRPgeneExpression()
         geneInfo        <- attr(geneExpr, "geneInfo")
         cellLineInfo    <- attr(geneExpr, "cellLineInfo")
@@ -373,6 +379,8 @@ prepareExpressionDrugSensitivityAssociation <- function(
     attr(cor, "source")       <- source
     attr(cor, "drugActivityMetric") <- attr(drugSensitivity,
                                             "drugActivityMetric")
+    attr(cor, "isDrugActivityDirectlyProportionalToSensitivity") <- attr(
+        drugSensitivity, "isDrugActivityDirectlyProportionalToSensitivity")
     return(cor)
 }
 
@@ -380,7 +388,8 @@ prepareExpressionDrugSensitivityAssociation <- function(
 
 #' Load gene expression and drug sensitivity correlation matrix
 #'
-#' @param source Character: source (\code{CTRP}, \code{GDSC} or \code{NCI60})
+#' @param source Character: source (\code{CTRP 2.1}, \code{GDSC 7} or
+#'   \code{NCI60})
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
 #'
@@ -390,21 +399,22 @@ prepareExpressionDrugSensitivityAssociation <- function(
 #' @export
 #'
 #' @examples
-#' loadExpressionDrugSensitivityAssociation("GDSC")
+#' loadExpressionDrugSensitivityAssociation("GDSC 7")
 loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
-    source <- match.arg(source, c("GDSC", "CTRP", "NCI60"))
+    source <- match.arg(source, c("GDSC 7", "CTRP 2.1", "NCI60"))
 
-    if (source == "GDSC") {
-        url <- "5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC.rds"
-    } else if (source == "CTRP") {
-        url <- "zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP.rds"
+    if (source == "GDSC 7") {
+        url <- "5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds"
+    } else if (source == "CTRP 2.1") {
+        url <- "zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds"
     } else if (source == "NCI60") {
         url <- "p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds"
     }
     link <- sprintf("https://www.dropbox.com/s/%s?raw=1", url)
 
     if (is.null(file))
-        file <- sprintf("expressionDrugSensitivityCor%s.rds", source)
+        file <- sprintf("expressionDrugSensitivityCor%s.rds",
+                        gsub(" ", "_", source))
 
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
@@ -426,10 +436,21 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #'   Pre-prepared gene expression and drug sensitivity associations are
 #'   available to download using
 #'   \code{\link{loadExpressionDrugSensitivityAssociation}}.
+#' @param isDrugActivityDirectlyProportionalToSensitivity Boolean: are the
+#'   values used for drug activity directly proportional to drug sensitivity?
+#'   See details.
 #'
 #' @importFrom pbapply pbapply
 #'
 #' @inheritSection rankSimilarPerturbations GSEA score
+#'
+#' @details
+#'   If \code{isDrugActivityDirectlyProportionalToSensitivity} is set to
+#'   \code{NULL} (as by default), the attribute
+#'   \code{isDrugMetricDirectlyProportionalToSensitivity} on the object passed
+#'   as argument \code{expressionDrugSensitivityCor} is used (objects obtained
+#'   via \code{\link{loadExpressionDrugSensitivityAssociation}} have the
+#'   mentioned attribute set).
 #'
 #' @family functions related with the prediction of targeting drugs
 #' @return Data table with correlation or GSEA results comparing differential
@@ -441,34 +462,25 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #' data("diffExprStat")
 #'
 #' # Load expression and drug sensitivity association derived from GDSC data
-#' gdsc <- loadExpressionDrugSensitivityAssociation("GDSC")
+#' gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
 #'
 #' # Predict targeting drugs on a differential expression profile
 #' predictTargetingDrugs(diffExprStat, gdsc)
-predictTargetingDrugs <- function(diffExprGenes, expressionDrugSensitivityCor,
-                                  method=c("spearman", "pearson", "gsea"),
-                                  geneSize=150) {
+predictTargetingDrugs <- function(
+    diffExprGenes, expressionDrugSensitivityCor,
+    method=c("spearman", "pearson", "gsea"), geneSize=150,
+    isDrugActivityDirectlyProportionalToSensitivity=NULL) {
+
     cellLines <- length(attr(expressionDrugSensitivityCor, "cellLines"))
 
     # Check if drug metric is proportional to sensitivity
-    isDrugMetricProportionalToSensitivity <- attr(
-        expressionDrugSensitivityCor, "isDrugActivityProportionalToSensitivity")
-    drugActivityMetric <- attr(expressionDrugSensitivityCor,
-                               "drugActivityMetric")
-
-    if (is.null(isDrugMetricProportionalToSensitivity) &&
-        !is.null(drugActivityMetric)) {
-        if (grepl("-log(IC50)", drugActivityMetric, fixed=TRUE)) {
-            isDrugMetricProportionalToSensitivity <- TRUE
-        } else if (grepl("-log10(GI50)", drugActivityMetric, fixed=TRUE)) {
-            isDrugMetricProportionalToSensitivity <- TRUE
-        } else if (grepl("area under dose-response curve",
-                         drugActivityMetric)) {
-            isDrugMetricProportionalToSensitivity <- FALSE
-        }
+    if (is.null(isDrugActivityDirectlyProportionalToSensitivity)) {
+        isDrugActivityDirectlyProportionalToSensitivity <- attr(
+            expressionDrugSensitivityCor,
+            "isDrugActivityDirectlyProportionalToSensitivity")
     }
 
-    if (is.null(isDrugMetricProportionalToSensitivity)) {
+    if (is.null(isDrugActivityDirectlyProportionalToSensitivity)) {
         stop("Attribute 'isDrugActivityProportionalToSensitivity' for argument",
              " 'expressionDrugSensitivityCor' cannot be NULL.")
     }
@@ -476,7 +488,7 @@ predictTargetingDrugs <- function(diffExprGenes, expressionDrugSensitivityCor,
     rankedDrugs <- compareAgainstReference(
         diffExprGenes, expressionDrugSensitivityCor, method=method,
         geneSize=geneSize, cellLines=cellLines, cellLineMean=FALSE,
-        rankByAscending=isDrugMetricProportionalToSensitivity)
+        rankByAscending=isDrugActivityDirectlyProportionalToSensitivity)
     colnames(rankedDrugs)[[1]] <- "compound"
 
     # Inherit input settings and other relevant information

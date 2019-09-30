@@ -1,14 +1,19 @@
 context("Working with drug sensitivity data")
 
 data("diffExprStat")
-gdsc <- loadExpressionDrugSensitivityAssociation("GDSC")
+gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
 
 test_that("Correctly load expression and drug sensitivity association", {
     expect_is(gdsc, "matrix")
     attrs <- c("cellLines", "cellLineInfo", "compoundInfo", "source")
     expect_true(all(attrs %in% names(attributes(gdsc))))
-    expect_equal(attr(gdsc, "source"), "GDSC release-7.0")
+    expect_equal(attr(gdsc, "source"), "GDSC 7")
+    expect_equal(attr(gdsc, "drugActivityMetric"), "-log(IC50)")
+    expect_equal(attr(gdsc, "method"), "spearman")
+    expect_equal(attr(gdsc, "type"), "compounds")
+    expect_true(attr(gdsc, "isDrugActivityDirectlyProportionalToSensitivity"))
     expect_equal(length(attr(gdsc, "cellLines")), 983)
+    expect_true(!is.null(attr(gdsc, "cellLineInfo")))
 })
 
 predicted <- predictTargetingDrugs(diffExprStat, gdsc)
