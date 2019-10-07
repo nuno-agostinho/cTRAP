@@ -30,7 +30,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     message("Downloading metadata for ENCODE knockdown experiments...")
     url <- paste(
         sep="&", "https://www.encodeproject.org/search/?type=Experiment",
-        "searchTerm=knock", "limit=all", "frame=object", "format=json")
+        "searchTerm=knockdown", "limit=all", "frame=object", "format=json")
     jsonMetadata <- content(GET(url))
 
     # Parse an experiment's control --------------------------------------------
@@ -48,7 +48,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for ENCODE knockdown experiments (table format) --------
     url <- paste(
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
-        "limit=all", "searchTerm=knock/metadata.tsv")
+        "limit=all", "searchTerm=knockdown/metadata.tsv")
     table <- suppressWarnings(suppressMessages(read_tsv(url)))
     table <- table[table$Assembly == "hg19" &
                        table$`Output type` == "gene quantifications" &
