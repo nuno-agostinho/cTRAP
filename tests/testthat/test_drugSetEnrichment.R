@@ -1,5 +1,7 @@
 context("Drug set enrichment")
 
+library(data.table)
+
 # Load and prepare drug descriptors
 descriptors <- loadDrugDescriptors("NCI60", "2D")
 drugSets    <- prepareDrugSets(descriptors)
