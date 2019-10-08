@@ -74,10 +74,16 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
     return(res)
 }
 
-#' Match identifiers between stats and drug sets
+#' Match identifiers between data and drug sets
+#'
+#' @inheritParams analyseDrugSetEnrichment
 #'
 #' @importFrom pbapply pbapply
 #' @keywords internal
+#'
+#' @return Statistic values from input data and corresponding identifiers as
+#'   names (if no match is found, the original identifier from argument
+#'   \code{stats} is used)
 matchStatsWithDrugSetsID <- function(sets, stats, col=NULL) {
     statsSuffix <- ".stats"
     setsSuffix  <- ".sets"

@@ -38,6 +38,9 @@ individual cell lines instead of only focusing on the mean score across
 cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
 are always ranked}
 }
+\value{
+List of data frame containing the results per methods of comparison
+}
 \description{
 Compare multiple methods and rank reference accordingly
 }

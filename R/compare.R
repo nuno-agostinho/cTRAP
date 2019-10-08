@@ -1,5 +1,11 @@
-#' Divide columns into chunks to be loaded into memory at a time
+#' Assign vector elements into chunks
+#'
+#' @param x Vector of elements
+#' @param nElems Numeric: number of chunks
+#'
 #' @keywords internal
+#'
+#' @return List of chunks with the original vector elements divided
 chunkVector <- function(x, nElems) {
     groups <- ceiling(length(x)/nElems)
     split(x, factor(sort(rank(x) %% groups)))
@@ -309,6 +315,7 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
 
 #' Compare multiple methods and rank reference accordingly
 #' @inheritParams compareAgainstReferencePerMethod
+#' @return List of data frame containing the results per methods of comparison
 compareAgainstReference <- function(diffExprGenes, reference,
                                     method=c("spearman", "pearson", "gsea"),
                                     geneSize=150, cellLines=NULL,

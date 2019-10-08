@@ -2,11 +2,19 @@
 % Please edit documentation in R/compare.R
 \name{chunkVector}
 \alias{chunkVector}
-\title{Divide columns into chunks to be loaded into memory at a time}
+\title{Assign vector elements into chunks}
 \usage{
 chunkVector(x, nElems)
 }
+\arguments{
+\item{x}{Vector of elements}
+
+\item{nElems}{Numeric: number of chunks}
+}
+\value{
+List of chunks with the original vector elements divided
+}
 \description{
-Divide columns into chunks to be loaded into memory at a time
+Assign vector elements into chunks
 }
 \keyword{internal}

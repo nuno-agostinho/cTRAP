@@ -2,11 +2,29 @@
 % Please edit documentation in R/drugSetEnrichment.R
 \name{matchStatsWithDrugSetsID}
 \alias{matchStatsWithDrugSetsID}
-\title{Match identifiers between stats and drug sets}
+\title{Match identifiers between data and drug sets}
 \usage{
 matchStatsWithDrugSetsID(sets, stats, col = NULL)
 }
+\arguments{
+\item{sets}{Named list of characters: named sets containing compound
+identifiers (obtain drug sets by running \code{prepareDrugSets()})}
+
+\item{stats}{Named numeric vector or either a \code{similarPerturbations} or
+a \code{targetingDrugs} object (obtained after running
+\code{\link{rankSimilarPerturbations}} or
+\code{\link{predictTargetingDrugs}}, respectively)}
+
+\item{col}{Character: name of the column to use for statistics (only required
+if class of \code{stats} is either \code{similarPerturbations} or
+\code{targetingDrugs})}
+}
+\value{
+Statistic values from input data and corresponding identifiers as
+  names (if no match is found, the original identifier from argument
+  \code{stats} is used)
+}
 \description{
-Match identifiers between stats and drug sets
+Match identifiers between data and drug sets
 }
 \keyword{internal}
