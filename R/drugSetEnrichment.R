@@ -272,5 +272,5 @@ plotDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank",
     }
     if (!is.null(selectedSets)) sets <- sets[selectedSets]
     plots <- pblapply(seq(sets), plotGSEAperSet, sets, stats, col)
-    return(plots)
+    return(invisible(plots))
 }

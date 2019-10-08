@@ -232,9 +232,16 @@ prepareLabel <- function(data) {
             if (is.na(name)) name <- "NA"
         }
         target <- compound[["target"]]
-        target <- gsub(", ", "/", target)
-        res    <- sprintf("%s (%s: %s)", name, target,
-                          compound[["target pathway"]])
+        target <- gsub(", |;", "/", target)
+        if (is.null(target) || target == "") target <- "?"
+
+        targetPathway <- compound[["target pathway"]]
+        if (is.null(targetPathway)) {
+            targetPathway <- NA
+            res <- sprintf("%s (%s)", name, target)
+        } else {
+            res <- sprintf("%s (%s: %s)", name, target, targetPathway)
+        }
         return(res)
     }
 

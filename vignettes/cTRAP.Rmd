@@ -18,7 +18,7 @@ editor_options:
 # Introduction
 
 `cTRAP` is an R package designed to compare differential gene expression results
-with those from known cellular perturbations (such as gene knock-down, 
+with those from known cellular perturbations (such as gene knockdown, 
 overexpression or small molecules) derived from the [Connectivity Map][clue.io]
 (CMap; [Subramanian et al., Cell 2017][subramanian2017]). Such analyses allow 
 not only to infer the molecular causes of the observed difference in gene 
@@ -26,10 +26,10 @@ expression but also to identify small molecules that could drive or revert
 specific transcriptomic alterations.
 
 To illustrate the package functionalities, we will use an example based on a
-gene knock-down dataset from the [ENCODE project][ENCODE] for which there is
+gene knockdown dataset from the [ENCODE project][ENCODE] for which there is
 available RNA-seq data. After performing differential expression analyses to the
 matched-control sample, we will compare the respective transcriptomic changes
-with the ones caused by all CMap's gene knock-down perturbations to identify 
+with the ones caused by all CMap's gene knockdown perturbations to identify 
 which ones have similar or inverse transcriptomic changes to the observed ones. 
 As a positive control, we expect to find the knock-down of the gene depleted in
 the ENCODE experiment as one of the most similar transcriptomic perturbations.
@@ -85,7 +85,7 @@ counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
 diffExpr <- performDifferentialExpression(counts)
 ```
 
-As our metric of differential expression after EIF4G1 shRNA knock-down, we will
+For our metric of differential expression after EIF4G1 shRNA knock-down, we will
 use the respective t-statistic.
 
 ```{r t-statistics, eval=FALSE}
@@ -101,49 +101,61 @@ data("diffExprStat")
 
 # Load CMap perturbation data
 
-We will compare our differential gene expression metric with all the CMap's gene 
+We will use our differential gene expression metric to compare with CMap's gene 
 knock-down perturbations in the same cell line (HepG2). Note that this
-comparison can also be done to perturbations in a different cell line or in all
-cell lines, using in the latter the average result across cell lines. 
-Differential gene expression data for each CMap perturbation are available in 
-z-score normalised values (see [Subramanian et al., Cell 2017][subramanian2017]
-for more details).
+comparison can also be done to perturbations in a different cell line (or in all
+cell lines using the average result across cell lines).
+
+To summarise conditions and check available data in CMap, we can use the 
+following commands to download CMap metadata:
 
 ```{r CMap metadata conditions}
+# Download CMap metadata (if not found in current directory)
+cmapMetadata <- loadCMapData("cmapMetadata.txt", type="metadata")
+
 # Summarise conditions for all CMap perturbations
-cmapMetadata <- loadCMapData("cmapMetadata.txt")
 getCMapConditions(cmapMetadata)
 
-# Summarise conditions for HepG2 cell line
+# Summarise conditions for CMap perturbations in HepG2 cell line
 getCMapConditions(cmapMetadata, cellLine="HepG2")
 
-# Summarise conditions for HepG2 cell line and a specific perturbation
+# Summarise conditions for a specific CMap perturbation in HepG2 cell line
 getCMapConditions(
     cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 ```
 
+Now, we will filter the metadata to CMap gene knockdown perturbations in HepG2
+cell line and load associated gene information and differential gene expression
+data. Data is loaded based on the given filename (if no file with the given 
+filename is available, data will be first downloaded).
+
+> Differential gene expression data for each CMap perturbation are available in 
+normalised z-score values (read [Subramanian et al., Cell 2017][subramanian2017]
+for more details). This file's size is around 20GB and a prompt will ask the
+user to confirm whether to download the file.
+
 ```{r CMap knockdown perturbations, eval=FALSE}
-# Load CMap gene knockdown HepG2 data
+# Filter CMap gene knockdown HepG2 data to load afterwards
 cmapMetadataKD <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 
+# Load filtered data (if data is not found, it will be downloaded)
 cmapPerturbationsKD <- prepareCMapPerturbations(
     metadata=cmapMetadataKD, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt")
 ```
 
-If the interest is in small molecules, one can download the differential gene
-expression z-scores for each small molecule perturbation in HepG2 (given a
-specific concentration and time point of RNA extraction) through the following
-command:
+If the interest is in small molecules, the differential gene expression z-scores
+from CMap can be downloaded for each small molecule perturbation:
 
 ```{r CMap small molecule perturbations, eval=FALSE}
-# Load CMap small molecule perturbation data
+# Filter CMap gene small molecule HepG2 data to load afterwards
 cmapMetadataCompounds <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2", perturbationType="Compound")
 
+# Load filtered data (if data is not found, it will be downloaded)
 cmapPerturbationsCompounds <- prepareCMapPerturbations(
     metadata=cmapMetadataCompounds, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt", compoundInfo="cmapCompoundInfo.txt")
@@ -156,11 +168,11 @@ cmapPerturbationsCompounds <- cmapPerturbationsCompounds[
     , grep("HEPG2", colnames(cmapPerturbationsCompounds))]
 ```
 
-# Comparison with CMap's perturbations
+# Comparison with CMap perturbations
 
-The `rankSimilarPerturbations` function compares the statistic for differential
-expression (the t-statistic, in this case) with the z-scores for the loaded 
-perturbations using the available methods:
+The `rankSimilarPerturbations` function compares the differential expression 
+metric (the t-statistic, in this case) against the CMap perturbations' z-scores
+using the available methods:
 
 * Spearman's correlation
 * Pearson's correlation
@@ -168,17 +180,15 @@ perturbations using the available methods:
 genes from the user's differential expression profile are used as gene sets (by 
 default, *n* = 150 genes)
 
+To compare against CMap knockdown perturbations using all the previous methods:
+
 ```{r compare knockdown, message=FALSE}
-# Compare against CMap using Spearman's and Pearson's correlation and gene set
-# enrichment analysis (GSEA) with the most up- and down-regulated 150 genes
 compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 ```
 
-For small molecules:
+To compare against selected CMap small molecule perturbations:
 
 ```{r compare small molecules, message=FALSE}
-# Compare against CMap using Spearman's and Pearson's correlation and gene set
-# enrichment analysis (GSEA) with the most up- and down-regulated 150 genes
 compareCompounds <- rankSimilarPerturbations(diffExprStat, 
                                              cmapPerturbationsCompounds)
 ```
@@ -232,10 +242,12 @@ sign, the GSEA score is 0).
 
 > If a perturbation has a similar differential expression profile to our data 
 (higher GSEA score), we expect to see the most up-regulated (down-regulated) 
-genes in the perturbation enriched in the top (bottom) *n* differentially expressed genes
-from our data.
+genes in the perturbation enriched in the top (bottom) *n* differentially
+expressed genes from our data.
 
 # Information on perturbations
+
+To get associated information as made available from CMap:
 
 ```{r perturbation info}
 # Information on the EIF4G1 knockdown perturbation
@@ -254,7 +266,7 @@ profile with that associated with a specific perturbation, scatter plots (for
 Spearman and Pearson analyses) and GSEA plots are available.
 
 For instance, let's plot the relationship between ENCODE's EIF4G1 shRNA 
-knockdown with the perturbations of interest.
+knockdown with the perturbations of interest:
 
 ```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from CMap
@@ -311,20 +323,18 @@ expression and drug sensitivity associations. The gene expression and drug
 sensitivity datasets derived from the following sources were correlated using 
 Spearman's correlation across the available cell lines.
 
-| Source    | Screened compounds | Human cancer cell lines |
-| --------- | ------------------:| -----------------------:|
-| [NCI60][] |          > 100 000 |                      60 |
-| [GDSC][]  |                481 |                     860 |
-| [CTRP][]  |                138 |                    ~700 |
+| Source        | Screened compounds | Human cancer cell lines |
+| ------------- | ------------------:| -----------------------:|
+| [NCI60][]     |          > 100 000 |                      60 |
+| [GDSC 7][]    |                481 |                     860 |
+| [CTRP 2.1][]  |                138 |                    ~700 |
 
-By correlating the user's differential expression profile
-
-To use `GDSC` expression and drug sensitivity association to infer 
-targeting drugs for the user's differential expression profile, type the
-following (`NCI60` and `CTRP` can also be used instead of `GDSC`):
+To use an expression and drug sensitivity association based on `CTRP 2.1`
+(`GDSC 7` and `NCI60` could be used instead) to infer targeting drugs for the
+user's differential expression profile:
 
 ```{r}
-gdsc      <- loadExpressionDrugSensitivityAssociation("GDSC")
+gdsc      <- loadExpressionDrugSensitivityAssociation("CTRP 2.1")
 predicted <- predictTargetingDrugs(diffExprStat, gdsc)
 plot(predicted, method="rankProduct")
 ```
@@ -333,11 +343,10 @@ plot(predicted, method="rankProduct")
 differential expression profile (i.e. the 1st-ranked compound has higher 
 targeting potential than the 2nd-ranked one).
 
-You can also plot candidate targeting drugs against the similarity ranking of 
-their perturbations towards the user's differential expression profile. Note 
-that the highlighted values are the same compounds for the following plots
-annotated with their name, gene target and mechanism of action (MOA),
-respectively.
+Candidate targeting drugs can be plotted against the similarity ranking of their
+perturbations towards the user's differential expression profile. Note that the
+highlighted values are the same compounds for the following plots annotated with
+their name, gene target and mechanism of action (MOA), respectively.
 
 ```{r}
 # Label by compound name
@@ -351,17 +360,20 @@ plotTargetingDrugsVSsimilarPerturbations(
   predicted, compareCompounds, column="spearman_rank", labelBy="moa")
 ```
 
-# Drug set enrichment analysis
+# Molecular descriptor enrichment analysis
 
-Analyse drug set enrichment against 2D and 3D molecular descriptors calculated 
-for CMap and NCI60 compounds.
+Next, from our candidate targeting drugs, we will analyse the enrichment of 2D
+and 3D molecular descriptors based on CMap and NCI60 compounds. This allows to
+check if targeting drugs are particularly enriched in specific drug descriptors
+and may be useful to think about the relevance of these descriptors for
+targeting a phenotype of interest.
 
-```{r}
+```{r drug set enrichment analysis, fig.width=5, fig.asp=1}
 descriptors <- loadDrugDescriptors("CMap", "2D")
 drugSets    <- prepareDrugSets(descriptors)
 dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
 # Plot the 6 most significant drug set enrichment results
-plotDrugSetEnrichment(drugSets[head(dsea$pathway)], predicted)
+plotDrugSetEnrichment(drugSets, predicted, selectedSets=head(dsea$pathway, 6))
 ```
 
 # Contact information
