@@ -412,6 +412,7 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #'
 #' @importFrom ggplot2 ggplot geom_point xlab ylab theme_bw
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom data.table data.table
 #'
 #' @family functions related with the ranking of CMap perturbations
 #' @family functions related with the prediction of targeting drugs

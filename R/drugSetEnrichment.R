@@ -79,6 +79,7 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
 #' @inheritParams analyseDrugSetEnrichment
 #'
 #' @importFrom pbapply pbapply
+#' @importFrom data.table data.table
 #' @keywords internal
 #'
 #' @return Statistic values from input data and corresponding identifiers as

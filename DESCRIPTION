@@ -38,12 +38,10 @@ Imports: biomaRt,
     methods,
     pbapply,
     R.utils,
-    readr,
     readxl,
     reshape2,
     rhdf5,
     stats,
-    tidyr,
     tools,
     utils
 VignetteBuilder: knitr

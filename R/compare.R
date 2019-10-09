@@ -124,6 +124,7 @@ rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
 #' @param pAdjust Character: method to use for p-value adjustment
 #'
 #' @importFrom stats p.adjust cor.test
+#' @importFrom data.table data.table
 #'
 #' @return Data frame with correlation results per data column
 #'
@@ -228,8 +229,6 @@ performGSEAagainstReference <- function(diffExprGenes, reference, pathways) {
 #'   are always ranked
 #'
 #' @importFrom utils head tail
-#' @importFrom tidyr gather
-#' @importFrom dplyr bind_rows
 #' @importFrom R.utils capitalize
 #'
 #' @keywords internal

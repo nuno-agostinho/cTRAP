@@ -18,7 +18,7 @@ getENCODEcontrols <- function(control, table) {
 #' @param gene Character: target gene
 #'
 #' @importFrom httr content GET
-#' @importFrom readr read_tsv
+#' @importFrom data.table fread
 #'
 #' @family functions related with using ENCODE expression data
 #' @return Data frame containing ENCODE knockdown experiment metadata
@@ -49,7 +49,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     url <- paste(
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
         "limit=all", "searchTerm=knockdown/metadata.tsv")
-    table <- suppressWarnings(suppressMessages(read_tsv(url)))
+    table <- suppressWarnings(suppressMessages(fread(url)))
     table <- table[table$Assembly == "hg19" &
                        table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
