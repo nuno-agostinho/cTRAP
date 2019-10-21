@@ -102,7 +102,7 @@ readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
                                  ncol=length(fields)))
     names(annots) <-  fields
     # Loop through each field and fill the annots data.frame
-    for (i in 1:length(fields)) {
+    for (i in seq(length(fields))) {
         field <- fields[i]
         # Remove any trailing spaces and cast as vector
         annots[,i] <- as.vector(gsub("\\s*$", "", raw_annots[[field]],

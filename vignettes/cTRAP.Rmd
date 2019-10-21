@@ -132,8 +132,12 @@ filename is available, data will be first downloaded).
 
 > Differential gene expression data for each CMap perturbation are available in 
 normalised z-score values (read [Subramanian et al., Cell 2017][subramanian2017]
-for more details). This file's size is around 20GB and a prompt will ask the
-user to confirm whether to download the file.
+for more details). As this file's size is big (around 20GB), a prompt will ask
+you to confirm whether to start downloading the file.
+>
+> Alternatively, you can download the file from the following link (do not
+forget to give the correct filename):
+ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz
 
 ```{r CMap knockdown perturbations, eval=FALSE}
 # Filter CMap gene knockdown HepG2 data to load afterwards

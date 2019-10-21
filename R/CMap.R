@@ -398,7 +398,7 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")
     summaryMsg <- sprintf(
-        "\nSummary: %s perturbations measured across %s genes",
+        "\nSummary: %s CMap perturbations measured across %s genes",
         ncol(zscores), nrow(zscores))
     if (!is.null(filters)) {
         filterNames <- c("cellLine"="Cell lines",

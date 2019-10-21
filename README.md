@@ -21,8 +21,8 @@ BiocManager::install("cTRAP")
 If you prefer, you can install cTRAP from GitHub instead:
 
 ``` r
-install.packages("devtools")
-devtools::install_github("nuno-agostinho/cTRAP")
+install.packages("remotes")
+remotes::install_github("nuno-agostinho/cTRAP")
 ```
 
 [clue.io]: https://clue.io/
