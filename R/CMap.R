@@ -72,8 +72,8 @@ getCMapPerturbationTypes <- function (control=FALSE) {
 }
 
 loadCMapMetadata <- function(file, nas) {
-    link <- paste0("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/",
-                   "suppl/GSE92742_Broad_LINCS_sig_info.txt.gz")
+    link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
+                   "&format=file&file=GSE92742_Broad_LINCS_sig_info.txt.gz")
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
@@ -86,10 +86,9 @@ loadCMapMetadata <- function(file, nas) {
 }
 
 prepareCMapZscores <- function(file, zscoresID=NULL) {
-    link <- paste0("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/",
-                   "suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328",
-                   ".gctx.gz")
-
+    link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
+                   "&format=file&file=GSE92742_Broad_LINCS_Level5_COMPZ.",
+                   "MODZ_n473647x12328.gctx.gz")
     downloadIfNotFound(link, file, ask=TRUE)
     data <- normalizePath(file)
     attr(data, "genes")         <- readGctxIds(data, dimension="row")
@@ -185,8 +184,8 @@ loadCMapCompoundInfo <- function(file, nas) {
 }
 
 loadCMapGeneInfo <- function(file, nas) {
-    link <- paste0("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/",
-                   "suppl/GSE92742_Broad_LINCS_gene_info.txt.gz")
+    link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
+                   "&format=file&file=GSE92742_Broad_LINCS_gene_info.txt.gz")
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
