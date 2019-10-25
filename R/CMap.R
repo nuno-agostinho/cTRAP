@@ -216,13 +216,12 @@ loadCMapGeneInfo <- function(file, nas) {
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' # Load CMap metadata (data is automatically downloaded if not available)
 #' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #'
 #' # Load CMap gene info
 #' loadCMapData("cmapGeneInfo.txt", "geneInfo")
-#'
+#' \donttest{
 #' # Load CMap zscores based on filtered metadata
 #' cmapMetadataKnockdown <- filterCMapMetadata(
 #'   cmapMetadata, cellLine="HepG2",
