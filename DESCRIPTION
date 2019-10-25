@@ -23,7 +23,8 @@ URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: testthat,
     knitr,
-    covr
+    covr,
+    rmarkdown
 RoxygenNote: 6.1.1
 Imports: biomaRt,
     cowplot,
