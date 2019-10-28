@@ -4,8 +4,7 @@
 \alias{downloadIfNotFound}
 \title{Download data if given file is not found}
 \usage{
-downloadIfNotFound(link, file, ask = FALSE, toExtract = NULL,
-  forceCorrectExtension = TRUE)
+downloadIfNotFound(link, file, ask = FALSE, toExtract = NULL)
 }
 \arguments{
 \item{link}{Character: link to download file}
@@ -15,8 +14,6 @@ downloadIfNotFound(link, file, ask = FALSE, toExtract = NULL,
 \item{ask}{Boolean: ask to download file?}
 
 \item{toExtract}{Character: files to extract (if \code{NULL}, extract all)}
-
-\item{fixExtension}{Boolean: fix extension used based on link}
 }
 \value{
 Download file if file is not found

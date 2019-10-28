@@ -16,16 +16,14 @@ stripStr <- function(str) {
 #' @param link Character: link to download file
 #' @param ask Boolean: ask to download file?
 #' @param toExtract Character: files to extract (if \code{NULL}, extract all)
-#' @param fixExtension Boolean: fix extension used based on link
 #'
 #' @importFrom utils download.file askYesNo unzip
-#' @importFrom tools file_path_sans_ext
+#' @importFrom tools file_path_sans_ext file_ext
 #' @importFrom R.utils isGzipped gunzip
 #'
 #' @return Download file if file is not found
 #' @keywords internal
-downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL,
-                               forceCorrectExtension=TRUE) {
+downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
     extracted <- file_path_sans_ext(file)
     if (file.exists(extracted)) file <- extracted
 
@@ -46,9 +44,19 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL,
             message(paste(file, "not found: downloading data..."))
         }
 
-        # Download data
-        if (isGzipped(link)) {
+        isBinary <- function(file) {
+            formats <- c("gz", "bz2", "xz", "tgz", "zip", "rda", "rds", "RData")
+            return(any(file_ext(file) %in% formats))
+        }
+
+        # Clean link if data is stored in Dropbox
+        processed <- link
+        processed <- gsub("\\?raw=1$", "", link)
+
+        if (isGzipped(processed)) {
             if (!isGzipped(file)) file <- paste0(file, ".gz")
+            mode <- "wb"
+        } else if (isBinary(processed)) {
             mode <- "wb"
         } else {
             mode <- "w"
