@@ -1,93 +1,103 @@
-#' Perform differential gene expression based on ENCODE data
+#' Strip non-alpha-numeric characters from a string
 #'
-#' @param counts Data frame: gene expression
+#' @param str Character
 #'
-#' @importFrom stats model.matrix aggregate
-#' @importFrom limma voom lmFit eBayes topTable
-#'
-#' @return Data frame with differential gene expression results between
-#' knockdown and control
-#' @export
-#'
-#' @examples
-#' data("ENCODEsamples")
-#'
-#' ## Download ENCODE metadata for a specific cell line and gene
-#' # cellLine <- "HepG2"
-#' # gene <- "EIF4G1"
-#' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#'
-#' ## Download samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
-#'
-#' counts <- prepareENCODEgeneExpression(ENCODEsamples)
-#'
-#' # Remove low coverage (at least 10 counts shared across two samples)
-#' minReads   <- 10
-#' minSamples <- 2
-#' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
-#' counts <- counts[filter, ]
-#'
-#' ## Convert ENSEMBL identifier to gene symbol
-#' # library(biomaRt)
-#' # mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-#' # genes <- sapply(strsplit(counts$gene_id, "\\."), `[`, 1)
-#' # geneConversion <- getBM(filters="ensembl_gene_id", values=genes, mart=mart,
-#' #                         attributes=c("ensembl_gene_id", "hgnc_symbol"))
-#' # counts$gene_id <- geneConversion$hgnc_symbol[
-#' #     match(genes, geneConversion$ensembl_gene_id)]
-#'
-#' ## Perform differential gene expression analysis
-#' # diffExpr <- performDifferentialExpression(counts)
-performDifferentialExpression <- function(counts) {
-    counts <- data.frame(counts)
-
-    # Design matrix
-    Sample_info <- data.frame(
-        sample = c("shRNA1", "shRNA2", "control1", "control2"),
-        condition = c("shRNA", "shRNA", "control", "control"))
-    design <- model.matrix(~ condition, Sample_info)
-    rownames(design) <- Sample_info$sample
-
-    # Check: identical(names(counts[ , 3:6]), rownames(design_matrix))
-    voom <- voom(counts[ , -c(1, 2)], design=design, plot=FALSE,
-                 normalize.method="quantile")
-
-    # Fit linear model
-    fit <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)], design=design)
-    ebayes <- eBayes(fit)
-    results <- topTable(ebayes, coef=2, number=nrow(ebayes),
-                        genelist=counts$gene_id)
-
-    # Mean-aggregation per gene symbol to compare unique gene knockdowns
-    meanAggr <- aggregate(results[ , -1], data=results, FUN=mean,
-                          by=list(Gene_symbol=results$ID))
-
-    # Remove non-matching genes (if any)
-    meanAggr           <- meanAggr[meanAggr$Gene_symbol != "", ]
-    rownames(meanAggr) <- meanAggr$Gene_symbol
-    return(meanAggr)
+#' @return Character without non-alphanumeric values
+#' @keywords internal
+stripStr <- function(str) {
+    str <- as.character(str)
+    str <- gsub("[^[:alnum:]]", "", str)
+    return(str)
 }
 
-#' Download data if a file does not exist
+#' Download data if given file is not found
 #'
 #' @param file Character: filepath
 #' @param link Character: link to download file
-#' @param gz Boolean: is downloaded file compressed?
+#' @param ask Boolean: ask to download file?
+#' @param toExtract Character: files to extract (if \code{NULL}, extract all)
 #'
-#' @importFrom utils download.file
+#' @importFrom utils download.file askYesNo unzip
+#' @importFrom tools file_path_sans_ext file_ext
+#' @importFrom R.utils isGzipped gunzip
 #'
-#' @return Download file if a file does not exist
+#' @return Download file if file is not found
 #' @keywords internal
-downloadIfNeeded <- function(file, link, gz=TRUE) {
+downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
+    extracted <- file_path_sans_ext(file)
+    if (file.exists(extracted)) file <- extracted
+
+    folder <- dirname(file)
     if (!file.exists(file)) {
-        if (gz) {
-            file <- paste0(file, ".gz")
+        if (!dir.exists(folder)) {
+            # Create folder based on file path
+            message(sprintf("Creating folder %s...", folder))
+            dir.create(folder)
+        }
+
+        # Warn or ask user about data download
+        if (ask) {
+            download <- askYesNo(
+                paste(file, "not found: download file?"), FALSE)
+            if (!download) return(stop(paste(file, "not found")))
+        } else {
+            message(paste(file, "not found: downloading data..."))
+        }
+
+        isBinary <- function(file) {
+            formats <- c("gz", "bz2", "xz", "tgz", "zip", "rda", "rds", "RData")
+            return(any(file_ext(file) %in% formats))
+        }
+
+        # Clean link if data is stored in Dropbox
+        processed <- link
+        processed <- gsub("\\?raw=1$", "", link)
+
+        if (isGzipped(processed)) {
+            if (!isGzipped(file)) file <- paste0(file, ".gz")
+            mode <- "wb"
+        } else if (isBinary(processed)) {
             mode <- "wb"
         } else {
             mode <- "w"
         }
-        download.file(link, file, mode="wb")
-        if (gz) gunzip(file)
+        download.file(link, file, mode=mode)
     }
+
+    # Extract data if GZ or ZIP
+    extractionMsg <- sprintf("Extracting %s...", basename(file))
+    if (isGzipped(file)) {
+        message(extractionMsg)
+        file <- gunzip(file, overwrite=TRUE)
+    } else if (grepl("\\.zip$", file)) {
+        message(extractionMsg)
+        zipped <- file
+        file <- unzip(zipped, exdir=folder, junkpaths=TRUE, files=toExtract)
+        unlink(zipped)
+    }
+    return(file)
+}
+
+#' Convert ENSEMBL gene identifiers to gene symbols
+#'
+#' @param genes Character: ENSEMBL gene identifiers
+#' @param dataset Character: \code{biomaRt} dataset name
+#' @param mart Character: \code{biomaRt} database name
+#'
+#' @importFrom biomaRt useDataset useMart getBM
+#'
+#' @return Named character vector where names are the input ENSEMBL gene
+#'   identifiers and the values are the matching gene symbols
+#' @export
+convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
+                                        mart="ensembl") {
+    mart      <- useDataset(dataset, useMart(mart))
+    processed <- sapply(strsplit(genes, "\\."), `[`, 1)
+    geneConversion <- getBM(
+        filters="ensembl_gene_id", values=processed, mart=mart,
+        attributes=c("ensembl_gene_id", "hgnc_symbol"))
+    converted <- geneConversion$hgnc_symbol[
+        match(processed, geneConversion$ensembl_gene_id)]
+    converted <- setNames(ifelse(converted != "", converted, genes), genes)
+    return(converted)
 }

@@ -7,7 +7,7 @@
 \title{cTRAP package}
 \description{
 Compare differential gene expression results with those from big datasets
-(e.g. L1000), allowing to infer which types of perturbations may explain the
+(e.g. CMap), allowing to infer which types of perturbations may explain the
 observed difference in gene expression.
 }
 \details{
@@ -20,15 +20,15 @@ its names are gene symbols.
 against selected perturbation conditions by:
 \itemize{
     \item{Spearman or Pearson correlation with z-scores of differentially
-    expressed genes after perturbations from L1000. Use function
-    \code{compareAgainstL1000} with \code{method = "spearman"} or
+    expressed genes after perturbations from CMap. Use function
+    \code{\link{rankSimilarPerturbations}} with \code{method = "spearman"} or
     \code{method = "pearson"}}
     \item{Gene set enrichment analysis (GSEA) using the (around) 12 000 genes
-    from L1000. Use function \code{compareAgainstL1000} with
+    from CMap. Use function \code{\link{rankSimilarPerturbations}} with
     \code{method = gsea}.}
 }
 
-Available perturbation conditions for L1000 include:
+Available perturbation conditions for CMap include:
 \itemize{
     \item{Cell line(s).}
     \item{Perturbation type (gene knockdown, gene upregulation or drug
@@ -38,7 +38,7 @@ Available perturbation conditions for L1000 include:
 }
 
 Values for each perturbation type can be listed with
-\code{getL1000perturbationTypes()}
+\code{getCMapPerturbationTypes()}
 
 \strong{Output:} The output includes a data frame of ranked perturbations
 based on the associated statistical values and respective p-values.

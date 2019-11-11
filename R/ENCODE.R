@@ -18,18 +18,19 @@ getENCODEcontrols <- function(control, table) {
 #' @param gene Character: target gene
 #'
 #' @importFrom httr content GET
-#' @importFrom readr read_tsv
+#' @importFrom data.table fread
 #'
+#' @family functions related with using ENCODE expression data
 #' @return Data frame containing ENCODE knockdown experiment metadata
 #' @export
 #' @examples
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
-    cat("Downloading metadata for ENCODE knockdown experiments...", fill=TRUE)
+    message("Downloading metadata for ENCODE knockdown experiments...")
     url <- paste(
         sep="&", "https://www.encodeproject.org/search/?type=Experiment",
-        "searchTerm=knock", "limit=all", "frame=object", "format=json")
+        "searchTerm=knockdown", "limit=all", "frame=object", "format=json")
     jsonMetadata <- content(GET(url))
 
     # Parse an experiment's control --------------------------------------------
@@ -47,9 +48,9 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
     # Retrieve metadata for ENCODE knockdown experiments (table format) --------
     url <- paste(
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
-        "limit=all", "searchTerm=knock/metadata.tsv")
-    table <- suppressWarnings(suppressMessages(read_tsv(url)))
-    table <- table[table$`Assembly` == "hg19" &
+        "limit=all", "searchTerm=knockdown/metadata.tsv")
+    table <- suppressWarnings(suppressMessages(fread(url)))
+    table <- table[table$Assembly == "hg19" &
                        table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
 
@@ -104,54 +105,78 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     sample <- paste0(sample)
 
     outfile <- paste0(sample, ".tsv")
-    downloadIfNeeded(outfile, sprintf(
-        "https://www.encodeproject.org/files/%s/@@download/%s.tsv",
-        sample, sample), gz=FALSE)
+    link <- sprintf("https://www.encodeproject.org/files/%s/@@download/%s.tsv",
+                    sample, sample)
+    downloadIfNotFound(link, outfile)
     fread(outfile)
 }
 
-#' Download ENCODE samples
+#' Load ENCODE samples
+#'
+#' Samples are automatically downloaded if they are not found in the current
+#' working directory.
 #'
 #' @param metadata Character: ENCODE metadata
 #'
+#' @importFrom pbapply pblapply
+#'
+#' @family functions related with using ENCODE expression data
 #' @return List of loaded ENCODE samples
 #' @export
 #'
 #' @examples
 #' if (interactive()) {
-#'   # Download ENCODE metadata for a specific cell line and gene
+#'   # Load ENCODE metadata for a specific cell line and gene
 #'   cellLine <- "HepG2"
-#'   gene <- "EIF4G1"
+#'   gene <- c("EIF4G1", "U2AF2")
 #'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
-#'   # Download samples based on filtered ENCODE metadata
-#'   ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'   # Load samples based on filtered ENCODE metadata
+#'   loadENCODEsamples(ENCODEmetadata)
 #' }
-downloadENCODEsamples <- function(metadata) {
-    list(rep1=loadENCODEsample(metadata, replicate=1),
-         rep2=loadENCODEsample(metadata, replicate=2),
-         control1=loadENCODEsample(metadata, replicate=1, control=TRUE),
-         control2=loadENCODEsample(metadata, replicate=2, control=TRUE))
+loadENCODEsamples <- function(metadata) {
+    loadENCODEsamplePerGene <- function(metadata) {
+        gene <- list()
+        reps <- as.numeric(metadata$`Biological replicate(s)`)
+        for (rep in reps) {
+            sample  <- loadENCODEsample(metadata, replicate=rep)
+            control <- loadENCODEsample(metadata, replicate=rep, control=TRUE)
+            gene <- c(gene, rep=list(sample), control=list(control))
+        }
+        names(gene) <- paste0(names(gene), rep(reps, each=max(reps)))
+        return(gene)
+    }
+
+    metadataPerGene <- split(metadata, sprintf("%s_%s_%s",
+                                               metadata$`Biosample term name`,
+                                               metadata$`Experiment target`,
+                                               metadata$`Experiment accession`))
+    res <- pblapply(metadataPerGene, loadENCODEsamplePerGene)
+    return(res)
 }
 
 #' Load an ENCODE gene expression data
 #'
 #' @param samples List of loaded ENCODE samples
 #'
+#' @seealso convertENSEMBLtoGeneSymbols
+#'
+#' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
 #' @export
 #'
 #' @examples
-#' data("ENCODEsamples")
-#' ## Download ENCODE metadata for a specific cell line and gene
-#' # cellLine <- "HepG2"
-#' # gene <- "EIF4G1"
-#' # ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' if (interactive()) {
+#'   # Load ENCODE metadata for a specific cell line and gene
+#'   cellLine <- "HepG2"
+#'   gene <- "EIF4G1"
+#'   ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
 #'
-#' ## Download samples based on filtered ENCODE metadata
-#' # ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#'   # Load samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #'
-#' prepareENCODEgeneExpression(ENCODEsamples)
+#'   prepareENCODEgeneExpression(ENCODEsamples)
+#' }
 prepareENCODEgeneExpression <- function(samples) {
     # Check if transcripts are identical across samples
     sameTranscriptsAcrossSamples <- all(sapply(lapply(
@@ -166,4 +191,70 @@ prepareENCODEgeneExpression <- function(samples) {
     names(countTable)[3:6] <- c("shRNA1", "shRNA2", "control1", "control2")
     rownames(countTable) <- countTable$gene_id
     return(countTable)
+}
+
+#' Perform differential gene expression based on ENCODE data
+#'
+#' @param counts Data frame: gene expression
+#'
+#' @importFrom stats model.matrix aggregate
+#' @importFrom limma voom lmFit eBayes topTable
+#'
+#' @family functions related with using ENCODE expression data
+#' @return Data frame with differential gene expression results between
+#' knockdown and control
+#' @export
+#'
+#' @examples
+#' if (interactive()) {
+#'   # Download ENCODE metadata for a specific cell line and gene
+#'   cellLine <- "HepG2"
+#'   gene <- "EIF4G1"
+#'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#'
+#'   # Download samples based on filtered ENCODE metadata
+#'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+#'
+#'   counts <- prepareENCODEgeneExpression(ENCODEsamples)
+#'
+#'   # Remove low coverage (at least 10 counts shared across two samples)
+#'   minReads   <- 10
+#'   minSamples <- 2
+#'   filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
+#'   counts <- counts[filter, ]
+#'
+#'   # Convert ENSEMBL identifier to gene symbol
+#'   counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+#'
+#'   # Perform differential gene expression analysis
+#'   diffExpr <- performDifferentialExpression(counts)
+#' }
+performDifferentialExpression <- function(counts) {
+    counts <- data.frame(counts)
+
+    # Design matrix
+    Sample_info <- data.frame(
+        sample = c("shRNA1", "shRNA2", "control1", "control2"),
+        condition = c("shRNA", "shRNA", "control", "control"))
+    design <- model.matrix(~ condition, Sample_info)
+    rownames(design) <- Sample_info$sample
+
+    # Check: identical(names(counts[ , 3:6]), rownames(design_matrix))
+    voom <- voom(counts[ , -c(1, 2)], design=design, plot=FALSE,
+                 normalize.method="quantile")
+
+    # Fit linear model
+    fit <- lmFit(voom[ , colnames(voom$E) %in% rownames(design)], design=design)
+    ebayes <- eBayes(fit)
+    results <- topTable(ebayes, coef=2, number=nrow(ebayes),
+                        genelist=counts$gene_id)
+
+    # Mean-aggregation per gene symbol to compare unique gene knockdowns
+    meanAggr <- aggregate(results[ , -1], data=results, FUN=mean,
+                          by=list(Gene_symbol=results$ID))
+
+    # Remove non-matching genes (if any)
+    meanAggr           <- meanAggr[meanAggr$Gene_symbol != "", ]
+    rownames(meanAggr) <- meanAggr$Gene_symbol
+    return(meanAggr)
 }

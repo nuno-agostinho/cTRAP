@@ -3,15 +3,16 @@
 .RData
 *.Rproj
 .Rapp.history
-
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
-
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/
-
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+cmap*.txt
+*.gctx*
+ENC*.tsv
+tests/testthat/Rplots.pdf

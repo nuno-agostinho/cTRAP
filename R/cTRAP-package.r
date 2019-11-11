@@ -1,7 +1,7 @@
 #' cTRAP package
 #'
 #' Compare differential gene expression results with those from big datasets
-#' (e.g. L1000), allowing to infer which types of perturbations may explain the
+#' (e.g. CMap), allowing to infer which types of perturbations may explain the
 #' observed difference in gene expression.
 #'
 #' \strong{Input:} To use this package, a named vector of differentially
@@ -13,15 +13,15 @@
 #' against selected perturbation conditions by:
 #' \itemize{
 #'     \item{Spearman or Pearson correlation with z-scores of differentially
-#'     expressed genes after perturbations from L1000. Use function
-#'     \code{compareAgainstL1000} with \code{method = "spearman"} or
+#'     expressed genes after perturbations from CMap. Use function
+#'     \code{\link{rankSimilarPerturbations}} with \code{method = "spearman"} or
 #'     \code{method = "pearson"}}
 #'     \item{Gene set enrichment analysis (GSEA) using the (around) 12 000 genes
-#'     from L1000. Use function \code{compareAgainstL1000} with
+#'     from CMap. Use function \code{\link{rankSimilarPerturbations}} with
 #'     \code{method = gsea}.}
 #' }
 #'
-#' Available perturbation conditions for L1000 include:
+#' Available perturbation conditions for CMap include:
 #' \itemize{
 #'     \item{Cell line(s).}
 #'     \item{Perturbation type (gene knockdown, gene upregulation or drug
@@ -31,7 +31,7 @@
 #' }
 #'
 #' Values for each perturbation type can be listed with
-#' \code{getL1000perturbationTypes()}
+#' \code{getCMapPerturbationTypes()}
 #'
 #' \strong{Output:} The output includes a data frame of ranked perturbations
 #' based on the associated statistical values and respective p-values.
@@ -40,20 +40,33 @@
 #' @docType package
 NULL
 
+#' ENCODE metadata sample
+#'
+#' @description
+#' ENCODE metadata sample obtained by running the following code:
+#'
+#' \preformatted{
+#' gene <- "EIF4G1"
+#' cellLine <- "HepG2"
+#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#'
+#' table(ENCODEmetadata$`Experiment target`)
+#' length(unique(ENCODEmetadata$`Experiment target`))
+#' }
+#'
+#' @name ENCODEmetadata
+#' @docType data
+#' @keywords internal
+NULL
+
 #' Gene expression data sample
 #'
 #' @description
 #' Gene expression data sample obtained by running the following code:
 #'
 #' \preformatted{
-#' gene <- "EIF4G1"
-#' cellLine <- "HepG2"
-#'
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#' table(ENCODEmetadata$`Experiment target`)
-#' length(unique(ENCODEmetadata$`Experiment target`))
-#'
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
+#' data("ENCODEmetadata")
+#' ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
 #' counts <- prepareENCODEgeneExpression(ENCODEsamples)
 #'
 #' # Remove low coverage (at least 10 counts shared across two samples)
@@ -61,6 +74,9 @@ NULL
 #' minSamples <- 2
 #' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 #' counts <- counts[filter, ]
+#'
+#' # Convert ENSEMBL identifier to gene symbol
+#' counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
 #' }
 #'
 #' @name counts
@@ -75,21 +91,7 @@ NULL
 #' following code:
 #'
 #' \preformatted{
-#' gene <- "EIF4G1"
-#' cellLine <- "HepG2"
-#'
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#' table(ENCODEmetadata$`Experiment target`)
-#' length(unique(ENCODEmetadata$`Experiment target`))
-#'
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
-#' counts <- prepareENCODEgeneExpression(ENCODEsamples)
-#'
-#' # Remove low coverage (at least 10 counts shared across two samples)
-#' minReads   <- 10
-#' minSamples <- 2
-#' filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
-#' counts <- counts[filter, ]
+#' data("counts")
 #'
 #' # Perform differential gene expression analysis
 #' diffExpr <- performDifferentialExpression(counts)
@@ -104,147 +106,87 @@ NULL
 #' @keywords internal
 NULL
 
-#' ENCODE metadata sample
+#' CMap metadata
 #'
 #' @description
-#' ENCODE metadata sample obtained by running the following code:
+#' CMap metadata obtained by running the following code:
 #'
 #' \preformatted{
-#' gene <- "EIF4G1"
-#' cellLine <- "HepG2"
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
+#' cmapMetadata <- filterCMapMetadata("cmapMetadata.txt", cellLine = "HEPG2",
+#'                                    timepoint = "2 h")
 #' }
 #'
-#' @name ENCODEmetadata
+#' @name cmapMetadata
 #' @docType data
 #' @keywords internal
 NULL
 
-#' L1000 metadata
+#' CMap perturbations sample for knockdown experiments
 #'
 #' @description
-#' L1000 metadata obtained by running the following code:
-#'
-#' \preformatted{
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
-#' l1000metadata <- filterL1000metadata(l1000metadata, cellLine = "HEPG2",
-#'                                      timepoint = "2 h")
-#' }
-#'
-#' @name l1000metadata
-#' @docType data
-#' @keywords internal
-NULL
-
-#' L1000 perturbations sample for knockdown experiments
-#'
-#' @description
-#' L1000 perturbations sample for knockdown experiments obtained by running the
+#' CMap perturbations sample for knockdown experiments obtained by running the
 #' following code:
 #'
 #' \preformatted{
 #' # Code for loading CMap gene KD HepG2 data
-#' l1000metadata <- downloadL1000data("l1000metadata.txt", "metadata")
-#' l1000metadataKnockdown <- filterL1000metadata(
-#'   l1000metadata, cellLine="HepG2",
+#' cellLine <- "HepG2"
+#' cmapMetadataKD <- filterCMapMetadata(
+#'   "cmapMetadata.txt", cellLine=cellLine,
 #'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-#'                                    l1000metadataKnockdown$sig_id)
-#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt", "geneInfo")
 #'
-#' l1000perturbationsKnockdown <- loadL1000perturbations(
-#'   l1000metadataKnockdown, l1000zscores, l1000geneInfo)
+#' cmapPerturbationsKD <- prepareCMapPerturbations(
+#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt",
+#'   loadZscores=TRUE)
+#'
+#' data("diffExprStat")
+#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #'
 #' # Select only some perturbations (to reduce file size)
-#' data("diffExprStat")
+#' filter <- c(head(order(compareKD$spearman_rank)),
+#'             tail(order(compareKD$spearman_rank)),
+#'             head(order(compareKD$pearson_rank)),
+#'             tail(order(compareKD$pearson_rank)),
+#'             head(order(compareKD$gsea_rank)),
+#'             tail(order(compareKD$gsea_rank)))
+#' filter <- unique(compareKD[[1]][filter])
+#' cmapPerturbationsKD <- cmapPerturbationsKD[ , filter]
 #'
-#' compareKnockdown <- list()
-#' compareKnockdown$spearman <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="spearman")
-#' compareKnockdown$pearson <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="pearson")
-#' compareKnockdown$gsea <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsKnockdown, cellLine, method="gsea",
-#'     geneSize=150)
-#'
-#' genes  <- lapply(compareKnockdown, "[[", "genes")
-#' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
-#' l1000perturbationsKnockdown <- l1000perturbationsKnockdown[ , filter]
+#' # Remove non-ASCII characters for portability reasons
+#' metadata <- attr(cmapPerturbationsKD, "metadata")
+#' metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+#' metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+#' attr(cmapPerturbationsKD, "metadata") <- metadata
 #' }
 #'
-#' @name l1000perturbationsKnockdown
+#' @name cmapPerturbationsKD
 #' @docType data
 #' @keywords internal
 NULL
 
-#' L1000 perturbations sample for small molecules
+#' CMap perturbations sample for small molecules
 #'
 #' @description
-#' L1000 perturbations sample for small molecules obtained by running the
+#' CMap perturbations sample for small molecules obtained by running the
 #' following code:
 #'
 #' \preformatted{
-#' l1000metadataSmallMolecules <- filterL1000metadata(
-#'     l1000metadata, cellLine="HepG2", timepoint="24 h",
-#'     dosage="5 \\U00B5M", # \\U00B5 is the unicode code for the micro symbol
-#'     perturbationType="Compound")
-#' l1000zscores  <- downloadL1000data("l1000zscores.gctx", "zscores",
-#'                                    l1000metadataSmallMolecules$sig_id)
-#' l1000geneInfo <- downloadL1000data("l1000geneInfo.txt")
+#' cellLine <- c("HepG2", "HUH7")
+#' cmapMetadataCompounds <- filterCMapMetadata(
+#'     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
+#'     dosage="5 \u00B5M", perturbationType="Compound")
 #'
-#' l1000perturbationsSmallMolecules <- loadL1000perturbations(
-#'     l1000metadataSmallMolecules, l1000zscores, l1000geneInfo,
-#'     sanitizeCompoundNames=TRUE)
+#' cmapPerturbationsCompounds <- prepareCMapPerturbations(
+#'     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
+#'     "cmapCompoundInfo_drugs.txt", loadZscores=TRUE)
 #'
-#' # Select only some perturbations (to reduce file size)
-#' data("diffExprStat")
-#'
-#' compareSmallMolecule <- list()
-#' compareSmallMolecule$spearman <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
-#'     method="spearman")
-#' compareSmallMolecule$pearson <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine,
-#'     method="pearson")
-#' compareSmallMolecule$gsea <- compareAgainstL1000(
-#'     diffExprStat, l1000perturbationsSmallMolecules, cellLine, method="gsea",
-#'     geneSize=150)
-#'
-#' genes  <- lapply(compareSmallMolecule, "[[", "genes")
-#' filter <- c(unlist(lapply(genes, head)), unlist(lapply(genes, tail)))
-#' l1000perturbationsSmallMolecules <- l1000perturbationsSmallMolecules[
-#'     , filter]
+#' # Remove non-ASCII characters for portability reasons
+#' metadata <- attr(cmapPerturbationsCompounds, "metadata")
+#' metadata$pert_idose <- gsub("\u00B5", "micro", metadata$pert_idose)
+#' metadata$pert_dose_unit <- gsub("\u00B5", "micro", metadata$pert_dose_unit)
+#' attr(cmapPerturbationsCompounds, "metadata") <- metadata
 #' }
 #'
-#' @name l1000perturbationsSmallMolecules
-#' @docType data
-#' @keywords internal
-NULL
-
-#' Sample of ENCODE samples
-#'
-#' @description
-#' Sample of ENCODE samples obtained by running the following code:
-#'
-#' \preformatted{
-#' # Download ENCODE metadata for a specific cell line and gene
-#' cellLine <- "HepG2"
-#' gene <- "EIF4G1"
-#' ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
-#'
-#' # Download samples based on filtered ENCODE metadata
-#' ENCODEsamples <- downloadENCODEsamples(ENCODEmetadata)
-#'
-#' # Get small subset of whole dataset
-#' filter <- ENCODEsamples[[1]]$expected_count > 0
-#' genes <- head(ENCODEsamples[[1]][filter, ])$gene_id
-#' for (k in seq(ENCODEsamples)) {
-#'     ENCODEsamples[[k]] <- ENCODEsamples[[k]][
-#'         ENCODEsamples[[k]]$gene_id %in% genes, ]
-#' }
-#' }
-#'
-#' @name ENCODEsamples
+#' @name cmapPerturbationsCompounds
 #' @docType data
 #' @keywords internal
 NULL
