@@ -386,10 +386,34 @@ prepareExpressionDrugSensitivityAssociation <- function(
 
 # Load gene expression/drug sensitivity associations ---------------------------
 
+#' List available gene expression and drug sensitivity correlation matrices
+#'
+#' @param url Boolean: return download link?
+#'
+#' @family functions related with the prediction of targeting drugs
+#' @return Character vector of available gene expression and drug sensitivity
+#'   correlation matrices
+#' @export
+#'
+#' @examples
+#' listExpressionDrugSensitivityAssociation()
+listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
+    options <- c(
+        "GDSC 7"="5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds",
+        "CTRP 2.1"="zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds",
+        "NCI60"="p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds")
+    link <- sprintf("https://www.dropbox.com/s/%s?raw=1", options)
+    names(link) <- names(options)
+
+    res <- link
+    if (!url) res <- names(res)
+    return(res)
+}
+
 #' Load gene expression and drug sensitivity correlation matrix
 #'
-#' @param source Character: source (\code{CTRP 2.1}, \code{GDSC 7} or
-#'   \code{NCI60})
+#' @param source Character: source of matrix to load; see
+#'   \code{\link{listExpressionDrugSensitivityAssociation}}
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
 #'
@@ -399,22 +423,17 @@ prepareExpressionDrugSensitivityAssociation <- function(
 #' @export
 #'
 #' @examples
-#' loadExpressionDrugSensitivityAssociation("GDSC 7")
+#' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
+#' loadExpressionDrugSensitivityAssociation(gdsc)
 loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
-    source <- match.arg(source, c("GDSC 7", "CTRP 2.1", "NCI60"))
+    available <- listExpressionDrugSensitivityAssociation(url=TRUE)
+    source    <- match.arg(source, names(available))
+    link      <- available[source]
 
-    if (source == "GDSC 7") {
-        url <- "5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds"
-    } else if (source == "CTRP 2.1") {
-        url <- "zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds"
-    } else if (source == "NCI60") {
-        url <- "p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds"
+    if (is.null(file)) {
+        filename <- "expressionDrugSensitivityCor%s.rds"
+        file <- sprintf(filename, gsub(" ", "_", source))
     }
-    link <- sprintf("https://www.dropbox.com/s/%s?raw=1", url)
-
-    if (is.null(file))
-        file <- sprintf("expressionDrugSensitivityCor%s.rds",
-                        gsub(" ", "_", source))
 
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))

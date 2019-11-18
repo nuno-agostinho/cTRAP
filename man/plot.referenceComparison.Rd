@@ -73,7 +73,8 @@ Other functions related with the ranking of CMap perturbations: \code{\link{[.pe
   \code{\link{print.similarPerturbations}},
   \code{\link{rankSimilarPerturbations}}
 
-Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
+Other functions related with the prediction of targeting drugs: \code{\link{listExpressionDrugSensitivityAssociation}},
+  \code{\link{loadExpressionDrugSensitivityAssociation}},
   \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
   \code{\link{predictTargetingDrugs}}
 }

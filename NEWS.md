@@ -1,3 +1,8 @@
+# 1.4.1 (18 November, 2019)
+
+* List available gene expression and drug sensitivity associations
+(`listExpressionDrugSensitivityAssociation()`)
+
 # 1.4 (25 October, 2019)
 
 ## New features
