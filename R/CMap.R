@@ -75,7 +75,7 @@ loadCMapMetadata <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_sig_info.txt.gz")
     downloadIfNotFound(link, file)
-    message(sprintf("Loading data from %s...", file))
+    message(sprintf("Loading CMap metadata from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
 
     # Fix issues with specific metadata values
@@ -118,7 +118,11 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #' zscores <- loadCMapZscores(perts[ , 1:10])
 #' }
 loadCMapZscores <- function(data, perturbationChanges=FALSE, verbose=TRUE) {
-    if (verbose) message(sprintf("Loading data from %s...", data))
+    if (verbose) {
+        msg <- paste("Loading CMap perturbation's differential expression",
+                     "z-scores from %s...")
+        message(sprintf(msg, data))
+    }
     zscores  <- new("GCT", src=data, cid=colnames(data), verbose=verbose)@mat
     geneInfo <- attr(data, "geneInfo")
     if (!is.null(geneInfo)) {
@@ -161,7 +165,8 @@ loadCMapCompoundInfo <- function(file, nas) {
     downloadIfNotFound(link, file[["drugs"]])
 
     # Replace separation symbols for targets
-    message(sprintf("Loading compound data from %s...", file[["drugs"]]))
+    message(sprintf("Loading CMap compound data [1/2] from %s...",
+                    file[["drugs"]]))
     drugData <- readAfterComments(file[["drugs"]])
     drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
 
@@ -171,7 +176,8 @@ loadCMapCompoundInfo <- function(file, nas) {
         "repurposing_samples_20180907.txt")
     downloadIfNotFound(link, file[["samples"]])
 
-    message(sprintf("Loading compound data from %s...", file[["samples"]]))
+    message(sprintf("Loading CMap compound data [2/2] from %s...",
+                    file[["samples"]]))
     pertData <- readAfterComments(file[["samples"]])
     pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
                               "InChIKey", "pubchem_cid")]
@@ -187,7 +193,7 @@ loadCMapGeneInfo <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_gene_info.txt.gz")
     downloadIfNotFound(link, file)
-    message(sprintf("Loading data from %s...", file))
+    message(sprintf("Loading CMap gene information from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
     return(data)
 }

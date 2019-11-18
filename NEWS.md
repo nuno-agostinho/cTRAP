@@ -3,6 +3,10 @@
 * List available gene expression and drug sensitivity associations
 (`listExpressionDrugSensitivityAssociation()`)
 
+## Minor changes
+
+* Copy-edit CMap-related console messages
+
 # 1.4 (25 October, 2019)
 
 ## New features
