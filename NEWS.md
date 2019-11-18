@@ -6,6 +6,7 @@
 ## Minor changes
 
 * Copy-edit CMap-related console messages
+* Improve tutorial
 
 # 1.4 (25 October, 2019)
 

@@ -261,6 +261,11 @@ print(compareKD, EIF4G1knockdown)
 # Information on the most similar compound perturbation (based on Spearman's 
 # correlation)
 print(compareCompounds[order(rankProduct_rank, na.last=NA)], 1)
+
+# Obtain available raw information from compared perturbations
+names(attributes(compareKD)) # Data available in compared perturbations
+attr(compareKD, "metadata")  # Perturbation metadata
+attr(compareKD, "geneInfo")  # Gene information
 ```
 
 # Relationship plots
@@ -338,8 +343,8 @@ To use an expression and drug sensitivity association based on `CTRP 2.1`
 user's differential expression profile:
 
 ```{r}
-gdsc      <- loadExpressionDrugSensitivityAssociation("CTRP 2.1")
-predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+assoc     <- loadExpressionDrugSensitivityAssociation("CTRP 2.1")
+predicted <- predictTargetingDrugs(diffExprStat, assoc)
 plot(predicted, method="rankProduct")
 ```
 
