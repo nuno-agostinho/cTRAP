@@ -7,6 +7,7 @@
 
 * Copy-edit CMap-related console messages
 * Improve tutorial
+* Copy-edit function documentation
 
 # 1.4 (25 October, 2019)
 

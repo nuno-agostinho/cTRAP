@@ -4,8 +4,11 @@
 \alias{loadDrugDescriptors}
 \title{Load table with drug descriptors}
 \usage{
-loadDrugDescriptors(source = c("NCI60", "CMap"), type = c("2D", "3D"),
-  file = NULL)
+loadDrugDescriptors(
+  source = c("NCI60", "CMap"),
+  type = c("2D", "3D"),
+  file = NULL
+)
 }
 \arguments{
 \item{source}{Character: molecular descriptors for compounds in \code{NCI60}
@@ -26,8 +29,9 @@ Load table with drug descriptors
 loadDrugDescriptors()
 }
 \seealso{
-Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
-  \code{\link{plotDrugSetEnrichment}},
-  \code{\link{prepareDrugSets}}
+Other functions for drug set enrichment analysis: 
+\code{\link{analyseDrugSetEnrichment}()},
+\code{\link{plotDrugSetEnrichment}()},
+\code{\link{prepareDrugSets}()}
 }
 \concept{functions for drug set enrichment analysis}

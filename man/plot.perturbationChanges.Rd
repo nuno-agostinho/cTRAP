@@ -4,9 +4,15 @@
 \alias{plot.perturbationChanges}
 \title{Plot perturbation comparison against a differential expression profile}
 \usage{
-\method{plot}{perturbationChanges}(x, perturbation, diffExprGenes,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  genes = c("both", "top", "bottom"), ...)
+\method{plot}{perturbationChanges}(
+  x,
+  perturbation,
+  diffExprGenes,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  genes = c("both", "top", "bottom"),
+  ...
+)
 }
 \arguments{
 \item{x}{\code{perturbationChanges} object}
@@ -64,19 +70,21 @@ plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
 # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{[.perturbationChanges}()},
+\code{\link{as.table.similarPerturbations}()},
+\code{\link{dim.perturbationChanges}()},
+\code{\link{dimnames.perturbationChanges}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

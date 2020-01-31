@@ -25,9 +25,10 @@ gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
 loadExpressionDrugSensitivityAssociation(gdsc)
 }
 \seealso{
-Other functions related with the prediction of targeting drugs: \code{\link{listExpressionDrugSensitivityAssociation}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{predictTargetingDrugs}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{predictTargetingDrugs}()}
 }
 \concept{functions related with the prediction of targeting drugs}

@@ -31,8 +31,9 @@ if (interactive()) {
 \seealso{
 convertENSEMBLtoGeneSymbols
 
-Other functions related with using ENCODE expression data: \code{\link{downloadENCODEknockdownMetadata}},
-  \code{\link{loadENCODEsamples}},
-  \code{\link{performDifferentialExpression}}
+Other functions related with using ENCODE expression data: 
+\code{\link{downloadENCODEknockdownMetadata}()},
+\code{\link{loadENCODEsamples}()},
+\code{\link{performDifferentialExpression}()}
 }
 \concept{functions related with using ENCODE expression data}

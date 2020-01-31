@@ -20,9 +20,10 @@ List available gene expression and drug sensitivity correlation matrices
 listExpressionDrugSensitivityAssociation()
 }
 \seealso{
-Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{predictTargetingDrugs}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{loadExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{predictTargetingDrugs}()}
 }
 \concept{functions related with the prediction of targeting drugs}

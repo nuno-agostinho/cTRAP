@@ -4,9 +4,13 @@
 \alias{predictTargetingDrugs}
 \title{Predict targeting drugs}
 \usage{
-predictTargetingDrugs(diffExprGenes, expressionDrugSensitivityCor,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  isDrugActivityDirectlyProportionalToSensitivity = NULL)
+predictTargetingDrugs(
+  diffExprGenes,
+  expressionDrugSensitivityCor,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  isDrugActivityDirectlyProportionalToSensitivity = NULL
+)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -64,9 +68,10 @@ gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
 predictTargetingDrugs(diffExprStat, gdsc)
 }
 \seealso{
-Other functions related with the prediction of targeting drugs: \code{\link{listExpressionDrugSensitivityAssociation}},
-  \code{\link{loadExpressionDrugSensitivityAssociation}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{loadExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()}
 }
 \concept{functions related with the prediction of targeting drugs}

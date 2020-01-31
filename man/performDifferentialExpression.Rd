@@ -42,8 +42,9 @@ if (interactive()) {
 }
 }
 \seealso{
-Other functions related with using ENCODE expression data: \code{\link{downloadENCODEknockdownMetadata}},
-  \code{\link{loadENCODEsamples}},
-  \code{\link{prepareENCODEgeneExpression}}
+Other functions related with using ENCODE expression data: 
+\code{\link{downloadENCODEknockdownMetadata}()},
+\code{\link{loadENCODEsamples}()},
+\code{\link{prepareENCODEgeneExpression}()}
 }
 \concept{functions related with using ENCODE expression data}

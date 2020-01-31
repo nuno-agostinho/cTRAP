@@ -5,9 +5,14 @@
 \alias{compareAgainstCMap}
 \title{Rank CMap perturbations' similarity to a differential expression profile}
 \usage{
-rankSimilarPerturbations(diffExprGenes, perturbations,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  cellLineMean = "auto", rankPerCellLine = FALSE)
+rankSimilarPerturbations(
+  diffExprGenes,
+  perturbations,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  cellLineMean = "auto",
+  rankPerCellLine = FALSE
+)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes
@@ -55,7 +60,7 @@ data("diffExprStat")
 cellLine <- c("HepG2", "HUH7")
 cmapMetadataCompounds <- filterCMapMetadata(
     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
-    dosage="5 \\u00B5M", perturbationType="Compound")
+    dosage="5 \u00B5M", perturbationType="Compound")
 
 cmapPerturbationsCompounds <- prepareCMapPerturbations(
     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
@@ -72,19 +77,21 @@ rankSimilarPerturbations(diffExprStat, perturbations)
 rankSimilarPerturbations(diffExprStat, perturbations, method="spearman")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{[.perturbationChanges}()},
+\code{\link{as.table.similarPerturbations}()},
+\code{\link{dim.perturbationChanges}()},
+\code{\link{dimnames.perturbationChanges}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

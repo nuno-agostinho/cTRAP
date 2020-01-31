@@ -4,10 +4,16 @@
 \alias{compareAgainstReference}
 \title{Compare multiple methods and rank reference accordingly}
 \usage{
-compareAgainstReference(diffExprGenes, reference, method = c("spearman",
-  "pearson", "gsea"), geneSize = 150, cellLines = NULL,
-  cellLineMean = "auto", rankByAscending = TRUE,
-  rankPerCellLine = FALSE)
+compareAgainstReference(
+  diffExprGenes,
+  reference,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  cellLines = NULL,
+  cellLineMean = "auto",
+  rankByAscending = TRUE,
+  rankPerCellLine = FALSE
+)
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes

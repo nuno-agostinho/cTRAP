@@ -4,8 +4,14 @@
 \alias{analyseDrugSetEnrichment}
 \title{Analyse drug set enrichment}
 \usage{
-analyseDrugSetEnrichment(sets, stats, col = NULL, nperm = 10000,
-  maxSize = 500, ...)
+analyseDrugSetEnrichment(
+  sets,
+  stats,
+  col = NULL,
+  nperm = 10000,
+  maxSize = 500,
+  ...
+)
 }
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
@@ -24,16 +30,17 @@ if class of \code{stats} is either \code{similarPerturbations} or
 
 \item{maxSize}{Maximal size of a gene set to test. All pathways above the threshold are excluded.}
 
-\item{...}{Arguments passed on to \code{fgsea::fgsea}
-\describe{
-  \item{minSize}{Minimal size of a gene set to test. All pathways below the threshold are excluded.}
-  \item{nproc}{If not equal to zero sets BPPARAM to use nproc workers (default = 0).}
-  \item{gseaParam}{GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
+\item{...}{
+  Arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}
+  \describe{
+    \item{\code{minSize}}{Minimal size of a gene set to test. All pathways below the threshold are excluded.}
+    \item{\code{nproc}}{If not equal to zero sets BPPARAM to use nproc workers (default = 0).}
+    \item{\code{gseaParam}}{GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
 before calculation of GSEA enrichment scores.}
-  \item{BPPARAM}{Parallelization parameter used in bplapply.
+    \item{\code{BPPARAM}}{Parallelization parameter used in bplapply.
 Can be used to specify cluster to run. If not initialized explicitly or
 by setting `nproc` default value `bpparam()` is used.}
-}}
+  }}
 }
 \value{
 Enrichment analysis based on GSEA
@@ -54,8 +61,9 @@ predicted <- predictTargetingDrugs(diffExprStat, gdsc)
 analyseDrugSetEnrichment(drugSets, predicted)
 }
 \seealso{
-Other functions for drug set enrichment analysis: \code{\link{loadDrugDescriptors}},
-  \code{\link{plotDrugSetEnrichment}},
-  \code{\link{prepareDrugSets}}
+Other functions for drug set enrichment analysis: 
+\code{\link{loadDrugDescriptors}()},
+\code{\link{plotDrugSetEnrichment}()},
+\code{\link{prepareDrugSets}()}
 }
 \concept{functions for drug set enrichment analysis}

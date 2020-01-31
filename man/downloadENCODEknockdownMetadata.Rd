@@ -21,8 +21,9 @@ Download metadata for ENCODE knockdown experiments
 downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
 }
 \seealso{
-Other functions related with using ENCODE expression data: \code{\link{loadENCODEsamples}},
-  \code{\link{performDifferentialExpression}},
-  \code{\link{prepareENCODEgeneExpression}}
+Other functions related with using ENCODE expression data: 
+\code{\link{loadENCODEsamples}()},
+\code{\link{performDifferentialExpression}()},
+\code{\link{prepareENCODEgeneExpression}()}
 }
 \concept{functions related with using ENCODE expression data}

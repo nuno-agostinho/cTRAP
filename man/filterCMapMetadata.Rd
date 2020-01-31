@@ -4,8 +4,13 @@
 \alias{filterCMapMetadata}
 \title{Filter CMap metadata}
 \usage{
-filterCMapMetadata(metadata, cellLine = NULL, timepoint = NULL,
-  dosage = NULL, perturbationType = NULL)
+filterCMapMetadata(
+  metadata,
+  cellLine = NULL,
+  timepoint = NULL,
+  dosage = NULL,
+  perturbationType = NULL
+)
 }
 \arguments{
 \item{metadata}{Data frame (CMap metadata) or character (respective filepath)}
@@ -33,19 +38,21 @@ filterCMapMetadata(cmapMetadata, cellLine="HEPG2", timepoint="2 h",
                    dosage="25 ng/mL")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{[.perturbationChanges}()},
+\code{\link{as.table.similarPerturbations}()},
+\code{\link{dim.perturbationChanges}()},
+\code{\link{dimnames.perturbationChanges}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

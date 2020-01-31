@@ -12,19 +12,24 @@
 \alias{loadGDSC7drugSensitivity}
 \title{Load CTRP data}
 \usage{
-loadCTRPgeneExpression(geneExpressionFile = "CTRP 2.1/geneExpr.txt",
+loadCTRPgeneExpression(
+  geneExpressionFile = "CTRP 2.1/geneExpr.txt",
   geneInfoFile = "CTRP 2.1/geneInfo.txt",
-  cellLineInfoFile = "CTRP 2.1/cellLineInfo.txt")
+  cellLineInfoFile = "CTRP 2.1/cellLineInfo.txt"
+)
 
-
-  loadCTRPdrugSensitivity(drugSensitivityFile = "CTRP 2.1/drugSensitivity.txt",
+loadCTRPdrugSensitivity(
+  drugSensitivityFile = "CTRP 2.1/drugSensitivity.txt",
   experimentFile = "CTRP 2.1/experimentInfo.txt",
-  compoundFile = "CTRP 2.1/compoundInfo.txt")
+  compoundFile = "CTRP 2.1/compoundInfo.txt"
+)
 
 loadCTRPcompoundInfo(compoundFile = "CTRP 2.1/compoundInfo.txt")
 
-loadNCI60geneExpression(file = "NCI60/geneExpr.xls",
-  cellLineInfoFile = "cellLineInfo.xls")
+loadNCI60geneExpression(
+  file = "NCI60/geneExpr.xls",
+  cellLineInfoFile = "cellLineInfo.xls"
+)
 
 loadGDSC7file(file, filename, type, ...)
 

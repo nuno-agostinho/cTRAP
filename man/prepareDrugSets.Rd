@@ -27,8 +27,9 @@ descriptors <- loadDrugDescriptors("NCI60")
 prepareDrugSets(descriptors)
 }
 \seealso{
-Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
-  \code{\link{loadDrugDescriptors}},
-  \code{\link{plotDrugSetEnrichment}}
+Other functions for drug set enrichment analysis: 
+\code{\link{analyseDrugSetEnrichment}()},
+\code{\link{loadDrugDescriptors}()},
+\code{\link{plotDrugSetEnrichment}()}
 }
 \concept{functions for drug set enrichment analysis}

@@ -32,8 +32,10 @@ This is a low-level helper function
   which most users will not need to access directly
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{readGctxIds}}, \code{\link{readGctxMeta}}
+Other GCTX parsing functions: 
+\code{\link{fix.datatypes}()},
+\code{\link{readGctxIds}()},
+\code{\link{readGctxMeta}()}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

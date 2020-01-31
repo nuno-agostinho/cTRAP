@@ -25,7 +25,7 @@ Suggests: testthat,
     knitr,
     covr,
     rmarkdown
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Imports: biomaRt,
     cowplot,
     data.table,

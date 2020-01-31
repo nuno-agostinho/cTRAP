@@ -21,8 +21,10 @@ a character vector of row or column ids from the provided file
 Read GCTX row or column ids
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{processIds}}, \code{\link{readGctxMeta}}
+Other GCTX parsing functions: 
+\code{\link{fix.datatypes}()},
+\code{\link{processIds}()},
+\code{\link{readGctxMeta}()}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

@@ -4,8 +4,7 @@
 \alias{correlateAgainstReference}
 \title{Correlate against data columns}
 \usage{
-correlateAgainstReference(diffExprGenes, reference, method,
-  pAdjust = "BH")
+correlateAgainstReference(diffExprGenes, reference, method, pAdjust = "BH")
 }
 \arguments{
 \item{diffExprGenes}{Numeric: named vector of differentially expressed genes

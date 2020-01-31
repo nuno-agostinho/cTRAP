@@ -4,8 +4,11 @@
 \alias{convertENSEMBLtoGeneSymbols}
 \title{Convert ENSEMBL gene identifiers to gene symbols}
 \usage{
-convertENSEMBLtoGeneSymbols(genes, dataset = "hsapiens_gene_ensembl",
-  mart = "ensembl")
+convertENSEMBLtoGeneSymbols(
+  genes,
+  dataset = "hsapiens_gene_ensembl",
+  mart = "ensembl"
+)
 }
 \arguments{
 \item{genes}{Character: ENSEMBL gene identifiers}

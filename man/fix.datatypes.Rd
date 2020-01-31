@@ -27,8 +27,10 @@ This is a low-level helper function
   which most users will not need to access directly
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{processIds}},
-  \code{\link{readGctxIds}}, \code{\link{readGctxMeta}}
+Other GCTX parsing functions: 
+\code{\link{processIds}()},
+\code{\link{readGctxIds}()},
+\code{\link{readGctxMeta}()}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

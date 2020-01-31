@@ -4,8 +4,13 @@
 \alias{plotGSEA}
 \title{Plot gene set enrichment analysis (GSEA)}
 \usage{
-plotGSEA(stats, topGenes = NULL, bottomGenes = NULL,
-  title = "GSEA plot", gseaParam = 1)
+plotGSEA(
+  stats,
+  topGenes = NULL,
+  bottomGenes = NULL,
+  title = "GSEA plot",
+  gseaParam = 1
+)
 }
 \arguments{
 \item{stats}{Named numeric vector: statistics}

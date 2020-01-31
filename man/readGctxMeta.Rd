@@ -7,8 +7,12 @@
 https://github.com/cmap/cmapR
 }
 \usage{
-readGctxMeta(gctx_path, dimension = "row", ids = NULL,
-  set_annot_rownames = TRUE)
+readGctxMeta(
+  gctx_path,
+  dimension = "row",
+  ids = NULL,
+  set_annot_rownames = TRUE
+)
 }
 \arguments{
 \item{gctx_path}{the path to the GCTX file}
@@ -29,8 +33,10 @@ a \code{data.frame} of metadata
 Parse row or column metadata from GCTX files
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{processIds}}, \code{\link{readGctxIds}}
+Other GCTX parsing functions: 
+\code{\link{fix.datatypes}()},
+\code{\link{processIds}()},
+\code{\link{readGctxIds}()}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

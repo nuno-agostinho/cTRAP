@@ -4,9 +4,15 @@
 \alias{compareAgainstReferencePerMethod}
 \title{Compare single method}
 \usage{
-compareAgainstReferencePerMethod(method, diffExprGenes, reference,
-  geneSize = 150, cellLines = NULL, cellLineMean = "auto",
-  rankPerCellLine = FALSE)
+compareAgainstReferencePerMethod(
+  method,
+  diffExprGenes,
+  reference,
+  geneSize = 150,
+  cellLines = NULL,
+  cellLineMean = "auto",
+  rankPerCellLine = FALSE
+)
 }
 \arguments{
 \item{method}{Character: comparison methods to run (\code{spearman},
