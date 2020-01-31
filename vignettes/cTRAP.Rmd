@@ -151,8 +151,8 @@ cmapPerturbationsKD <- prepareCMapPerturbations(
     geneInfo="cmapGeneInfo.txt")
 ```
 
-If the interest is in small molecules, the differential gene expression z-scores
-from CMap can be downloaded for each small molecule perturbation:
+If interested in small molecules, the differential gene expression z-scores from
+CMap can be downloaded for each small molecule perturbation:
 
 ```{r CMap small molecule perturbations, eval=FALSE}
 # Filter CMap gene small molecule HepG2 data to load afterwards
@@ -343,7 +343,9 @@ To use an expression and drug sensitivity association based on `CTRP 2.1`
 user's differential expression profile:
 
 ```{r}
-assoc     <- loadExpressionDrugSensitivityAssociation("CTRP 2.1")
+listExpressionDrugSensitivityAssociation()
+ctrp      <- listExpressionDrugSensitivityAssociation()[[2]]
+assoc     <- loadExpressionDrugSensitivityAssociation(ctrp)
 predicted <- predictTargetingDrugs(diffExprStat, assoc)
 plot(predicted, method="rankProduct")
 ```
