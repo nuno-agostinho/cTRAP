@@ -1,12 +1,12 @@
-# 1.4.1 (18 November, 2019)
+# 1.4.1 (31 January, 2020)
 
-* List available gene expression and drug sensitivity associations
-(`listExpressionDrugSensitivityAssociation()`)
+* `listExpressionDrugSensitivityAssociation()` lists available gene expression
+and drug sensitivity associations
 
 ## Minor changes
 
-* Copy-edit CMap-related console messages
 * Improve tutorial
+* Copy-edit CMap-related console messages
 * Copy-edit function documentation
 
 # 1.4 (25 October, 2019)
