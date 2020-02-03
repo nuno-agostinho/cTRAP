@@ -13,7 +13,7 @@ and drug sensitivity associations
 
 ## New features
 
-* Predict targeting drugs (`predictTargetingDrug()`):
+* Predict targeting drugs (`predictTargetingDrugs()`):
     - Based on expression and drug sensitivity associations derived from NCI60,
     CTRP and GDSC data (see `loadExpressionDrugSensitivityAssociation()`)
     - Compare user-provided differential expression profile with gene expression
@@ -24,7 +24,7 @@ and drug sensitivity associations
     `plotTargetingDrugsVSsimilarPerturbations()`, highlighting compounds that
     selectively select against cells with a similar differential gene expression
     profile
-* Analyse drug set enrichment (`performDSEA()`):
+* Analyse drug set enrichment (`analyseDrugSetEnrichment()`):
     - Prepare drug sets based on a table with compound identifiers and 
     respective 2D and 3D molecular descriptors using `prepareDrugSets()`
     - Test drug set enrichment on results from
@@ -65,7 +65,7 @@ and drug sensitivity associations
     argument `loadZscores = TRUE`
     - Display summary of loaded perturbations after running 
     `prepareCMapPerturbations()`
-* Improve ranking of similar perturbations (`rankSimilarPerturbation()`):
+* Improve ranking of similar perturbations (`rankSimilarPerturbations()`):
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
     cell line available; disabled if argument `cellLineMean = FALSE`
@@ -134,7 +134,7 @@ running `rankSimilarPerturbations()`:
     - Update the `cmapPerturbationsCompounds` and `cmapPerturbationsKD` datasets 
     according to new internal changes and fix their respective code in the 
     documentation
-* Include license and copyright text for cmapR code
+* Include license and copyright text for `cmapR` code
 
 # cTRAP 1.0.3 (3 December, 2018)
 

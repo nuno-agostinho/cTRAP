@@ -21,10 +21,12 @@ biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
     Pathways, ImmunoOncology, GeneSetEnrichment
 URL: https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
-Suggests: testthat,
+Suggests: 
+    testthat,
     knitr,
     covr,
-    rmarkdown
+    rmarkdown,
+    spelling
 RoxygenNote: 7.0.2
 Imports: biomaRt,
     cowplot,
@@ -46,3 +48,4 @@ Imports: biomaRt,
     tools,
     utils
 VignetteBuilder: knitr
+Language: en-GB

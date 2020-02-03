@@ -4,7 +4,7 @@
 \alias{readGctxMeta}
 \title{Parse row or column metadata from GCTX files}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 readGctxMeta(
@@ -23,8 +23,8 @@ readGctxMeta(
 for which to read the metadata}
 
 \item{set_annot_rownames}{a boolean indicating whether to set the
-\code{rownames} addtribute of the returned \code{data.frame} to
-the corresponding row/column ids.}
+\code{rownames} attribute of the returned \code{data.frame} to the
+corresponding row/column ids.}
 }
 \value{
 a \code{data.frame} of metadata

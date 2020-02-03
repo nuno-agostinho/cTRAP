@@ -26,8 +26,8 @@ or compound information to be used for labelling}
 \item{quantileThreshold}{Numeric: quantile to use for highlight values within
 [0, 1]}
 
-\item{showAllScores}{Boolean: showl all scores? If \code{FALSE}, only the
-best score per compound will be plotted}
+\item{showAllScores}{Boolean: show all scores? If \code{FALSE}, only the best
+score per compound will be plotted}
 }
 \value{
 \code{ggplot2} plot

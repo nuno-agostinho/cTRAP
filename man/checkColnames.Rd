@@ -4,7 +4,7 @@
 \alias{checkColnames}
 \title{Check whether \code{test_names} are columns in the \code{\link{data.frame}}}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 checkColnames(test_names, df, throw_error = TRUE)

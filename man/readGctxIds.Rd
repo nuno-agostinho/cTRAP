@@ -4,7 +4,7 @@
 \alias{readGctxIds}
 \title{Read GCTX row or column ids}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 readGctxIds(gctx_path, dimension = "row")

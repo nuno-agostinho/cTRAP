@@ -240,9 +240,9 @@ weighted Kolmogorov-Smirnov enrichment statistic (ES)
 ([Subramanian et al., Cell 2017][subramanian2017]).
 
 > To calculate the GSEA score, GSEA is run for the most up- and down-regulated
-genes fromthe user's differential expression profile. The GSEA score is the mean 
-between ES~top~ and ES~bottom~ (however, if ES~top~ and ES~bottom~ have the same
-sign, the GSEA score is 0).
+genes from the user's differential expression profile. The GSEA score is the
+mean between ES~top~ and ES~bottom~ (however, if ES~top~ and ES~bottom~ have the
+same sign, the GSEA score is 0).
 
 > If a perturbation has a similar differential expression profile to our data 
 (higher GSEA score), we expect to see the most up-regulated (down-regulated) 
@@ -274,8 +274,8 @@ To analyse the relationship between the user-provided differential expression
 profile with that associated with a specific perturbation, scatter plots (for
 Spearman and Pearson analyses) and GSEA plots are available.
 
-For instance, let's plot the relationship between ENCODE's EIF4G1 shRNA 
-knockdown with the perturbations of interest:
+For instance, let's plot the relationship between EIF4G1 shRNA knockdown from
+ENCODE with the CMap knockdown perturbations:
 
 ```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from CMap

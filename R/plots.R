@@ -405,8 +405,8 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @param column Character: column to plot (must be available in both databases)
 #' @param labelBy Character: column in \code{similarPerturbations}, its metadata
 #'   or compound information to be used for labelling
-#' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
-#'   best score per compound will be plotted
+#' @param showAllScores Boolean: show all scores? If \code{FALSE}, only the best
+#'   score per compound will be plotted
 #' @param quantileThreshold Numeric: quantile to use for highlight values within
 #'   [0, 1]
 #'

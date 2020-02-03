@@ -4,7 +4,7 @@
 \alias{fix.datatypes}
 \title{Adjust the data types for columns of a meta data frame}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 fix.datatypes(meta)

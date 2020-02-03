@@ -19,7 +19,7 @@
 #'
 #' @seealso \url{http://clue.io/help} for more information on the GCT format
 #'
-#' @source https://github.com/cmap/cmapR
+#' @inherit readGctxMeta source
 #' @keywords internal
 setClass("GCT", representation(
     mat = "matrix", rid = "character", cid = "character", rdesc = "data.frame",
@@ -42,8 +42,7 @@ setClass("GCT", representation(
 #' @keywords internal
 #'
 #' @family GCTX parsing functions
-#'
-#' @source https://github.com/cmap/cmapR
+#' @inherit readGctxMeta source
 fix.datatypes <- function(meta) {
     for (field.name in names(meta)) {
         field <- meta[[field.name]]
@@ -72,16 +71,15 @@ fix.datatypes <- function(meta) {
 #' @param ids a character vector of a subset of row/column ids
 #'   for which to read the metadata
 #' @param set_annot_rownames a boolean indicating whether to set the
-#'   \code{rownames} addtribute of the returned \code{data.frame} to
-#'   the corresponding row/column ids.
+#'   \code{rownames} attribute of the returned \code{data.frame} to the
+#'   corresponding row/column ids.
 #'
 #' @importFrom rhdf5 h5read
 #'
 #' @return a \code{data.frame} of metadata
 #' @keywords internal
 #'
-#' @source https://github.com/cmap/cmapR
-#'
+#' @source \url{https://github.com/cmap/cmapR}
 #' @family GCTX parsing functions
 readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
                            set_annot_rownames=TRUE) {
@@ -129,8 +127,7 @@ readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
 #' @return a character vector of row or column ids from the provided file
 #' @keywords internal
 #'
-#' @source https://github.com/cmap/cmapR
-#'
+#' @inherit readGctxMeta source
 #' @family GCTX parsing functions
 readGctxIds <- function(gctx_path, dimension="row") {
     if (!file.exists(gctx_path)) {
@@ -150,7 +147,7 @@ readGctxIds <- function(gctx_path, dimension="row") {
     return(ids)
 }
 
-#' Return a subset of requested GCTX row/colum ids
+#' Return a subset of requested GCTX row/column ids
 #' out of the universe of all ids
 #'
 #' @details This is a low-level helper function
@@ -165,8 +162,7 @@ readGctxIds <- function(gctx_path, dimension="row") {
 #'  \code{ids}: a character vector of the processed ids
 #'  \code{idx}: an integer list of their corresponding indices in \code{all_ids}
 #'
-#' @source https://github.com/cmap/cmapR
-#'
+#' @inherit readGctxMeta source
 #' @family GCTX parsing functions
 #' @keywords internal
 processIds <- function(ids, all_ids, type="rid") {
@@ -409,7 +405,7 @@ closeOpenHandles <- function() {
 #' @return boolean indicating whether or not all \code{test_names} are
 #'   columns of \code{df}
 #'
-#' @source https://github.com/cmap/cmapR
+#' @inherit readGctxMeta source
 #' @keywords internal
 checkColnames <- function(test_names, df, throw_error=TRUE) {
     # Check if test_names are valid; throw error if specified
@@ -432,7 +428,7 @@ checkColnames <- function(test_names, df, throw_error=TRUE) {
 #' @param ids the ids to subset to
 #' @return a subset version of \code{df}
 #'
-#' @source https://github.com/cmap/cmapR
+#' @inherit readGctxMeta source
 #' @keywords internal
 subsetToIds <- function(df, ids) {
     checkColnames("id", df)
