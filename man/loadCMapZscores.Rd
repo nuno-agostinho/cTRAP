@@ -32,10 +32,7 @@ zscores <- loadCMapZscores(perts[ , 1:10])
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
-\code{\link{[.perturbationChanges}()},
 \code{\link{as.table.similarPerturbations}()},
-\code{\link{dim.perturbationChanges}()},
-\code{\link{dimnames.perturbationChanges}()},
 \code{\link{filterCMapMetadata}()},
 \code{\link{getCMapConditions}()},
 \code{\link{getCMapPerturbationTypes}()},

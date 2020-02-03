@@ -50,3 +50,4 @@ List of data frame containing the results per methods of comparison
 \description{
 Compare multiple methods and rank reference accordingly
 }
+\keyword{internal}

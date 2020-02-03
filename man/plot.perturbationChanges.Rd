@@ -2,7 +2,10 @@
 % Please edit documentation in R/CMap.R
 \name{plot.perturbationChanges}
 \alias{plot.perturbationChanges}
-\title{Plot perturbation comparison against a differential expression profile}
+\alias{[.perturbationChanges}
+\alias{dim.perturbationChanges}
+\alias{dimnames.perturbationChanges}
+\title{Operations on a \code{perturbationChanges} object}
 \usage{
 \method{plot}{perturbationChanges}(
   x,
@@ -13,6 +16,12 @@
   genes = c("both", "top", "bottom"),
   ...
 )
+
+\method{[}{perturbationChanges}(x, i, j, drop = FALSE, ...)
+
+\method{dim}{perturbationChanges}(x)
+
+\method{dimnames}{perturbationChanges}(x)
 }
 \arguments{
 \item{x}{\code{perturbationChanges} object}
@@ -37,13 +46,18 @@ plot top genes (\code{genes = "top"}), bottom genes
 (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
 \code{method = "gsea"}}
 
-\item{...}{Extra arguments (currently undocumented)}
+\item{...}{Extra arguments passed to generic methods}
+
+\item{i, j}{Character or numeric indexes specifying elements to extract}
+
+\item{drop}{Boolean: coerce result to the lowest possible dimension?}
 }
 \value{
-CMap data comparison plots
+Subset, plot or return dimensions or names of a
+  \code{perturbationChanges} object
 }
 \description{
-Plot perturbation comparison against a differential expression profile
+Operations on a \code{perturbationChanges} object
 }
 \examples{
 data("diffExprStat")
@@ -71,10 +85,7 @@ plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
-\code{\link{[.perturbationChanges}()},
 \code{\link{as.table.similarPerturbations}()},
-\code{\link{dim.perturbationChanges}()},
-\code{\link{dimnames.perturbationChanges}()},
 \code{\link{filterCMapMetadata}()},
 \code{\link{getCMapConditions}()},
 \code{\link{getCMapPerturbationTypes}()},

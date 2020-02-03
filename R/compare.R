@@ -313,7 +313,10 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
 }
 
 #' Compare multiple methods and rank reference accordingly
+#'
 #' @inheritParams compareAgainstReferencePerMethod
+#'
+#' @keywords internal
 #' @return List of data frame containing the results per methods of comparison
 compareAgainstReference <- function(diffExprGenes, reference,
                                     method=c("spearman", "pearson", "gsea"),

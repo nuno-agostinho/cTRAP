@@ -1,4 +1,4 @@
-# 1.4.1 (31 January, 2020)
+# cTRAP 1.4.1 (31 January, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
 and drug sensitivity associations
@@ -9,7 +9,7 @@ and drug sensitivity associations
 * Copy-edit CMap-related console messages
 * Copy-edit function documentation
 
-# 1.4 (25 October, 2019)
+# cTRAP 1.4 (25 October, 2019)
 
 ## New features
 
@@ -136,16 +136,16 @@ running `rankSimilarPerturbations()`:
     documentation
 * Include license and copyright text for cmapR code
 
-# 1.0.3 (3 December, 2018)
+# cTRAP 1.0.3 (3 December, 2018)
 
 * Add tag ImmunoOncology to BiocViews
 
-# 1.0.2 (11 November, 2018)
+# cTRAP 1.0.2 (11 November, 2018)
 
 * Fix comparison against CMap perturbations using gene set enrichment analysis 
 (the resulting score was the additive inverse of the real scores)
 
-# 1.0.1 (2 November, 2018)
+# cTRAP 1.0.1 (2 November, 2018)
 
 * Update title, author names, version and README
 * Remove biomaRt dependency

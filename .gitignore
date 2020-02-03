@@ -16,3 +16,4 @@ cmap*.txt
 *.gctx*
 ENC*.tsv
 tests/testthat/Rplots.pdf
+docs/

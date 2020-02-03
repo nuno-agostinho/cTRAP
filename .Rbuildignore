@@ -5,3 +5,6 @@
 ^codecov\.yml$
 ^appveyor\.yml$
 ^Dockerfile
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

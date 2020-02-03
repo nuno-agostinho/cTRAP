@@ -39,10 +39,7 @@ filterCMapMetadata(cmapMetadata, cellLine="HEPG2", timepoint="2 h",
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
-\code{\link{[.perturbationChanges}()},
 \code{\link{as.table.similarPerturbations}()},
-\code{\link{dim.perturbationChanges}()},
-\code{\link{dimnames.perturbationChanges}()},
 \code{\link{getCMapConditions}()},
 \code{\link{getCMapPerturbationTypes}()},
 \code{\link{loadCMapData}()},

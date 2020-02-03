@@ -159,7 +159,7 @@ loadENCODEsamples <- function(metadata) {
 #'
 #' @param samples List of loaded ENCODE samples
 #'
-#' @seealso convertENSEMBLtoGeneSymbols
+#' @seealso \code{\link{convertENSEMBLtoGeneSymbols}()}
 #'
 #' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
@@ -170,7 +170,7 @@ loadENCODEsamples <- function(metadata) {
 #'   # Load ENCODE metadata for a specific cell line and gene
 #'   cellLine <- "HepG2"
 #'   gene <- "EIF4G1"
-#'   ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
+#'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
 #'   # Load samples based on filtered ENCODE metadata
 #'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]

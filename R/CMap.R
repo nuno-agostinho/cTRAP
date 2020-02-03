@@ -564,10 +564,12 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
     return(rankedPerts)
 }
 
-#' Plot perturbation comparison against a differential expression profile
+# perturbationChanges object ---------------------------------------------------
+
+#' Operations on a \code{perturbationChanges} object
 #'
 #' @param x \code{perturbationChanges} object
-#' @param ... Extra arguments (currently undocumented)
+#' @param ... Extra arguments passed to generic methods
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
@@ -583,7 +585,8 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
 #' @importFrom stats setNames
 #'
 #' @family functions related with the ranking of CMap perturbations
-#' @return CMap data comparison plots
+#' @return Subset, plot or return dimensions or names of a
+#'   \code{perturbationChanges} object
 #' @export
 #'
 #' @examples
@@ -660,17 +663,9 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
     }
 }
 
-# perturbationChanges object ---------------------------------------------------
-
-#' Subset a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @param i,j Character or numeric indexes specifying elements to extract
 #' @param drop Boolean: coerce result to the lowest possible dimension?
-#' @param ... Extra parameters passed to \code{`[`}
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return \code{perturbationChanges} object with subset data
 #' @export
 `[.perturbationChanges` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
@@ -712,12 +707,7 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
     return(out)
 }
 
-#' Dimensions of a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return Dimensions of a \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @export
 dim.perturbationChanges <- function(x) {
     if (is.character(x)) {
@@ -728,12 +718,7 @@ dim.perturbationChanges <- function(x) {
     return(res)
 }
 
-#' Dimnames of a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return Retrieve dimnames of a \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @export
 dimnames.perturbationChanges <- function(x) {
     if (is.character(x)) {
@@ -755,7 +740,7 @@ dimnames.perturbationChanges <- function(x) {
 #'
 #' @family functions related with the ranking of CMap perturbations
 #' @return Information on \code{perturbationChanges} object or on specific
-#'   perturbations (if \code{perturbation} is set)
+#'   perturbations
 #' @export
 print.similarPerturbations <- function(x, perturbation=NULL, ...) {
     if (is.null(perturbation)) {
