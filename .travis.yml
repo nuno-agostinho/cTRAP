@@ -5,8 +5,8 @@ language: r
 cache: packages
 
 r:
-  - bioc-devel
   - bioc-release
+  - bioc-devel
 
 os:
   - linux
@@ -22,11 +22,15 @@ jobs:
   include:
     - stage: "Code coverage"
       script: Rscript -e 'covr::codecov()'
+      os: linux
+      r: bioc-release
     - stage: "Deploy"
       deploy:
         provider: script
         script: Rscript -e 'pkgdown::deploy_site_github(verbose=TRUE)'
         cleanup: true
+        os: linux
+        r: bioc-release
         on:
           branch: master
   allow_failures:
