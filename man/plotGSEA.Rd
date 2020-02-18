@@ -6,8 +6,8 @@
 \usage{
 plotGSEA(
   stats,
-  topGenes = NULL,
-  bottomGenes = NULL,
+  geneset,
+  genes = c("both", "top", "bottom"),
   title = "GSEA plot",
   gseaParam = 1
 )
@@ -15,9 +15,10 @@ plotGSEA(
 \arguments{
 \item{stats}{Named numeric vector: statistics}
 
-\item{topGenes}{Named list of characters: up-regulated genes}
-
-\item{bottomGenes}{Named list of characters: down-regulated genes}
+\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{title}{Character: title}
 

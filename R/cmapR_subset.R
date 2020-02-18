@@ -231,7 +231,7 @@ setMethod("initialize", signature = "GCT", definition = function(
         .Object@cdesc <- cdesc
     } else if (!is.null(src)) {
         if (! (grepl(".gct$", src) || grepl(".gctx$", src) ))
-            stop("Either a .gct or .gctx file must be given")
+            stop("either a .gct or .gctx file must be given")
         if (grepl(".gct$", src)) {
             if ( ! is.null(rid) || !is.null(cid) ) {
                 msg <- paste(

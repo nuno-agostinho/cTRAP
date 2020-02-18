@@ -204,3 +204,21 @@ test_that("Compare against CMap by also ranking individual cell lines", {
     checkPerturbationIdentifierInformationInMetadata(data)
     expect_false(areNAsIncludedInRanks(data))
 })
+
+test_that("Compare against CMap based on a gene set", {
+    geneset <- sample(names(diffExprStat), 200)
+    rank <- rankSimilarPerturbations(geneset, perturbations)
+    checkPerturbationIdentifierInformationInMetadata(rank)
+
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(rank, col="GSEA_rank", cols=cols)
+
+    input <- attr(rank, "input")
+    expect_equivalent(input, geneset)
+    expect_true(attr(input, "isGeneset"))
+
+    # Automatically perform only GSEA based on a gene set
+    expect_warning(
+        rankSimilarPerturbations(geneset, perturbations, method="spearman"),
+        "gsea")
+})

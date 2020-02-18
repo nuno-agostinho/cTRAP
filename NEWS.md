@@ -1,7 +1,21 @@
-# cTRAP 1.4.1 (31 January, 2020)
+# cTRAP 1.4.1 (19 February, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
 and drug sensitivity associations
+* First argument of `rankSimilarPerturbations()` and `predictTargetingDrugs()`
+changed name from `diffExprGenes` to `input` and now accepts:
+    - `Named numeric vector` containing differential gene expression values
+    with gene symbols as names, as before;
+    - `Character vector` containing a custom gene set to test for enrichment
+    (only to use with GSEA).
+* Plotting:
+    - Support plotting `predictTargetingDrugs()` results for a given drug using
+    `plot()`, e.g. `plot(targetingDrugs, "1425")`
+    - `GSEA` plots now support two or less gene hits
+    - Automatically plot one available method instead of trying to plot
+    the `"spearman"` method by default
+    - `plotDrugSetEnrichment()` now returns a list whose names are drug set
+    names
 
 ## Minor changes
 
@@ -151,7 +165,7 @@ running `rankSimilarPerturbations()`:
 * Remove biomaRt dependency
 * By default, `getL1000conditions()` now shows CMap perturbation types except 
 for controls
-* Compare against CMap perturbations (`compareAgainstL1000()` function):
+* Compare against CMap perturbations (`compareAgainstL1000()`):
     - Remove "_t" from resulting column names (as the t-statistic may or may not
     be used)
     - Select p-value adjustment method when performing correlation analyses

@@ -56,7 +56,7 @@ processByChunks <- function(data, FUN, ..., chunkSize=10000) {
     pb <- startpb(max=ncol(data))
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
-        msg <- "%s not found: have you moved or deleted the CMap z-scores file?"
+        msg <- "%s not found: has the CMap z-scores file been moved or deleted?"
         stop(sprintf(msg, data))
     }
 
@@ -154,24 +154,23 @@ correlateAgainstReference <- function(diffExprGenes, reference, method,
     return(res)
 }
 
-#' Prepare GSEA pathways
+#' Prepare GSEA gene sets
 #'
-#' @param diffExprGenes Numeric: named vector of differentially expressed genes
-#'   whose names are gene identifiers and respective values are a statistic
-#'   that represents significance and magnitude of differentially expressed
-#'   genes (e.g. t-statistics)
-#' @param geneSize Number: top and bottom number of differentially expressed
-#'   genes for gene set enrichment (only used if \code{method = gsea})
-#'
-#' @return List of top and bottom differentially expressed genes
+#' @inheritParams compareAgainstReferencePerMethod
+#' @return List of gene sets
 #' @keywords internal
-prepareGSEApathways <- function(diffExprGenes, geneSize) {
-    ordered         <- order(diffExprGenes, decreasing=TRUE)
-    topGenes        <- names(diffExprGenes)[head(ordered, geneSize)]
-    bottomGenes     <- names(diffExprGenes)[tail(ordered, geneSize)]
-    pathways        <- list(topGenes, bottomGenes)
-    names(pathways) <- c("top", "bottom")
-    return(pathways)
+prepareGSEAgenesets <- function(input, geneSize) {
+    isGeneset <- isTRUE(attr(input, "isGeneset"))
+    if(isGeneset) {
+        geneset <- list(custom=input)
+    } else {
+        ordered        <- order(input, decreasing=TRUE)
+        topGenes       <- names(input)[head(ordered, geneSize)]
+        bottomGenes    <- names(input)[tail(ordered, geneSize)]
+        geneset        <- list(topGenes, bottomGenes)
+        names(geneset) <- c("top", "bottom")
+    }
+    return(geneset)
 }
 
 #' Perform gene set enrichment (GSA) against data columns
@@ -186,59 +185,72 @@ prepareGSEApathways <- function(diffExprGenes, geneSize) {
 #' @return Data frame containing gene set enrichment analysis (GSEA) results per
 #' data column
 #' @keywords internal
-performGSEAagainstReference <- function(diffExprGenes, reference, pathways) {
+performGSEAagainstReference <- function(reference, geneset) {
     # Calculate GSEA per data column
-    gseaPerColumn <- function(k, data, pathways) {
+    gseaPerColumn <- function(k, data, geneset) {
         signature        <- data[ , k]
         names(signature) <- rownames(data)
         signature        <- sort(signature)
-        score            <- fgsea(pathways=pathways, stats=signature,
+        score            <- fgsea(pathways=geneset, stats=signature,
                                   minSize=15, maxSize=500, nperm=1)
         return(score)
     }
-    gsa <- processByChunks(reference, gseaPerColumn, pathways=pathways)
-
-    # Calculate weighted connectivity score (WTCS) based on CMap paper (page e8)
+    gsa <- processByChunks(reference, gseaPerColumn, geneset)
     gsaRes <- bind_rows(gsa)
-    isTop  <- gsaRes$pathway == "top"
-    top    <- gsaRes[["ES"]][isTop]
-    bottom <- gsaRes[["ES"]][!isTop]
-    wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
 
-    results <- data.table("identifier"=colnames(reference), "GSEA"=wtcs)
+    calcWTCS <- all(sort(unique(gsaRes$pathway)) == c("bottom", "top"))
+    if (calcWTCS) {
+        # Weighted connectivity score (WTCS) as per CMap paper (page e8)
+        isTop  <- gsaRes$pathway == "top"
+        top    <- gsaRes[["ES"]][isTop]
+        bottom <- gsaRes[["ES"]][!isTop]
+        wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
+        score  <- wtcs
+    } else {
+        score  <- gsaRes[["ES"]]
+    }
+    if (length(score) == 0) score <- NA
+    results <- data.table("identifier"=colnames(reference), "GSEA"=score)
     attr(results, "colsToRank") <- "GSEA"
     return(results)
 }
 
 #' Compare single method
 #'
-#' @inheritParams prepareGSEApathways
+#' @param input \code{Named numeric vector} of differentially expressed genes
+#'   whose names are gene identifiers and respective values are a statistic that
+#'   represents significance and magnitude of differentially expressed genes
+#'   (e.g. t-statistics); or \code{character} of gene symbols composing a gene
+#'   set that is tested for enrichment in reference data (only used if
+#'   \code{method = gsea})
+#' @param geneSize Numeric: number of up-/down-regulated genes to use as gene
+#'   sets to test for enrichment in reference data (only used if
+#'   \code{method = gsea} and if \code{input} is a numeric vector)
 #' @param method Character: comparison methods to run (\code{spearman},
 #'   \code{pearson} or \code{gsea}); multiple methods can be selected
 #' @param reference Data matrix or \code{perturbationChanges} object (CMap
-#'   perturbations; read \code{\link{prepareCMapPerturbations}})
+#'   perturbations; see \code{\link{prepareCMapPerturbations}()})
 #' @param cellLines Integer: number of unique cell lines
 #' @param cellLineMean Boolean: add a column with the mean score across cell
-#'   lines? If \code{cellLineMean = "auto"} (default) the mean score will be
-#'   added if more than one cell line is available
-#' @param rankByAscending Boolean: rank values based on their ascending (TRUE)
-#'   or descending (FALSE) order?
-#' @param rankPerCellLine Boolean: when ranking results, also rank them based on
-#'   individual cell lines instead of only focusing on the mean score across
-#'   cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
-#'   are always ranked
+#'   lines? If \code{cellLineMean = "auto"} (default), the mean score will be
+#'   added when data for more than one cell line is available.
+#' @param rankByAscending Boolean: rank values based on their ascending
+#'   (\code{TRUE}) or descending (\code{FALSE}) order?
+#' @param rankPerCellLine Boolean: rank results based on both individual cell
+#'   lines and mean scores across cell lines (\code{TRUE}) or based on mean
+#'   scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
+#'   cell line conditions are always ranked.
 #'
 #' @importFrom utils head tail
 #' @importFrom R.utils capitalize
 #'
 #' @keywords internal
 #' @return Data frame containing the results per method of comparison
-compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
+compareAgainstReferencePerMethod <- function(method, input, reference,
                                              geneSize=150, cellLines=NULL,
                                              cellLineMean="auto",
                                              rankPerCellLine=FALSE) {
     startTime <- Sys.time()
-
     type <- attr(reference, "type")
     if (is.null(type)) type <- "comparisons"
     compareMsg <- paste(c(ncol(reference),
@@ -253,10 +265,8 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
                            ifelse(cellLines == 1, "", "s"), methodStr)
         }
         message(sprintf("Correlating against %s (%s)...", compareMsg, msg))
-        pathways  <- NULL
-        rankedRef <- correlateAgainstReference(diffExprGenes=diffExprGenes,
-                                               reference=reference,
-                                               method=method)
+        geneset  <- NULL
+        rankedRef <- correlateAgainstReference(input, reference, method)
     } else if (method == "gsea") {
         if (is.null(cellLines) || cellLines == 0) {
             msg <- compareMsg
@@ -266,11 +276,8 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
             msg <- paste(compareMsg, cellLinesMsg)
         }
         message(sprintf("Performing GSEA against %s...", msg))
-
-        pathways  <- prepareGSEApathways(diffExprGenes, geneSize)
-        rankedRef <- performGSEAagainstReference(diffExprGenes=diffExprGenes,
-                                                 reference=reference,
-                                                 pathways=pathways)
+        geneset   <- prepareGSEAgenesets(input, geneSize)
+        rankedRef <- performGSEAagainstReference(reference, geneset)
     }
     colsToRank <- attr(rankedRef, "colsToRank")
 
@@ -301,7 +308,7 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
     # Inherit information of interest
     attr(rankedRef, "rankingInfo") <- rankingInfo
     attr(rankedRef, "metadata")    <- metadata
-    attr(rankedRef, "pathways")    <- pathways
+    attr(rankedRef, "geneset")     <- geneset
 
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
@@ -312,13 +319,29 @@ compareAgainstReferencePerMethod <- function(method, diffExprGenes, reference,
     return(rankedRef)
 }
 
+prepareGeneInput <- function(input) {
+    if (is.null(names(input)) && is.character(input)) {
+        isGeneset   <- TRUE
+        geneSymbols <- input
+    } else if (!is.null(names(input)) && is.numeric(input)) {
+        isGeneset   <- FALSE
+        geneSymbols <- names(input)
+    } else {
+        stop("argument 'input' must be a named numeric vector or a character",
+             " vector with gene symbols.")
+    }
+    attr(input, "isGeneset")   <- isGeneset
+    attr(input, "geneSymbols") <- geneSymbols
+    return(input)
+}
+
 #' Compare multiple methods and rank reference accordingly
 #'
 #' @inheritParams compareAgainstReferencePerMethod
 #'
 #' @keywords internal
 #' @return List of data frame containing the results per methods of comparison
-compareAgainstReference <- function(diffExprGenes, reference,
+compareAgainstReference <- function(input, reference,
                                     method=c("spearman", "pearson", "gsea"),
                                     geneSize=150, cellLines=NULL,
                                     cellLineMean="auto", rankByAscending=TRUE,
@@ -333,24 +356,32 @@ compareAgainstReference <- function(diffExprGenes, reference,
             "Argument 'method' must contain one of the following supported",
             "comparison methods:", paste(supported, collapse=", ")))
     }
+    input <- prepareGeneInput(input)
+    if (attr(input, "isGeneset")) {
+        if (!"gsea" %in% method) {
+            msg <- paste("Method 'gsea' is automatically performed if argument",
+                         "'input' is a gene set.")
+            warning(msg)
+        }
+        method <- "gsea"
+    }
 
     # Summary of intersecting genes
-    genes       <- intersect(names(diffExprGenes), rownames(reference))
+    genes       <- intersect(attr(input, "geneSymbols"), rownames(reference))
     intersected <- length(genes)
-    total       <- length(diffExprGenes)
+    total       <- length(input)
     message(sprintf(paste(
         "Subsetting data based on %s intersecting genes",
         "(%s%% of the %s input genes)..."),
         intersected, round(intersected / total * 100, 0), total))
     if (intersected == 0) {
-        stop(paste("No intersecting genes found. Check if argument",
-                   "'diffExprGenes' is a named vector with gene symbols."))
+        stop("No intersecting genes found. Check if argument 'input' is a",
+             " named numeric vector or a character vector with gene symbols.")
     }
 
     names(method) <- method
-    res <- lapply(method, compareAgainstReferencePerMethod,
-                  diffExprGenes=diffExprGenes, reference=reference,
-                  geneSize=geneSize, cellLines=cellLines,
+    res <- lapply(method, compareAgainstReferencePerMethod, input=input,
+                  reference=reference, geneSize=geneSize, cellLines=cellLines,
                   cellLineMean=cellLineMean, rankPerCellLine=rankPerCellLine)
 
     # Rank columns
@@ -366,13 +397,15 @@ compareAgainstReference <- function(diffExprGenes, reference,
 
     # Inherit metadata
     attr(ranked, "metadata") <- Reduce(merge, lapply(res, attr, "metadata"))
-    attr(ranked, "geneInfo")      <- attr(reference, "geneInfo")
-    attr(ranked, "compoundInfo")  <- attr(reference, "compoundInfo")
+    attr(ranked, "geneInfo")        <- attr(reference, "geneInfo")
+    attr(ranked, "compoundInfo")    <- attr(reference, "compoundInfo")
+    attr(ranked, "zscoresFilename") <- attr(reference, "zscoresFilename")
 
-    # Inherit from input differential expression profile
-    attr(ranked, "diffExprGenes") <- diffExprGenes
+    # Inherit from input
+    attr(ranked, "input")         <- input
     attr(ranked, "rankingInfo")   <- rankingInfo
-    attr(ranked, "pathways")      <- attr(res[["gsea"]], "pathways")
+    attr(ranked, "geneset")       <- c(attr(res[["gsea"]], "pathways"), # legacy
+                                       attr(res[["gsea"]], "geneset"))
     attr(ranked, "runtime")       <- Sys.time() - startTime
 
     class(ranked) <- c("referenceComparison", class(ranked))

@@ -136,7 +136,8 @@ for more details). As this file's size is big (around 20GB), a prompt will ask
 you to confirm whether to start downloading the file.
 >
 > Alternatively, you can download the file from the following link (do not
-forget to give the correct filename):
+forget to use the same filename as the argument of
+`prepareCMapPerturbations()`):
 ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz
 
 ```{r CMap knockdown perturbations, eval=FALSE}
@@ -220,10 +221,10 @@ tail(compareKD[order(GSEA_rank, na.last=NA)])
 tail(compareKD[order(rankProduct_rank, na.last=NA)])
 
 # Plot list of compared pertubations
-plot(compareKD, "spearman", n=c(10, 3))
-plot(compareKD, "pearson")
-plot(compareKD, "gsea")
-plot(compareKD, "rankProduct")
+plot(compareKD, method="spearman", n=c(10, 3))
+plot(compareKD, method="pearson")
+plot(compareKD, method="gsea")
+plot(compareKD, method="rankProduct")
 ```
 
 For small molecules:
@@ -231,7 +232,7 @@ For small molecules:
 ```{r order small molecule perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively and negatively associated perturbations
 compareCompounds[order(rankProduct_rank, na.last=NA)]
-plot(compareCompounds, "rankProduct")
+plot(compareCompounds, method="rankProduct")
 ```
 
 > The Gene Set Enrichment Analysis (GSEA) score is based on the Weighted
@@ -253,7 +254,7 @@ expressed genes from our data.
 
 To get associated information as made available from CMap:
 
-```{r perturbation info}
+```{r perturbation info, fig.width=5, fig.asp=1}
 # Information on the EIF4G1 knockdown perturbation
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 print(compareKD, EIF4G1knockdown)
@@ -332,22 +333,26 @@ expression and drug sensitivity associations. The gene expression and drug
 sensitivity datasets derived from the following sources were correlated using 
 Spearman's correlation across the available cell lines.
 
-| Source        | Screened compounds | Human cancer cell lines |
-| ------------- | ------------------:| -----------------------:|
-| [NCI60][]     |          > 100 000 |                      60 |
-| [GDSC 7][]    |                481 |                     860 |
-| [CTRP 2.1][]  |                138 |                    ~700 |
+| Source           | Screened compounds | Human cancer cell lines |
+| ---------------- | ------------------:| -----------------------:|
+| [NCI60][]        |          > 100 000 |                      60 |
+| [GDSC 7][GDSC]   |                481 |                     860 |
+| [CTRP 2.1][CTRP] |                138 |                    ~700 |
 
 To use an expression and drug sensitivity association based on `CTRP 2.1`
 (`GDSC 7` and `NCI60` could be used instead) to infer targeting drugs for the
 user's differential expression profile:
 
-```{r}
+```{r, fig.width=5, fig.asp=1}
 listExpressionDrugSensitivityAssociation()
 ctrp      <- listExpressionDrugSensitivityAssociation()[[2]]
 assoc     <- loadExpressionDrugSensitivityAssociation(ctrp)
 predicted <- predictTargetingDrugs(diffExprStat, assoc)
 plot(predicted, method="rankProduct")
+
+# Plot results for a given drug
+plot(predicted, predicted[[1, 1]], method="spearman")
+plot(predicted, predicted[[1, 1]], method="gsea")
 ```
 
 > Compounds are ranked by their relative targeting potential based on the input
@@ -359,7 +364,7 @@ perturbations towards the user's differential expression profile. Note that the
 highlighted values are the same compounds for the following plots annotated with
 their name, gene target and mechanism of action (MOA), respectively.
 
-```{r}
+```{r, fig.width=5, fig.asp=1}
 # Label by compound name
 plotTargetingDrugsVSsimilarPerturbations(
   predicted, compareCompounds, column="spearman_rank")

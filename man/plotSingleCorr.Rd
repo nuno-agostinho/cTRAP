@@ -13,7 +13,7 @@ the list will be rendered with a different colour}
 
 \item{ylabel}{Character: Y axis label}
 
-\item{diffExprGenes}{Named vector}
+\item{diffExprGenes}{Named numeric vector}
 }
 \value{
 Scatter plot

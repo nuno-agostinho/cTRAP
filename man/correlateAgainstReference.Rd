@@ -7,11 +7,6 @@
 correlateAgainstReference(diffExprGenes, reference, method, pAdjust = "BH")
 }
 \arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
-
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}
 

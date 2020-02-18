@@ -6,7 +6,7 @@
 \title{Rank CMap perturbations' similarity to a differential expression profile}
 \usage{
 rankSimilarPerturbations(
-  diffExprGenes,
+  input,
   perturbations,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
@@ -15,10 +15,12 @@ rankSimilarPerturbations(
 )
 }
 \arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method = gsea})}
 
 \item{perturbations}{\code{perturbationChanges} object: CMap perturbations
 (check \code{\link{prepareCMapPerturbations}})}
@@ -26,17 +28,18 @@ genes (e.g. t-statistics)}
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
+sets to test for enrichment in reference data (only used if
+\code{method = gsea} and if \code{input} is a numeric vector)}
 
 \item{cellLineMean}{Boolean: add a column with the mean score across cell
-lines? If \code{cellLineMean = "auto"} (default) the mean score will be
-added if more than one cell line is available}
+lines? If \code{cellLineMean = "auto"} (default), the mean score will be
+added when data for more than one cell line is available.}
 
-\item{rankPerCellLine}{Boolean: when ranking results, also rank them based on
-individual cell lines instead of only focusing on the mean score across
-cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
-are always ranked}
+\item{rankPerCellLine}{Boolean: rank results based on both individual cell
+lines and mean scores across cell lines (\code{TRUE}) or based on mean
+scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
+cell line conditions are always ranked.}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

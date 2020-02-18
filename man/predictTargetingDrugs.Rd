@@ -5,30 +5,34 @@
 \title{Predict targeting drugs}
 \usage{
 predictTargetingDrugs(
-  diffExprGenes,
+  input,
   expressionDrugSensitivityCor,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
+  geneset = NULL,
   isDrugActivityDirectlyProportionalToSensitivity = NULL
 )
 }
 \arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method = gsea})}
 
 \item{expressionDrugSensitivityCor}{Matrix: correlation matrix of gene
 expression (rows) and drug sensitivity (columns) across cell lines.
 Pre-prepared gene expression and drug sensitivity associations are
 available to download using
-\code{\link{loadExpressionDrugSensitivityAssociation}}.}
+\code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
 \item{method}{Character: comparison methods to run (\code{spearman},
 \code{pearson} or \code{gsea}); multiple methods can be selected}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
+sets to test for enrichment in reference data (only used if
+\code{method = gsea} and if \code{input} is a numeric vector)}
 
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
@@ -44,12 +48,10 @@ user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
 }
 \details{
-If \code{isDrugActivityDirectlyProportionalToSensitivity} is set to
-  \code{NULL} (as by default), the attribute
-  \code{isDrugMetricDirectlyProportionalToSensitivity} on the object passed
-  as argument \code{expressionDrugSensitivityCor} is used (objects obtained
-  via \code{\link{loadExpressionDrugSensitivityAssociation}} have the
-  mentioned attribute set).
+If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
+  attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
+  \code{expressionDrugSensitivityCor} is used (see
+  \code{\link{loadExpressionDrugSensitivityAssociation}()}).
 }
 \section{GSEA score}{
 

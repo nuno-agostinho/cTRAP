@@ -87,6 +87,6 @@ test_that("Plot Pearson's correlation for a single perturbation", {
 
 test_that("Plot GSEA for a single perturbation", {
     plot <- plot(perturbations, colnames(perturbations)[[1]], diffExprStat,
-                 "gsea")
+                 method="gsea")
     expect_s3_class(plot, "ggplot")
 })

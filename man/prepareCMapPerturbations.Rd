@@ -26,7 +26,7 @@ filepath to load data from file)}
 filepath to load data from file)}
 
 \item{loadZscores}{Boolean: load perturbation z-scores? Not recommended in
-memory-constrained systems}
+systems with less than ~30GB available of RAM}
 }
 \value{
 CMap perturbation data attributes and filename

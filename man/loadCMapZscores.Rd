@@ -4,13 +4,13 @@
 \alias{loadCMapZscores}
 \title{Load matrix of CMap perturbation's differential expression z-scores}
 \usage{
-loadCMapZscores(data, perturbationChanges = FALSE, verbose = TRUE)
+loadCMapZscores(data, inheritAttrs = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{data}{\code{perturbationChanges} object}
 
-\item{perturbationChanges}{Boolean: convert to \code{perturbationChanges}
-object?}
+\item{inheritAttrs}{Boolean: convert to \code{perturbationChanges} object and
+inherit attributes from \code{data}?}
 
 \item{verbose}{Boolean: print messages?}
 }

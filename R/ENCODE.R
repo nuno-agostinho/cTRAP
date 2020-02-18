@@ -183,7 +183,7 @@ prepareENCODEgeneExpression <- function(samples) {
         samples, "[[", "transcript_id(s)"),
         identical, samples$rep1$`transcript_id(s)`))
     if (!all(sameTranscriptsAcrossSamples))
-        stop("Not all samples share the same transcript identifiers")
+        stop("not all samples share the same transcript identifiers")
 
     # Merge gene counts from the different samples to a single table
     countTable <- cbind(samples$rep1[ , c(1:2, 5)], samples$rep2[ , 5],

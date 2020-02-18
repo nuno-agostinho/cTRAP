@@ -6,32 +6,49 @@
 \usage{
 \method{plot}{referenceComparison}(
   x,
+  element = NULL,
   method = c("spearman", "pearson", "gsea", "rankProduct"),
   n = c(3, 3),
   showMetadata = TRUE,
   plotNonRankedPerturbations = FALSE,
   alpha = 0.3,
+  geneSize = 150,
+  genes = c("both", "top", "bottom"),
   ...
 )
 }
 \arguments{
 \item{x}{\code{referenceComparison} object: obtained after running
-\code{\link{rankSimilarPerturbations}} or
-\code{\link{predictTargetingDrugs}}}
+\code{\link{rankSimilarPerturbations}()} or
+\code{\link{predictTargetingDrugs}()}}
 
-\item{method}{Character: method to plot results (\code{spearman},
-\code{pearson}, \code{gsea} or \code{rankProduct})}
+\item{element}{Character: identifier in the first column of \code{x}}
+
+\item{method}{Character: method to plot results; choose between
+\code{spearman}, \code{pearson}, \code{gsea} or \code{rankProduct} (the
+last one is only available if \code{element = NULL})}
 
 \item{n}{Numeric: number of top and bottom genes to label (if a vector of two
 numbers is given, the first and second numbers will be used as the number
-of top and bottom genes to label, respectively)}
+of top and bottom genes to label, respectively); only used if
+\code{element = NULL}}
 
 \item{showMetadata}{Boolean: show available metadata information instead of
-identifiers (if available)?}
+identifiers (if available)? Only used if \code{element = NULL}}
 
-\item{plotNonRankedPerturbations}{Boolean: plot non-ranked data in grey?}
+\item{plotNonRankedPerturbations}{Boolean: plot non-ranked data in grey? Only
+used if \code{element = NULL}}
 
-\item{alpha}{Numeric: transparency}
+\item{alpha}{Numeric: transparency; only used if \code{element = NULL}}
+
+\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
+sets to test for enrichment in reference data (only used if
+\code{method = gsea} and if \code{input} is a numeric vector)}
+
+\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{...}{Extra arguments currently not used}
 }
@@ -39,7 +56,9 @@ identifiers (if available)?}
 Plot illustrating the reference comparison
 }
 \description{
-Plot data comparison
+If \code{element = NULL}, comparison is plotted based on all elements.
+Otherwise, show scatter or GSEA plots for a single element compared with
+previously given differential expression results.
 }
 \examples{
 # Example of a differential expression profile
@@ -59,9 +78,11 @@ cmapPerturbationsKD <- prepareCMapPerturbations(
 # Rank similar CMap perturbations
 compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 
-plot(compareKD, "spearman", c(7, 3))
-plot(compareKD, "pearson")
-plot(compareKD, "gsea")
+plot(compareKD, method="spearman", n=c(7, 3))
+plot(compareKD, method="pearson")
+plot(compareKD, method="gsea")
+
+plot(compareKD, compareKD[[1, 1]])
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 

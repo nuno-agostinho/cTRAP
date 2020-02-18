@@ -14,10 +14,10 @@ cell lines as values}
 
 \item{metadata}{Data table: \code{data} metadata}
 
-\item{rankPerCellLine}{Boolean: when ranking results, also rank them based on
-individual cell lines instead of only focusing on the mean score across
-cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
-are always ranked}
+\item{rankPerCellLine}{Boolean: rank results based on both individual cell
+lines and mean scores across cell lines (\code{TRUE}) or based on mean
+scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
+cell line conditions are always ranked.}
 }
 \value{
 A list with two items:

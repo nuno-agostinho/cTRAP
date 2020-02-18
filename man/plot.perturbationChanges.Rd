@@ -10,7 +10,7 @@
 \method{plot}{perturbationChanges}(
   x,
   perturbation,
-  diffExprGenes,
+  input,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
   genes = c("both", "top", "bottom"),
@@ -30,23 +30,26 @@
 \code{similarPerturbations} table (from which the respective perturbation
 identifiers are retrieved)}
 
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method = gsea})}
 
-\item{method}{Character: method to plot results (\code{spearman},
-\code{pearson} or \code{gsea})}
+\item{method}{Character: comparison methods to run (\code{spearman},
+\code{pearson} or \code{gsea}); multiple methods can be selected}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
+sets to test for enrichment in reference data (only used if
+\code{method = gsea} and if \code{input} is a numeric vector)}
 
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
-plot top genes (\code{genes = "top"}), bottom genes
-(\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-\code{method = "gsea"}}
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
-\item{...}{Extra arguments passed to generic methods}
+\item{...}{Extra arguments}
 
 \item{i, j}{Character or numeric indexes specifying elements to extract}
 
