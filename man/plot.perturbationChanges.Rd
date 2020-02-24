@@ -12,7 +12,7 @@
   perturbation,
   input,
   method = c("spearman", "pearson", "gsea"),
-  geneset = NULL,
+  geneSize = 150,
   genes = c("both", "top", "bottom"),
   ...
 )
@@ -39,6 +39,10 @@ set that is tested for enrichment in reference data (only used if
 
 \item{method}{Character: comparison methods to run (\code{spearman},
 \code{pearson} or \code{gsea}); multiple methods can be selected}
+
+\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
+sets to test for enrichment in reference data (only used if
+\code{method = gsea} and if \code{input} is a numeric vector)}
 
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
 plot most up-regulated genes (\code{genes = "top"}), most down-regulated

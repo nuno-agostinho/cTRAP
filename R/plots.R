@@ -430,9 +430,11 @@ plot.referenceComparison <- function(x, element=NULL,
             prepareCMapPerturbations(metadata, zscores, geneInfo, compoundInfo))
         input   <- c(attr(x, "diffExprGenes"), # legacy
                      attr(x, "input"))
-        geneset <- c(attr(x, "pathways"), attr(x, "geneset"))
-        plot  <- plot(cmapPerturbations, element, input=input, method=method,
-                      geneset=geneset, genes=genes, ...)
+        geneset <- c(attr(x, "pathways"), # legacy
+                     attr(x, "geneset"))
+        plot  <- plotPerturbationChanges(cmapPerturbations, element,
+                                         input=input, method=method,
+                                         geneset=geneset, genes=genes, ...)
     } else if (is(x, "targetingDrugs")) {
         plot <- plotTargetingDrug(x, element, method=method, genes=genes, ...)
     }

@@ -609,10 +609,18 @@ rankSimilarPerturbations <- function(input, perturbations,
 #' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 plot.perturbationChanges <- function(x, perturbation, input,
                                      method=c("spearman", "pearson", "gsea"),
-                                     geneset=NULL,
+                                     geneSize=150,
                                      genes=c("both", "top", "bottom"), ...) {
-    method <- match.arg(method)
+    plotPerturbationChanges(x=x, perturbation=perturbation, input=input,
+                            method=method, geneset=NULL, geneSize=geneSize,
+                            genes=genes, ...)
+}
 
+plotPerturbationChanges <- function(x, perturbation, input,
+                                    method=c("spearman", "pearson", "gsea"),
+                                    geneset=NULL, geneSize=150,
+                                    genes=c("both", "top", "bottom"), ...) {
+    method <- match.arg(method)
     if (is(perturbation, "similarPerturbations")) {
         perturbation <- perturbation[[1]]
     }
@@ -643,14 +651,16 @@ plot.perturbationChanges <- function(x, perturbation, input,
     }, zscores)
 
     if (method != "gsea") {
-        plotSingleCorr(data, perturbation, input)
+        plot <- plotSingleCorr(data, perturbation, input)
     } else {
         if (length(data) > 1) {
             stop("plotting GSEA of multiple perturbations is not supported")
         }
         data <- unclass(data[[1]])
-        plotGSEA(data, geneset, genes, title=perturbation, ...)
+        if (is.null(geneset)) geneset <- prepareGSEAgenesets(input, geneSize)
+        plot <- plotGSEA(data, geneset, genes, title=perturbation, ...)
     }
+    return(plot)
 }
 
 #' @rdname plot.perturbationChanges
