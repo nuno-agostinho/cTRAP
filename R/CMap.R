@@ -609,7 +609,7 @@ rankSimilarPerturbations <- function(input, perturbations,
 #' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 plot.perturbationChanges <- function(x, perturbation, input,
                                      method=c("spearman", "pearson", "gsea"),
-                                     geneSize=150,
+                                     geneset=NULL,
                                      genes=c("both", "top", "bottom"), ...) {
     method <- match.arg(method)
 
@@ -649,7 +649,6 @@ plot.perturbationChanges <- function(x, perturbation, input,
             stop("plotting GSEA of multiple perturbations is not supported")
         }
         data <- unclass(data[[1]])
-        geneset <- prepareGSEAgenesets(input, geneSize)
         plotGSEA(data, geneset, genes, title=perturbation, ...)
     }
 }

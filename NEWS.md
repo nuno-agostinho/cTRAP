@@ -9,11 +9,11 @@ changed name from `diffExprGenes` to `input` and now accepts:
     - `Character vector` containing a custom gene set to test for enrichment
     (only to use with GSEA).
 * Plotting:
-    - Support plotting `predictTargetingDrugs()` results for a given drug using
-    `plot()`, e.g. `plot(targetingDrugs, "1425")`
-    - `GSEA` plots now support two or less gene hits
-    - Automatically plot one available method instead of trying to plot
-    the `"spearman"` method by default
+    - `plot` now supports plotting `predictTargetingDrugs()` results for a given
+    drug, e.g. `plot(targetingDrugs, "1425")`
+    - GSEA plots now support two or less gene hits
+    - `plot` now plots results based on available methods instead of trying
+    to plot based on results from `spearman` method only
     - `plotDrugSetEnrichment()` now returns a list whose names are drug set
     names
 

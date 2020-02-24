@@ -486,7 +486,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #' predictTargetingDrugs(diffExprStat, gdsc)
 predictTargetingDrugs <- function(
     input, expressionDrugSensitivityCor,
-    method=c("spearman", "pearson", "gsea"), geneSize=150, geneset=NULL,
+    method=c("spearman", "pearson", "gsea"), geneSize=150,
     isDrugActivityDirectlyProportionalToSensitivity=NULL) {
 
     cellLines <- length(attr(expressionDrugSensitivityCor, "cellLines"))
@@ -521,7 +521,7 @@ predictTargetingDrugs <- function(
 #'
 #' @keywords internal
 plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
-                              geneSize=150, genes=c("both", "top", "bottom"),
+                              genes=c("both", "top", "bottom"),
                               data=NULL) {
     method <- match.arg(method)
     drug <- as.character(drug)
@@ -547,7 +547,7 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
             theme_bw() +
             theme(legend.position="bottom")
     } else if (method == "gsea") {
-        geneset <- prepareGSEAgenesets(input, geneSize)
+        geneset <- attr(x, "pathways")
         plot <- plotGSEA(cor, geneset, genes, title=drug)
     }
     return(plot)

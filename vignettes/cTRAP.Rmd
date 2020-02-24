@@ -259,9 +259,14 @@ To get associated information as made available from CMap:
 EIF4G1knockdown <- grep("EIF4G1", compareKD[[1]], value=TRUE)
 print(compareKD, EIF4G1knockdown)
 
-# Information on the most similar compound perturbation (based on Spearman's 
-# correlation)
-print(compareCompounds[order(rankProduct_rank, na.last=NA)], 1)
+# Information on the top 10 most similar compound perturbations (based on
+# Spearman's correlation)
+print(compareKD[order(rankProduct_rank, na.last=NA)], 1:10)
+
+# Get table with all information available (including ranks, metadata, compound
+# information, etc.)
+table <- as.table(compareKD)
+head(table)
 
 # Obtain available raw information from compared perturbations
 names(attributes(compareKD)) # Data available in compared perturbations

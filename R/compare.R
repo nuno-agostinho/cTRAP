@@ -160,16 +160,29 @@ correlateAgainstReference <- function(diffExprGenes, reference, method,
 #' @return List of gene sets
 #' @keywords internal
 prepareGSEAgenesets <- function(input, geneSize) {
+    input <- prepareGeneInput(input)
     isGeneset <- isTRUE(attr(input, "isGeneset"))
     if(isGeneset) {
         geneset <- list(custom=input)
+        actualGeneSize <- geneSize
     } else {
+        # Check if length of input is too small for geneSize
+        genes          <- names(input)
+        actualGeneSize <- min(floor(length(genes)/2), geneSize)
+        if (actualGeneSize != geneSize) {
+            msg <- sprintf(
+                "'input' contains a smaller number of genes than available for",
+                "'geneSize'; 'geneSize' used was reduced to %s", actualGeneSize)
+            warning(msg)
+        }
+
         ordered        <- order(input, decreasing=TRUE)
-        topGenes       <- names(input)[head(ordered, geneSize)]
-        bottomGenes    <- names(input)[tail(ordered, geneSize)]
+        topGenes       <- genes[head(ordered, actualGeneSize)]
+        bottomGenes    <- genes[tail(ordered, actualGeneSize)]
         geneset        <- list(topGenes, bottomGenes)
         names(geneset) <- c("top", "bottom")
     }
+    attr(geneset, "geneSize") <- actualGeneSize
     return(geneset)
 }
 
@@ -277,6 +290,7 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
         }
         message(sprintf("Performing GSEA against %s...", msg))
         geneset   <- prepareGSEAgenesets(input, geneSize)
+        geneSize  <- attr(geneset, "geneSize")
         rankedRef <- performGSEAagainstReference(reference, geneset)
     }
     colsToRank <- attr(rankedRef, "colsToRank")

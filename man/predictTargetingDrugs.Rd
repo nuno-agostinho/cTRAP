@@ -9,7 +9,6 @@ predictTargetingDrugs(
   expressionDrugSensitivityCor,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
-  geneset = NULL,
   isDrugActivityDirectlyProportionalToSensitivity = NULL
 )
 }
