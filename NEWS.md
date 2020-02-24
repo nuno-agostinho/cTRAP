@@ -8,6 +8,12 @@ changed name from `diffExprGenes` to `input` and now accepts:
     with gene symbols as names, as before;
     - `Character vector` containing a custom gene set to test for enrichment
     (only to use with GSEA).
+* In `rankSimilarPerturbations()` and `predictTargetingDrugs()`, when performing
+`gsea` method, allow to set different gene set size for top up- and
+down-regulated genes with `geneSize` argument:
+    - e.g. `geneSize=c(100, 200)` creates gene sets from the top 100 up-
+    and top 200 down-regulated genes
+    - using `geneSize=c(150, 150)` or `geneSize=150` is equivalent
 * Plotting:
     - `plot` now supports plotting `predictTargetingDrugs()` results for a given
     drug, e.g. `plot(targetingDrugs, "1425")`

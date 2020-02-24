@@ -163,26 +163,36 @@ prepareGSEAgenesets <- function(input, geneSize) {
     input <- prepareGeneInput(input)
     isGeneset <- isTRUE(attr(input, "isGeneset"))
     if(isGeneset) {
-        geneset <- list(custom=input)
-        actualGeneSize <- geneSize
+        geneset <- list("custom"=input)
+        geneSize <- 0
     } else {
         # Check if length of input is too small for geneSize
-        genes          <- names(input)
-        actualGeneSize <- min(floor(length(genes)/2), geneSize)
-        if (actualGeneSize != geneSize) {
-            msg <- sprintf(
-                "'input' contains a smaller number of genes than available for",
-                "'geneSize'; 'geneSize' used was reduced to %s", actualGeneSize)
-            warning(msg)
+        genes <- names(input)
+        if (length(geneSize) == 1) {
+            isGeneNumberLow <- floor(length(genes)/2) < geneSize
+        } else if (length(geneSize) == 2) {
+            isGeneNumberLow <- length(genes) < sum(geneSize)
         }
 
-        ordered        <- order(input, decreasing=TRUE)
-        topGenes       <- genes[head(ordered, actualGeneSize)]
-        bottomGenes    <- genes[tail(ordered, actualGeneSize)]
-        geneset        <- list(topGenes, bottomGenes)
-        names(geneset) <- c("top", "bottom")
+        if (isGeneNumberLow) {
+            geneSize <- floor(length(genes)/2)
+            msg <- sprintf(
+                "'input' contains a smaller number of genes than available for",
+                "'geneSize'; 'geneSize' parameter was reduced to %s", geneSize)
+            warning(msg, immediate.=TRUE)
+        }
+        if (length(geneSize) == 1) geneSize <- rep(geneSize, 2)
+
+        ordered  <- order(input, decreasing=TRUE)
+        topGenes <- genes[head(ordered, geneSize[[1]])]
+        if (geneSize[[1]] <= 0) topGenes <- NULL
+
+        bottomGenes <- genes[tail(ordered, geneSize[[2]])]
+        if (geneSize[[2]] <= 0) bottomGenes <- NULL
+
+        geneset <- list("top"=topGenes, "bottom"=bottomGenes)
     }
-    attr(geneset, "geneSize") <- actualGeneSize
+    attr(geneset, "geneSize") <- unique(geneSize)
     return(geneset)
 }
 
@@ -264,6 +274,10 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
                                              cellLineMean="auto",
                                              rankPerCellLine=FALSE) {
     startTime <- Sys.time()
+
+    # Check immediately if there is something wrong
+    if (method == "gsea") geneset <- prepareGSEAgenesets(input, geneSize)
+
     type <- attr(reference, "type")
     if (is.null(type)) type <- "comparisons"
     compareMsg <- paste(c(ncol(reference),
@@ -289,7 +303,6 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
             msg <- paste(compareMsg, cellLinesMsg)
         }
         message(sprintf("Performing GSEA against %s...", msg))
-        geneset   <- prepareGSEAgenesets(input, geneSize)
         geneSize  <- attr(geneset, "geneSize")
         rankedRef <- performGSEAagainstReference(reference, geneset)
     }
