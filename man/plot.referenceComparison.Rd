@@ -14,7 +14,8 @@
   alpha = 0.3,
   geneSize = 150,
   genes = c("both", "top", "bottom"),
-  ...
+  ...,
+  zscores = NULL
 )
 }
 \arguments{

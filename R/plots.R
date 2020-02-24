@@ -400,7 +400,8 @@ plot.referenceComparison <- function(x, element=NULL,
                                      n=c(3, 3), showMetadata=TRUE,
                                      plotNonRankedPerturbations=FALSE,
                                      alpha=0.3, geneSize=150,
-                                     genes=c("both", "top", "bottom"), ...) {
+                                     genes=c("both", "top", "bottom"), ...,
+                                     zscores=NULL) {
     if (!is.null(element)) {
         if (length(element) > 1) {
             stop("argument 'element' should be a character of length one")
@@ -422,18 +423,18 @@ plot.referenceComparison <- function(x, element=NULL,
             plotNonRankedPerturbations=plotNonRankedPerturbations, alpha=alpha)
     } else if (is(x, "similarPerturbations")) {
         metadata     <- attr(x, "metadata")
-        zscores      <- attr(x, "zscoresFilename")
         geneInfo     <- attr(x, "geneInfo")
         compoundInfo <- attr(x, "compoundInfo")
+        if (is.null(zscores)) zscores <- attr(x, "zscoresFilename")
         cmapPerturbations <- suppressMessages(
             prepareCMapPerturbations(metadata, zscores, geneInfo, compoundInfo))
-        input <- c(attr(compareKD, "diffExprGenes"), # legacy
-                   attr(compareKD, "input"))
+        input   <- c(attr(x, "diffExprGenes"), # legacy
+                     attr(x, "input"))
+        geneset <- c(attr(x, "pathways"), attr(x, "geneset"))
         plot  <- plot(cmapPerturbations, element, input=input, method=method,
-                      geneSize=geneSize, genes=genes, ...)
+                      geneset=geneset, genes=genes, ...)
     } else if (is(x, "targetingDrugs")) {
-        plot <- plotTargetingDrug(x, element, method=method, geneSize=geneSize,
-                                  genes=genes, ...)
+        plot <- plotTargetingDrug(x, element, method=method, genes=genes, ...)
     }
     return(plot)
 }
