@@ -176,9 +176,9 @@ prepareGSEAgenesets <- function(input, geneSize) {
 
         if (isGeneNumberLow) {
             geneSize <- floor(length(genes)/2)
-            msg <- sprintf(
+            msg <- paste(
                 "'input' contains a smaller number of genes than available for",
-                "'geneSize'; 'geneSize' parameter was reduced to %s", geneSize)
+                "'geneSize'; 'geneSize' parameter was reduced to", geneSize)
             warning(msg, immediate.=TRUE)
         }
         if (length(geneSize) == 1) geneSize <- rep(geneSize, 2)
