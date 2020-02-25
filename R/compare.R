@@ -164,7 +164,7 @@ prepareGSEAgenesets <- function(input, geneSize) {
     isGeneset <- isTRUE(attr(input, "isGeneset"))
     if(isGeneset) {
         geneset <- list("custom"=input)
-        geneSize <- 0
+        geneSize <- c(length(input), 0)
     } else {
         # Check if length of input is too small for geneSize
         genes <- names(input)
