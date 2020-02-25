@@ -12,7 +12,6 @@
   showMetadata = TRUE,
   plotNonRankedPerturbations = FALSE,
   alpha = 0.3,
-  geneSize = 150,
   genes = c("both", "top", "bottom"),
   ...,
   zscores = NULL
@@ -41,10 +40,6 @@ identifiers (if available)? Only used if \code{element = NULL}}
 used if \code{element = NULL}}
 
 \item{alpha}{Numeric: transparency; only used if \code{element = NULL}}
-
-\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
-sets to test for enrichment in reference data (only used if
-\code{method = gsea} and if \code{input} is a numeric vector)}
 
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
 plot most up-regulated genes (\code{genes = "top"}), most down-regulated

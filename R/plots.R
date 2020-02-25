@@ -399,7 +399,7 @@ plot.referenceComparison <- function(x, element=NULL,
                                               "rankProduct"),
                                      n=c(3, 3), showMetadata=TRUE,
                                      plotNonRankedPerturbations=FALSE,
-                                     alpha=0.3, geneSize=150,
+                                     alpha=0.3,
                                      genes=c("both", "top", "bottom"), ...,
                                      zscores=NULL) {
     if (!is.null(element)) {

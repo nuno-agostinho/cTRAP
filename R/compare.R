@@ -245,12 +245,15 @@ performGSEAagainstReference <- function(reference, geneset) {
 #'   represents significance and magnitude of differentially expressed genes
 #'   (e.g. t-statistics); or \code{character} of gene symbols composing a gene
 #'   set that is tested for enrichment in reference data (only used if
-#'   \code{method = gsea})
-#' @param geneSize Numeric: number of up-/down-regulated genes to use as gene
-#'   sets to test for enrichment in reference data (only used if
-#'   \code{method = gsea} and if \code{input} is a numeric vector)
-#' @param method Character: comparison methods to run (\code{spearman},
-#'   \code{pearson} or \code{gsea}); multiple methods can be selected
+#'   \code{method} includes \code{gsea})
+#' @param geneSize Numeric: number of top up-/down-regulated genes to use as
+#'   gene sets to test for enrichment in reference data; if a 2-length numeric
+#'   vector, the first index is the number of top up-regulated genes and the
+#'   second index is the number of down-regulated genes used to create gene
+#'   sets; only used if \code{method} includes \code{gsea} and if \code{input}
+#'   is not a gene set
+#' @param method Character: one or more methods to compare data
+#'   (\code{spearman}, \code{pearson} or \code{gsea})
 #' @param reference Data matrix or \code{perturbationChanges} object (CMap
 #'   perturbations; see \code{\link{prepareCMapPerturbations}()})
 #' @param cellLines Integer: number of unique cell lines

@@ -20,7 +20,7 @@ whose names are gene identifiers and respective values are a statistic that
 represents significance and magnitude of differentially expressed genes
 (e.g. t-statistics); or \code{character} of gene symbols composing a gene
 set that is tested for enrichment in reference data (only used if
-\code{method = gsea})}
+\code{method} includes \code{gsea})}
 
 \item{perturbations}{\code{perturbationChanges} object: CMap perturbations
 (check \code{\link{prepareCMapPerturbations}})}
@@ -28,9 +28,12 @@ set that is tested for enrichment in reference data (only used if
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}
 
-\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
-sets to test for enrichment in reference data (only used if
-\code{method = gsea} and if \code{input} is a numeric vector)}
+\item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
+gene sets to test for enrichment in reference data; if a 2-length numeric
+vector, the first index is the number of top up-regulated genes and the
+second index is the number of down-regulated genes used to create gene
+sets; only used if \code{method} includes \code{gsea} and if \code{input}
+is not a gene set}
 
 \item{cellLineMean}{Boolean: add a column with the mean score across cell
 lines? If \code{cellLineMean = "auto"} (default), the mean score will be

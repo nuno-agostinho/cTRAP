@@ -18,7 +18,7 @@ whose names are gene identifiers and respective values are a statistic that
 represents significance and magnitude of differentially expressed genes
 (e.g. t-statistics); or \code{character} of gene symbols composing a gene
 set that is tested for enrichment in reference data (only used if
-\code{method = gsea})}
+\code{method} includes \code{gsea})}
 
 \item{expressionDrugSensitivityCor}{Matrix: correlation matrix of gene
 expression (rows) and drug sensitivity (columns) across cell lines.
@@ -26,12 +26,15 @@ Pre-prepared gene expression and drug sensitivity associations are
 available to download using
 \code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
-\item{method}{Character: comparison methods to run (\code{spearman},
-\code{pearson} or \code{gsea}); multiple methods can be selected}
+\item{method}{Character: one or more methods to compare data
+(\code{spearman}, \code{pearson} or \code{gsea})}
 
-\item{geneSize}{Numeric: number of up-/down-regulated genes to use as gene
-sets to test for enrichment in reference data (only used if
-\code{method = gsea} and if \code{input} is a numeric vector)}
+\item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
+gene sets to test for enrichment in reference data; if a 2-length numeric
+vector, the first index is the number of top up-regulated genes and the
+second index is the number of down-regulated genes used to create gene
+sets; only used if \code{method} includes \code{gsea} and if \code{input}
+is not a gene set}
 
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
