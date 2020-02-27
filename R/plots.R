@@ -270,7 +270,7 @@ plotComparison <- function(x, method, n, showMetadata,
     if (method == "gsea") {
         stat     <- "GSEA"
         statRank <- "GSEA_rank"
-        yLabel   <- "Weighted Connectivity Score (WCTS)"
+        yLabel   <- "Weighted Connectivity Score (WTCS)"
     } else if (method == "rankProduct") {
         stat     <- "rankProduct_rank"
         statRank <- stat

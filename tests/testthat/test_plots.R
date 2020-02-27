@@ -20,7 +20,7 @@ test_that("Plot similar perturbations according to selected method", {
 
     plot <- plot(cmp, method="gsea")
     expect_s3_class(plot, "ggplot")
-    expect_match(plot$labels$y, "WCTS")
+    expect_match(plot$labels$y, "WTCS")
 
     # Avoid plots based on inexisting methods in the similarPerturbations object
     cmpPearson <- rankSimilarPerturbations(diffExprStat, perturbations,

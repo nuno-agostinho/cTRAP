@@ -50,5 +50,5 @@ test_that("Plot predicted targeting drugs", {
     expect_equal(plot$labels$y, "Pearson's correlation coefficient")
 
     plot <- plot(predicted, method="gsea")
-    expect_equal(plot$labels$y, "Weighted Connectivity Score (WCTS)")
+    expect_equal(plot$labels$y, "Weighted Connectivity Score (WTCS)")
 })
