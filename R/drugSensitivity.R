@@ -552,3 +552,38 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
     }
     return(plot)
 }
+
+# targetingDrugs object --------------------------------------------------------
+
+#' Cross Tabulation and Table Creation
+#'
+#' @param x \code{targetingDrugs} object
+#' @param ... Extra parameters passed to \code{table}
+#' @param clean Boolean: only show certain columns (to avoid redundancy)?
+#'
+#' @family functions related with the prediction of targeting drugs
+#' @return Complete table with metadata based on a \code{targetingDrugs} object
+#' @export
+as.table.targetingDrugs <- function(x, ..., clean=TRUE) {
+    compoundInfo <- attr(x, "compoundInfo")
+    isCompoundInfoUseful <- !is.null(compoundInfo) && any(
+        x[["compound"]] %in% compoundInfo[[1]])
+    if (isCompoundInfoUseful) {
+        x[["compound"]]   <- as.character(x[["compound"]])
+        compoundInfo[[1]] <- as.character(compoundInfo[[1]])
+        res <- merge(x, compoundInfo, by.x="compound",
+                     by.y=names(compoundInfo)[[1]], all.x=TRUE)
+    } else {
+        res <- x
+    }
+
+    if (clean) {
+        hideCols <- c(colnames(res)[endsWith(colnames(res), "value") |
+                                        endsWith(colnames(res), "value_rank")],
+                      "pert_dose", "pert_dose_unit",
+                      "pert_time", "pert_time_unit")
+        hideCols <- hideCols[hideCols %in% colnames(res)]
+        if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
+    }
+    return(res)
+}

@@ -96,6 +96,7 @@ Other functions related with the ranking of CMap perturbations:
 \code{\link{rankSimilarPerturbations}()}
 
 Other functions related with the prediction of targeting drugs: 
+\code{\link{as.table.targetingDrugs}()},
 \code{\link{listExpressionDrugSensitivityAssociation}()},
 \code{\link{loadExpressionDrugSensitivityAssociation}()},
 \code{\link{plotTargetingDrugsVSsimilarPerturbations}()},

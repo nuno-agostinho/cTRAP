@@ -781,6 +781,7 @@ print.similarPerturbations <- function(x, perturbation=NULL, ...) {
 #' @family functions related with the ranking of CMap perturbations
 #' @return Complete table with metadata based on a \code{similarPerturbations}
 #'   object
+#' @export
 as.table.similarPerturbations <- function(x, ..., clean=TRUE) {
     metadata <- attr(x, "metadata")
     if (!is.null(metadata)) {
@@ -789,14 +790,27 @@ as.table.similarPerturbations <- function(x, ..., clean=TRUE) {
         summaryID <- parseCMapID(metadata$sig_id, cellLine=FALSE)
         metadata[[nonCellID]] <- summaryID
         metadataSubset <- metadata[unique(match(summaryID, summaryID)), ]
-        metadataSubset[ , c("cell_id", "sig_id", "distil_id")] <- NULL
+        metadataSubset[ , c("sig_id", "distil_id")] <- NULL
 
         x[[nonCellID]] <- parseCMapID(x[[1]], cellLine=FALSE)
         res <- merge(x, metadataSubset, all.x=TRUE, by=nonCellID)
         res[[nonCellID]] <- NULL
 
+        geneInfo <- attr(x, "geneInfo")
+        isGeneInfoUseful <- !is.null(geneInfo) && any(
+            res[["pert_iname"]] %in% geneInfo[["pr_gene_symbol"]])
+        if (isGeneInfoUseful) {
+            res <- merge(res, geneInfo, by.x="pert_iname",
+                         by.y="pr_gene_symbol", all.x=TRUE)
+            # Place "pert_iname" column after "pert_id" one
+            m <- match("pert_id", colnames(res))
+            res <- res[ , c(2:m, 1, (m+1):(ncol(res))), with=FALSE]
+        }
+
         compoundInfo <- attr(x, "compoundInfo")
-        if (!is.null(compoundInfo)) {
+        isCompoundInfoUseful <- !is.null(compoundInfo) && any(
+            res[["pert_iname"]] %in% compoundInfo[["pert_iname"]])
+        if (isCompoundInfoUseful) {
             res <- merge(res, compoundInfo, by="pert_iname", all.x=TRUE)
             # Place "pert_iname" column after "pert_id" one
             m <- match("pert_id", colnames(res))
@@ -814,6 +828,5 @@ as.table.similarPerturbations <- function(x, ..., clean=TRUE) {
         hideCols <- hideCols[hideCols %in% colnames(res)]
         if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
     }
-
     return(res)
 }

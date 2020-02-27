@@ -22,6 +22,9 @@ down-regulated genes with `geneSize` argument:
     to plot based on results from `spearman` method only
     - `plotDrugSetEnrichment()` now returns a list whose names are drug set
     names
+* `as.table()` improvements:
+    - Return cell identifiers and gene information (if available and as needed)
+    - Support `predictTargetingDrugs()` results
 
 ## Minor changes
 
