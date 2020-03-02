@@ -193,9 +193,8 @@ processIds <- function(ids, all_ids, type="rid") {
             }
             if (any(is.na(idx))) {
                 ids_not_found <- ids[is.na(idx)]
-                warning(paste("The following", type,
-                              "were not found and will be ignored:\n",
-                              paste(ids_not_found, collapse="\n")))
+                warning(paste("multiple", type,
+                              "were not found and will be ignored"))
             }
             idx <- idx[!is.na(idx)]
         }

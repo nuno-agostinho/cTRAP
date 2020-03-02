@@ -423,6 +423,9 @@ plot.referenceComparison <- function(x, element=NULL,
             plotNonRankedPerturbations=plotNonRankedPerturbations, alpha=alpha)
     } else if (is(x, "similarPerturbations")) {
         metadata     <- attr(x, "metadata")
+        # Filter out average cell line perturbations (not found in zscores file)
+        metadata     <- metadata[!is.na(parseCMapID(metadata[[1]],
+                                                    cellLine=TRUE))]
         geneInfo     <- attr(x, "geneInfo")
         compoundInfo <- attr(x, "compoundInfo")
         if (is.null(zscores)) zscores <- attr(x, "zscoresFilename")
