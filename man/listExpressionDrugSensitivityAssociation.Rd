@@ -21,7 +21,7 @@ listExpressionDrugSensitivityAssociation()
 }
 \seealso{
 Other functions related with the prediction of targeting drugs: 
-\code{\link{as.table.targetingDrugs}()},
+\code{\link{as.table.referenceComparison}()},
 \code{\link{loadExpressionDrugSensitivityAssociation}()},
 \code{\link{plot.referenceComparison}()},
 \code{\link{plotTargetingDrugsVSsimilarPerturbations}()},

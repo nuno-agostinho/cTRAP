@@ -82,7 +82,7 @@ plot(compareKD, compareKD[[1, 1]])
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
-\code{\link{as.table.similarPerturbations}()},
+\code{\link{as.table.referenceComparison}()},
 \code{\link{filterCMapMetadata}()},
 \code{\link{getCMapConditions}()},
 \code{\link{getCMapPerturbationTypes}()},
@@ -96,7 +96,7 @@ Other functions related with the ranking of CMap perturbations:
 \code{\link{rankSimilarPerturbations}()}
 
 Other functions related with the prediction of targeting drugs: 
-\code{\link{as.table.targetingDrugs}()},
+\code{\link{as.table.referenceComparison}()},
 \code{\link{listExpressionDrugSensitivityAssociation}()},
 \code{\link{loadExpressionDrugSensitivityAssociation}()},
 \code{\link{plotTargetingDrugsVSsimilarPerturbations}()},

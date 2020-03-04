@@ -441,3 +441,81 @@ compareAgainstReference <- function(input, reference,
     class(ranked) <- c("referenceComparison", class(ranked))
     return(ranked)
 }
+
+# referenceComparison object ---------------------------------------------------
+
+convertToTable <- function(x, clean=TRUE) {
+    metadata <- attr(x, "metadata")
+    isMetadataUseful <- !is.null(metadata) && nrow(metadata) > 0
+    if (isMetadataUseful) {
+        nonCellID <- "non_cell_id"
+
+        summaryID <- parseCMapID(metadata$sig_id, cellLine=FALSE)
+        metadata[[nonCellID]] <- summaryID
+        metadataSubset <- metadata[unique(match(summaryID, summaryID)), ]
+        metadataSubset[ , c("sig_id", "distil_id")] <- NULL
+
+        x[[nonCellID]] <- parseCMapID(x[[1]], cellLine=FALSE)
+        res <- merge(x, metadataSubset, all.x=TRUE, by=nonCellID)
+        res[[nonCellID]] <- NULL
+    } else {
+        res <- x
+    }
+
+    geneInfo <- attr(x, "geneInfo")
+    isGeneInfoUseful <- !is.null(geneInfo) && any(
+        res[["pert_iname"]] %in% geneInfo[["pr_gene_symbol"]])
+    if (isGeneInfoUseful) {
+        res <- merge(res, geneInfo, by.x="pert_iname",
+                     by.y="pr_gene_symbol", all.x=TRUE)
+        # Place "pert_iname" column after "pert_id" one
+        m <- match("pert_id", colnames(res))
+        res <- res[ , c(2:m, 1, (m+1):(ncol(res))), with=FALSE]
+    }
+
+    compoundInfo <- attr(x, "compoundInfo")
+    if (is(x, "similarPerturbations")) {
+        compoundCol1 <- compoundCol2 <- "pert_iname"
+    } else {
+        compoundCol1 <- "compound"
+        compoundCol2 <- names(compoundInfo)[[1]]
+    }
+    isCompoundInfoUseful <- !is.null(compoundInfo) && any(
+        res[[compoundCol1]] %in% compoundInfo[[compoundCol2]])
+    if (isCompoundInfoUseful) {
+        res[[compoundCol1]] <- as.character(res[[compoundCol1]])
+        compoundInfo[[compoundCol2]] <- as.character(
+            compoundInfo[[compoundCol2]])
+        res <- merge(res, compoundInfo, by.x=compoundCol1, by.y=compoundCol2,
+                     all.x=TRUE)
+        pos <- match("pert_id", colnames(res))
+        if (!is.na(pos)) {
+            # Place "pert_iname" column after "pert_id"
+            res <- res[ , c(2:pos, 1, (pos + 1):(ncol(res))), with=FALSE]
+        }
+    }
+    if (clean) {
+        hideCols <- c(colnames(res)[endsWith(colnames(res), "value") |
+                                        endsWith(colnames(res), "value_rank")],
+                      "pert_dose", "pert_dose_unit",
+                      "pert_time", "pert_time_unit")
+        hideCols <- hideCols[hideCols %in% colnames(res)]
+        if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
+    }
+    res <- data.table(res)
+    return(res)
+}
+
+#' Cross Tabulation and Table Creation
+#'
+#' @param x \code{referenceComparison} object
+#' @param ... Extra parameters not currently used
+#' @param clean Boolean: only show certain columns (to avoid redundancy)?
+#'
+#' @family functions related with the ranking of CMap perturbations
+#' @family functions related with the prediction of targeting drugs
+#' @return Complete table with metadata based on a \code{targetingDrugs} object
+#' @export
+as.table.referenceComparison <- function(x, ..., clean=TRUE) {
+    return(convertToTable(x, clean=clean))
+}

@@ -73,7 +73,7 @@ predictTargetingDrugs(diffExprStat, gdsc)
 }
 \seealso{
 Other functions related with the prediction of targeting drugs: 
-\code{\link{as.table.targetingDrugs}()},
+\code{\link{as.table.referenceComparison}()},
 \code{\link{listExpressionDrugSensitivityAssociation}()},
 \code{\link{loadExpressionDrugSensitivityAssociation}()},
 \code{\link{plot.referenceComparison}()},

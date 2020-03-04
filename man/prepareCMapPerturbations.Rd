@@ -43,7 +43,7 @@ prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
-\code{\link{as.table.similarPerturbations}()},
+\code{\link{as.table.referenceComparison}()},
 \code{\link{filterCMapMetadata}()},
 \code{\link{getCMapConditions}()},
 \code{\link{getCMapPerturbationTypes}()},
