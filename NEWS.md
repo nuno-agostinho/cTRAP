@@ -30,6 +30,8 @@ down-regulated genes with `geneSize` argument:
 
 ## Bug fixes and minor changes
 
+* `downloadENCODEknockdownMetadata()` now correctly retrieves metadata following
+a change in the metadata content from ENCODE
 * Fix bugs when rendering GSEA plots due to deprecated funcitons in `ggplot2`
 * Improve tutorial
 * Copy-edit CMap-related console messages

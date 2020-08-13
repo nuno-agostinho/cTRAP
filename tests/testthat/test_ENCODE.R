@@ -18,7 +18,7 @@ test_that("Download ENCODE knockdown metadata", {
     expect_equal(nrow(metadata), 2)
     expect_equal(unique(metadata$`File format`), "tsv")
     expect_equal(unique(metadata$`Output type`), "gene quantifications")
-    expect_equal(unique(metadata$Assay), "shRNA knockdown followed by RNA-seq")
+    expect_equal(unique(metadata$Assay), "shRNA RNA-seq")
     expect_equal(unique(metadata$`Biosample term name`),  "HepG2")
     expect_equal(unique(metadata$`Biosample genetic modifications categories`),
                  "interference")
@@ -28,7 +28,7 @@ test_that("Download ENCODE knockdown metadata", {
     expect_equal(unique(metadata$`Library made from`), "polyadenylated mRNA")
     expect_equal(unique(metadata$Project), "ENCODE")
     expect_equal(unique(metadata$`Biological replicate(s)`), c("1", "2"))
-    expect_equal(unique(metadata$Assembly), "hg19")
+    expect_equal(unique(metadata$`File assembly`), "hg19")
     expect_equal(unique(metadata$`File Status`), "released")
 })
 

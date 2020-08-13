@@ -50,7 +50,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
         "limit=all", "searchTerm=knockdown/metadata.tsv")
     table <- suppressWarnings(suppressMessages(fread(url)))
-    table <- table[table$Assembly == "hg19" &
+    table <- table[table$`File assembly` == "hg19" &
                        table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
 
