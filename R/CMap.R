@@ -604,9 +604,7 @@ rankSimilarPerturbations <- function(input, perturbations,
 #' pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
 #' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
 #' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-#'
-#' # Currently unsupported!
-#' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 plot.perturbationChanges <- function(x, perturbation, input,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150,
@@ -653,12 +651,22 @@ plotPerturbationChanges <- function(x, perturbation, input,
     if (method != "gsea") {
         plot <- plotSingleCorr(data, perturbation, input)
     } else {
-        if (length(data) > 1) {
-            stop("plotting GSEA of multiple perturbations is not supported")
-        }
-        data <- unclass(data[[1]])
         if (is.null(geneset)) geneset <- prepareGSEAgenesets(input, geneSize)
-        plot <- plotGSEA(data, geneset, genes, title=perturbation, ...)
+        plot <- NULL
+        areMultiplePerturbations <- length(seq(data)) > 1
+        for (i in seq(data)) {
+            dataset <- unclass(data[[i]])
+            title   <- names(data)[[i]]
+            p <- plotGSEA(dataset, geneset, genes, title=title, ...,
+                          compact=areMultiplePerturbations)
+            plot <- c(plot, setNames(list(p), title))
+        }
+        names(plot) <- names(cellLinePerts)
+        if (areMultiplePerturbations) {
+            plot <- plot_grid(plotlist=plot, ncol=1)
+        } else {
+            plot <- plot[[1]]
+        }
     }
     return(plot)
 }

@@ -22,22 +22,26 @@ performGSEA <- function(pathways, stats) {
 #'
 #' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line annotate
 #' scale_x_continuous scale_y_continuous theme theme_bw ggtitle labs
-#' element_text element_blank element_rect expand_scale
+#' element_text element_blank element_rect expansion
 #'
 #' @keywords internal
 #' @return GSEA enrichment plot
-plotESplot <- function(enrichmentScore, gseaStat) {
+plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
     amp <- range(enrichmentScore$score)
     ES  <- amp[which.max(abs(amp))]
-    enrichmentPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
-                                                  y=enrichmentScore$score)) +
-        geom_rug(alpha=0.2, sides="b", length = unit(0.1, "npc")) +
+    if (compact) {
+        rugLength <- 20
+        rugAlpha  <- 0.05
+    } else {
+        rugLength <- 0.1
+        rugAlpha  <- 0.2
+    }
+    enrichmentPlot <- ggplot(enrichmentScore, aes(x=rank, y=score)) +
+        geom_rug(alpha=rugAlpha, sides="b", length=unit(rugLength, "npc")) +
         geom_line(colour="orange", na.rm=TRUE, size=0.7) +
         geom_hline(yintercept=0, colour="darkgrey", linetype="longdash") +
         geom_hline(yintercept=ES, colour="#3895D3") +
         scale_x_continuous(expand=c(0,0)) +
-        scale_y_continuous(expand=expand_scale(mult = c(0.2, 0.1))) +
-                           # breaks=c(round(ES, 2), seq(-20, 20, .1))) +
         labs(y="Enrichment score") +
         theme_bw() +
         theme(axis.title.x=element_blank(),
@@ -47,6 +51,16 @@ plotESplot <- function(enrichmentScore, gseaStat) {
               panel.grid.minor=element_blank(),
               axis.text=element_text(size=10),
               axis.title=element_text(size=12))
+    if (compact) {
+        enrichmentPlot <- enrichmentPlot +
+            theme(axis.title.y=element_blank(),
+                  axis.text.y=element_blank(),
+                  axis.ticks.y=element_blank())
+    } else {
+        enrichmentPlot <- enrichmentPlot +
+            scale_y_continuous(expand=expansion(mult=c(0.2, 0.1)))
+                               # breaks=c(round(ES, 2), seq(-20, 20, .1)))
+    }
 
     if (ES > 0) {
         label_x     <- max(enrichmentScore$rank)
@@ -66,32 +80,50 @@ plotESplot <- function(enrichmentScore, gseaStat) {
 #' Plot metric distribution
 #'
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous theme
-#' theme_bw labs guides element_text geom_area scale_fill_gradient2
+#' theme_bw labs guides element_text geom_area scale_fill_gradient2 geom_raster
 #'
 #' @keywords internal
 #' @return Metric distribution plot
-plotMetricDistribution <- function(stat) {
+plotMetricDistribution <- function(stat, compact=FALSE) {
     # Scale number of breaks according to number of ranked elements
     breaks       <- max(round(-120 + 55 * log10(length(stat))), 10)
     quantile     <- cut(stat, breaks=breaks, labels=FALSE)
     quantile     <- seq(min(stat), max(stat), length.out=breaks)[quantile]
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
-    metricPlot <- ggplot(rankedMetric, aes_string("sort", "stat")) +
-        scale_x_continuous(expand=c(0, 0)) +
+    if (compact) {
+        aes        <- aes_string("sort", 0, fill="stat")
+        metricPlot <- ggplot(rankedMetric, aes) +
+            geom_raster()
+    } else {
+        aes        <- aes_string("sort", "stat")
+        metricPlot <- ggplot(rankedMetric, aes) +
+            geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
+                      position="identity")
+    }
+    metricPlot <- metricPlot +
+        scale_x_continuous(expand=c(0, 0), breaks=c(
+            scales::extended_breaks()(rankedMetric$sort),
+            max(rankedMetric$sort))) +
         scale_y_continuous(expand=c(0, 0)) +
         labs(x="Rank", y="Ranked metric") +
-        guides(colour=FALSE, fill=FALSE) +
-        geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
-                  position="identity") +
+        guides(colour="none", fill="none") +
         scale_fill_gradient2(low="dodgerblue", mid="grey95", high="orangered",
                              midpoint=0) +
         theme_bw() +
         theme(plot.margin=unit(c(0, 0, 5.5, 0), "pt"),
               panel.grid.major.x=element_blank(),
-              panel.grid.minor=element_blank(),
-              axis.text=element_text(size=10),
-              axis.title=element_text(size=12))
+              panel.grid.minor=element_blank())
+    if (compact) {
+        metricPlot <- metricPlot +
+            theme(axis.text=element_blank(),
+                  axis.title=element_blank(),
+                  axis.ticks=element_blank())
+    } else {
+        metricPlot <- metricPlot +
+            theme(axis.text=element_text(size=10),
+                  axis.title=element_text(size=12))
+    }
     return(metricPlot)
 }
 
@@ -101,6 +133,7 @@ plotMetricDistribution <- function(stat) {
 #' @param title Character: title
 #' @inheritParams plot.referenceComparison
 #' @param gseaParam Numeric: GSEA-like parameter
+#' @param compact Boolean: render a compact version of the GSEA plot?
 #'
 #' @importFrom ggplot2 ggtitle theme unit
 #' @importFrom cowplot plot_grid ggdraw draw_label
@@ -109,7 +142,7 @@ plotMetricDistribution <- function(stat) {
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
 plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
-                     title="GSEA plot", gseaParam=1) {
+                     title="GSEA plot", gseaParam=1, compact=FALSE) {
     genes <- match.arg(genes)
     if (is.list(geneset)) {
         topGenes    <- c(geneset[["top"]], geneset[["custom"]])
@@ -125,23 +158,26 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
     statsAdj <- abs(statsOrd ^ gseaParam)
     statsAdj <- sign(statsOrd) * statsAdj / max(statsAdj)
 
-    plotOneESplot <- function(end, genes, stats) {
+    plotOneESplot <- function(end, genes, stats, compact=FALSE) {
         if (is.null(genes)) return(NULL)
         gseaRes        <- suppressWarnings(performGSEA(genes, stats))
-        enrichmentPlot <- plotESplot(gseaRes$enrichmentScore, gseaRes$stat)
+        enrichmentPlot <- plotESplot(gseaRes$enrichmentScore, gseaRes$stat,
+                                     compact=compact)
         return(enrichmentPlot)
     }
-    title        <- ggdraw() + draw_label(title, size=14)
-    topESplot    <- plotOneESplot("top",    topGenes,    statsAdj)
-    bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj)
-    metricPlot   <- plotMetricDistribution(statsOrd)
+    titleSize <- ifelse(compact, 10, 14)
+    title        <- ggdraw() + draw_label(title, size=titleSize)
+    topESplot    <- plotOneESplot("top",    topGenes,    statsAdj, compact)
+    bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj, compact)
+    metricPlot   <- plotMetricDistribution(statsOrd, compact)
 
     plots <- list(topESplot, bottomESplot, metricPlot)
     plots <- Filter(length, plots)
+
+    metricPlotHeight <- ifelse(compact, 2, 6)
     plotHeights <- c(1, 6,
                      if (!is.null(topGenes))    6,
                      if (!is.null(bottomGenes)) 6)
-
     grid <- plot_grid(title, plotlist=plots, align="v", ncol=1,
                       rel_heights=plotHeights)
     return(grid)
@@ -325,7 +361,7 @@ plotComparison <- function(x, method, n, showMetadata,
               axis.line.x=element_blank(), axis.ticks.x=element_blank(),
               axis.text.x=element_blank(), axis.title.x=element_blank())
 
-    if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour=FALSE)
+    if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour="none")
     if (method == "rankProduct") plot <- plot + scale_y_reverse()
     return(plot)
 }

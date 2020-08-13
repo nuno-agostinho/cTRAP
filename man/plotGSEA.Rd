@@ -9,7 +9,8 @@ plotGSEA(
   geneset,
   genes = c("both", "top", "bottom"),
   title = "GSEA plot",
-  gseaParam = 1
+  gseaParam = 1,
+  compact = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ if \code{method = "gsea"} and \code{geneset = NULL}}
 \item{title}{Character: title}
 
 \item{gseaParam}{Numeric: GSEA-like parameter}
+
+\item{compact}{Boolean: render a compact version of the GSEA plot?}
 }
 \value{
 Grid of plots illustrating a GSEA plot

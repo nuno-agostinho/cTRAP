@@ -28,7 +28,7 @@ Suggests:
     covr,
     rmarkdown,
     spelling
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Imports: biomaRt,
     cowplot,
     data.table,

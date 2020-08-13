@@ -59,7 +59,7 @@ test_that("Plot similar perturbations with/without metadata", {
 test_that("Plot only ranked perturbations", {
     plot <- plot(cmp, "spearman", plotNonRankedPerturbations=FALSE)
     expect_s3_class(plot, "ggplot")
-    expect_false(plot$guides$colour)
+    expect_equal(plot$guides$colour, "none")
 })
 
 test_that("Plot non-ranked perturbations", {

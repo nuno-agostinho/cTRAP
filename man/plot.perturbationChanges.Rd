@@ -85,9 +85,7 @@ plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
 plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
 plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-
-# Currently unsupported!
-# plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
