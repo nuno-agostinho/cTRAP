@@ -358,8 +358,10 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
 #'   filepath to load data from file)
-#' @param loadZscores Boolean: load perturbation z-scores? Not recommended in
-#'   systems with less than ~30GB available of RAM
+#' @param loadZscores Boolean: load matrix of perturbation z-scores? Not
+#'   recommended in systems with less than 30GB of RAM; if \code{FALSE},
+#'   downstream functions will read the file chunk by chunk (this strategy
+#'   impacts performance at the expense of a much lower memory footprint)
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new

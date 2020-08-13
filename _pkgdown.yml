@@ -9,17 +9,24 @@ reference:
       - matches("ENCODE")
       - convertENSEMBLtoGeneSymbols
       - performDifferentialExpression
-  - title: "Rank similar CMap perturbations"
+  - title: "Download and manipulate CMap perturbations"
     contents:
-      - matches("CMap")
-      - rankSimilarPerturbations
-      - plot.referenceComparison
-      - as.table.similarPerturbations
-      - print.similarPerturbations
+      - getCMapConditions
+      - getCMapPerturbationTypes
+      - loadCMapData
+      - loadCMapZscores
+      - filterCMapMetadata
+      - prepareCMapPerturbations
       - dim.perturbationChanges
       - dimnames.perturbationChanges
       - "`[.perturbationChanges`"
       - plot.perturbationChanges
+      - parseCMapID
+  - title: "Rank similar CMap perturbations"
+    contents:
+      - rankSimilarPerturbations
+      - plot.referenceComparison
+      - as.table.referenceComparison
       - plotTargetingDrugsVSsimilarPerturbations
   - title: "Predict targeting drugs"
     contents:
@@ -27,6 +34,7 @@ reference:
       - loadExpressionDrugSensitivityAssociation
       - predictTargetingDrugs
       - plot.referenceComparison
+      - as.table.referenceComparison
       - plotTargetingDrugsVSsimilarPerturbations
   - title: "Analyse drug (descriptor) set enrichment"
     contents:

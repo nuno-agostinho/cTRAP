@@ -25,8 +25,10 @@ filepath to load data from file)}
 \item{compoundInfo}{Data frame (CMap compound info) or character (respective
 filepath to load data from file)}
 
-\item{loadZscores}{Boolean: load perturbation z-scores? Not recommended in
-systems with less than ~30GB available of RAM}
+\item{loadZscores}{Boolean: load matrix of perturbation z-scores? Not
+recommended in systems with less than 30GB of RAM; if \code{FALSE},
+downstream functions will read the file chunk by chunk (this strategy
+impacts performance at the expense of a much lower memory footprint)}
 }
 \value{
 CMap perturbation data attributes and filename

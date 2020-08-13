@@ -278,7 +278,7 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
                                              rankPerCellLine=FALSE) {
     startTime <- Sys.time()
 
-    # Check immediately if there is something wrong
+    # Check immediately if there is something wrong with the geneset(s)
     if (method == "gsea") geneset <- prepareGSEAgenesets(input, geneSize)
 
     type <- attr(reference, "type")

@@ -7,7 +7,7 @@ output:
         toc: true
 vignette: >
     \usepackage[utf8]{inputenc}
-    %\VignetteIndexEntry{cTRAP: DGE comparison with cellular perturbations}
+    %\VignetteIndexEntry{cTRAP: identifying candidate causal perturbations from differential gene expression data}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
@@ -141,12 +141,12 @@ forget to use the same filename as the argument of
 ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz
 
 ```{r CMap knockdown perturbations, eval=FALSE}
-# Filter CMap gene knockdown HepG2 data to load afterwards
+# Filter CMap gene knockdown HepG2 data to be loaded
 cmapMetadataKD <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 
-# Load filtered data (if data is not found, it will be downloaded)
+# Load filtered data (data will be downloaded if not found)
 cmapPerturbationsKD <- prepareCMapPerturbations(
     metadata=cmapMetadataKD, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt")
@@ -156,11 +156,11 @@ If interested in small molecules, the differential gene expression z-scores from
 CMap can be downloaded for each small molecule perturbation:
 
 ```{r CMap small molecule perturbations, eval=FALSE}
-# Filter CMap gene small molecule HepG2 data to load afterwards
+# Filter CMap gene small molecule HepG2 data to be loaded
 cmapMetadataCompounds <- filterCMapMetadata(
     cmapMetadata, cellLine="HepG2", perturbationType="Compound")
 
-# Load filtered data (if data is not found, it will be downloaded)
+# Load filtered data (data will be downloaded if not found)
 cmapPerturbationsCompounds <- prepareCMapPerturbations(
     metadata=cmapMetadataCompounds, zscores="cmapZscores.gctx",
     geneInfo="cmapGeneInfo.txt", compoundInfo="cmapCompoundInfo.txt")
