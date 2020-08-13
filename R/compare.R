@@ -503,6 +503,11 @@ convertToTable <- function(x, clean=TRUE) {
         if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
     }
     res <- data.table(res)
+
+    # Reorder table based on original ordering
+    if (all(x[[1]] %in% res[[1]])) {
+        res <- res[match(x[[1]], res[[1]]), , drop=FALSE]
+    }
     return(res)
 }
 

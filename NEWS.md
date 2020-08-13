@@ -26,6 +26,7 @@ down-regulated genes with `geneSize` argument:
 * `as.table()` improvements:
     - Return cell identifiers and gene information (if available and as needed)
     - Support `predictTargetingDrugs()` results
+    - Return results ordered as found on input
 
 
 ## Bug fixes and minor changes
