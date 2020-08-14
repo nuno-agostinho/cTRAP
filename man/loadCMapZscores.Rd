@@ -2,7 +2,8 @@
 % Please edit documentation in R/CMap.R
 \name{loadCMapZscores}
 \alias{loadCMapZscores}
-\title{Load matrix of CMap perturbation's differential expression z-scores}
+\title{Load matrix of CMap perturbation's differential expression z-scores
+(optional)}
 \usage{
 loadCMapZscores(data, inheritAttrs = FALSE, verbose = TRUE)
 }
@@ -20,6 +21,7 @@ Matrix containing CMap perturbation z-scores (genes as rows,
 }
 \description{
 Load matrix of CMap perturbation's differential expression z-scores
+(optional)
 }
 \examples{
 \donttest{

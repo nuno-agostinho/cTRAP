@@ -2,7 +2,7 @@
 % Please edit documentation in R/CMap.R
 \name{getCMapPerturbationTypes}
 \alias{getCMapPerturbationTypes}
-\title{Get perturbation types}
+\title{Get CMap perturbation types}
 \usage{
 getCMapPerturbationTypes(control = FALSE)
 }
@@ -13,7 +13,7 @@ getCMapPerturbationTypes(control = FALSE)
 Perturbation types and respective codes as used by CMap datasets
 }
 \description{
-Get perturbation types
+Get CMap perturbation types
 }
 \examples{
 getCMapPerturbationTypes()

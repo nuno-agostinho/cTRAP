@@ -27,6 +27,7 @@ performGSEA <- function(pathways, stats) {
 #' @keywords internal
 #' @return GSEA enrichment plot
 plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
+    score <- NULL
     amp <- range(enrichmentScore$score)
     ES  <- amp[which.max(abs(amp))]
     if (compact) {
@@ -81,6 +82,7 @@ plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
 #'
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous theme
 #' theme_bw labs guides element_text geom_area scale_fill_gradient2 geom_raster
+#' @importFrom scales extended_breaks
 #'
 #' @keywords internal
 #' @return Metric distribution plot
@@ -103,7 +105,7 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
     }
     metricPlot <- metricPlot +
         scale_x_continuous(expand=c(0, 0), breaks=c(
-            scales::extended_breaks()(rankedMetric$sort),
+            extended_breaks()(rankedMetric$sort),
             max(rankedMetric$sort))) +
         scale_y_continuous(expand=c(0, 0)) +
         labs(x="Rank", y="Ranked metric") +
@@ -393,6 +395,7 @@ plotComparison <- function(x, method, n, showMetadata,
 #'   plot most up-regulated genes (\code{genes = "top"}), most down-regulated
 #'   genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 #'   if \code{method = "gsea"} and \code{geneset = NULL}
+#' @inheritParams prepareCMapPerturbations
 #'
 #' @param ... Extra arguments currently not used
 #'
@@ -429,7 +432,7 @@ plotComparison <- function(x, method, n, showMetadata,
 #' plot(compareKD, method="pearson")
 #' plot(compareKD, method="gsea")
 #'
-#' plot(compareKD, compareKD[[1, 1]])
+#' plot(compareKD, compareKD[[1, 1]], zscores=cmapPerturbationsKD)
 plot.referenceComparison <- function(x, element=NULL,
                                      method=c("spearman", "pearson", "gsea",
                                               "rankProduct"),

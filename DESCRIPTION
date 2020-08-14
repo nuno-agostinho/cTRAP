@@ -28,7 +28,7 @@ Suggests:
     covr,
     rmarkdown,
     spelling
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: biomaRt,
     cowplot,
     data.table,
@@ -45,6 +45,7 @@ Imports: biomaRt,
     readxl,
     reshape2,
     rhdf5,
+    scales,
     stats,
     tools,
     utils

@@ -30,7 +30,7 @@ parseCMapID <- function(id, cellLine=FALSE) {
     return(res)
 }
 
-#' Get perturbation types
+#' Get CMap perturbation types
 #'
 #' @param control Boolean: return perturbation types used as control?
 #'
@@ -98,6 +98,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 }
 
 #' Load matrix of CMap perturbation's differential expression z-scores
+#' (optional)
 #'
 #' @param data \code{perturbationChanges} object
 #' @param inheritAttrs Boolean: convert to \code{perturbationChanges} object and
@@ -388,18 +389,20 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
         compoundInfo <- loadCMapData(compoundInfo, "compoundInfo")
     }
 
-    attr(zscores, "genes") <- geneInfo$pr_gene_symbol[
-        match(attr(zscores, "genes"), geneInfo$pr_gene_id)]
-    attr(zscores, "metadata") <- metadata
-    attr(zscores, "geneInfo") <- geneInfo
-    attr(zscores, "compoundInfo") <- compoundInfo
-    class(zscores) <- c("perturbationChanges", class(zscores))
+    if (!is.null(zscores)) {
+        attr(zscores, "genes") <- geneInfo$pr_gene_symbol[
+            match(attr(zscores, "genes"), geneInfo$pr_gene_id)]
+        attr(zscores, "metadata") <- metadata
+        attr(zscores, "geneInfo") <- geneInfo
+        attr(zscores, "compoundInfo") <- compoundInfo
+        class(zscores) <- c("perturbationChanges", class(zscores))
 
-    # Item information
-    attr(zscores, "source") <- "CMap"
-    attr(zscores, "type")   <- "perturbations"
+        # Item information
+        attr(zscores, "source") <- "CMap"
+        attr(zscores, "type")   <- "perturbations"
 
-    if (loadZscores) zscores <- loadCMapZscores(zscores, inheritAttrs=TRUE)
+        if (loadZscores) zscores <- loadCMapZscores(zscores, inheritAttrs=TRUE)
+    }
 
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")

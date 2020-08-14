@@ -47,6 +47,9 @@ genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{...}{Extra arguments currently not used}
+
+\item{zscores}{Data frame (GCTX z-scores) or character (respective filepath
+to load data from file)}
 }
 \value{
 Plot illustrating the reference comparison
@@ -78,7 +81,7 @@ plot(compareKD, method="spearman", n=c(7, 3))
 plot(compareKD, method="pearson")
 plot(compareKD, method="gsea")
 
-plot(compareKD, compareKD[[1, 1]])
+plot(compareKD, compareKD[[1, 1]], zscores=cmapPerturbationsKD)
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 

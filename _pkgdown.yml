@@ -9,7 +9,7 @@ reference:
       - matches("ENCODE")
       - convertENSEMBLtoGeneSymbols
       - performDifferentialExpression
-  - title: "Download and manipulate CMap perturbations"
+  - title: "Download and manipulate CMap perturbation data"
     contents:
       - getCMapConditions
       - getCMapPerturbationTypes
