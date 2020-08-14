@@ -13,8 +13,6 @@ RUN Rscript -e "BiocManager::install('biomaRt')"
 
 # Copy package source code
 WORKDIR cTRAP
-ADD appveyor.yml .
-ADD codecov.yml .
 ADD CONDUCT.md .
 ADD data data
 ADD DESCRIPTION .

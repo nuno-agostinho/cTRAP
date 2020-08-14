@@ -1,10 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^CONDUCT\.md$
-^\.travis\.yml$
 ^codecov\.yml$
-^appveyor\.yml$
 ^Dockerfile
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.github$
