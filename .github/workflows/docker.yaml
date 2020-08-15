@@ -21,5 +21,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: nuno-agostinho/psichomics/psichomics
+          repository: nuno-agostinho/cTRAP/cTRAP
           tag_with_ref: true
