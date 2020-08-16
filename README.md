@@ -35,5 +35,5 @@ remotes::install_github("nuno-agostinho/cTRAP")
 [codecov]: https://codecov.io/github/nuno-agostinho/cTRAP?branch=master
 [codecovBadge]: https://img.shields.io/codecov/c/github/nuno-agostinho/cTRAP/master.svg
 [ghActions]: https://github.com/nuno-agostinho/cTRAP/actions
-[ghActionsIcon]: https://github.com/nuno-agostinho/cTRAP/workflows/R-CMD-check/badge.svg
+[ghActionsIcon]: https://github.com/nuno-agostinho/cTRAP/workflows/R-CMD-check-bioc/badge.svg
 [bioconductor]: http://bioconductor.org/packages/cTRAP
