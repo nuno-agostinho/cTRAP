@@ -386,10 +386,34 @@ prepareExpressionDrugSensitivityAssociation <- function(
 
 # Load gene expression/drug sensitivity associations ---------------------------
 
+#' List available gene expression and drug sensitivity correlation matrices
+#'
+#' @param url Boolean: return download link?
+#'
+#' @family functions related with the prediction of targeting drugs
+#' @return Character vector of available gene expression and drug sensitivity
+#'   correlation matrices
+#' @export
+#'
+#' @examples
+#' listExpressionDrugSensitivityAssociation()
+listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
+    options <- c(
+        "GDSC 7"="5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds",
+        "CTRP 2.1"="zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds",
+        "NCI60"="p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds")
+    link <- sprintf("https://www.dropbox.com/s/%s?raw=1", options)
+    names(link) <- names(options)
+
+    res <- link
+    if (!url) res <- names(res)
+    return(res)
+}
+
 #' Load gene expression and drug sensitivity correlation matrix
 #'
-#' @param source Character: source (\code{CTRP 2.1}, \code{GDSC 7} or
-#'   \code{NCI60})
+#' @param source Character: source of matrix to load; see
+#'   \code{\link{listExpressionDrugSensitivityAssociation}}
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
 #'
@@ -399,26 +423,22 @@ prepareExpressionDrugSensitivityAssociation <- function(
 #' @export
 #'
 #' @examples
-#' loadExpressionDrugSensitivityAssociation("GDSC 7")
+#' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
+#' loadExpressionDrugSensitivityAssociation(gdsc)
 loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
-    source <- match.arg(source, c("GDSC 7", "CTRP 2.1", "NCI60"))
+    available <- listExpressionDrugSensitivityAssociation(url=TRUE)
+    source    <- match.arg(source, names(available))
+    link      <- available[source]
 
-    if (source == "GDSC 7") {
-        url <- "5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds"
-    } else if (source == "CTRP 2.1") {
-        url <- "zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds"
-    } else if (source == "NCI60") {
-        url <- "p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds"
+    if (is.null(file)) {
+        filename <- "expressionDrugSensitivityCor%s.rds"
+        file <- sprintf(filename, gsub(" ", "_", source))
     }
-    link <- sprintf("https://www.dropbox.com/s/%s?raw=1", url)
-
-    if (is.null(file))
-        file <- sprintf("expressionDrugSensitivityCor%s.rds",
-                        gsub(" ", "_", source))
 
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
     cor <- readRDS(file)
+    attr(cor, "filename") <- normalizePath(file)
     return(cor)
 }
 
@@ -435,7 +455,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #'   expression (rows) and drug sensitivity (columns) across cell lines.
 #'   Pre-prepared gene expression and drug sensitivity associations are
 #'   available to download using
-#'   \code{\link{loadExpressionDrugSensitivityAssociation}}.
+#'   \code{\link{loadExpressionDrugSensitivityAssociation}()}.
 #' @param isDrugActivityDirectlyProportionalToSensitivity Boolean: are the
 #'   values used for drug activity directly proportional to drug sensitivity?
 #'   See details.
@@ -445,12 +465,10 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #' @inheritSection rankSimilarPerturbations GSEA score
 #'
 #' @details
-#'   If \code{isDrugActivityDirectlyProportionalToSensitivity} is set to
-#'   \code{NULL} (as by default), the attribute
-#'   \code{isDrugMetricDirectlyProportionalToSensitivity} on the object passed
-#'   as argument \code{expressionDrugSensitivityCor} is used (objects obtained
-#'   via \code{\link{loadExpressionDrugSensitivityAssociation}} have the
-#'   mentioned attribute set).
+#'   If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
+#'   attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
+#'   \code{expressionDrugSensitivityCor} is used (see
+#'   \code{\link{loadExpressionDrugSensitivityAssociation}()}).
 #'
 #' @family functions related with the prediction of targeting drugs
 #' @return Data table with correlation or GSEA results comparing differential
@@ -467,7 +485,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #' # Predict targeting drugs on a differential expression profile
 #' predictTargetingDrugs(diffExprStat, gdsc)
 predictTargetingDrugs <- function(
-    diffExprGenes, expressionDrugSensitivityCor,
+    input, expressionDrugSensitivityCor,
     method=c("spearman", "pearson", "gsea"), geneSize=150,
     isDrugActivityDirectlyProportionalToSensitivity=NULL) {
 
@@ -481,13 +499,13 @@ predictTargetingDrugs <- function(
     }
 
     if (is.null(isDrugActivityDirectlyProportionalToSensitivity)) {
-        stop("Attribute 'isDrugActivityProportionalToSensitivity' for argument",
-             " 'expressionDrugSensitivityCor' cannot be NULL.")
+        stop("attribute 'isDrugActivityProportionalToSensitivity' for argument",
+             " 'expressionDrugSensitivityCor' cannot be NULL")
     }
 
     rankedDrugs <- compareAgainstReference(
-        diffExprGenes, expressionDrugSensitivityCor, method=method,
-        geneSize=geneSize, cellLines=cellLines, cellLineMean=FALSE,
+        input, expressionDrugSensitivityCor, method=method, geneSize=geneSize,
+        cellLines=cellLines, cellLineMean=FALSE,
         rankByAscending=isDrugActivityDirectlyProportionalToSensitivity)
     colnames(rankedDrugs)[[1]] <- "compound"
 
@@ -496,4 +514,48 @@ predictTargetingDrugs <- function(
         expressionDrugSensitivityCor)
     class(rankedDrugs) <- c("targetingDrugs", class(rankedDrugs))
     return(rankedDrugs)
+}
+
+#' @importFrom ggplot2 ggplot geom_point geom_rug geom_density_2d xlab ylab
+#'   theme_bw theme
+#'
+#' @keywords internal
+plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
+                              genes=c("both", "top", "bottom"),
+                              data=NULL, title=NULL) {
+    method <- match.arg(method)
+    drug <- as.character(drug)
+
+    if (is.null(data)) {
+        info <- attr(x, "expressionDrugSensitivityCor")
+        data <- loadExpressionDrugSensitivityAssociation(info$source,
+                                                         info$filename)
+    }
+    cor   <- data[ , drug]
+    input <- attr(x, "input")
+
+    if (method %in% c("spearman", "pearson")) {
+        intersecting <- intersect(names(input), names(cor))
+        df <- data.frame(input=input[intersecting], cor=cor[intersecting])
+
+        plot <- ggplot(df, aes_string("input", "cor")) +
+            geom_point(alpha=0.1) +
+            geom_rug(alpha=0.1) +
+            geom_density_2d() +
+            xlab("Differentially expressed genes (input)") +
+            ylab(drug) +
+            theme_bw() +
+            theme(legend.position="bottom")
+        if (!is.null(title)) {
+            plot <- plot +
+                ggtitle(title) +
+                theme(plot.title = element_text(hjust = 0.5))
+        }
+    } else if (method == "gsea") {
+        geneset <- c(attr(x, "pathways"), # legacy
+                     attr(x, "geneset"))
+        if (is.null(title)) title <- drug
+        plot <- plotGSEA(cor, geneset, genes, title=title)
+    }
+    return(plot)
 }

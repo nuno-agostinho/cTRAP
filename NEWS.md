@@ -1,8 +1,49 @@
-# 1.4 (25 October, 2019)
+# cTRAP 1.4.1 (17 August, 2020)
+
+* `listExpressionDrugSensitivityAssociation()` lists available gene expression
+and drug sensitivity associations
+* First argument of `rankSimilarPerturbations()` and `predictTargetingDrugs()`
+changed name from `diffExprGenes` to `input` and now accepts:
+    - `Named numeric vector` containing differential gene expression values
+    with gene symbols as names, as before;
+    - `Character vector` containing a custom gene set to test for enrichment
+    (only to use with GSEA).
+* In `rankSimilarPerturbations()` and `predictTargetingDrugs()`, when performing
+`gsea` method, allow to set different gene set size for top up- and
+down-regulated genes with `geneSize` argument:
+    - e.g. `geneSize=c(100, 200)` creates gene sets from the top 100 up-
+    and top 200 down-regulated genes
+    - using `geneSize=c(150, 150)` or `geneSize=150` is equivalent
+* Plotting:
+    - `plot()` now supports plotting `predictTargetingDrugs()` results for a
+    given drug, e.g. `plot(targetingDrugs, "1425")`
+    - `plot()` nows allows to set plot title with argument `title`
+    - `plot()` now plots results based on available methods instead of trying
+    to plot based on results from `spearman` method only
+    - GSEA plots now support two or less gene hits
+    - GSEA plots now support plotting of multiple perturbations
+    - GESA plots now show the first and last values of ranked genes
+    - `plotDrugSetEnrichment()` now returns a list whose names are drug set
+    names
+* `as.table()` improvements:
+    - Return cell identifiers and gene information (if available and as needed)
+    - Support `predictTargetingDrugs()` results
+    - Return results ordered as found on input
+
+## Bug fixes and minor changes
+
+* `downloadENCODEknockdownMetadata()` now correctly retrieves metadata following
+a change in the metadata content from ENCODE
+* Fix bugs when rendering GSEA plots due to deprecated functions in `ggplot2`
+* Improve tutorial
+* Copy-edit CMap-related console messages
+* Copy-edit function documentation
+
+# cTRAP 1.4 (25 October, 2019)
 
 ## New features
 
-* Predict targeting drugs (`predictTargetingDrug()`):
+* Predict targeting drugs (`predictTargetingDrugs()`):
     - Based on expression and drug sensitivity associations derived from NCI60,
     CTRP and GDSC data (see `loadExpressionDrugSensitivityAssociation()`)
     - Compare user-provided differential expression profile with gene expression
@@ -13,7 +54,7 @@
     `plotTargetingDrugsVSsimilarPerturbations()`, highlighting compounds that
     selectively select against cells with a similar differential gene expression
     profile
-* Analyse drug set enrichment (`performDSEA()`):
+* Analyse drug set enrichment (`analyseDrugSetEnrichment()`):
     - Prepare drug sets based on a table with compound identifiers and 
     respective 2D and 3D molecular descriptors using `prepareDrugSets()`
     - Test drug set enrichment on results from
@@ -54,7 +95,7 @@
     argument `loadZscores = TRUE`
     - Display summary of loaded perturbations after running 
     `prepareCMapPerturbations()`
-* Improve ranking of similar perturbations (`rankSimilarPerturbation()`):
+* Improve ranking of similar perturbations (`rankSimilarPerturbations()`):
     - Redesigned output: long (instead of wide) table
     - By default, calculate mean across cell lines if there is more than one 
     cell line available; disabled if argument `cellLineMean = FALSE`
@@ -123,24 +164,24 @@ running `rankSimilarPerturbations()`:
     - Update the `cmapPerturbationsCompounds` and `cmapPerturbationsKD` datasets 
     according to new internal changes and fix their respective code in the 
     documentation
-* Include license and copyright text for cmapR code
+* Include license and copyright text for `cmapR` code
 
-# 1.0.3 (3 December, 2018)
+# cTRAP 1.0.3 (3 December, 2018)
 
 * Add tag ImmunoOncology to BiocViews
 
-# 1.0.2 (11 November, 2018)
+# cTRAP 1.0.2 (11 November, 2018)
 
 * Fix comparison against CMap perturbations using gene set enrichment analysis 
 (the resulting score was the additive inverse of the real scores)
 
-# 1.0.1 (2 November, 2018)
+# cTRAP 1.0.1 (2 November, 2018)
 
 * Update title, author names, version and README
 * Remove biomaRt dependency
 * By default, `getL1000conditions()` now shows CMap perturbation types except 
 for controls
-* Compare against CMap perturbations (`compareAgainstL1000()` function):
+* Compare against CMap perturbations (`compareAgainstL1000()`):
     - Remove "_t" from resulting column names (as the t-statistic may or may not
     be used)
     - Select p-value adjustment method when performing correlation analyses

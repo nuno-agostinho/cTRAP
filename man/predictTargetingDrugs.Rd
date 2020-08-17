@@ -4,27 +4,37 @@
 \alias{predictTargetingDrugs}
 \title{Predict targeting drugs}
 \usage{
-predictTargetingDrugs(diffExprGenes, expressionDrugSensitivityCor,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  isDrugActivityDirectlyProportionalToSensitivity = NULL)
+predictTargetingDrugs(
+  input,
+  expressionDrugSensitivityCor,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  isDrugActivityDirectlyProportionalToSensitivity = NULL
+)
 }
 \arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method} includes \code{gsea})}
 
 \item{expressionDrugSensitivityCor}{Matrix: correlation matrix of gene
 expression (rows) and drug sensitivity (columns) across cell lines.
 Pre-prepared gene expression and drug sensitivity associations are
 available to download using
-\code{\link{loadExpressionDrugSensitivityAssociation}}.}
+\code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
-\item{method}{Character: comparison methods to run (\code{spearman},
-\code{pearson} or \code{gsea}); multiple methods can be selected}
+\item{method}{Character: one or more methods to compare data
+(\code{spearman}, \code{pearson} or \code{gsea})}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
+gene sets to test for enrichment in reference data; if a 2-length numeric
+vector, the first index is the number of top up-regulated genes and the
+second index is the number of down-regulated genes used to create gene
+sets; only used if \code{method} includes \code{gsea} and if \code{input}
+is not a gene set}
 
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
@@ -40,12 +50,10 @@ user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
 }
 \details{
-If \code{isDrugActivityDirectlyProportionalToSensitivity} is set to
-  \code{NULL} (as by default), the attribute
-  \code{isDrugMetricDirectlyProportionalToSensitivity} on the object passed
-  as argument \code{expressionDrugSensitivityCor} is used (objects obtained
-  via \code{\link{loadExpressionDrugSensitivityAssociation}} have the
-  mentioned attribute set).
+If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
+  attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
+  \code{expressionDrugSensitivityCor} is used (see
+  \code{\link{loadExpressionDrugSensitivityAssociation}()}).
 }
 \section{GSEA score}{
 
@@ -64,8 +72,11 @@ gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
 predictTargetingDrugs(diffExprStat, gdsc)
 }
 \seealso{
-Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{loadExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()}
 }
 \concept{functions related with the prediction of targeting drugs}

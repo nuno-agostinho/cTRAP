@@ -3,7 +3,6 @@
 \docType{package}
 \name{cTRAP}
 \alias{cTRAP}
-\alias{cTRAP-package}
 \title{cTRAP package}
 \description{
 Compare differential gene expression results with those from big datasets

@@ -4,19 +4,29 @@
 \alias{plotGSEA}
 \title{Plot gene set enrichment analysis (GSEA)}
 \usage{
-plotGSEA(stats, topGenes = NULL, bottomGenes = NULL,
-  title = "GSEA plot", gseaParam = 1)
+plotGSEA(
+  stats,
+  geneset,
+  genes = c("both", "top", "bottom"),
+  title = "GSEA plot",
+  gseaParam = 1,
+  compact = FALSE
+)
 }
 \arguments{
 \item{stats}{Named numeric vector: statistics}
 
-\item{topGenes}{Named list of characters: up-regulated genes}
+\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
-\item{bottomGenes}{Named list of characters: down-regulated genes}
-
-\item{title}{Character: title}
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 
 \item{gseaParam}{Numeric: GSEA-like parameter}
+
+\item{compact}{Boolean: render a compact version of the GSEA plot?}
 }
 \value{
 Grid of plots illustrating a GSEA plot

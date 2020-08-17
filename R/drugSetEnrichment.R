@@ -25,7 +25,7 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
     } else if (source == "CMap" && type == "3D") {
         link <- "tpu3sq53mpy5fvt/compound_descriptors_CMap_3D.rds"
     } else {
-        stop("The selected 'source' and 'type' are currently unsupported.")
+        stop("selected 'source' and 'type' are not supported")
     }
 
     link  <- sprintf("https://www.dropbox.com/s/%s?raw=1", link)
@@ -134,7 +134,9 @@ matchStatsWithDrugSetsID <- function(sets, stats, col=NULL) {
         col  <- cols[paste0(cols, statsSuffix) %in% colnames(statsInfo)][[1]]
     }
     col <- paste0(col, statsSuffix)
-    if (!col %in% colnames(statsInfo)) stop("Specified column not found")
+    if (!col %in% colnames(statsInfo)) {
+        stop(sprintf("specified column '%s' not found", col))
+    }
 
     # Get drug sets' compound info
     setsCompoundInfo <- attr(sets, "compoundInfo")
@@ -273,5 +275,6 @@ plotDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank",
     }
     if (!is.null(selectedSets)) sets <- sets[selectedSets]
     plots <- pblapply(seq(sets), plotGSEAperSet, sets, stats, col)
-    return(invisible(plots))
+    names(plots) <- names(sets)
+    return(plots)
 }

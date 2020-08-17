@@ -2,15 +2,16 @@
 % Please edit documentation in R/CMap.R
 \name{loadCMapZscores}
 \alias{loadCMapZscores}
-\title{Load matrix of CMap perturbation's differential expression z-scores}
+\title{Load matrix of CMap perturbation's differential expression z-scores
+(optional)}
 \usage{
-loadCMapZscores(data, perturbationChanges = FALSE, verbose = TRUE)
+loadCMapZscores(data, inheritAttrs = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{data}{\code{perturbationChanges} object}
 
-\item{perturbationChanges}{Boolean: convert to \code{perturbationChanges}
-object?}
+\item{inheritAttrs}{Boolean: convert to \code{perturbationChanges} object and
+inherit attributes from \code{data}?}
 
 \item{verbose}{Boolean: print messages?}
 }
@@ -20,6 +21,7 @@ Matrix containing CMap perturbation z-scores (genes as rows,
 }
 \description{
 Load matrix of CMap perturbation's differential expression z-scores
+(optional)
 }
 \examples{
 \donttest{
@@ -31,19 +33,18 @@ zscores <- loadCMapZscores(perts[ , 1:10])
 }
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

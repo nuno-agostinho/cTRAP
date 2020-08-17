@@ -1,0 +1,44 @@
+destination: docs
+url: https://nuno-agostinho.github.io/cTRAP/
+template:
+  params:
+    ganalytics: UA-156449666-2
+reference:
+  - title: "Prepare ENCODE data"
+    contents:
+      - matches("ENCODE")
+      - convertENSEMBLtoGeneSymbols
+      - performDifferentialExpression
+  - title: "Download and manipulate CMap perturbation data"
+    contents:
+      - getCMapConditions
+      - getCMapPerturbationTypes
+      - loadCMapData
+      - loadCMapZscores
+      - filterCMapMetadata
+      - prepareCMapPerturbations
+      - dim.perturbationChanges
+      - dimnames.perturbationChanges
+      - "`[.perturbationChanges`"
+      - plot.perturbationChanges
+      - parseCMapID
+  - title: "Rank similar CMap perturbations"
+    contents:
+      - rankSimilarPerturbations
+      - plot.referenceComparison
+      - as.table.referenceComparison
+      - plotTargetingDrugsVSsimilarPerturbations
+  - title: "Predict targeting drugs"
+    contents:
+      - listExpressionDrugSensitivityAssociation
+      - loadExpressionDrugSensitivityAssociation
+      - predictTargetingDrugs
+      - plot.referenceComparison
+      - as.table.referenceComparison
+      - plotTargetingDrugsVSsimilarPerturbations
+  - title: "Analyse drug (descriptor) set enrichment"
+    contents:
+      - loadDrugDescriptors
+      - prepareDrugSets
+      - analyseDrugSetEnrichment
+      - plotDrugSetEnrichment

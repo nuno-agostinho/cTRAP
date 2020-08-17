@@ -20,7 +20,7 @@ test_that("Plot similar perturbations according to selected method", {
 
     plot <- plot(cmp, method="gsea")
     expect_s3_class(plot, "ggplot")
-    expect_match(plot$labels$y, "WCTS")
+    expect_match(plot$labels$y, "WTCS")
 
     # Avoid plots based on inexisting methods in the similarPerturbations object
     cmpPearson <- rankSimilarPerturbations(diffExprStat, perturbations,
@@ -59,7 +59,7 @@ test_that("Plot similar perturbations with/without metadata", {
 test_that("Plot only ranked perturbations", {
     plot <- plot(cmp, "spearman", plotNonRankedPerturbations=FALSE)
     expect_s3_class(plot, "ggplot")
-    expect_false(plot$guides$colour)
+    expect_equal(plot$guides$colour, "none")
 })
 
 test_that("Plot non-ranked perturbations", {
@@ -87,6 +87,6 @@ test_that("Plot Pearson's correlation for a single perturbation", {
 
 test_that("Plot GSEA for a single perturbation", {
     plot <- plot(perturbations, colnames(perturbations)[[1]], diffExprStat,
-                 "gsea")
+                 method="gsea")
     expect_s3_class(plot, "ggplot")
 })

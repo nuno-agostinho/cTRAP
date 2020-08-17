@@ -2,10 +2,10 @@
 % Please edit documentation in R/cmapR_subset.R
 \name{processIds}
 \alias{processIds}
-\title{Return a subset of requested GCTX row/colum ids
+\title{Return a subset of requested GCTX row/column ids
 out of the universe of all ids}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 processIds(ids, all_ids, type = "rid")
@@ -24,7 +24,7 @@ a list with the following elements
  \code{idx}: an integer list of their corresponding indices in \code{all_ids}
 }
 \description{
-Return a subset of requested GCTX row/colum ids
+Return a subset of requested GCTX row/column ids
 out of the universe of all ids
 }
 \details{
@@ -32,8 +32,10 @@ This is a low-level helper function
   which most users will not need to access directly
 }
 \seealso{
-Other GCTX parsing functions: \code{\link{fix.datatypes}},
-  \code{\link{readGctxIds}}, \code{\link{readGctxMeta}}
+Other GCTX parsing functions: 
+\code{\link{fix.datatypes}()},
+\code{\link{readGctxIds}()},
+\code{\link{readGctxMeta}()}
 }
 \concept{GCTX parsing functions}
 \keyword{internal}

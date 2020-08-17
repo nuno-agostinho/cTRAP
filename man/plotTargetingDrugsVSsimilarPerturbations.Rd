@@ -4,9 +4,14 @@
 \alias{plotTargetingDrugsVSsimilarPerturbations}
 \title{Plot similar perturbations against predicted targeting drugs}
 \usage{
-plotTargetingDrugsVSsimilarPerturbations(targetingDrugs,
-  similarPerturbations, column, labelBy = "pert_iname",
-  quantileThreshold = 0.25, showAllScores = FALSE)
+plotTargetingDrugsVSsimilarPerturbations(
+  targetingDrugs,
+  similarPerturbations,
+  column,
+  labelBy = "pert_iname",
+  quantileThreshold = 0.25,
+  showAllScores = FALSE
+)
 }
 \arguments{
 \item{targetingDrugs}{\code{targetingDrugs} object}
@@ -21,8 +26,8 @@ or compound information to be used for labelling}
 \item{quantileThreshold}{Numeric: quantile to use for highlight values within
 [0, 1]}
 
-\item{showAllScores}{Boolean: showl all scores? If \code{FALSE}, only the
-best score per compound will be plotted}
+\item{showAllScores}{Boolean: show all scores? If \code{FALSE}, only the best
+score per compound will be plotted}
 }
 \value{
 \code{ggplot2} plot
@@ -31,24 +36,26 @@ best score per compound will be plotted}
 Plot similar perturbations against predicted targeting drugs
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 
-Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{predictTargetingDrugs}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{loadExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{predictTargetingDrugs}()}
 }
 \concept{functions related with the prediction of targeting drugs}
 \concept{functions related with the ranking of CMap perturbations}

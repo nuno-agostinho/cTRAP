@@ -5,7 +5,7 @@
 \alias{GCT-class}
 \title{An S4 class to represent a GCT object}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \description{
 The GCT class serves to represent annotated

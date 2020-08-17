@@ -28,8 +28,9 @@ if (interactive()) {
 }
 }
 \seealso{
-Other functions related with using ENCODE expression data: \code{\link{downloadENCODEknockdownMetadata}},
-  \code{\link{performDifferentialExpression}},
-  \code{\link{prepareENCODEgeneExpression}}
+Other functions related with using ENCODE expression data: 
+\code{\link{downloadENCODEknockdownMetadata}()},
+\code{\link{performDifferentialExpression}()},
+\code{\link{prepareENCODEgeneExpression}()}
 }
 \concept{functions related with using ENCODE expression data}

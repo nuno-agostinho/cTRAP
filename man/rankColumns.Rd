@@ -13,8 +13,8 @@ rankColumns(table, rankingInfo, rankByAscending = TRUE, sort = FALSE)
 columns (column names to be ranked must exactly match those available in
 argument \code{table}); first column must be identifiers}
 
-\item{rankByAscending}{Boolean: rank values based on their ascending (TRUE)
-or descending (FALSE) order?}
+\item{rankByAscending}{Boolean: rank values based on their ascending
+(\code{TRUE}) or descending (\code{FALSE}) order?}
 
 \item{sort}{Boolean: sort data based on rank product's rank (if multiple
 methods are available) or by available ranks}

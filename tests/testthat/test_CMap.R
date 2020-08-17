@@ -151,8 +151,72 @@ test_that("Compare using Pearson correlation", {
     testSimilarPerturbationsResult(data, col="pearson_rank", cols=cols)
 })
 
+testGeneset <- function(data, geneSize) {
+    geneset <- attr(data, "geneset")
+    expect_equal(names(geneset), c("top", "bottom"))
+
+    if (length(geneSize) < 2) geneSize <- rep(geneSize, 2)
+    if (length(attr(data, "input")) < sum(geneSize)) {
+        geneSize <- rep(floor(length(diffExprStat)/2), 2)
+    }
+    expect_equal(length(geneset[[1]]), geneSize[[1]])
+    expect_equal(length(geneset[[2]]), geneSize[[2]])
+}
+
 test_that("Compare using GSEA", {
     data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea")
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+    testGeneset(data, geneSize=150)
+
+    # Use a gene size of 100
+    geneSize <- 100
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=geneSize)
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+    testGeneset(data, geneSize)
+
+    # Use a gene size of 0
+    geneSize <- 0
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=geneSize)
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+    expect_true(all(is.na(data$GSEA)))
+    expect_true(all(is.na(data$GSEA_rank)))
+    testGeneset(data, geneSize)
+
+    # Use gene size that is too large
+    geneSize <- 50000
+    data <- expect_warning(
+        rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                 geneSize=geneSize))
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+    testGeneset(data, geneSize)
+
+    # Different gene size for top and bottom genes
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=c(120, 180))
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+
+    # Use no top genes in GSEA comparison
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=c(0, 180))
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+
+    # Use no bottom genes in GSEA comparison
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=c(120, 0))
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
+
+    # Same gene size used for top and bottom genes with a 2-length vector
+    data <- rankSimilarPerturbations(diffExprStat, perturbations, method="gsea",
+                                     geneSize=c(100, 100))
     cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
     testSimilarPerturbationsResult(data, col="GSEA_rank", cols=cols)
 })
@@ -203,4 +267,22 @@ test_that("Compare against CMap by also ranking individual cell lines", {
                                      cellLineMean=FALSE)
     checkPerturbationIdentifierInformationInMetadata(data)
     expect_false(areNAsIncludedInRanks(data))
+})
+
+test_that("Compare against CMap based on a gene set", {
+    geneset <- sample(names(diffExprStat), 200)
+    rank <- rankSimilarPerturbations(geneset, perturbations)
+    checkPerturbationIdentifierInformationInMetadata(rank)
+
+    cols <- c("compound_perturbation", "GSEA", "GSEA_rank")
+    testSimilarPerturbationsResult(rank, col="GSEA_rank", cols=cols)
+
+    input <- attr(rank, "input")
+    expect_equivalent(input, geneset)
+    expect_true(attr(input, "isGeneset"))
+
+    # Automatically perform only GSEA based on a gene set
+    expect_warning(
+        rankSimilarPerturbations(geneset, perturbations, method="spearman"),
+        "gsea")
 })

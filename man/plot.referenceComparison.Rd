@@ -4,36 +4,64 @@
 \alias{plot.referenceComparison}
 \title{Plot data comparison}
 \usage{
-\method{plot}{referenceComparison}(x, method = c("spearman", "pearson",
-  "gsea", "rankProduct"), n = c(3, 3), showMetadata = TRUE,
-  plotNonRankedPerturbations = FALSE, alpha = 0.3, ...)
+\method{plot}{referenceComparison}(
+  x,
+  element = NULL,
+  method = c("spearman", "pearson", "gsea", "rankProduct"),
+  n = c(3, 3),
+  showMetadata = TRUE,
+  plotNonRankedPerturbations = FALSE,
+  alpha = 0.3,
+  genes = c("both", "top", "bottom"),
+  ...,
+  zscores = NULL,
+  title = NULL
+)
 }
 \arguments{
 \item{x}{\code{referenceComparison} object: obtained after running
-\code{\link{rankSimilarPerturbations}} or
-\code{\link{predictTargetingDrugs}}}
+\code{\link{rankSimilarPerturbations}()} or
+\code{\link{predictTargetingDrugs}()}}
 
-\item{method}{Character: method to plot results (\code{spearman},
-\code{pearson}, \code{gsea} or \code{rankProduct})}
+\item{element}{Character: identifier in the first column of \code{x}}
+
+\item{method}{Character: method to plot results; choose between
+\code{spearman}, \code{pearson}, \code{gsea} or \code{rankProduct} (the
+last one is only available if \code{element = NULL})}
 
 \item{n}{Numeric: number of top and bottom genes to label (if a vector of two
 numbers is given, the first and second numbers will be used as the number
-of top and bottom genes to label, respectively)}
+of top and bottom genes to label, respectively); only used if
+\code{element = NULL}}
 
 \item{showMetadata}{Boolean: show available metadata information instead of
-identifiers (if available)?}
+identifiers (if available)? Only used if \code{element = NULL}}
 
-\item{plotNonRankedPerturbations}{Boolean: plot non-ranked data in grey?}
+\item{plotNonRankedPerturbations}{Boolean: plot non-ranked data in grey? Only
+used if \code{element = NULL}}
 
-\item{alpha}{Numeric: transparency}
+\item{alpha}{Numeric: transparency; only used if \code{element = NULL}}
+
+\item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{...}{Extra arguments currently not used}
+
+\item{zscores}{Data frame (GCTX z-scores) or character (respective filepath
+to load data from file)}
+
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 }
 \value{
 Plot illustrating the reference comparison
 }
 \description{
-Plot data comparison
+If \code{element = NULL}, comparison is plotted based on all elements.
+Otherwise, show scatter or GSEA plots for a single element compared with
+previously given differential expression results.
 }
 \examples{
 # Example of a differential expression profile
@@ -53,29 +81,55 @@ cmapPerturbationsKD <- prepareCMapPerturbations(
 # Rank similar CMap perturbations
 compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 
-plot(compareKD, "spearman", c(7, 3))
-plot(compareKD, "pearson")
-plot(compareKD, "gsea")
+# Plot ranked list of CMap perturbations
+plot(compareKD, method="spearman")
+plot(compareKD, method="spearman", n=c(7, 3))
+plot(compareKD, method="pearson")
+plot(compareKD, method="gsea")
+
+# Plot results for a single perturbation
+pert <- compareKD[[1, 1]]
+plot(compareKD, pert, method="spearman", zscores=cmapPerturbationsKD)
+plot(compareKD, pert, method="pearson", zscores=cmapPerturbationsKD)
+plot(compareKD, pert, method="gsea", zscores=cmapPerturbationsKD)
+
+# Predict targeting drugs based on a given differential expression profile
+gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
+# Plot ranked list of targeting drugs
+plot(predicted, method="spearman")
+plot(predicted, method="spearman", n=c(7, 3))
+plot(predicted, method="pearson")
+plot(predicted, method="gsea")
+
+# Plot results for a single targeting drug
+drug <- predicted$compound[[4]]
+plot(predicted, drug, method="spearman")
+plot(predicted, drug, method="pearson")
+plot(predicted, drug, method="gsea")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 
-Other functions related with the prediction of targeting drugs: \code{\link{loadExpressionDrugSensitivityAssociation}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{predictTargetingDrugs}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{loadExpressionDrugSensitivityAssociation}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{predictTargetingDrugs}()}
 }
 \concept{functions related with the prediction of targeting drugs}
 \concept{functions related with the ranking of CMap perturbations}

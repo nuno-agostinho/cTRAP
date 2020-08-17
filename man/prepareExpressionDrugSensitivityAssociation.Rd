@@ -4,8 +4,10 @@
 \alias{prepareExpressionDrugSensitivityAssociation}
 \title{Prepare gene expression and drug sensitivity correlation matrix}
 \usage{
-prepareExpressionDrugSensitivityAssociation(dataset = c("GDSC 7",
-  "CTRP 2.1", "NCI60"), method = "spearman")
+prepareExpressionDrugSensitivityAssociation(
+  dataset = c("GDSC 7", "CTRP 2.1", "NCI60"),
+  method = "spearman"
+)
 }
 \arguments{
 \item{dataset}{Character: dataset to use (\code{CTRP}, \code{GDSC} or

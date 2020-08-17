@@ -7,8 +7,8 @@
 loadExpressionDrugSensitivityAssociation(source, file = NULL)
 }
 \arguments{
-\item{source}{Character: source (\code{CTRP 2.1}, \code{GDSC 7} or
-\code{NCI60})}
+\item{source}{Character: source of matrix to load; see
+\code{\link{listExpressionDrugSensitivityAssociation}}}
 
 \item{file}{Character: filepath to gene expression and drug sensitivity
 association dataset (automatically downloaded if file does not exist)}
@@ -21,11 +21,15 @@ Correlation matrix between gene expression (rows) and drug
 Load gene expression and drug sensitivity correlation matrix
 }
 \examples{
-loadExpressionDrugSensitivityAssociation("GDSC 7")
+gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
+loadExpressionDrugSensitivityAssociation(gdsc)
 }
 \seealso{
-Other functions related with the prediction of targeting drugs: \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{predictTargetingDrugs}}
+Other functions related with the prediction of targeting drugs: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{listExpressionDrugSensitivityAssociation}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{predictTargetingDrugs}()}
 }
 \concept{functions related with the prediction of targeting drugs}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CMap.R
 \name{getCMapPerturbationTypes}
 \alias{getCMapPerturbationTypes}
-\title{Get perturbation types}
+\title{Get CMap perturbation types}
 \usage{
 getCMapPerturbationTypes(control = FALSE)
 }
@@ -13,25 +13,24 @@ getCMapPerturbationTypes(control = FALSE)
 Perturbation types and respective codes as used by CMap datasets
 }
 \description{
-Get perturbation types
+Get CMap perturbation types
 }
 \examples{
 getCMapPerturbationTypes()
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

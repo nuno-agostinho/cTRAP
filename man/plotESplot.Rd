@@ -4,7 +4,7 @@
 \alias{plotESplot}
 \title{Render GSEA enrichment plot}
 \usage{
-plotESplot(enrichmentScore, gseaStat)
+plotESplot(enrichmentScore, gseaStat, compact = FALSE)
 }
 \value{
 GSEA enrichment plot

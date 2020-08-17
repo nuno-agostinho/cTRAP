@@ -30,7 +30,7 @@ parseCMapID <- function(id, cellLine=FALSE) {
     return(res)
 }
 
-#' Get perturbation types
+#' Get CMap perturbation types
 #'
 #' @param control Boolean: return perturbation types used as control?
 #'
@@ -75,7 +75,7 @@ loadCMapMetadata <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_sig_info.txt.gz")
     downloadIfNotFound(link, file)
-    message(sprintf("Loading data from %s...", file))
+    message(sprintf("Loading CMap metadata from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
 
     # Fix issues with specific metadata values
@@ -98,10 +98,11 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 }
 
 #' Load matrix of CMap perturbation's differential expression z-scores
+#' (optional)
 #'
 #' @param data \code{perturbationChanges} object
-#' @param perturbationChanges Boolean: convert to \code{perturbationChanges}
-#'   object?
+#' @param inheritAttrs Boolean: convert to \code{perturbationChanges} object and
+#'   inherit attributes from \code{data}?
 #' @param verbose Boolean: print messages?
 #'
 #' @family functions related with the ranking of CMap perturbations
@@ -117,8 +118,12 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #'                                   "cmapGeneInfo.txt")
 #' zscores <- loadCMapZscores(perts[ , 1:10])
 #' }
-loadCMapZscores <- function(data, perturbationChanges=FALSE, verbose=TRUE) {
-    if (verbose) message(sprintf("Loading data from %s...", data))
+loadCMapZscores <- function(data, inheritAttrs=FALSE, verbose=TRUE) {
+    if (verbose) {
+        msg <- paste("Loading CMap perturbation's differential expression",
+                     "z-scores from %s...")
+        message(sprintf(msg, data))
+    }
     zscores  <- new("GCT", src=data, cid=colnames(data), verbose=verbose)@mat
     geneInfo <- attr(data, "geneInfo")
     if (!is.null(geneInfo)) {
@@ -128,7 +133,7 @@ loadCMapZscores <- function(data, perturbationChanges=FALSE, verbose=TRUE) {
             zscores <- zscores[attr(data, "genes"), , drop=FALSE]
     }
 
-    if (perturbationChanges) {
+    if (inheritAttrs) {
         class(zscores) <- c("perturbationChanges", class(zscores))
         # Inherit input's attributes
         attrs <- attributes(data)
@@ -161,7 +166,8 @@ loadCMapCompoundInfo <- function(file, nas) {
     downloadIfNotFound(link, file[["drugs"]])
 
     # Replace separation symbols for targets
-    message(sprintf("Loading compound data from %s...", file[["drugs"]]))
+    message(sprintf("Loading CMap compound data [1/2] from %s...",
+                    file[["drugs"]]))
     drugData <- readAfterComments(file[["drugs"]])
     drugData$target <- gsub("|", ", ", drugData$target, fixed=TRUE)
 
@@ -171,7 +177,8 @@ loadCMapCompoundInfo <- function(file, nas) {
         "repurposing_samples_20180907.txt")
     downloadIfNotFound(link, file[["samples"]])
 
-    message(sprintf("Loading compound data from %s...", file[["samples"]]))
+    message(sprintf("Loading CMap compound data [2/2] from %s...",
+                    file[["samples"]]))
     pertData <- readAfterComments(file[["samples"]])
     pertData <- pertData[ , c("pert_iname", "expected_mass", "smiles",
                               "InChIKey", "pubchem_cid")]
@@ -187,7 +194,7 @@ loadCMapGeneInfo <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_gene_info.txt.gz")
     downloadIfNotFound(link, file)
-    message(sprintf("Loading data from %s...", file))
+    message(sprintf("Loading CMap gene information from %s...", file))
     data <- fread(file, sep="\t", na.strings=nas)
     return(data)
 }
@@ -230,7 +237,7 @@ loadCMapGeneInfo <- function(file, nas) {
 loadCMapData <- function(file, type=c("metadata", "geneInfo", "zscores",
                                       "compoundInfo"),
                          zscoresID=NULL) {
-    if (is.null(file)) stop("File cannot be NULL, please provide a filename")
+    if (is.null(file)) stop("'file' cannot be NULL, please provide a filename")
 
     type <- match.arg(type)
     nas  <- c("", "NA", "na", "-666", "-666.0", "-666 -666",
@@ -352,8 +359,10 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
 #'   filepath to load data from file)
-#' @param loadZscores Boolean: load perturbation z-scores? Not recommended in
-#'   memory-constrained systems
+#' @param loadZscores Boolean: load matrix of perturbation z-scores? Not
+#'   recommended in systems with less than 30GB of RAM; if \code{FALSE},
+#'   downstream functions will read the file chunk by chunk (this strategy
+#'   impacts performance at the expense of a much lower memory footprint)
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -374,24 +383,26 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {
         zscores <- loadCMapData(zscores, "zscores", metadata$sig_id)
+        attr(zscores, "zscoresFilename") <- as.character(zscores)
     }
     if (is.character(compoundInfo)) {
         compoundInfo <- loadCMapData(compoundInfo, "compoundInfo")
     }
 
-    attr(zscores, "genes") <- geneInfo$pr_gene_symbol[
-        match(attr(zscores, "genes"), geneInfo$pr_gene_id)]
-    attr(zscores, "metadata") <- metadata
-    attr(zscores, "geneInfo") <- geneInfo
-    attr(zscores, "compoundInfo") <- compoundInfo
-    class(zscores) <- c("perturbationChanges", class(zscores))
+    if (!is.null(zscores)) {
+        attr(zscores, "genes") <- geneInfo$pr_gene_symbol[
+            match(attr(zscores, "genes"), geneInfo$pr_gene_id)]
+        attr(zscores, "metadata") <- metadata
+        attr(zscores, "geneInfo") <- geneInfo
+        attr(zscores, "compoundInfo") <- compoundInfo
+        class(zscores) <- c("perturbationChanges", class(zscores))
 
-    # Item information
-    attr(zscores, "source") <- "CMap"
-    attr(zscores, "type")   <- "perturbations"
+        # Item information
+        attr(zscores, "source") <- "CMap"
+        attr(zscores, "type")   <- "perturbations"
 
-    if (loadZscores) zscores <- loadCMapZscores(zscores,
-                                                perturbationChanges=TRUE)
+        if (loadZscores) zscores <- loadCMapZscores(zscores, inheritAttrs=TRUE)
+    }
 
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")
@@ -492,8 +503,6 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 #'   (check \code{\link{prepareCMapPerturbations}})
 #' @inheritParams compareAgainstReference
 #'
-#' @importFrom data.table setkeyv :=
-#'
 #' @section GSEA score:
 #' Weighted connectivity scores (WTCS) are calculated when \code{method
 #'   = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
@@ -528,16 +537,16 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 #'
 #' # Rank similar CMap perturbations using only Spearman's correlation
 #' rankSimilarPerturbations(diffExprStat, perturbations, method="spearman")
-rankSimilarPerturbations <- function(diffExprGenes, perturbations,
+rankSimilarPerturbations <- function(input, perturbations,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150, cellLineMean="auto",
                                      rankPerCellLine=FALSE) {
     metadata  <- attr(perturbations, "metadata")
     cellLines <- length(unique(metadata$cell_id))
     rankedPerts <- compareAgainstReference(
-        diffExprGenes, perturbations, method=method, geneSize=geneSize,
-        cellLines=cellLines, cellLineMean=cellLineMean,
-        rankByAscending=TRUE, rankPerCellLine=rankPerCellLine)
+        input, perturbations, method=method, geneSize=geneSize,
+        cellLines=cellLines, cellLineMean=cellLineMean, rankByAscending=TRUE,
+        rankPerCellLine=rankPerCellLine)
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -558,26 +567,26 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
     return(rankedPerts)
 }
 
-#' Plot perturbation comparison against a differential expression profile
+# perturbationChanges object ---------------------------------------------------
+
+#' Operations on a \code{perturbationChanges} object
 #'
 #' @param x \code{perturbationChanges} object
-#' @param ... Extra arguments (currently undocumented)
+#' @param ... Extra arguments
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
-#' @inheritParams prepareGSEApathways
-#' @param method Character: method to plot results (\code{spearman},
-#'   \code{pearson} or \code{gsea})
-#' @param genes Character: when plotting gene set enrichment analysis (GSEA),
-#'   plot top genes (\code{genes = "top"}), bottom genes
-#'   (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-#'   \code{method = "gsea"}
+#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams plot.referenceComparison
+#' @param title Character: plot title (if \code{NULL}, the default title depends
+#'   on the context; ignored when plotting multiple perturbations)
 #'
 #' @importFrom methods is
 #' @importFrom stats setNames
 #'
 #' @family functions related with the ranking of CMap perturbations
-#' @return CMap data comparison plots
+#' @return Subset, plot or return dimensions or names of a
+#'   \code{perturbationChanges} object
 #' @export
 #'
 #' @examples
@@ -600,34 +609,43 @@ rankSimilarPerturbations <- function(diffExprGenes, perturbations,
 #' pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
 #' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
 #' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-#'
-#' # Currently unsupported!
-#' # plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
-plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
+#' plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+plot.perturbationChanges <- function(x, perturbation, input,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150,
-                                     genes=c("both", "top", "bottom"), ...) {
-    method <- match.arg(method)
+                                     genes=c("both", "top", "bottom"), ...,
+                                     title=NULL) {
+    plotPerturbationChanges(x=x, perturbation=perturbation, input=input,
+                            method=method, geneset=NULL, geneSize=geneSize,
+                            genes=genes, ..., title=title)
+}
 
-    if (is(perturbation, "similarPerturbations"))
+plotPerturbationChanges <- function(x, perturbation, input,
+                                    method=c("spearman", "pearson", "gsea"),
+                                    geneset=NULL, geneSize=150,
+                                    genes=c("both", "top", "bottom"), ...,
+                                    title=NULL) {
+    method <- match.arg(method)
+    if (is(perturbation, "similarPerturbations")) {
         perturbation <- perturbation[[1]]
+    }
 
     cellLinePerts <- colnames(x)[
         parseCMapID(colnames(x), cellLine=FALSE) %in% perturbation]
     isSummaryPert <- length(cellLinePerts) > 0
 
     if (length(perturbation) == 0) {
-        stop("One perturbation ID must be provided")
+        stop("a perturbation ID must be provided")
     } else if (length(perturbation) > 1) {
-        stop("Only one perturbation ID is currently supported")
+        stop("only one perturbation ID is currently supported")
     } else if (!perturbation %in% colnames(x) && !isSummaryPert) {
-        stop("Perturbation not found in the columns of the given dataset")
+        stop("perturbation not found in the columns of 'x'")
     }
 
     if (!isSummaryPert) cellLinePerts <- perturbation
     names(cellLinePerts) <- cellLinePerts
     if (is.character(x)) {
-        zscores <- loadCMapZscores(x[cellLinePerts])
+        zscores <- loadCMapZscores(x[cellLinePerts], verbose=FALSE)
     } else {
         zscores <- unclass(x)
     }
@@ -638,33 +656,33 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
     }, zscores)
 
     if (method != "gsea") {
-        plotSingleCorr(data, perturbation, diffExprGenes, ...)
+        plot <- plotSingleCorr(data, perturbation, input, title=title)
     } else {
-        if (length(data) > 1) {
-            stop("Plotting GSEA of multiple perturbations is currently ",
-                 "unsupported")
+        if (is.null(geneset)) geneset <- prepareGSEAgenesets(input, geneSize)
+        plot <- NULL
+        areMultiplePerturbations <- length(seq(data)) > 1
+        for (i in seq(data)) {
+            dataset <- unclass(data[[i]])
+            if (is.null(title) || areMultiplePerturbations) {
+                title <- names(data)[[i]]
+            }
+            p <- plotGSEA(dataset, geneset, genes, title=title, ...,
+                          compact=areMultiplePerturbations)
+            plot <- c(plot, setNames(list(p), title))
         }
-        data <- unclass(data[[1]])
-        pathways <- prepareGSEApathways(diffExprGenes=diffExprGenes,
-                                        geneSize=geneSize)
-        genes <- match.arg(genes)
-        if (!any(genes %in% c("top", "both")))    pathways$top    <- NULL
-        if (!any(genes %in% c("bottom", "both"))) pathways$bottom <- NULL
-        plotGSEA(data, pathways$top, pathways$bottom, title=perturbation, ...)
+        names(plot) <- names(cellLinePerts)
+        if (areMultiplePerturbations) {
+            plot <- plot_grid(plotlist=plot, ncol=1)
+        } else {
+            plot <- plot[[1]]
+        }
     }
+    return(plot)
 }
 
-# perturbationChanges object ---------------------------------------------------
-
-#' Subset a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @param i,j Character or numeric indexes specifying elements to extract
 #' @param drop Boolean: coerce result to the lowest possible dimension?
-#' @param ... Extra parameters passed to \code{`[`}
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return \code{perturbationChanges} object with subset data
 #' @export
 `[.perturbationChanges` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
@@ -706,12 +724,7 @@ plot.perturbationChanges <- function(x, perturbation, diffExprGenes,
     return(out)
 }
 
-#' Dimensions of a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return Dimensions of a \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @export
 dim.perturbationChanges <- function(x) {
     if (is.character(x)) {
@@ -722,12 +735,7 @@ dim.perturbationChanges <- function(x) {
     return(res)
 }
 
-#' Dimnames of a \code{perturbationChanges} object
-#'
-#' @param x \code{perturbationChanges} object
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return Retrieve dimnames of a \code{perturbationChanges} object
+#' @rdname plot.perturbationChanges
 #' @export
 dimnames.perturbationChanges <- function(x) {
     if (is.character(x)) {
@@ -749,7 +757,7 @@ dimnames.perturbationChanges <- function(x) {
 #'
 #' @family functions related with the ranking of CMap perturbations
 #' @return Information on \code{perturbationChanges} object or on specific
-#'   perturbations (if \code{perturbation} is set)
+#'   perturbations
 #' @export
 print.similarPerturbations <- function(x, perturbation=NULL, ...) {
     if (is.null(perturbation)) {
@@ -779,50 +787,4 @@ print.similarPerturbations <- function(x, perturbation=NULL, ...) {
         }
         return(res)
     }
-}
-
-#' Cross Tabulation and Table Creation
-#'
-#' @param x \code{similarPerturbations} object
-#' @param ... Extra parameters passed to \code{table}
-#' @param clean Boolean: only show certain columns (to avoid redundancy)?
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @return Complete table with metadata based on a \code{similarPerturbations}
-#'   object
-as.table.similarPerturbations <- function(x, ..., clean=TRUE) {
-    metadata <- attr(x, "metadata")
-    if (!is.null(metadata)) {
-        nonCellID <- "non_cell_id"
-
-        summaryID <- parseCMapID(metadata$sig_id, cellLine=FALSE)
-        metadata[[nonCellID]] <- summaryID
-        metadataSubset <- metadata[unique(match(summaryID, summaryID)), ]
-        metadataSubset[ , c("cell_id", "sig_id", "distil_id")] <- NULL
-
-        x[[nonCellID]] <- parseCMapID(x[[1]], cellLine=FALSE)
-        res <- merge(x, metadataSubset, all.x=TRUE, by=nonCellID)
-        res[[nonCellID]] <- NULL
-
-        compoundInfo <- attr(x, "compoundInfo")
-        if (!is.null(compoundInfo)) {
-            res <- merge(res, compoundInfo, by="pert_iname", all.x=TRUE)
-            # Place "pert_iname" column after "pert_id" one
-            m <- match("pert_id", colnames(res))
-            res <- res[ , c(2:m, 1, (m+1):(ncol(res))), with=FALSE]
-        }
-    } else {
-        res <- x
-    }
-
-    if (clean) {
-        hideCols <- c(colnames(res)[endsWith(colnames(res), "value") |
-                                        endsWith(colnames(res), "value_rank")],
-                      "pert_dose", "pert_dose_unit",
-                      "pert_time", "pert_time_unit")
-        hideCols <- hideCols[hideCols %in% colnames(res)]
-        if (length(hideCols) > 0) res <- res[ , -hideCols, with=FALSE]
-    }
-
-    return(res)
 }

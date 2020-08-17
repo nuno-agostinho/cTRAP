@@ -22,22 +22,27 @@ performGSEA <- function(pathways, stats) {
 #'
 #' @importFrom ggplot2 ggplot aes geom_point geom_hline geom_line annotate
 #' scale_x_continuous scale_y_continuous theme theme_bw ggtitle labs
-#' element_text element_blank element_rect expand_scale
+#' element_text element_blank element_rect expansion
 #'
 #' @keywords internal
 #' @return GSEA enrichment plot
-plotESplot <- function(enrichmentScore, gseaStat) {
+plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
+    score <- NULL
     amp <- range(enrichmentScore$score)
     ES  <- amp[which.max(abs(amp))]
-    enrichmentPlot <- ggplot(enrichmentScore, aes(x=enrichmentScore$rank,
-                                                  y=enrichmentScore$score)) +
-        geom_rug(alpha=0.2, sides="b", length = unit(0.1, "npc")) +
+    if (compact) {
+        rugLength <- 20
+        rugAlpha  <- 0.05
+    } else {
+        rugLength <- 0.1
+        rugAlpha  <- 0.2
+    }
+    enrichmentPlot <- ggplot(enrichmentScore, aes(x=rank, y=score)) +
+        geom_rug(alpha=rugAlpha, sides="b", length=unit(rugLength, "npc")) +
         geom_line(colour="orange", na.rm=TRUE, size=0.7) +
         geom_hline(yintercept=0, colour="darkgrey", linetype="longdash") +
         geom_hline(yintercept=ES, colour="#3895D3") +
         scale_x_continuous(expand=c(0,0)) +
-        scale_y_continuous(expand=expand_scale(mult = c(0.2, 0.1))) +
-                           # breaks=c(round(ES, 2), seq(-20, 20, .1))) +
         labs(y="Enrichment score") +
         theme_bw() +
         theme(axis.title.x=element_blank(),
@@ -47,6 +52,16 @@ plotESplot <- function(enrichmentScore, gseaStat) {
               panel.grid.minor=element_blank(),
               axis.text=element_text(size=10),
               axis.title=element_text(size=12))
+    if (compact) {
+        enrichmentPlot <- enrichmentPlot +
+            theme(axis.title.y=element_blank(),
+                  axis.text.y=element_blank(),
+                  axis.ticks.y=element_blank())
+    } else {
+        enrichmentPlot <- enrichmentPlot +
+            scale_y_continuous(expand=expansion(mult=c(0.2, 0.1)))
+                               # breaks=c(round(ES, 2), seq(-20, 20, .1)))
+    }
 
     if (ES > 0) {
         label_x     <- max(enrichmentScore$rank)
@@ -66,42 +81,72 @@ plotESplot <- function(enrichmentScore, gseaStat) {
 #' Plot metric distribution
 #'
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous theme
-#' theme_bw labs guides element_text geom_area scale_fill_gradient2
+#' theme_bw labs guides element_text geom_area scale_fill_gradient2 geom_raster
+#' @importFrom scales extended_breaks
 #'
 #' @keywords internal
 #' @return Metric distribution plot
-plotMetricDistribution <- function(stat) {
+plotMetricDistribution <- function(stat, compact=FALSE) {
     # Scale number of breaks according to number of ranked elements
-    breaks       <- round(-120 + 55 * log10(length(stat)))
+    breaks       <- max(round(-120 + 55 * log10(length(stat))), 10)
     quantile     <- cut(stat, breaks=breaks, labels=FALSE)
     quantile     <- seq(min(stat), max(stat), length.out=breaks)[quantile]
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
-    metricPlot <- ggplot(rankedMetric, aes_string("sort", "stat")) +
-        scale_x_continuous(expand=c(0, 0)) +
+    if (compact) {
+        aes        <- aes_string("sort", 0, fill="stat")
+        metricPlot <- ggplot(rankedMetric, aes) +
+            geom_raster()
+    } else {
+        aes        <- aes_string("sort", "stat")
+        metricPlot <- ggplot(rankedMetric, aes) +
+            geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
+                      position="identity")
+    }
+    xBreaks <- c(min(rankedMetric$sort),
+                 extended_breaks()(rankedMetric$sort),
+                 max(rankedMetric$sort))
+    xBreaks <- xBreaks[xBreaks != 0]
+    # Check if last tick is too close to potentially overlap
+    if (xBreaks[length(xBreaks)] - xBreaks[length(xBreaks) - 1] < 2000) {
+        xBreaks <- xBreaks[-c(length(xBreaks) - 1)]
+    }
+    xBreaksAdj <- c(ifelse(compact, 0, 0.5), rep(0.5, length(xBreaks) - 2), 1)
+
+    metricPlot <- metricPlot +
+        scale_x_continuous(expand=c(0, 0), breaks=xBreaks) +
         scale_y_continuous(expand=c(0, 0)) +
         labs(x="Rank", y="Ranked metric") +
-        guides(colour=FALSE, fill=FALSE) +
-        geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
-                  position="identity") +
+        guides(colour="none", fill="none") +
         scale_fill_gradient2(low="dodgerblue", mid="grey95", high="orangered",
                              midpoint=0) +
         theme_bw() +
         theme(plot.margin=unit(c(0, 0, 5.5, 0), "pt"),
               panel.grid.major.x=element_blank(),
-              panel.grid.minor=element_blank(),
-              axis.text=element_text(size=10),
-              axis.title=element_text(size=12))
+              panel.grid.minor=element_blank())
+    # May potentially break with a future ggplot2 update...
+    metricPlot <- suppressWarnings(
+        metricPlot + theme(axis.text.x=element_text(hjust=xBreaksAdj)))
+    if (compact) {
+        metricPlot <- metricPlot +
+            theme(axis.text=element_blank(),
+                  axis.title=element_blank(),
+                  axis.ticks=element_blank())
+    } else {
+        metricPlot <- metricPlot +
+            theme(axis.text=element_text(size=10),
+                  axis.title=element_text(size=12))
+    }
     return(metricPlot)
 }
 
 #' Plot gene set enrichment analysis (GSEA)
 #'
 #' @param stats Named numeric vector: statistics
-#' @param topGenes Named list of characters: up-regulated genes
-#' @param bottomGenes Named list of characters: down-regulated genes
-#' @param title Character: title
+#' @inheritParams plot.perturbationChanges
+#' @inheritParams plot.referenceComparison
 #' @param gseaParam Numeric: GSEA-like parameter
+#' @param compact Boolean: render a compact version of the GSEA plot?
 #'
 #' @importFrom ggplot2 ggtitle theme unit
 #' @importFrom cowplot plot_grid ggdraw draw_label
@@ -109,29 +154,44 @@ plotMetricDistribution <- function(stat) {
 #'
 #' @return Grid of plots illustrating a GSEA plot
 #' @keywords internal
-plotGSEA <- function(stats, topGenes=NULL, bottomGenes=NULL, title="GSEA plot",
-                     gseaParam=1) {
+plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
+                     title="GSEA plot", gseaParam=1, compact=FALSE) {
+    genes <- match.arg(genes)
+    if (is.list(geneset)) {
+        topGenes    <- c(geneset[["top"]], geneset[["custom"]])
+        bottomGenes <- geneset[["bottom"]]
+    } else {
+        topGenes    <- geneset
+        bottomGenes <- NULL
+    }
+    if (!any(genes %in% c("top", "both")))    topGenes    <- NULL
+    if (!any(genes %in% c("bottom", "both"))) bottomGenes <- NULL
+
     statsOrd <- sort(stats, decreasing=TRUE)
     statsAdj <- abs(statsOrd ^ gseaParam)
     statsAdj <- sign(statsOrd) * statsAdj / max(statsAdj)
 
-    plotOneESplot <- function(end, genes, stats) {
+    plotOneESplot <- function(end, genes, stats, compact=FALSE) {
         if (is.null(genes)) return(NULL)
-        gseaRes        <- performGSEA(genes, stats)
-        enrichmentPlot <- plotESplot(gseaRes$enrichmentScore, gseaRes$stat)
+        gseaRes        <- suppressWarnings(performGSEA(genes, stats))
+        enrichmentPlot <- plotESplot(gseaRes$enrichmentScore, gseaRes$stat,
+                                     compact=compact)
         return(enrichmentPlot)
     }
-    title        <- ggdraw() + draw_label(title, size=14)
-    topESplot    <- plotOneESplot("top",    topGenes,    statsAdj)
-    bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj)
-    metricPlot   <- plotMetricDistribution(statsOrd)
+    titleSize    <- ifelse(compact, 10, 14)
+    title        <- ggdraw() + draw_label(title, size=titleSize)
+    topESplot    <- plotOneESplot("top",    topGenes,    statsAdj, compact)
+    bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj, compact)
+    metricPlot   <- plotMetricDistribution(statsOrd, compact)
 
     plots <- list(topESplot, bottomESplot, metricPlot)
     plots <- Filter(length, plots)
+
+    metricPlotHeight <- ifelse(compact, 3, 6)
     plotHeights <- c(1, 6,
                      if (!is.null(topGenes))    6,
                      if (!is.null(bottomGenes)) 6)
-
+    plotHeights[length(plotHeights)] <- metricPlotHeight
     grid <- plot_grid(title, plotlist=plots, align="v", ncol=1,
                       rel_heights=plotHeights)
     return(grid)
@@ -145,14 +205,15 @@ plotGSEA <- function(stats, topGenes=NULL, bottomGenes=NULL, title="GSEA plot",
 #' expression profile score per gene for a perturbation; each perturbation of
 #' the list will be rendered with a different colour
 #' @param ylabel Character: Y axis label
-#' @param diffExprGenes Named vector
+#' @param diffExprGenes Named numeric vector
+#' @inheritParams plot.perturbationChanges
 #'
 #' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab
-#' geom_density_2d theme guides guide_legend theme_bw
+#' geom_density_2d theme guides guide_legend theme_bw ggtitle
 #'
 #' @keywords internal
 #' @return Scatter plot
-plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
+plotSingleCorr <- function(perturbation, ylabel, diffExprGenes, title=NULL) {
     prepareDFperPert <- function(perturbation, diffExprGenes) {
         # Intersect common genes
         genes         <- intersect(names(perturbation), names(diffExprGenes))
@@ -187,6 +248,11 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
         theme_bw() +
         theme(legend.position="bottom") +
         guide
+    if (!is.null(title)) {
+        plot <- plot +
+            ggtitle(title) +
+            theme(plot.title = element_text(hjust = 0.5))
+    }
     return(plot)
 }
 
@@ -255,64 +321,12 @@ prepareLabel <- function(data) {
     return(res)
 }
 
-#' Plot data comparison
-#'
-#' @param x \code{referenceComparison} object: obtained after running
-#'   \code{\link{rankSimilarPerturbations}} or
-#'   \code{\link{predictTargetingDrugs}}
-#' @param ... Extra arguments currently not used
-#' @param method Character: method to plot results (\code{spearman},
-#'   \code{pearson}, \code{gsea} or \code{rankProduct})
-#' @param n Numeric: number of top and bottom genes to label (if a vector of two
-#'   numbers is given, the first and second numbers will be used as the number
-#'   of top and bottom genes to label, respectively)
-#' @param showMetadata Boolean: show available metadata information instead of
-#'   identifiers (if available)?
-#' @param alpha Numeric: transparency
-#' @param plotNonRankedPerturbations Boolean: plot non-ranked data in grey?
-#'
-#' @importFrom graphics plot
-#' @importFrom R.utils capitalize
-#' @importFrom ggplot2 ggplot aes_string geom_point geom_hline ylab theme
-#'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
-#' @importFrom ggrepel geom_text_repel
-#'
-#' @family functions related with the ranking of CMap perturbations
-#' @family functions related with the prediction of targeting drugs
-#' @return Plot illustrating the reference comparison
-#' @export
-#'
-#' @examples
-#' # Example of a differential expression profile
-#' data("diffExprStat")
-#'
-#' \dontrun{
-#' # Download and load CMap perturbations to compare with
-#' cellLine <- "HepG2"
-#' cmapMetadataKD <- filterCMapMetadata(
-#'   "cmapMetadata.txt", cellLine=cellLine,
-#'   perturbationType="Consensus signature from shRNAs targeting the same gene")
-#'
-#' cmapPerturbationsKD <- prepareCMapPerturbations(
-#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt", loadZscores=TRUE)
-#' }
-#'
-#' # Rank similar CMap perturbations
-#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
-#'
-#' plot(compareKD, "spearman", c(7, 3))
-#' plot(compareKD, "pearson")
-#' plot(compareKD, "gsea")
-plot.referenceComparison <- function(x, method=c("spearman", "pearson", "gsea",
-                                                 "rankProduct"),
-                                     n=c(3, 3), showMetadata=TRUE,
-                                     plotNonRankedPerturbations=FALSE,
-                                     alpha=0.3, ...) {
-    method <- match.arg(method)
+plotComparison <- function(x, method, n, showMetadata,
+                           plotNonRankedPerturbations, alpha, title=NULL) {
     if (method == "gsea") {
         stat     <- "GSEA"
         statRank <- "GSEA_rank"
-        yLabel   <- "Weighted Connectivity Score (WCTS)"
+        yLabel   <- "Weighted Connectivity Score (WTCS)"
     } else if (method == "rankProduct") {
         stat     <- "rankProduct_rank"
         statRank <- stat
@@ -367,8 +381,155 @@ plot.referenceComparison <- function(x, method=c("spearman", "pearson", "gsea",
               axis.line.x=element_blank(), axis.ticks.x=element_blank(),
               axis.text.x=element_blank(), axis.title.x=element_blank())
 
-    if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour=FALSE)
+    if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour="none")
     if (method == "rankProduct") plot <- plot + scale_y_reverse()
+
+    if (!is.null(title)) {
+        plot <- plot +
+            ggtitle(title) +
+            theme(plot.title = element_text(hjust = 0.5))
+    }
+
+    return(plot)
+}
+
+#' Plot data comparison
+#'
+#' If \code{element = NULL}, comparison is plotted based on all elements.
+#' Otherwise, show scatter or GSEA plots for a single element compared with
+#' previously given differential expression results.
+#'
+#' @param x \code{referenceComparison} object: obtained after running
+#'   \code{\link{rankSimilarPerturbations}()} or
+#'   \code{\link{predictTargetingDrugs}()}
+#' @param element Character: identifier in the first column of \code{x}
+#' @param method Character: method to plot results; choose between
+#'   \code{spearman}, \code{pearson}, \code{gsea} or \code{rankProduct} (the
+#'   last one is only available if \code{element = NULL})
+#' @param n Numeric: number of top and bottom genes to label (if a vector of two
+#'   numbers is given, the first and second numbers will be used as the number
+#'   of top and bottom genes to label, respectively); only used if
+#'   \code{element = NULL}
+#' @param showMetadata Boolean: show available metadata information instead of
+#'   identifiers (if available)? Only used if \code{element = NULL}
+#' @param alpha Numeric: transparency; only used if \code{element = NULL}
+#' @param plotNonRankedPerturbations Boolean: plot non-ranked data in grey? Only
+#'   used if \code{element = NULL}
+#' @param genes Character: when plotting gene set enrichment analysis (GSEA),
+#'   plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+#'   genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+#'   if \code{method = "gsea"} and \code{geneset = NULL}
+#' @inheritParams prepareCMapPerturbations
+#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams plot.perturbationChanges
+#'
+#' @param ... Extra arguments currently not used
+#'
+#' @importFrom graphics plot
+#' @importFrom R.utils capitalize
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_hline ylab theme
+#'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
+#' @importFrom ggrepel geom_text_repel
+#'
+#' @family functions related with the ranking of CMap perturbations
+#' @family functions related with the prediction of targeting drugs
+#' @return Plot illustrating the reference comparison
+#' @export
+#'
+#' @examples
+#' # Example of a differential expression profile
+#' data("diffExprStat")
+#'
+#' \dontrun{
+#' # Download and load CMap perturbations to compare with
+#' cellLine <- "HepG2"
+#' cmapMetadataKD <- filterCMapMetadata(
+#'   "cmapMetadata.txt", cellLine=cellLine,
+#'   perturbationType="Consensus signature from shRNAs targeting the same gene")
+#'
+#' cmapPerturbationsKD <- prepareCMapPerturbations(
+#'   cmapMetadataKD, "cmapZscores.gctx", "cmapGeneInfo.txt", loadZscores=TRUE)
+#' }
+#'
+#' # Rank similar CMap perturbations
+#' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
+#'
+#' # Plot ranked list of CMap perturbations
+#' plot(compareKD, method="spearman")
+#' plot(compareKD, method="spearman", n=c(7, 3))
+#' plot(compareKD, method="pearson")
+#' plot(compareKD, method="gsea")
+#'
+#' # Plot results for a single perturbation
+#' pert <- compareKD[[1, 1]]
+#' plot(compareKD, pert, method="spearman", zscores=cmapPerturbationsKD)
+#' plot(compareKD, pert, method="pearson", zscores=cmapPerturbationsKD)
+#' plot(compareKD, pert, method="gsea", zscores=cmapPerturbationsKD)
+#'
+#' # Predict targeting drugs based on a given differential expression profile
+#' gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+#' predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+#'
+#' # Plot ranked list of targeting drugs
+#' plot(predicted, method="spearman")
+#' plot(predicted, method="spearman", n=c(7, 3))
+#' plot(predicted, method="pearson")
+#' plot(predicted, method="gsea")
+#'
+#' # Plot results for a single targeting drug
+#' drug <- predicted$compound[[4]]
+#' plot(predicted, drug, method="spearman")
+#' plot(predicted, drug, method="pearson")
+#' plot(predicted, drug, method="gsea")
+plot.referenceComparison <- function(x, element=NULL,
+                                     method=c("spearman", "pearson", "gsea",
+                                              "rankProduct"),
+                                     n=c(3, 3), showMetadata=TRUE,
+                                     plotNonRankedPerturbations=FALSE,
+                                     alpha=0.3,
+                                     genes=c("both", "top", "bottom"), ...,
+                                     zscores=NULL, title=NULL) {
+    if (!is.null(element)) {
+        if (length(element) > 1) {
+            stop("argument 'element' should be a character of length one")
+        } else if (element %in% method) {
+            # Legacy: 'method' as the second argument
+            method  <- element
+            element <- NULL
+        }
+    }
+    cols   <- tolower(colnames(x))
+    method <- method[tolower(method) %in% gsub("_rank", "", cols)]
+    if (length(method) == 0) stop("no supported methods selected")
+    method <- method[[1]]
+    method <- match.arg(method)
+
+    if (is.null(element)) {
+        plot <- plotComparison(
+            x, method=method, n=n, showMetadata=showMetadata, title=title,
+            plotNonRankedPerturbations=plotNonRankedPerturbations, alpha=alpha)
+    } else if (is(x, "similarPerturbations")) {
+        metadata     <- attr(x, "metadata")
+        # Filter out average cell line perturbations (not found in zscores file)
+        metadata     <- metadata[!is.na(parseCMapID(metadata[[1]],
+                                                    cellLine=TRUE))]
+        geneInfo     <- attr(x, "geneInfo")
+        compoundInfo <- attr(x, "compoundInfo")
+        if (is.null(zscores)) zscores <- attr(x, "zscoresFilename")
+        cmapPerturbations <- suppressMessages(
+            prepareCMapPerturbations(metadata, zscores, geneInfo, compoundInfo))
+        input   <- c(attr(x, "diffExprGenes"), # legacy
+                     attr(x, "input"))
+        geneset <- c(attr(x, "pathways"), # legacy
+                     attr(x, "geneset"))
+        plot  <- plotPerturbationChanges(cmapPerturbations, element,
+                                         input=input, method=method,
+                                         geneset=geneset, genes=genes, ...,
+                                         title=title)
+    } else if (is(x, "targetingDrugs")) {
+        plot <- plotTargetingDrug(x, element, method=method, genes=genes, ...,
+                                  title=title)
+    }
     return(plot)
 }
 
@@ -405,8 +566,8 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 #' @param column Character: column to plot (must be available in both databases)
 #' @param labelBy Character: column in \code{similarPerturbations}, its metadata
 #'   or compound information to be used for labelling
-#' @param showAllScores Boolean: showl all scores? If \code{FALSE}, only the
-#'   best score per compound will be plotted
+#' @param showAllScores Boolean: show all scores? If \code{FALSE}, only the best
+#'   score per compound will be plotted
 #' @param quantileThreshold Numeric: quantile to use for highlight values within
 #'   [0, 1]
 #'

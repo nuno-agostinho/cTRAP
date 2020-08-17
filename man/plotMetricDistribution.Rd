@@ -4,7 +4,7 @@
 \alias{plotMetricDistribution}
 \title{Plot metric distribution}
 \usage{
-plotMetricDistribution(stat)
+plotMetricDistribution(stat, compact = FALSE)
 }
 \value{
 Metric distribution plot

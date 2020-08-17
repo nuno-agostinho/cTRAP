@@ -50,7 +50,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
         sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
         "limit=all", "searchTerm=knockdown/metadata.tsv")
     table <- suppressWarnings(suppressMessages(fread(url)))
-    table <- table[table$Assembly == "hg19" &
+    table <- table[table$`File assembly` == "hg19" &
                        table$`Output type` == "gene quantifications" &
                        table$Lab == "ENCODE Processing Pipeline", ]
 
@@ -159,7 +159,7 @@ loadENCODEsamples <- function(metadata) {
 #'
 #' @param samples List of loaded ENCODE samples
 #'
-#' @seealso convertENSEMBLtoGeneSymbols
+#' @seealso \code{\link{convertENSEMBLtoGeneSymbols}()}
 #'
 #' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
@@ -170,7 +170,7 @@ loadENCODEsamples <- function(metadata) {
 #'   # Load ENCODE metadata for a specific cell line and gene
 #'   cellLine <- "HepG2"
 #'   gene <- "EIF4G1"
-#'   ENCODEmetadata <- loadENCODEknockdownMetadata(cellLine, gene)
+#'   ENCODEmetadata <- downloadENCODEknockdownMetadata(cellLine, gene)
 #'
 #'   # Load samples based on filtered ENCODE metadata
 #'   ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
@@ -183,7 +183,7 @@ prepareENCODEgeneExpression <- function(samples) {
         samples, "[[", "transcript_id(s)"),
         identical, samples$rep1$`transcript_id(s)`))
     if (!all(sameTranscriptsAcrossSamples))
-        stop("Not all samples share the same transcript identifiers")
+        stop("not all samples share the same transcript identifiers")
 
     # Merge gene counts from the different samples to a single table
     countTable <- cbind(samples$rep1[ , c(1:2, 5)], samples$rep2[ , 5],

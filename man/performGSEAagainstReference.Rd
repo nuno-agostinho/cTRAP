@@ -4,15 +4,7 @@
 \alias{performGSEAagainstReference}
 \title{Perform gene set enrichment (GSA) against data columns}
 \usage{
-performGSEAagainstReference(diffExprGenes, reference, pathways)
-}
-\arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
-
-\item{pathways}{List of gene sets to check.}
+performGSEAagainstReference(reference, geneset)
 }
 \value{
 Data frame containing gene set enrichment analysis (GSEA) results per

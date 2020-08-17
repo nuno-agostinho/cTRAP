@@ -1,7 +1,7 @@
 Package: cTRAP
 Title: Identification of candidate causal perturbations from differential gene 
     expression data
-Version: 1.4
+Version: 1.4.1
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
@@ -19,13 +19,16 @@ Encoding: UTF-8
 LazyData: true
 biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
     Pathways, ImmunoOncology, GeneSetEnrichment
-URL: https://github.com/nuno-agostinho/cTRAP
+URL: https://nuno-agostinho.github.io/cTRAP,
+    https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
-Suggests: testthat,
+Suggests: 
+    testthat,
     knitr,
     covr,
-    rmarkdown
-RoxygenNote: 6.1.1
+    rmarkdown,
+    spelling
+RoxygenNote: 7.1.1
 Imports: biomaRt,
     cowplot,
     data.table,
@@ -42,7 +45,9 @@ Imports: biomaRt,
     readxl,
     reshape2,
     rhdf5,
+    scales,
     stats,
     tools,
     utils
 VignetteBuilder: knitr
+Language: en-GB

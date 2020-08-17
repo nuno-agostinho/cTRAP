@@ -16,3 +16,7 @@ cmap*.txt
 *.gctx*
 ENC*.tsv
 tests/testthat/Rplots.pdf
+docs/
+# RDS files
+expressionDrugSensitivity*.rds
+molecular_descriptors*.rds

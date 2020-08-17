@@ -4,8 +4,12 @@
 \alias{plotDrugSetEnrichment}
 \title{Plot drug set enrichment}
 \usage{
-plotDrugSetEnrichment(sets, stats, col = "rankProduct_rank",
-  selectedSets = NULL)
+plotDrugSetEnrichment(
+  sets,
+  stats,
+  col = "rankProduct_rank",
+  selectedSets = NULL
+)
 }
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
@@ -41,8 +45,9 @@ predicted <- predictTargetingDrugs(diffExprStat, gdsc)
 plotDrugSetEnrichment(drugSets, predicted)
 }
 \seealso{
-Other functions for drug set enrichment analysis: \code{\link{analyseDrugSetEnrichment}},
-  \code{\link{loadDrugDescriptors}},
-  \code{\link{prepareDrugSets}}
+Other functions for drug set enrichment analysis: 
+\code{\link{analyseDrugSetEnrichment}()},
+\code{\link{loadDrugDescriptors}()},
+\code{\link{prepareDrugSets}()}
 }
 \concept{functions for drug set enrichment analysis}

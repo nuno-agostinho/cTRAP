@@ -2,11 +2,27 @@
 % Please edit documentation in R/CMap.R
 \name{plot.perturbationChanges}
 \alias{plot.perturbationChanges}
-\title{Plot perturbation comparison against a differential expression profile}
+\alias{[.perturbationChanges}
+\alias{dim.perturbationChanges}
+\alias{dimnames.perturbationChanges}
+\title{Operations on a \code{perturbationChanges} object}
 \usage{
-\method{plot}{perturbationChanges}(x, perturbation, diffExprGenes,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  genes = c("both", "top", "bottom"), ...)
+\method{plot}{perturbationChanges}(
+  x,
+  perturbation,
+  input,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  genes = c("both", "top", "bottom"),
+  ...,
+  title = NULL
+)
+
+\method{[}{perturbationChanges}(x, i, j, drop = FALSE, ...)
+
+\method{dim}{perturbationChanges}(x)
+
+\method{dimnames}{perturbationChanges}(x)
 }
 \arguments{
 \item{x}{\code{perturbationChanges} object}
@@ -15,29 +31,43 @@
 \code{similarPerturbations} table (from which the respective perturbation
 identifiers are retrieved)}
 
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method} includes \code{gsea})}
 
-\item{method}{Character: method to plot results (\code{spearman},
-\code{pearson} or \code{gsea})}
+\item{method}{Character: one or more methods to compare data
+(\code{spearman}, \code{pearson} or \code{gsea})}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
+gene sets to test for enrichment in reference data; if a 2-length numeric
+vector, the first index is the number of top up-regulated genes and the
+second index is the number of down-regulated genes used to create gene
+sets; only used if \code{method} includes \code{gsea} and if \code{input}
+is not a gene set}
 
 \item{genes}{Character: when plotting gene set enrichment analysis (GSEA),
-plot top genes (\code{genes = "top"}), bottom genes
-(\code{genes = "bottom"}) or both (\code{genes = "both"}); only used if
-\code{method = "gsea"}}
+plot most up-regulated genes (\code{genes = "top"}), most down-regulated
+genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
+if \code{method = "gsea"} and \code{geneset = NULL}}
 
-\item{...}{Extra arguments (currently undocumented)}
+\item{...}{Extra arguments}
+
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
+
+\item{i, j}{Character or numeric indexes specifying elements to extract}
+
+\item{drop}{Boolean: coerce result to the lowest possible dimension?}
 }
 \value{
-CMap data comparison plots
+Subset, plot or return dimensions or names of a
+  \code{perturbationChanges} object
 }
 \description{
-Plot perturbation comparison against a differential expression profile
+Operations on a \code{perturbationChanges} object
 }
 \examples{
 data("diffExprStat")
@@ -59,24 +89,21 @@ plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 pert <- "CVD001_24H:BRD-A14014306-001-01-1:4.1"
 plot(cmapPerturbationsCompounds, pert, diffExprStat, method="spearman")
 plot(cmapPerturbationsCompounds, pert, diffExprStat, method="pearson")
-
-# Currently unsupported!
-# plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
+plot(cmapPerturbationsCompounds, pert, diffExprStat, method="gsea")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}},
-  \code{\link{rankSimilarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()},
+\code{\link{rankSimilarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

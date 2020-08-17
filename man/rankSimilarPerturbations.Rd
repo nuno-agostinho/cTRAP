@@ -5,15 +5,22 @@
 \alias{compareAgainstCMap}
 \title{Rank CMap perturbations' similarity to a differential expression profile}
 \usage{
-rankSimilarPerturbations(diffExprGenes, perturbations,
-  method = c("spearman", "pearson", "gsea"), geneSize = 150,
-  cellLineMean = "auto", rankPerCellLine = FALSE)
+rankSimilarPerturbations(
+  input,
+  perturbations,
+  method = c("spearman", "pearson", "gsea"),
+  geneSize = 150,
+  cellLineMean = "auto",
+  rankPerCellLine = FALSE
+)
 }
 \arguments{
-\item{diffExprGenes}{Numeric: named vector of differentially expressed genes
-whose names are gene identifiers and respective values are a statistic
-that represents significance and magnitude of differentially expressed
-genes (e.g. t-statistics)}
+\item{input}{\code{Named numeric vector} of differentially expressed genes
+whose names are gene identifiers and respective values are a statistic that
+represents significance and magnitude of differentially expressed genes
+(e.g. t-statistics); or \code{character} of gene symbols composing a gene
+set that is tested for enrichment in reference data (only used if
+\code{method} includes \code{gsea})}
 
 \item{perturbations}{\code{perturbationChanges} object: CMap perturbations
 (check \code{\link{prepareCMapPerturbations}})}
@@ -21,17 +28,21 @@ genes (e.g. t-statistics)}
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}
 
-\item{geneSize}{Number: top and bottom number of differentially expressed
-genes for gene set enrichment (only used if \code{method = gsea})}
+\item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
+gene sets to test for enrichment in reference data; if a 2-length numeric
+vector, the first index is the number of top up-regulated genes and the
+second index is the number of down-regulated genes used to create gene
+sets; only used if \code{method} includes \code{gsea} and if \code{input}
+is not a gene set}
 
 \item{cellLineMean}{Boolean: add a column with the mean score across cell
-lines? If \code{cellLineMean = "auto"} (default) the mean score will be
-added if more than one cell line is available}
+lines? If \code{cellLineMean = "auto"} (default), the mean score will be
+added when data for more than one cell line is available.}
 
-\item{rankPerCellLine}{Boolean: when ranking results, also rank them based on
-individual cell lines instead of only focusing on the mean score across
-cell lines; if \code{cellLineMean = FALSE}, individual cell line conditions
-are always ranked}
+\item{rankPerCellLine}{Boolean: rank results based on both individual cell
+lines and mean scores across cell lines (\code{TRUE}) or based on mean
+scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
+cell line conditions are always ranked.}
 }
 \value{
 Data table with correlation or GSEA results comparing differential
@@ -55,7 +66,7 @@ data("diffExprStat")
 cellLine <- c("HepG2", "HUH7")
 cmapMetadataCompounds <- filterCMapMetadata(
     "cmapMetadata.txt", cellLine=cellLine, timepoint="24 h",
-    dosage="5 \\u00B5M", perturbationType="Compound")
+    dosage="5 \u00B5M", perturbationType="Compound")
 
 cmapPerturbationsCompounds <- prepareCMapPerturbations(
     cmapMetadataCompounds, "cmapZscores.gctx", "cmapGeneInfo.txt",
@@ -72,19 +83,18 @@ rankSimilarPerturbations(diffExprStat, perturbations)
 rankSimilarPerturbations(diffExprStat, perturbations, method="spearman")
 }
 \seealso{
-Other functions related with the ranking of CMap perturbations: \code{\link{[.perturbationChanges}},
-  \code{\link{as.table.similarPerturbations}},
-  \code{\link{dim.perturbationChanges}},
-  \code{\link{dimnames.perturbationChanges}},
-  \code{\link{filterCMapMetadata}},
-  \code{\link{getCMapConditions}},
-  \code{\link{getCMapPerturbationTypes}},
-  \code{\link{loadCMapData}},
-  \code{\link{loadCMapZscores}}, \code{\link{parseCMapID}},
-  \code{\link{plot.perturbationChanges}},
-  \code{\link{plot.referenceComparison}},
-  \code{\link{plotTargetingDrugsVSsimilarPerturbations}},
-  \code{\link{prepareCMapPerturbations}},
-  \code{\link{print.similarPerturbations}}
+Other functions related with the ranking of CMap perturbations: 
+\code{\link{as.table.referenceComparison}()},
+\code{\link{filterCMapMetadata}()},
+\code{\link{getCMapConditions}()},
+\code{\link{getCMapPerturbationTypes}()},
+\code{\link{loadCMapData}()},
+\code{\link{loadCMapZscores}()},
+\code{\link{parseCMapID}()},
+\code{\link{plot.perturbationChanges}()},
+\code{\link{plot.referenceComparison}()},
+\code{\link{plotTargetingDrugsVSsimilarPerturbations}()},
+\code{\link{prepareCMapPerturbations}()},
+\code{\link{print.similarPerturbations}()}
 }
 \concept{functions related with the ranking of CMap perturbations}

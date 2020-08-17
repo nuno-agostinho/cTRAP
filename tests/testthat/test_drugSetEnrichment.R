@@ -225,3 +225,12 @@ test_that("Analyse drug set enrichment using a custom list of drug sets", {
     expect_equal(sort(dsea$pathway), sort(names(customSets)))
 })
 
+test_that("Plot drug set enrichment", {
+    # dsea <- analyseDrugSetEnrichment(drugSets, customDrugStat)
+    selected <- names(drugSets)[1:5]
+    plots <- expect_warning(
+        plotDrugSetEnrichment(drugSets, customDrugStat, selected=selected),
+        regexp = NA) # Expect no warnings
+    expect_is(plots, "list")
+    expect_equal(names(plots), selected)
+})

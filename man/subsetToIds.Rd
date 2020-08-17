@@ -4,7 +4,7 @@
 \alias{subsetToIds}
 \title{Do a robust \code{\link{data.frame}} subset to a set of ids}
 \source{
-https://github.com/cmap/cmapR
+\url{https://github.com/cmap/cmapR}
 }
 \usage{
 subsetToIds(df, ids)
