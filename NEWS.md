@@ -1,4 +1,4 @@
-# cTRAP 1.4.1 (17 August, 2020)
+# cTRAP 1.6.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
 and drug sensitivity associations
