@@ -132,7 +132,7 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
 #' Plot gene set enrichment analysis (GSEA)
 #'
 #' @param stats Named numeric vector: statistics
-#' @param title Character: title
+#' @inheritParams plot.perturbationChanges
 #' @inheritParams plot.referenceComparison
 #' @param gseaParam Numeric: GSEA-like parameter
 #' @param compact Boolean: render a compact version of the GSEA plot?
@@ -194,13 +194,14 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
 #' the list will be rendered with a different colour
 #' @param ylabel Character: Y axis label
 #' @param diffExprGenes Named numeric vector
+#' @inheritParams plot.perturbationChanges
 #'
 #' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab
-#' geom_density_2d theme guides guide_legend theme_bw
+#' geom_density_2d theme guides guide_legend theme_bw ggtitle
 #'
 #' @keywords internal
 #' @return Scatter plot
-plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
+plotSingleCorr <- function(perturbation, ylabel, diffExprGenes, title=NULL) {
     prepareDFperPert <- function(perturbation, diffExprGenes) {
         # Intersect common genes
         genes         <- intersect(names(perturbation), names(diffExprGenes))
@@ -235,6 +236,11 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes) {
         theme_bw() +
         theme(legend.position="bottom") +
         guide
+    if (!is.null(title)) {
+        plot <- plot +
+            ggtitle(title) +
+            theme(plot.title = element_text(hjust = 0.5))
+    }
     return(plot)
 }
 
@@ -304,7 +310,7 @@ prepareLabel <- function(data) {
 }
 
 plotComparison <- function(x, method, n, showMetadata,
-                           plotNonRankedPerturbations, alpha) {
+                           plotNonRankedPerturbations, alpha, title=NULL) {
     if (method == "gsea") {
         stat     <- "GSEA"
         statRank <- "GSEA_rank"
@@ -365,6 +371,13 @@ plotComparison <- function(x, method, n, showMetadata,
 
     if (length(unique(x$ranked)) == 1) plot <- plot + guides(colour="none")
     if (method == "rankProduct") plot <- plot + scale_y_reverse()
+
+    if (!is.null(title)) {
+        plot <- plot +
+            ggtitle(title) +
+            theme(plot.title = element_text(hjust = 0.5))
+    }
+
     return(plot)
 }
 
@@ -428,11 +441,33 @@ plotComparison <- function(x, method, n, showMetadata,
 #' # Rank similar CMap perturbations
 #' compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 #'
+#' # Plot ranked list of CMap perturbations
+#' plot(compareKD, method="spearman")
 #' plot(compareKD, method="spearman", n=c(7, 3))
 #' plot(compareKD, method="pearson")
 #' plot(compareKD, method="gsea")
 #'
-#' plot(compareKD, compareKD[[1, 1]], zscores=cmapPerturbationsKD)
+#' # Plot results for a single perturbation
+#' pert <- compareKD[[1, 1]]
+#' plot(compareKD, pert, method="spearman", zscores=cmapPerturbationsKD)
+#' plot(compareKD, pert, method="pearson", zscores=cmapPerturbationsKD)
+#' plot(compareKD, pert, method="gsea", zscores=cmapPerturbationsKD)
+#'
+#' # Predict targeting drugs based on a given differential expression profile
+#' gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+#' predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+#'
+#' # Plot ranked list of targeting drugs
+#' plot(predicted, method="spearman")
+#' plot(predicted, method="spearman", n=c(7, 3))
+#' plot(predicted, method="pearson")
+#' plot(predicted, method="gsea")
+#'
+#' # Plot results for a single targeting drug
+#' drug <- predicted$compound[[4]]
+#' plot(predicted, drug, method="spearman")
+#' plot(predicted, drug, method="pearson")
+#' plot(predicted, drug, method="gsea")
 plot.referenceComparison <- function(x, element=NULL,
                                      method=c("spearman", "pearson", "gsea",
                                               "rankProduct"),
@@ -440,7 +475,7 @@ plot.referenceComparison <- function(x, element=NULL,
                                      plotNonRankedPerturbations=FALSE,
                                      alpha=0.3,
                                      genes=c("both", "top", "bottom"), ...,
-                                     zscores=NULL) {
+                                     zscores=NULL, title=NULL) {
     if (!is.null(element)) {
         if (length(element) > 1) {
             stop("argument 'element' should be a character of length one")
@@ -458,7 +493,7 @@ plot.referenceComparison <- function(x, element=NULL,
 
     if (is.null(element)) {
         plot <- plotComparison(
-            x, method=method, n=n, showMetadata=showMetadata,
+            x, method=method, n=n, showMetadata=showMetadata, title=title,
             plotNonRankedPerturbations=plotNonRankedPerturbations, alpha=alpha)
     } else if (is(x, "similarPerturbations")) {
         metadata     <- attr(x, "metadata")
@@ -476,9 +511,11 @@ plot.referenceComparison <- function(x, element=NULL,
                      attr(x, "geneset"))
         plot  <- plotPerturbationChanges(cmapPerturbations, element,
                                          input=input, method=method,
-                                         geneset=geneset, genes=genes, ...)
+                                         geneset=geneset, genes=genes, ...,
+                                         title=title)
     } else if (is(x, "targetingDrugs")) {
-        plot <- plotTargetingDrug(x, element, method=method, genes=genes, ...)
+        plot <- plotTargetingDrug(x, element, method=method, genes=genes, ...,
+                                  title=title)
     }
     return(plot)
 }

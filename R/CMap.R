@@ -580,6 +580,8 @@ rankSimilarPerturbations <- function(input, perturbations,
 #'   identifiers are retrieved)
 #' @inheritParams compareAgainstReferencePerMethod
 #' @inheritParams plot.referenceComparison
+#' @param title Character: plot title (if \code{NULL}, the default title depends
+#'   on the context; ignored when plotting multiple perturbations)
 #'
 #' @importFrom methods is
 #' @importFrom stats setNames
@@ -613,16 +615,18 @@ rankSimilarPerturbations <- function(input, perturbations,
 plot.perturbationChanges <- function(x, perturbation, input,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150,
-                                     genes=c("both", "top", "bottom"), ...) {
+                                     genes=c("both", "top", "bottom"), ...,
+                                     title=NULL) {
     plotPerturbationChanges(x=x, perturbation=perturbation, input=input,
                             method=method, geneset=NULL, geneSize=geneSize,
-                            genes=genes, ...)
+                            genes=genes, ..., title=title)
 }
 
 plotPerturbationChanges <- function(x, perturbation, input,
                                     method=c("spearman", "pearson", "gsea"),
                                     geneset=NULL, geneSize=150,
-                                    genes=c("both", "top", "bottom"), ...) {
+                                    genes=c("both", "top", "bottom"), ...,
+                                    title=NULL) {
     method <- match.arg(method)
     if (is(perturbation, "similarPerturbations")) {
         perturbation <- perturbation[[1]]
@@ -654,14 +658,16 @@ plotPerturbationChanges <- function(x, perturbation, input,
     }, zscores)
 
     if (method != "gsea") {
-        plot <- plotSingleCorr(data, perturbation, input)
+        plot <- plotSingleCorr(data, perturbation, input, title=title)
     } else {
         if (is.null(geneset)) geneset <- prepareGSEAgenesets(input, geneSize)
         plot <- NULL
         areMultiplePerturbations <- length(seq(data)) > 1
         for (i in seq(data)) {
             dataset <- unclass(data[[i]])
-            title   <- names(data)[[i]]
+            if (is.null(title) || areMultiplePerturbations) {
+                title <- names(data)[[i]]
+            }
             p <- plotGSEA(dataset, geneset, genes, title=title, ...,
                           compact=areMultiplePerturbations)
             plot <- c(plot, setNames(list(p), title))

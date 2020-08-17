@@ -1,4 +1,4 @@
-# cTRAP 1.4.1 (13 August, 2020)
+# cTRAP 1.4.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
 and drug sensitivity associations
@@ -15,19 +15,19 @@ down-regulated genes with `geneSize` argument:
     and top 200 down-regulated genes
     - using `geneSize=c(150, 150)` or `geneSize=150` is equivalent
 * Plotting:
-    - `plot` now supports plotting `predictTargetingDrugs()` results for a given
-    drug, e.g. `plot(targetingDrugs, "1425")`
+    - `plot()` now supports plotting `predictTargetingDrugs()` results for a
+    given drug, e.g. `plot(targetingDrugs, "1425")`
+    - `plot()` nows allows to set plot title with argument `title`
+    - `plot()` now plots results based on available methods instead of trying
+    to plot based on results from `spearman` method only
     - GSEA plots now support two or less gene hits
     - GSEA plots now support plotting of multiple perturbations
-    - `plot` now plots results based on available methods instead of trying
-    to plot based on results from `spearman` method only
     - `plotDrugSetEnrichment()` now returns a list whose names are drug set
     names
 * `as.table()` improvements:
     - Return cell identifiers and gene information (if available and as needed)
     - Support `predictTargetingDrugs()` results
     - Return results ordered as found on input
-
 
 ## Bug fixes and minor changes
 

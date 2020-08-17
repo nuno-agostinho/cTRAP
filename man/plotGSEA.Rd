@@ -21,7 +21,8 @@ plot most up-regulated genes (\code{genes = "top"}), most down-regulated
 genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 if \code{method = "gsea"} and \code{geneset = NULL}}
 
-\item{title}{Character: title}
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 
 \item{gseaParam}{Numeric: GSEA-like parameter}
 

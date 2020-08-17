@@ -4,7 +4,7 @@
 \alias{plotSingleCorr}
 \title{Render scatter plot to show a single relationship}
 \usage{
-plotSingleCorr(perturbation, ylabel, diffExprGenes)
+plotSingleCorr(perturbation, ylabel, diffExprGenes, title = NULL)
 }
 \arguments{
 \item{perturbation}{List of named numeric vectors containing the differential
@@ -14,6 +14,9 @@ the list will be rendered with a different colour}
 \item{ylabel}{Character: Y axis label}
 
 \item{diffExprGenes}{Named numeric vector}
+
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 }
 \value{
 Scatter plot

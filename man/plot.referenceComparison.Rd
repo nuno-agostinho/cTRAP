@@ -14,7 +14,8 @@
   alpha = 0.3,
   genes = c("both", "top", "bottom"),
   ...,
-  zscores = NULL
+  zscores = NULL,
+  title = NULL
 )
 }
 \arguments{
@@ -77,11 +78,33 @@ cmapPerturbationsKD <- prepareCMapPerturbations(
 # Rank similar CMap perturbations
 compareKD <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 
+# Plot ranked list of CMap perturbations
+plot(compareKD, method="spearman")
 plot(compareKD, method="spearman", n=c(7, 3))
 plot(compareKD, method="pearson")
 plot(compareKD, method="gsea")
 
-plot(compareKD, compareKD[[1, 1]], zscores=cmapPerturbationsKD)
+# Plot results for a single perturbation
+pert <- compareKD[[1, 1]]
+plot(compareKD, pert, method="spearman", zscores=cmapPerturbationsKD)
+plot(compareKD, pert, method="pearson", zscores=cmapPerturbationsKD)
+plot(compareKD, pert, method="gsea", zscores=cmapPerturbationsKD)
+
+# Predict targeting drugs based on a given differential expression profile
+gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
+# Plot ranked list of targeting drugs
+plot(predicted, method="spearman")
+plot(predicted, method="spearman", n=c(7, 3))
+plot(predicted, method="pearson")
+plot(predicted, method="gsea")
+
+# Plot results for a single targeting drug
+drug <- predicted$compound[[4]]
+plot(predicted, drug, method="spearman")
+plot(predicted, drug, method="pearson")
+plot(predicted, drug, method="gsea")
 }
 \seealso{
 Other functions related with the ranking of CMap perturbations: 

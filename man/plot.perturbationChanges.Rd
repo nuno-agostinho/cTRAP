@@ -14,7 +14,8 @@
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
   genes = c("both", "top", "bottom"),
-  ...
+  ...,
+  title = NULL
 )
 
 \method{[}{perturbationChanges}(x, i, j, drop = FALSE, ...)
@@ -53,6 +54,9 @@ genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{...}{Extra arguments}
+
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 
 \item{i, j}{Character or numeric indexes specifying elements to extract}
 

@@ -522,7 +522,7 @@ predictTargetingDrugs <- function(
 #' @keywords internal
 plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
                               genes=c("both", "top", "bottom"),
-                              data=NULL) {
+                              data=NULL, title=NULL) {
     method <- match.arg(method)
     drug <- as.character(drug)
 
@@ -546,9 +546,15 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
             ylab(drug) +
             theme_bw() +
             theme(legend.position="bottom")
+        if (!is.null(title)) {
+            plot <- plot +
+                ggtitle(title) +
+                theme(plot.title = element_text(hjust = 0.5))
+        }
     } else if (method == "gsea") {
         geneset <- attr(x, "pathways")
-        plot <- plotGSEA(cor, geneset, genes, title=drug)
+        if (is.null(title)) title <- drug
+        plot <- plotGSEA(cor, geneset, genes, title=title)
     }
     return(plot)
 }
