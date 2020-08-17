@@ -103,10 +103,18 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
             geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
                       position="identity")
     }
+    xBreaks <- c(min(rankedMetric$sort),
+                 extended_breaks()(rankedMetric$sort),
+                 max(rankedMetric$sort))
+    xBreaks <- xBreaks[xBreaks != 0]
+    # Check if last tick is too close to potentially overlap
+    if (xBreaks[length(xBreaks)] - xBreaks[length(xBreaks) - 1] < 2000) {
+        xBreaks <- xBreaks[-c(length(xBreaks) - 1)]
+    }
+    xBreaksAdj <- c(ifelse(compact, 0, 0.5), rep(0.5, length(xBreaks) - 2), 1)
+
     metricPlot <- metricPlot +
-        scale_x_continuous(expand=c(0, 0), breaks=c(
-            extended_breaks()(rankedMetric$sort),
-            max(rankedMetric$sort))) +
+        scale_x_continuous(expand=c(0, 0), breaks=xBreaks) +
         scale_y_continuous(expand=c(0, 0)) +
         labs(x="Rank", y="Ranked metric") +
         guides(colour="none", fill="none") +
@@ -115,7 +123,8 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
         theme_bw() +
         theme(plot.margin=unit(c(0, 0, 5.5, 0), "pt"),
               panel.grid.major.x=element_blank(),
-              panel.grid.minor=element_blank())
+              panel.grid.minor=element_blank(),
+              axis.text.x=element_text(hjust=xBreaksAdj))
     if (compact) {
         metricPlot <- metricPlot +
             theme(axis.text=element_blank(),

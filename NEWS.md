@@ -1,3 +1,8 @@
+## TODO
+* Table from `rankSimilarPerturbations()` and `predictTargetingDrugs()` is now
+complete with gene and/or compound information
+* Use `GSEA score` instead of `WTCS` when calculating only GSEA scores
+
 # cTRAP 1.4.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
@@ -22,6 +27,7 @@ down-regulated genes with `geneSize` argument:
     to plot based on results from `spearman` method only
     - GSEA plots now support two or less gene hits
     - GSEA plots now support plotting of multiple perturbations
+    - GESA plots now show the first and last values of ranked genes
     - `plotDrugSetEnrichment()` now returns a list whose names are drug set
     names
 * `as.table()` improvements:
