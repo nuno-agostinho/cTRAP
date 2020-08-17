@@ -552,7 +552,8 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
                 theme(plot.title = element_text(hjust = 0.5))
         }
     } else if (method == "gsea") {
-        geneset <- attr(x, "pathways")
+        geneset <- c(attr(x, "pathways"), # legacy
+                     attr(x, "geneset"))
         if (is.null(title)) title <- drug
         plot <- plotGSEA(cor, geneset, genes, title=title)
     }
