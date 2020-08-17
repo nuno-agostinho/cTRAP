@@ -51,6 +51,9 @@ if \code{method = "gsea"} and \code{geneset = NULL}}
 
 \item{zscores}{Data frame (GCTX z-scores) or character (respective filepath
 to load data from file)}
+
+\item{title}{Character: plot title (if \code{NULL}, the default title depends
+on the context; ignored when plotting multiple perturbations)}
 }
 \value{
 Plot illustrating the reference comparison

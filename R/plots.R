@@ -123,8 +123,10 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
         theme_bw() +
         theme(plot.margin=unit(c(0, 0, 5.5, 0), "pt"),
               panel.grid.major.x=element_blank(),
-              panel.grid.minor=element_blank(),
-              axis.text.x=element_text(hjust=xBreaksAdj))
+              panel.grid.minor=element_blank())
+    # May potentially break with a future ggplot2 update...
+    metricPlot <- suppressWarnings(
+        metricPlot + theme(axis.text.x=element_text(hjust=xBreaksAdj)))
     if (compact) {
         metricPlot <- metricPlot +
             theme(axis.text=element_blank(),
@@ -413,12 +415,13 @@ plotComparison <- function(x, method, n, showMetadata,
 #' @param alpha Numeric: transparency; only used if \code{element = NULL}
 #' @param plotNonRankedPerturbations Boolean: plot non-ranked data in grey? Only
 #'   used if \code{element = NULL}
-#' @inheritParams compareAgainstReferencePerMethod
 #' @param genes Character: when plotting gene set enrichment analysis (GSEA),
 #'   plot most up-regulated genes (\code{genes = "top"}), most down-regulated
 #'   genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 #'   if \code{method = "gsea"} and \code{geneset = NULL}
 #' @inheritParams prepareCMapPerturbations
+#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams plot.perturbationChanges
 #'
 #' @param ... Extra arguments currently not used
 #'

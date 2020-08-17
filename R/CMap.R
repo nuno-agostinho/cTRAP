@@ -503,8 +503,6 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 #'   (check \code{\link{prepareCMapPerturbations}})
 #' @inheritParams compareAgainstReference
 #'
-#' @importFrom data.table setkeyv :=
-#'
 #' @section GSEA score:
 #' Weighted connectivity scores (WTCS) are calculated when \code{method
 #'   = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).

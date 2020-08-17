@@ -85,8 +85,9 @@ processByChunks <- function(data, FUN, ..., chunkSize=10000) {
 #'   argument \code{table}); first column must be identifiers
 #' @param sort Boolean: sort data based on rank product's rank (if multiple
 #'   methods are available) or by available ranks
-#'
 #' @inheritParams compareAgainstReference
+#'
+#' @importFrom data.table setkeyv
 #'
 #' @return Data table with the contents of \code{table} and extra columns with
 #'   respective rankings
@@ -368,6 +369,8 @@ prepareGeneInput <- function(input) {
 #' Compare multiple methods and rank reference accordingly
 #'
 #' @inheritParams compareAgainstReferencePerMethod
+#'
+#' @importFrom data.table :=
 #'
 #' @keywords internal
 #' @return List of data frame containing the results per methods of comparison
