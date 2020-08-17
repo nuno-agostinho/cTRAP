@@ -1,0 +1,7 @@
+# Original files
+*.tsv
+*.txt
+
+# RDS files
+expressionDrugSensitivity*.rds
+molecular_descriptors*.rds
