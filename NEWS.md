@@ -1,8 +1,3 @@
-## TODO
-* Table from `rankSimilarPerturbations()` and `predictTargetingDrugs()` is now
-complete with gene and/or compound information
-* Use `GSEA score` instead of `WTCS` when calculating only GSEA scores
-
 # cTRAP 1.4.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
