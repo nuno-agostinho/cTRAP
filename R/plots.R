@@ -176,7 +176,7 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
                                      compact=compact)
         return(enrichmentPlot)
     }
-    titleSize <- ifelse(compact, 10, 14)
+    titleSize    <- ifelse(compact, 10, 14)
     title        <- ggdraw() + draw_label(title, size=titleSize)
     topESplot    <- plotOneESplot("top",    topGenes,    statsAdj, compact)
     bottomESplot <- plotOneESplot("bottom", bottomGenes, statsAdj, compact)
@@ -185,10 +185,11 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
     plots <- list(topESplot, bottomESplot, metricPlot)
     plots <- Filter(length, plots)
 
-    metricPlotHeight <- ifelse(compact, 2, 6)
+    metricPlotHeight <- ifelse(compact, 3, 6)
     plotHeights <- c(1, 6,
                      if (!is.null(topGenes))    6,
                      if (!is.null(bottomGenes)) 6)
+    plotHeights[length(plotHeights)] <- metricPlotHeight
     grid <- plot_grid(title, plotlist=plots, align="v", ncol=1,
                       rel_heights=plotHeights)
     return(grid)
