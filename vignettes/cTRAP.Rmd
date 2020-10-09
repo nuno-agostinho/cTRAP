@@ -95,7 +95,7 @@ diffExprStat <- diffExpr$t
 names(diffExprStat) <- diffExpr$Gene_symbol
 ```
 
-```{r}
+```{r, echo=FALSE}
 data("diffExprStat")
 ```
 
@@ -110,7 +110,7 @@ To summarise conditions and check available data in CMap, we can use the
 following commands to download CMap metadata:
 
 ```{r CMap metadata conditions}
-# Download CMap metadata (if not found in current directory)
+# Load CMap metadata (automatically downloaded if not found)
 cmapMetadata <- loadCMapData("cmapMetadata.txt", type="metadata")
 
 # Summarise conditions for all CMap perturbations
@@ -209,30 +209,30 @@ summarise other method's rankings.
 # Most positively associated perturbations (note that EIF4G1 knockdown is the
 # 7th, 1st and 2nd most positively associated perturbation based on Spearman's
 # correlation, Pearson's correlation and GSEA, respectively)
-head(compareKD[order(spearman_rank, na.last=NA)], n=10)
-head(compareKD[order(pearson_rank, na.last=NA)])
-head(compareKD[order(GSEA_rank, na.last=NA)])
-head(compareKD[order(rankProduct_rank, na.last=NA)])
+head(compareKD[order(spearman_rank)], n=10)
+head(compareKD[order(pearson_rank)])
+head(compareKD[order(GSEA_rank)])
+head(compareKD[order(rankProduct_rank)])
 
 # Most negatively associated perturbations
-tail(compareKD[order(spearman_rank, na.last=NA)])
-tail(compareKD[order(pearson_rank, na.last=NA)])
-tail(compareKD[order(GSEA_rank, na.last=NA)])
-tail(compareKD[order(rankProduct_rank, na.last=NA)])
+head(compareKD[order(-spearman_rank)])
+head(compareKD[order(-pearson_rank)])
+head(compareKD[order(-GSEA_rank)])
+head(compareKD[order(-rankProduct_rank)])
 
 # Plot list of compared pertubations
-plot(compareKD, method="spearman", n=c(10, 3))
-plot(compareKD, method="pearson")
-plot(compareKD, method="gsea")
-plot(compareKD, method="rankProduct")
+plot(compareKD, "spearman", n=c(10, 3))
+plot(compareKD, "pearson")
+plot(compareKD, "gsea")
+plot(compareKD, "rankProduct")
 ```
 
 For small molecules:
 
 ```{r order small molecule perturbation comparison, fig.width=6, fig.asp=1}
 # Most positively and negatively associated perturbations
-compareCompounds[order(rankProduct_rank, na.last=NA)]
-plot(compareCompounds, method="rankProduct")
+compareCompounds[order(rankProduct_rank)]
+plot(compareCompounds, "rankProduct")
 ```
 
 > The Gene Set Enrichment Analysis (GSEA) score is based on the Weighted
@@ -261,7 +261,7 @@ print(compareKD, EIF4G1knockdown)
 
 # Information on the top 10 most similar compound perturbations (based on
 # Spearman's correlation)
-print(compareKD[order(rankProduct_rank, na.last=NA)], 1:10)
+print(compareKD[order(rankProduct_rank)], 1:10)
 
 # Get table with all information available (including ranks, metadata, compound
 # information, etc.)
@@ -283,51 +283,38 @@ Spearman and Pearson analyses) and GSEA plots are available.
 For instance, let's plot the relationship between EIF4G1 shRNA knockdown from
 ENCODE with the CMap knockdown perturbations:
 
-```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
-# Plot relationship with EIF4G1 knockdown from CMap
-plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "spearman")
-plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "pearson")
-plot(cmapPerturbationsKD, EIF4G1knockdown, diffExprStat, "gsea")
-
-# Plot relationship with most negatively associated perturbation
-plot(cmapPerturbationsKD,
-     tail(compareKD[order(spearman_rank, na.last=NA)], 1),
-     diffExprStat, "spearman")
-plot(cmapPerturbationsKD,
-     tail(compareKD[order(pearson_rank, na.last=NA)], 1),
-     diffExprStat, "pearson")
-plot(cmapPerturbationsKD,
-     tail(compareKD[order(GSEA_rank, na.last=NA)], 1),
-     diffExprStat, "gsea")
+```{r, echo=FALSE}
+attr(compareKD, "zscoresFilename") <- cmapPerturbationsKD
 ```
 
-> By default, `plot()` plots both the up- and down-regulated genes based on the
-`rankSimilarPerturbations()` arguments.
+```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
+# Plot relationship with EIF4G1 knockdown from CMap
+plot(compareKD, EIF4G1knockdown, "spearman")
+plot(compareKD, EIF4G1knockdown, "pearson")
+plot(compareKD, EIF4G1knockdown, "gsea")
+
+# Plot relationship with most negatively associated perturbation
+plot(compareKD, compareKD[order(-spearman_rank)][1, 1], "spearman")
+plot(compareKD, compareKD[order(-pearson_rank)][1, 1], "pearson")
+plot(compareKD, compareKD[order(-GSEA_rank)][1, 1], "gsea")
+```
 
 For small molecules:
 
+```{r, echo=FALSE}
+attr(compareCompounds, "zscoresFilename") <- cmapPerturbationsCompounds
+```
+
 ```{r plot small molecule comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with most positively associated perturbation
-plot(cmapPerturbationsCompounds, 
-     head(compareCompounds[order(spearman_rank, na.last=NA)], 1), 
-     diffExprStat, "spearman")
-plot(cmapPerturbationsCompounds, 
-     head(compareCompounds[order(pearson_rank, na.last=NA)], 1), 
-     diffExprStat,"pearson")
-plot(cmapPerturbationsCompounds, 
-     head(compareCompounds[order(GSEA_rank, na.last=NA)], 1), 
-     diffExprStat, "gsea")
+plot(compareCompounds, compareCompounds[order(spearman_rank)][1, 1], "spearman")
+plot(compareCompounds, compareCompounds[order(pearson_rank)][1, 1], "pearson")
+plot(compareCompounds, compareCompounds[order(GSEA_rank)][1, 1], "gsea")
 
 # Plot relationship with most negatively associated perturbation
-plot(cmapPerturbationsCompounds,
-     tail(compareCompounds[order(spearman_rank, na.last=NA)], 1),
-     diffExprStat, "spearman")
-plot(cmapPerturbationsCompounds, 
-     tail(compareCompounds[order(pearson_rank, na.last=NA)], 1), 
-     diffExprStat, "pearson")
-plot(cmapPerturbationsCompounds, 
-     tail(compareCompounds[order(GSEA_rank, na.last=NA)], 1), 
-     diffExprStat, "gsea")
+plot(compareCompounds, compareCompounds[order(-spearman_rank)][1,1], "spearman")
+plot(compareCompounds, compareCompounds[order(-pearson_rank)][1, 1], "pearson")
+plot(compareCompounds, compareCompounds[order(-GSEA_rank)][1, 1], "gsea")
 ```
 
 # Predict targeting drugs

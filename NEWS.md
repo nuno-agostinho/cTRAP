@@ -1,3 +1,7 @@
+# cTRAP 1.6.2 (7 October, 2020)
+
+* Simplify tutorial
+
 # cTRAP 1.6.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression
