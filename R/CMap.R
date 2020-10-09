@@ -190,6 +190,7 @@ loadCMapCompoundInfo <- function(file, nas) {
     return(data)
 }
 
+#' @include utils.R
 loadCMapGeneInfo <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_gene_info.txt.gz")

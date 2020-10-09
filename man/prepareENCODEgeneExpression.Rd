@@ -2,7 +2,7 @@
 % Please edit documentation in R/ENCODE.R
 \name{prepareENCODEgeneExpression}
 \alias{prepareENCODEgeneExpression}
-\title{Load an ENCODE gene expression data}
+\title{Load ENCODE gene expression data}
 \usage{
 prepareENCODEgeneExpression(samples)
 }
@@ -13,7 +13,7 @@ prepareENCODEgeneExpression(samples)
 Data frame containing gene read counts
 }
 \description{
-Load an ENCODE gene expression data
+Load ENCODE gene expression data
 }
 \examples{
 if (interactive()) {

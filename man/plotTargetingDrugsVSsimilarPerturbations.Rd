@@ -10,7 +10,9 @@ plotTargetingDrugsVSsimilarPerturbations(
   column,
   labelBy = "pert_iname",
   quantileThreshold = 0.25,
-  showAllScores = FALSE
+  showAllScores = FALSE,
+  keyColTargetingDrugs = NULL,
+  keyColSimilarPerturbations = NULL
 )
 }
 \arguments{
@@ -20,14 +22,22 @@ plotTargetingDrugsVSsimilarPerturbations(
 
 \item{column}{Character: column to plot (must be available in both databases)}
 
-\item{labelBy}{Character: column in \code{similarPerturbations}, its metadata
-or compound information to be used for labelling}
+\item{labelBy}{Character: column in \code{as.table(similarPerturbations)} or
+\code{as.table(targetingDrugs)} to be used for labelling}
 
-\item{quantileThreshold}{Numeric: quantile to use for highlight values within
-[0, 1]}
+\item{quantileThreshold}{Numeric: quantile (between 0 and 1) to highlight
+values of interest}
 
 \item{showAllScores}{Boolean: show all scores? If \code{FALSE}, only the best
 score per compound will be plotted}
+
+\item{keyColTargetingDrugs}{Character: column from \code{targetingDrugs} to
+match against \code{keyColSimilarPerturbations}; if not set, it will be
+automatically determined}
+
+\item{keyColSimilarPerturbations}{Character: column from
+\code{similarPerturbations} to match against \code{keyColTargetingDrugs};
+if not set, it will be automatically determined}
 }
 \value{
 \code{ggplot2} plot
