@@ -16,6 +16,8 @@ in order to avoid downloading metadata every time this function is run
     - automatically look for matching compounds in multiple columns of both
     datasets
     - allow to manually select columns on which to merge datasets
+* `prepareDrugSets()`: drug sets based on numeric molecular descriptors are now
+prepared using evenly-distributed intervals
 * Simplify tutorial
 
 # cTRAP 1.6.1 (17 August, 2020)

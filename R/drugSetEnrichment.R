@@ -36,6 +36,25 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
     return(table)
 }
 
+#' @importFrom binr bins bins.getvals
+calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
+                                           ..., ids=NULL) {
+    nas     <- is.na(numbers)
+    numbers <- round(numbers[!nas])
+    if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids))
+    if (is.null(minpts)) minpts <- round( length(numbers) / target.bins / 5 )
+
+    bin <- bins(numbers, target.bins=target.bins, minpts=minpts, ...)
+
+    # Replace labels of single number intervals
+    names(bin$binct) <- gsub("\\[([-]?[0-9]*), \\1\\]", "\\1", names(bin$binct))
+    # Suppress warnings to avoid integer64 overflow warnings
+    factors <- suppressWarnings(
+        cut(numbers, bins.getvals(bin), labels=names(bin$binct)))
+    if (!is.null(ids)) names(factors) <- ids[!nas]
+    return(factors)
+}
+
 #' Prepare drug sets from a table with compound descriptors
 #'
 #' @param table Data frame: drug descriptors
@@ -43,6 +62,8 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
 #'   identifiers
 #' @param maxUniqueElems Numeric: maximum number of unique elements in a
 #'   descriptor to consider when creating discrete drug sets
+#'
+#' @importFrom pbapply pblapply
 #'
 #' @family functions for drug set enrichment analysis
 #' @return Named list of characters: named drug sets with respective compound
@@ -53,16 +74,27 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
 #' descriptors <- loadDrugDescriptors("NCI60")
 #' prepareDrugSets(descriptors)
 prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
-    nas <- !is.na(table[[id]])
-    table <- table[nas, ]
-    uniqueElems <- sapply(lapply(table, unique), length)
+    # Remove elements with no ID
+    valid <- !is.na(table[[id]])
+    table <- table[valid, ]
+
+    isCharacter <- sapply(table, class) == "character"
+
+    # Prepare sets from character columns if # unique values <= maxUniqueElems
+    uniqueElems <- sapply(lapply(table[ , isCharacter, with=FALSE], unique),
+                          length)
     sets <- names(uniqueElems[uniqueElems <= maxUniqueElems])
     subtable <- table[ , sets, with=FALSE]
 
-    res <- lapply(subtable, function(x, ids) {
-        split(ids, x, drop=TRUE)
-    }, ids=table[[id]])
+    res <- lapply(subtable, function(x, ids) split(ids, x, drop=TRUE),
+                  ids=table[[id]])
 
+    nonCharacterTable <- table[ , !isCharacter, with=FALSE]
+    res2 <- pblapply(nonCharacterTable, calculateEvenlyDistributedBins,
+                     ids=table[[id]])
+    res2 <- lapply(res2, function(x) split(names(x), x, drop=TRUE))
+
+    res <- c(res, res2)
     symbol <- ": "
     names(res) <- paste0(names(res), symbol)
     res <- unlist(res, recursive=FALSE)
