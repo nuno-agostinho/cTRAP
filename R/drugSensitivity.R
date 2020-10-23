@@ -337,8 +337,7 @@ correlateGEandDrugSensitivity <- function(geneExpr, drugSensitivity,
 #' @param method Character: correlation method to use between gene expression
 #'   and drug sensitivity
 #'
-#' @details If path direct to non-existing files, respective data will be
-#'   downloaded.
+#' @details If path directs to non-existing files, data will be downloaded.
 #'
 #' @return Correlation matrix between gene expression and drug sensitivity
 #' @keywords internal

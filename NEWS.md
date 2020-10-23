@@ -1,4 +1,4 @@
-# cTRAP 1.8 (22 October, 2020)
+# cTRAP 1.8 (23 October, 2020)
 
 ## Interactive functions for loading data and analysing results
 
@@ -7,7 +7,7 @@
     - `launchCMapDataLoader()`: load CMap data
     - `launchResultPlotter()`: view and plot data results
     - `launchMetadataViewer()`: check metadata of a given object
-    
+
 ## Major changes
 
 * `downloadENCODEknockdownMetadata()`: metadata is automatically saved to a file

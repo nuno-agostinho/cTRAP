@@ -194,7 +194,8 @@ test_that("Analyse drug set enrichment for putative targeting drugs", {
     expect_identical(dsea$padj, sort(dsea$padj))
     expect_identical(colnames(dsea), c("pathway", "pval", "padj", "ES", "NES",
                                        "nMoreExtreme", "size", "leadingEdge"))
-    expect_true(all(c("Aromatic Nitrogens: 6", "FDA_status: Clinical trial",
+    expect_true(all(c("Aromatic Nitrogens: [4, 12]",
+                      "FDA_status: Clinical trial",
                       "Reproductive Effective: high", "Irritant: high",
                       "Aromatic Nitrogens: 2", "Amines: 0") %in% dsea$pathway))
 })
@@ -210,7 +211,7 @@ test_that("Analyse drug set enrichment for a named numeric vector", {
                                        "nMoreExtreme", "size", "leadingEdge"))
     expect_true(all(c("Mutagenic: high", "Mutagenic: none", "Tumorigenic: none",
                       "Reproductive Effective: none", "Irritant: none",
-                      "Fragments: 2") %in% dsea$pathway))
+                      "Fragments: [2, 6]") %in% dsea$pathway))
 })
 
 test_that("Analyse drug set enrichment using a custom list of drug sets", {

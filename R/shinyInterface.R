@@ -2,7 +2,7 @@
 
 #' Plot packed bubbles
 #'
-#' @importFrom highcharter hchart hcaes hc_title hc_tooltip %>%
+#' @importFrom highcharter hchart hcaes hc_title hc_tooltip %>% highchart JS
 #'
 #' @param data Data to plot
 #' @param title Character: plot title
@@ -18,6 +18,7 @@
         tooltip <- paste0("function() {",
                           "return '<b>' + this.series.name + '</b><br/>'",
                           "+ this.y + ' perturbations'; }")
+        Freq <- NULL
         hc <- hchart(df, "packedbubble", hcaes(group=data, value=Freq),
                      showInLegend=FALSE, maxSize=50, color=colour) %>%
             hc_tooltip(formatter=JS(tooltip))
@@ -53,8 +54,7 @@
                           paste0, suffixes))
     cols <- lapply(cols, function(i) endsWith(names(table), i))
     cols <- which(Reduce("|", cols))
-    cols <- cols[!vapply(table, class, character(1))[cols] %in% c(
-        "character", "logical")]
+    cols <- cols[!sapply(table, class)[cols] %in% c("character", "logical")]
 
     # Convert to factor if there are low number of unique values
     lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
@@ -164,7 +164,7 @@
     return(ui)
 }
 
-#' @importFrom shiny moduleServer
+#' @importFrom shiny moduleServer stopApp
 #' @importFrom DT renderDT
 .diffExprENCODEloaderServer <- function(id, metadata) {
     moduleServer(
@@ -217,7 +217,7 @@
     unname(sapply(what, grep, where, ignore.case=ignore.case, value=TRUE))
 }
 
-#' @importFrom shiny NS
+#' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel
 .cmapDataLoaderUI <- function(id, metadata, zscores, geneInfo, compoundInfo,
                               cellLine, timepoint, dosage, perturbationType,
                               title="CMap Data Loader") {
@@ -259,6 +259,8 @@
     return(ui)
 }
 
+#' @importFrom shiny isolate updateSelectizeInput moduleServer stopApp
+#' observeEvent
 .cmapDataLoaderServer <- function(id, metadata, zscores, geneInfo, compoundInfo,
                                   cellLine, timepoint, dosage) {
     updateSelectizeCondition <- function(session, id, choices, selected, ...) {
@@ -357,7 +359,7 @@
     return(ui)
 }
 
-#' @importFrom shiny moduleServer
+#' @importFrom shiny moduleServer observe
 #' @importFrom DT renderDT
 .metadataViewerServer <- function(id, x) {
     moduleServer(
@@ -390,7 +392,7 @@
     return(ui)
 }
 
-#' @importFrom shiny renderPlot
+#' @importFrom shiny renderPlot observeEvent observe
 #' @importFrom DT renderDT
 .dataPlotterServer <- function(id, x) {
     moduleServer(
@@ -438,7 +440,7 @@
 }
 
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
-#' tabPanel
+#' tabPanel hr
 #' @importFrom DT DTOutput
 .datasetComparisonUI <- function(id, x, title="Dataset Comparison") {
     ns <- NS(id)
@@ -456,7 +458,7 @@
 }
 
 
-#' @importFrom shiny renderPlot
+#' @importFrom shiny renderPlot observe
 #' @importFrom DT renderDT
 .datasetComparisonServer <- function(id, x) {
     moduleServer(
@@ -522,6 +524,8 @@
     return(ui)
 }
 
+#' @importFrom shiny moduleServer reactive observe renderPlot brushedPoints
+#' @importFrom DT renderDT
 .targetingDrugsVSsimilarPerturbationsPlotterServer <- function(id, x) {
     moduleServer(
         id,
@@ -554,7 +558,15 @@
 
 # Launch graphical interface ---------------------------------------------------
 
-#' Launch differential expression data
+#' Load differential expression data via a visual interface
+#'
+#' Currently only supports loading data from ENCODE knockdown experiments
+#'
+#' @inheritParams downloadENCODEknockdownMetadata
+#'
+#' @return Differential expression data
+#' @family visual interface functions
+#' @export
 launchDiffExprLoader <- function(cellLine=NULL, gene=NULL) {
     metadata <- downloadENCODEknockdownMetadata()
     id       <- "diffExpr"
@@ -567,7 +579,7 @@ launchDiffExprLoader <- function(cellLine=NULL, gene=NULL) {
     return(app)
 }
 
-#' Load CMap data via a Shiny interface
+#' Load CMap data via a visual interface
 #'
 #' @importFrom highcharter highchartOutput renderHighchart
 #' @importFrom shiny sidebarPanel selectizeInput actionButton mainPanel fluidRow
@@ -578,6 +590,8 @@ launchDiffExprLoader <- function(cellLine=NULL, gene=NULL) {
 #' @inheritParams prepareCMapPerturbations
 #' @inherit prepareCMapPerturbations return
 #'
+#' @return CMap data
+#' @family visual interface functions
 #' @export
 launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
                                  zscores="cmapZscores.gctx",
@@ -598,13 +612,14 @@ launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
     return(app)
 }
 
-#' View metadata
+#' View metadata via a visual interface
 #'
 #' @param ... Objects
 #'
-#' @return Launches metadata viewer
-#'
 #' @importFrom shiny runApp shinyApp
+#'
+#' @return Metadata viewer (retunrs \code{NULL})
+#' @family visual interface functions
 #' @export
 launchMetadataViewer <- function(...) {
     elems  <- .prepareEllipsis(...)
@@ -615,11 +630,14 @@ launchMetadataViewer <- function(...) {
     return(app)
 }
 
-#' View and plot results
+#' View and plot results via a visual interface
 #'
 #' @param ... Objects
 #'
-#' @return Launches result viewer and plotter
+#' @importFrom shiny tagList
+#'
+#' @return Launches result viewer and plotter (returns \code{NULL})
+#' @family visual interface functions
 #' @export
 launchResultPlotter <- function(...) {
     elems <- .prepareEllipsis(...)

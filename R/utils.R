@@ -89,6 +89,8 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 #' @return Named character vector where names are the input ENSEMBL gene
 #'   identifiers and the values are the matching gene symbols
 #' @export
+#' @examples
+#' convertENSEMBLtoGeneSymbols(c("ENSG00000112742", "ENSG00000130234"))
 convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
                                         mart="ensembl") {
     mart      <- useDataset(dataset, useMart(mart))

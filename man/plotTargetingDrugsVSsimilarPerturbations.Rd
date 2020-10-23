@@ -45,6 +45,18 @@ if not set, it will be automatically determined}
 \description{
 Plot similar perturbations against predicted targeting drugs
 }
+\examples{
+# Rank similarity against CMap compound perturbations
+similarPerts <- rankSimilarPerturbations(diffExprStat,
+                                         cmapPerturbationsCompounds)
+
+# Predict targeting drugs
+gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+
+plotTargetingDrugsVSsimilarPerturbations(predicted, similarPerts,
+                                         "spearman_rank")
+}
 \seealso{
 Other functions related with the ranking of CMap perturbations: 
 \code{\link{as.table.referenceComparison}()},

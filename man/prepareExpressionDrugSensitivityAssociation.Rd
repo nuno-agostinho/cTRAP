@@ -23,7 +23,6 @@ Correlation matrix between gene expression and drug sensitivity
 Prepare gene expression and drug sensitivity correlation matrix
 }
 \details{
-If path direct to non-existing files, respective data will be
-  downloaded.
+If path directs to non-existing files, data will be downloaded.
 }
 \keyword{internal}

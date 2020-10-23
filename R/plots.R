@@ -560,6 +560,10 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
 }
 
 #' Check for intersecting compounds across specific columns on both datasets
+#'
+#' @return List containing three elements: matching compounds
+#'   \code{commonCompounds} between column \code{key 1} and \code{key 2} from
+#'   the first and second datasets, respectively
 #' @keywords internal
 findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
     showSelectedCols <- is.null(keys1) || is.null(keys2)
@@ -626,19 +630,24 @@ mergeDatasetsBy <- function(column, data1, data2, showAllScores=FALSE,
     # Convert key columns to same class if needed
     key1val <- data1table[[key1]]
     key2val <- data2table[[key2]]
+    areSameClass <- function(key1val, key2val, cmp) cmp(key1val) && cmp(key2val)
 
-    if (class(key1val) != class(key2val)) {
-        if (is.character(key1val)) {
+    FUN <- NULL
+    if (length(res$commonCompounds) > 0) {
+        if (!areSameClass(key1val, key2val, is.character)) {
             FUN <- as.character
-        } else if (is.integer(key1val)) {
+        } else if (!areSameClass(key1val, key2val, is.integer)) {
             FUN <- as.integer
-        } else if (is.numeric(key1val)) {
+        } else if (!areSameClass(key1val, key2val, is.numeric)) {
             FUN <- as.numeric
-        } else if (is.factor(key1val)) {
+        } else if (!areSameClass(key1val, key2val, is.factor)) {
             FUN <- as.factor
+        } else if (!areSameClass(key1val, key2val, is.logical)) {
+            FUN <- as.logical
         }
-        data2table[[key2]] <- FUN(data2table[[key2]])
     }
+    if (!is.null(FUN)) data2table[[key2]] <- FUN(data2table[[key2]])
+
     # Merge data based on intersecting compounds
     df <- merge(data2table, data1table, by.x=key2, by.y=key1,
                 suffixes=suffixes, allow.cartesian=TRUE)
@@ -684,6 +693,18 @@ mergeDatasetsBy <- function(column, data1, data2, showAllScores=FALSE,
 #' @family functions related with the prediction of targeting drugs
 #' @return \code{ggplot2} plot
 #' @export
+#'
+#' @examples
+#' # Rank similarity against CMap compound perturbations
+#' similarPerts <- rankSimilarPerturbations(diffExprStat,
+#'                                          cmapPerturbationsCompounds)
+#'
+#' # Predict targeting drugs
+#' gdsc <- loadExpressionDrugSensitivityAssociation("GDSC 7")
+#' predicted <- predictTargetingDrugs(diffExprStat, gdsc)
+#'
+#' plotTargetingDrugsVSsimilarPerturbations(predicted, similarPerts,
+#'                                          "spearman_rank")
 plotTargetingDrugsVSsimilarPerturbations <- function(
     targetingDrugs, similarPerturbations, column, labelBy="pert_iname",
     quantileThreshold=0.25, showAllScores=FALSE,

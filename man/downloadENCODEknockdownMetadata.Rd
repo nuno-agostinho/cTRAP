@@ -7,7 +7,7 @@
 downloadENCODEknockdownMetadata(
   cellLine = NULL,
   gene = NULL,
-  file = "ENCODEmetadata.RDS"
+  file = "ENCODEmetadata.rds"
 )
 }
 \arguments{

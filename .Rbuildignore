@@ -8,3 +8,9 @@
 ^pkgdown$
 ^\.github$
 ^dev$
+
+# Ignore files
+^.*\.tsv$
+^.*\.rds$
+^.*\.gctx$
+^.*\.txt$

@@ -28,7 +28,7 @@ getENCODEcontrols <- function(control, table) {
 #' @examples
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
 downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL,
-                                            file="ENCODEmetadata.RDS") {
+                                            file="ENCODEmetadata.rds") {
     if (!file.exists(file)) {
         # Retrieve metadata for ENCODE KD experiments (JSON format) ------------
         message("Downloading metadata for ENCODE knockdown experiments...")

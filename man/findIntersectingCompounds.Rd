@@ -6,6 +6,11 @@
 \usage{
 findIntersectingCompounds(data1, data2, keys1 = NULL, keys2 = NULL)
 }
+\value{
+List containing three elements: matching compounds
+  \code{commonCompounds} between column \code{key 1} and \code{key 2} from
+  the first and second datasets, respectively
+}
 \description{
 Check for intersecting compounds across specific columns on both datasets
 }

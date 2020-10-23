@@ -2,7 +2,7 @@
 % Please edit documentation in R/shinyInterface.R
 \name{launchMetadataViewer}
 \alias{launchMetadataViewer}
-\title{View metadata}
+\title{View metadata via a visual interface}
 \usage{
 launchMetadataViewer(...)
 }
@@ -10,8 +10,15 @@ launchMetadataViewer(...)
 \item{...}{Objects}
 }
 \value{
-Launches metadata viewer
+Metadata viewer (retunrs \code{NULL})
 }
 \description{
-View metadata
+View metadata via a visual interface
 }
+\seealso{
+Other visual interface functions: 
+\code{\link{launchCMapDataLoader}()},
+\code{\link{launchDiffExprLoader}()},
+\code{\link{launchResultPlotter}()}
+}
+\concept{visual interface functions}

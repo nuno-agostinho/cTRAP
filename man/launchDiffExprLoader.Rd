@@ -2,10 +2,25 @@
 % Please edit documentation in R/shinyInterface.R
 \name{launchDiffExprLoader}
 \alias{launchDiffExprLoader}
-\title{Launch differential expression data}
+\title{Load differential expression data via a visual interface}
 \usage{
 launchDiffExprLoader(cellLine = NULL, gene = NULL)
 }
-\description{
-Launch differential expression data
+\arguments{
+\item{cellLine}{Character: cell line}
+
+\item{gene}{Character: target gene}
 }
+\value{
+Differential expression data
+}
+\description{
+Currently only supports loading data from ENCODE knockdown experiments
+}
+\seealso{
+Other visual interface functions: 
+\code{\link{launchCMapDataLoader}()},
+\code{\link{launchMetadataViewer}()},
+\code{\link{launchResultPlotter}()}
+}
+\concept{visual interface functions}

@@ -24,9 +24,9 @@ Load matrix of CMap perturbation's differential expression z-scores
 (optional)
 }
 \examples{
-\donttest{
 metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+\dontrun{
 perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
                                   "cmapGeneInfo.txt")
 zscores <- loadCMapZscores(perts[ , 1:10])

@@ -31,9 +31,7 @@ Filtered CMap metadata
 Filter CMap metadata
 }
 \examples{
-\dontrun{
 cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
-}
 filterCMapMetadata(cmapMetadata, cellLine="HEPG2", timepoint="2 h",
                    dosage="25 ng/mL")
 }

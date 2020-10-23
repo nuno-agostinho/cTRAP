@@ -2,7 +2,7 @@
 % Please edit documentation in R/shinyInterface.R
 \name{launchResultPlotter}
 \alias{launchResultPlotter}
-\title{View and plot results}
+\title{View and plot results via a visual interface}
 \usage{
 launchResultPlotter(...)
 }
@@ -10,8 +10,15 @@ launchResultPlotter(...)
 \item{...}{Objects}
 }
 \value{
-Launches result viewer and plotter
+Launches result viewer and plotter (returns \code{NULL})
 }
 \description{
-View and plot results
+View and plot results via a visual interface
 }
+\seealso{
+Other visual interface functions: 
+\code{\link{launchCMapDataLoader}()},
+\code{\link{launchDiffExprLoader}()},
+\code{\link{launchMetadataViewer}()}
+}
+\concept{visual interface functions}

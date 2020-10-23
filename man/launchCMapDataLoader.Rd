@@ -2,7 +2,7 @@
 % Please edit documentation in R/shinyInterface.R
 \name{launchCMapDataLoader}
 \alias{launchCMapDataLoader}
-\title{Load CMap data via a Shiny interface}
+\title{Load CMap data via a visual interface}
 \usage{
 launchCMapDataLoader(
   metadata = "cmapMetadata.txt",
@@ -37,8 +37,15 @@ filepath to load data from file)}
 perturbation types are loaded)}
 }
 \value{
-CMap perturbation data attributes and filename
+CMap data
 }
 \description{
-Load CMap data via a Shiny interface
+Load CMap data via a visual interface
 }
+\seealso{
+Other visual interface functions: 
+\code{\link{launchDiffExprLoader}()},
+\code{\link{launchMetadataViewer}()},
+\code{\link{launchResultPlotter}()}
+}
+\concept{visual interface functions}

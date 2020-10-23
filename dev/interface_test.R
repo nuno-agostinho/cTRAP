@@ -4,18 +4,18 @@
 diffExpr <- launchDiffExprLoader()
 
 # launchCMapDataLoader() -------------------------------------------------------
-cmapPerturbationsKD <- launchCMapDataLoader(
+cmapKD <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
-cmapPerturbationsCompounds <- launchCMapDataLoader(
-    cellLine="HepG2", perturbationType="Compound")
+cmapCompounds <- launchCMapDataLoader(
+    cellLine="HepG2",
+    perturbationType="Compound")
 
 launchMetadataViewer(cmapPerturbationsKD)
 
 # Rank similar perturbations ---------------------------------------------------
-compareKD        <- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
-compareCompounds <- rankSimilarPerturbations(diffExprStat,
-                                             cmapPerturbationsCompounds)
+compareKD        <- rankSimilarPerturbations(diffExpr, cmapKD)
+compareCompounds <- rankSimilarPerturbations(diffExpr, cmapCompounds)
 
 launchResultPlotter(compareKD)
 launchResultPlotter(compareCompounds)
@@ -34,7 +34,7 @@ launchResultPlotter(predicted)
 launchResultPlotter(predicted, compareCompounds)
 
 # Drug set enrichment analysis -------------------------------------------------
-descriptors <- loadDrugDescriptors("CMap", "2D")
+descriptors <- loadDrugDescriptors("NCI60", "2D")
 drugSets    <- prepareDrugSets(descriptors)
 dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
 
