@@ -39,6 +39,7 @@ lapply(descriptors[c("cmap2D", "nci602D")], function(i) {
 # How many sets to create for numeric variables?
 calculateBins <- function(numbers, target.bins=15, minpts=NULL, ...) {
     numbers <- na.omit(numbers)
+    print(diptest::dip.test(numbers)) # Test if multimodal
     factors <- calculateEvenlyDistributedBins(numbers, target.bins=target.bins,
                                               minpts=minpts, ...)
     par(mfrow=c(1, 2))
