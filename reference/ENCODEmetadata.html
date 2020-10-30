@@ -42,12 +42,13 @@
 <meta property="og:title" content="ENCODE metadata sample — ENCODEmetadata" />
 <meta property="og:description" content="ENCODE metadata sample obtained by running the following code:
 
-gene &amp;amp;lt;- &quot;EIF4G1&quot;
-cellLine &amp;amp;lt;- &quot;HepG2&quot;
-ENCODEmetadata &amp;amp;lt;- downloadENCODEknockdownMetadata(cellLine, gene)
+gene &amp;lt;- &quot;EIF4G1&quot;
+cellLine &amp;lt;- &quot;HepG2&quot;
+ENCODEmetadata &amp;lt;- downloadENCODEknockdownMetadata(cellLine, gene)
 
 table(ENCODEmetadata$`Experiment target`)
 length(unique(ENCODEmetadata$`Experiment target`))
+
 " />
 
 
@@ -90,7 +91,7 @@ length(unique(ENCODEmetadata$`Experiment target`))
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -140,12 +141,13 @@ length(unique(ENCODEmetadata$`Experiment target`))
     <div class="ref-description">
     <p>ENCODE metadata sample obtained by running the following code:</p>
 <pre>
-<span class='no'>gene</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='st'>"EIF4G1"</span>
-<span class='no'>cellLine</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='st'>"HepG2"</span>
-<span class='no'>ENCODEmetadata</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span>(<span class='no'>cellLine</span>, <span class='no'>gene</span>)
+<span class='va'>gene</span> <span class='op'>&lt;-</span> <span class='st'>"EIF4G1"</span>
+<span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span>
+<span class='va'>ENCODEmetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span><span class='op'>(</span><span class='va'>cellLine</span>, <span class='va'>gene</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span>(<span class='no'>ENCODEmetadata</span>$<span class='no'>`Experiment target`</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>ENCODEmetadata</span>$<span class='no'>`Experiment target`</span>))</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>$</span><span class='va'>`Experiment target`</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>$</span><span class='va'>`Experiment target`</span><span class='op'>)</span><span class='op'>)</span>
+</pre>
 
     </div>
 
@@ -167,7 +169,7 @@ length(unique(ENCODEmetadata$`Experiment target`))
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Operations on a <code>perturbationChanges</code> object — plot.perturbationChanges • cTRAP</title>
+<title>Operations on a perturbationChanges object — plot.perturbationChanges • cTRAP</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Operations on a <code>perturbationChanges</code> object — plot.perturbationChanges" />
+<meta property="og:title" content="Operations on a perturbationChanges object — plot.perturbationChanges" />
 <meta property="og:description" content="Operations on a perturbationChanges object" />
 
 
@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -237,17 +237,27 @@ on the context; ignored when plotting multiple perturbations)</p></td>
 <code><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"diffExprStat"</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"cmapPerturbationsKD"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"cmapPerturbationsKD"</span><span class='op'>)</span>
 
-<span class='no'>compareKD</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a></span>(<span class='no'>diffExprStat</span>, <span class='no'>cmapPerturbationsKD</span>)</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 26 comparisons (1 cell line; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'spearman' performed in 0.67 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 26 comparisons (1 cell line; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'pearson' performed in 0.38 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 26 comparisons (1 cell line)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'gsea' (gene size of 150) performed in 0.77 secs</span></div><div class='input'><span class='no'>EIF4G1knockdown</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span>(<span class='st'>"EIF4G1"</span>, <span class='no'>compareKD</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsKD</span>, <span class='no'>EIF4G1knockdown</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"spearman"</span>)</div><div class='img'><img src='plot.perturbationChanges-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsKD</span>, <span class='no'>EIF4G1knockdown</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"pearson"</span>)</div><div class='img'><img src='plot.perturbationChanges-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsKD</span>, <span class='no'>EIF4G1knockdown</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"gsea"</span>)</div><div class='img'><img src='plot.perturbationChanges-3.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"cmapPerturbationsCompounds"</span>)
-<span class='no'>pert</span> <span class='kw'>&lt;-</span> <span class='st'>"CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1"</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"spearman"</span>)</div><div class='img'><img src='plot.perturbationChanges-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"pearson"</span>)</div><div class='img'><img src='plot.perturbationChanges-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"gsea"</span>)</div><div class='img'><img src='plot.perturbationChanges-6.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='va'>compareKD</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>cmapPerturbationsKD</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 26 comparisons (1 cell line; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'spearman' performed in 0.71 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 26 comparisons (1 cell line; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'pearson' performed in 0.4 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 26 comparisons (1 cell line)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 26 comparisons using 'gsea' (gene size of 150) performed in 1.33 secs</span></div><div class='input'><span class='va'>EIF4G1knockdown</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grep</a></span><span class='op'>(</span><span class='st'>"EIF4G1"</span>, <span class='va'>compareKD</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, value<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsKD</span>, <span class='va'>EIF4G1knockdown</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsKD</span>, <span class='va'>EIF4G1knockdown</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"pearson"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsKD</span>, <span class='va'>EIF4G1knockdown</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"gsea"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"cmapPerturbationsCompounds"</span><span class='op'>)</span>
+<span class='va'>pert</span> <span class='op'>&lt;-</span> <span class='st'>"CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1"</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"pearson"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"gsea"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-6.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Multiple cell line perturbations</span>
-<span class='no'>pert</span> <span class='kw'>&lt;-</span> <span class='st'>"CVD001_24H:BRD-A14014306-001-01-1:4.1"</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"spearman"</span>)</div><div class='img'><img src='plot.perturbationChanges-7.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"pearson"</span>)</div><div class='img'><img src='plot.perturbationChanges-8.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>cmapPerturbationsCompounds</span>, <span class='no'>pert</span>, <span class='no'>diffExprStat</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"gsea"</span>)</div><div class='img'><img src='plot.perturbationChanges-9.png' alt='' width='700' height='433' /></div></pre>
+<span class='va'>pert</span> <span class='op'>&lt;-</span> <span class='st'>"CVD001_24H:BRD-A14014306-001-01-1:4.1"</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-7.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"pearson"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-8.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsCompounds</span>, <span class='va'>pert</span>, <span class='va'>diffExprStat</span>, method<span class='op'>=</span><span class='st'>"gsea"</span><span class='op'>)</span>
+</div><div class='img'><img src='plot.perturbationChanges-9.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -263,7 +273,7 @@ on the context; ignored when plotting multiple perturbations)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

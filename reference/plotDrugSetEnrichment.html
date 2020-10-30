@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,12 +133,12 @@
     <p>Plot drug set enrichment</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotDrugSetEnrichment</span>(
-  <span class='no'>sets</span>,
-  <span class='no'>stats</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"rankProduct_rank"</span>,
-  <span class='kw'>selectedSets</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotDrugSetEnrichment</span><span class='op'>(</span>
+  <span class='va'>sets</span>,
+  <span class='va'>stats</span>,
+  col <span class='op'>=</span> <span class='st'>"rankProduct_rank"</span>,
+  selectedSets <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,14 +178,17 @@ if class of <code>stats</code> is either <code>similarPerturbations</code> or
 <code><a href='prepareDrugSets.html'>prepareDrugSets</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>descriptors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadDrugDescriptors.html'>loadDrugDescriptors</a></span>()
-<span class='no'>drugSets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span>(<span class='no'>descriptors</span>)
+    <pre class="examples"><div class='input'><span class='va'>descriptors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadDrugDescriptors.html'>loadDrugDescriptors</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>drugSets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span><span class='op'>(</span><span class='va'>descriptors</span><span class='op'>)</span>
 
 <span class='co'># Analyse drug set enrichment in ranked targeting drugs for a differential</span>
 <span class='co'># expression profile</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"diffExprStat"</span>)
-<span class='no'>gdsc</span>      <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span>(<span class='st'>"GDSC"</span>)</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='input'><span class='no'>predicted</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span>(<span class='no'>diffExprStat</span>, <span class='no'>gdsc</span>)</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'spearman' performed in 2.43 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'pearson' performed in 0.78 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 266 GDSC 7 compounds (983 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'gsea' (gene size of 150) performed in 5.82 secs</span></div><div class='input'>
-<span class='fu'>plotDrugSetEnrichment</span>(<span class='no'>drugSets</span>, <span class='no'>predicted</span>)</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Plotting enrichment analysis...</span></div><div class='output co'>#&gt; $`FDA_status: Clinical trial`</div><div class='img'><img src='plotDrugSetEnrichment-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
+<span class='va'>gdsc</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span><span class='op'>(</span><span class='st'>"GDSC"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='input'><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>gdsc</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'spearman' performed in 2.54 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'pearson' performed in 0.81 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 266 GDSC 7 compounds (983 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'gsea' (gene size of 150) performed in 13.4 secs</span></div><div class='input'>
+<span class='fu'>plotDrugSetEnrichment</span><span class='op'>(</span><span class='va'>drugSets</span>, <span class='va'>predicted</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Plotting enrichment analysis...</span></div><div class='output co'>#&gt; $`FDA_status: Clinical trial`</div><div class='img'><img src='plotDrugSetEnrichment-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; $`FDA_status: FDA approved`</div><div class='img'><img src='plotDrugSetEnrichment-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; $`Mutagenic: high`</div><div class='img'><img src='plotDrugSetEnrichment-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; $`Mutagenic: low`</div><div class='img'><img src='plotDrugSetEnrichment-4.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
@@ -199,92 +202,305 @@ if class of <code>stats</code> is either <code>similarPerturbations</code> or
 #&gt; $`Irritant: high`</div><div class='img'><img src='plotDrugSetEnrichment-12.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; $`Irritant: low`</div><div class='img'><img src='plotDrugSetEnrichment-13.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
 #&gt; $`Irritant: none`</div><div class='img'><img src='plotDrugSetEnrichment-14.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 1`</div><div class='img'><img src='plotDrugSetEnrichment-15.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 2`</div><div class='img'><img src='plotDrugSetEnrichment-16.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 3`</div><div class='img'><img src='plotDrugSetEnrichment-17.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 4`</div><div class='img'><img src='plotDrugSetEnrichment-18.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 5`</div><div class='img'><img src='plotDrugSetEnrichment-19.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Fragments: 6`</div><div class='img'><img src='plotDrugSetEnrichment-20.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Metal-Atoms: 0`</div><div class='img'><img src='plotDrugSetEnrichment-21.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Metal-Atoms: 1`</div><div class='img'><img src='plotDrugSetEnrichment-22.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Metal-Atoms: 2`</div><div class='img'><img src='plotDrugSetEnrichment-23.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Metal-Atoms: 3`</div><div class='img'><img src='plotDrugSetEnrichment-24.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Metal-Atoms: 4`</div><div class='img'><img src='plotDrugSetEnrichment-25.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 0`</div><div class='img'><img src='plotDrugSetEnrichment-26.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 1`</div><div class='img'><img src='plotDrugSetEnrichment-27.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 2`</div><div class='img'><img src='plotDrugSetEnrichment-28.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 3`</div><div class='img'><img src='plotDrugSetEnrichment-29.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 4`</div><div class='img'><img src='plotDrugSetEnrichment-30.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 5`</div><div class='img'><img src='plotDrugSetEnrichment-31.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 6`</div><div class='img'><img src='plotDrugSetEnrichment-32.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 7`</div><div class='img'><img src='plotDrugSetEnrichment-33.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 8`</div><div class='img'><img src='plotDrugSetEnrichment-34.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 9`</div><div class='img'><img src='plotDrugSetEnrichment-35.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 10`</div><div class='img'><img src='plotDrugSetEnrichment-36.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 12`</div><div class='img'><img src='plotDrugSetEnrichment-37.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 13`</div><div class='img'><img src='plotDrugSetEnrichment-38.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Rings: 15`</div><div class='img'><img src='plotDrugSetEnrichment-39.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-40.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-41.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 2`</div><div class='img'><img src='plotDrugSetEnrichment-42.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 3`</div><div class='img'><img src='plotDrugSetEnrichment-43.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 4`</div><div class='img'><img src='plotDrugSetEnrichment-44.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 5`</div><div class='img'><img src='plotDrugSetEnrichment-45.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 6`</div><div class='img'><img src='plotDrugSetEnrichment-46.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 7`</div><div class='img'><img src='plotDrugSetEnrichment-47.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 8`</div><div class='img'><img src='plotDrugSetEnrichment-48.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Amines: 10`</div><div class='img'><img src='plotDrugSetEnrichment-49.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-50.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-51.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 2`</div><div class='img'><img src='plotDrugSetEnrichment-52.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 3`</div><div class='img'><img src='plotDrugSetEnrichment-53.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 4`</div><div class='img'><img src='plotDrugSetEnrichment-54.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 5`</div><div class='img'><img src='plotDrugSetEnrichment-55.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 6`</div><div class='img'><img src='plotDrugSetEnrichment-56.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 7`</div><div class='img'><img src='plotDrugSetEnrichment-57.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 8`</div><div class='img'><img src='plotDrugSetEnrichment-58.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Alkyl-Amines: 10`</div><div class='img'><img src='plotDrugSetEnrichment-59.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-60.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-61.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 2`</div><div class='img'><img src='plotDrugSetEnrichment-62.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 3`</div><div class='img'><img src='plotDrugSetEnrichment-63.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 4`</div><div class='img'><img src='plotDrugSetEnrichment-64.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Amines: 6`</div><div class='img'><img src='plotDrugSetEnrichment-65.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-66.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-67.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 2`</div><div class='img'><img src='plotDrugSetEnrichment-68.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 3`</div><div class='img'><img src='plotDrugSetEnrichment-69.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 4`</div><div class='img'><img src='plotDrugSetEnrichment-70.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 5`</div><div class='img'><img src='plotDrugSetEnrichment-71.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 6`</div><div class='img'><img src='plotDrugSetEnrichment-72.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 7`</div><div class='img'><img src='plotDrugSetEnrichment-73.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 8`</div><div class='img'><img src='plotDrugSetEnrichment-74.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 10`</div><div class='img'><img src='plotDrugSetEnrichment-75.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Aromatic Nitrogens: 12`</div><div class='img'><img src='plotDrugSetEnrichment-76.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-77.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-78.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 2`</div><div class='img'><img src='plotDrugSetEnrichment-79.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 3`</div><div class='img'><img src='plotDrugSetEnrichment-80.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 4`</div><div class='img'><img src='plotDrugSetEnrichment-81.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 5`</div><div class='img'><img src='plotDrugSetEnrichment-82.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 6`</div><div class='img'><img src='plotDrugSetEnrichment-83.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 7`</div><div class='img'><img src='plotDrugSetEnrichment-84.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 8`</div><div class='img'><img src='plotDrugSetEnrichment-85.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 9`</div><div class='img'><img src='plotDrugSetEnrichment-86.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Basic Nitrogens: 10`</div><div class='img'><img src='plotDrugSetEnrichment-87.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-88.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-89.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 2`</div><div class='img'><img src='plotDrugSetEnrichment-90.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 3`</div><div class='img'><img src='plotDrugSetEnrichment-91.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 4`</div><div class='img'><img src='plotDrugSetEnrichment-92.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 5`</div><div class='img'><img src='plotDrugSetEnrichment-93.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 6`</div><div class='img'><img src='plotDrugSetEnrichment-94.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 8`</div><div class='img'><img src='plotDrugSetEnrichment-95.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Acidic Oxygens: 9`</div><div class='img'><img src='plotDrugSetEnrichment-96.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Stereo Configuration: meso`</div><div class='img'><img src='plotDrugSetEnrichment-97.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Stereo Configuration: racemate`</div><div class='img'><img src='plotDrugSetEnrichment-98.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Stereo Configuration: this enantiomer`</div><div class='img'><img src='plotDrugSetEnrichment-99.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
-#&gt; $`Stereo Configuration: unknown chirality`</div><div class='img'><img src='plotDrugSetEnrichment-100.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div></pre>
+#&gt; $`Stereo Configuration: meso`</div><div class='img'><img src='plotDrugSetEnrichment-15.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Configuration: racemate`</div><div class='img'><img src='plotDrugSetEnrichment-16.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Configuration: this enantiomer`</div><div class='img'><img src='plotDrugSetEnrichment-17.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Configuration: unknown chirality`</div><div class='img'><img src='plotDrugSetEnrichment-18.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [1, 85235]`</div><div class='img'><img src='plotDrugSetEnrichment-19.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [85236, 226080]`</div><div class='img'><img src='plotDrugSetEnrichment-20.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [226798, 601346]`</div><div class='img'><img src='plotDrugSetEnrichment-21.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [601347, 628540]`</div><div class='img'><img src='plotDrugSetEnrichment-22.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [628559, 642317]`</div><div class='img'><img src='plotDrugSetEnrichment-23.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [642319, 657194]`</div><div class='img'><img src='plotDrugSetEnrichment-24.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [657195, 669254]`</div><div class='img'><img src='plotDrugSetEnrichment-25.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [669257, 678359]`</div><div class='img'><img src='plotDrugSetEnrichment-26.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [678360, 689532]`</div><div class='img'><img src='plotDrugSetEnrichment-27.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [689533, 700034]`</div><div class='img'><img src='plotDrugSetEnrichment-28.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [700086, 711103]`</div><div class='img'><img src='plotDrugSetEnrichment-29.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [711104, 722804]`</div><div class='img'><img src='plotDrugSetEnrichment-30.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [722812, 735441]`</div><div class='img'><img src='plotDrugSetEnrichment-31.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [735444, 755892]`</div><div class='img'><img src='plotDrugSetEnrichment-32.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`compound: [755900, 783538]`</div><div class='img'><img src='plotDrugSetEnrichment-33.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [76, 240]`</div><div class='img'><img src='plotDrugSetEnrichment-34.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [241, 270]`</div><div class='img'><img src='plotDrugSetEnrichment-35.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [271, 293]`</div><div class='img'><img src='plotDrugSetEnrichment-36.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [294, 312]`</div><div class='img'><img src='plotDrugSetEnrichment-37.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [313, 332]`</div><div class='img'><img src='plotDrugSetEnrichment-38.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [333, 353]`</div><div class='img'><img src='plotDrugSetEnrichment-39.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [354, 371]`</div><div class='img'><img src='plotDrugSetEnrichment-40.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [372, 392]`</div><div class='img'><img src='plotDrugSetEnrichment-41.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [393, 414]`</div><div class='img'><img src='plotDrugSetEnrichment-42.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [415, 439]`</div><div class='img'><img src='plotDrugSetEnrichment-43.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [440, 469]`</div><div class='img'><img src='plotDrugSetEnrichment-44.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [470, 505]`</div><div class='img'><img src='plotDrugSetEnrichment-45.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [506, 557]`</div><div class='img'><img src='plotDrugSetEnrichment-46.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [558, 654]`</div><div class='img'><img src='plotDrugSetEnrichment-47.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Molweight: [655, 3046]`</div><div class='img'><img src='plotDrugSetEnrichment-48.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [63, 234]`</div><div class='img'><img src='plotDrugSetEnrichment-49.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [235, 265]`</div><div class='img'><img src='plotDrugSetEnrichment-50.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [266, 287]`</div><div class='img'><img src='plotDrugSetEnrichment-51.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [288, 306]`</div><div class='img'><img src='plotDrugSetEnrichment-52.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [307, 325]`</div><div class='img'><img src='plotDrugSetEnrichment-53.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [326, 344]`</div><div class='img'><img src='plotDrugSetEnrichment-54.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [345, 363]`</div><div class='img'><img src='plotDrugSetEnrichment-55.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [364, 382]`</div><div class='img'><img src='plotDrugSetEnrichment-56.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [383, 403]`</div><div class='img'><img src='plotDrugSetEnrichment-57.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [404, 427]`</div><div class='img'><img src='plotDrugSetEnrichment-58.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [428, 456]`</div><div class='img'><img src='plotDrugSetEnrichment-59.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [457, 493]`</div><div class='img'><img src='plotDrugSetEnrichment-60.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [494, 544]`</div><div class='img'><img src='plotDrugSetEnrichment-61.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [545, 634]`</div><div class='img'><img src='plotDrugSetEnrichment-62.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Monoisotopic Mass: [635, 3044]`</div><div class='img'><img src='plotDrugSetEnrichment-63.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: [-28, -2]`</div><div class='img'><img src='plotDrugSetEnrichment-64.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: -1`</div><div class='img'><img src='plotDrugSetEnrichment-65.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 0`</div><div class='img'><img src='plotDrugSetEnrichment-66.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 1`</div><div class='img'><img src='plotDrugSetEnrichment-67.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 2`</div><div class='img'><img src='plotDrugSetEnrichment-68.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 3`</div><div class='img'><img src='plotDrugSetEnrichment-69.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 4`</div><div class='img'><img src='plotDrugSetEnrichment-70.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 5`</div><div class='img'><img src='plotDrugSetEnrichment-71.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 6`</div><div class='img'><img src='plotDrugSetEnrichment-72.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: 7`</div><div class='img'><img src='plotDrugSetEnrichment-73.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogP: [8, 43]`</div><div class='img'><img src='plotDrugSetEnrichment-74.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: [-35, -10]`</div><div class='img'><img src='plotDrugSetEnrichment-75.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -9`</div><div class='img'><img src='plotDrugSetEnrichment-76.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -8`</div><div class='img'><img src='plotDrugSetEnrichment-77.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -7`</div><div class='img'><img src='plotDrugSetEnrichment-78.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -6`</div><div class='img'><img src='plotDrugSetEnrichment-79.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -5`</div><div class='img'><img src='plotDrugSetEnrichment-80.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -4`</div><div class='img'><img src='plotDrugSetEnrichment-81.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -3`</div><div class='img'><img src='plotDrugSetEnrichment-82.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: -2`</div><div class='img'><img src='plotDrugSetEnrichment-83.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`cLogS: [-1, 15]`</div><div class='img'><img src='plotDrugSetEnrichment-84.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: [0, 1]`</div><div class='img'><img src='plotDrugSetEnrichment-85.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 2`</div><div class='img'><img src='plotDrugSetEnrichment-86.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 3`</div><div class='img'><img src='plotDrugSetEnrichment-87.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 4`</div><div class='img'><img src='plotDrugSetEnrichment-88.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 5`</div><div class='img'><img src='plotDrugSetEnrichment-89.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 6`</div><div class='img'><img src='plotDrugSetEnrichment-90.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 7`</div><div class='img'><img src='plotDrugSetEnrichment-91.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 8`</div><div class='img'><img src='plotDrugSetEnrichment-92.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 9`</div><div class='img'><img src='plotDrugSetEnrichment-93.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: 10`</div><div class='img'><img src='plotDrugSetEnrichment-94.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: [11, 13]`</div><div class='img'><img src='plotDrugSetEnrichment-95.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Acceptors: [14, 88]`</div><div class='img'><img src='plotDrugSetEnrichment-96.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 0`</div><div class='img'><img src='plotDrugSetEnrichment-97.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 1`</div><div class='img'><img src='plotDrugSetEnrichment-98.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 2`</div><div class='img'><img src='plotDrugSetEnrichment-99.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 3`</div><div class='img'><img src='plotDrugSetEnrichment-100.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 4`</div><div class='img'><img src='plotDrugSetEnrichment-101.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: 5`</div><div class='img'><img src='plotDrugSetEnrichment-102.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`H-Donors: [6, 40]`</div><div class='img'><img src='plotDrugSetEnrichment-103.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [26, 170]`</div><div class='img'><img src='plotDrugSetEnrichment-104.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [171, 193]`</div><div class='img'><img src='plotDrugSetEnrichment-105.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [194, 210]`</div><div class='img'><img src='plotDrugSetEnrichment-106.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [211, 224]`</div><div class='img'><img src='plotDrugSetEnrichment-107.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [225, 238]`</div><div class='img'><img src='plotDrugSetEnrichment-108.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [239, 251]`</div><div class='img'><img src='plotDrugSetEnrichment-109.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [252, 265]`</div><div class='img'><img src='plotDrugSetEnrichment-110.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [266, 279]`</div><div class='img'><img src='plotDrugSetEnrichment-111.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [280, 294]`</div><div class='img'><img src='plotDrugSetEnrichment-112.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [295, 312]`</div><div class='img'><img src='plotDrugSetEnrichment-113.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [313, 332]`</div><div class='img'><img src='plotDrugSetEnrichment-114.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [333, 358]`</div><div class='img'><img src='plotDrugSetEnrichment-115.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [359, 393]`</div><div class='img'><img src='plotDrugSetEnrichment-116.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [394, 461]`</div><div class='img'><img src='plotDrugSetEnrichment-117.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Total Surface Area: [462, 2109]`</div><div class='img'><img src='plotDrugSetEnrichment-118.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [0, 28]`</div><div class='img'><img src='plotDrugSetEnrichment-119.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [29, 40]`</div><div class='img'><img src='plotDrugSetEnrichment-120.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [41, 49]`</div><div class='img'><img src='plotDrugSetEnrichment-121.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [50, 57]`</div><div class='img'><img src='plotDrugSetEnrichment-122.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [58, 64]`</div><div class='img'><img src='plotDrugSetEnrichment-123.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [65, 71]`</div><div class='img'><img src='plotDrugSetEnrichment-124.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [72, 77]`</div><div class='img'><img src='plotDrugSetEnrichment-125.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [78, 84]`</div><div class='img'><img src='plotDrugSetEnrichment-126.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [85, 92]`</div><div class='img'><img src='plotDrugSetEnrichment-127.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [93, 100]`</div><div class='img'><img src='plotDrugSetEnrichment-128.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [101, 110]`</div><div class='img'><img src='plotDrugSetEnrichment-129.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [111, 122]`</div><div class='img'><img src='plotDrugSetEnrichment-130.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [123, 141]`</div><div class='img'><img src='plotDrugSetEnrichment-131.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [142, 173]`</div><div class='img'><img src='plotDrugSetEnrichment-132.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Polar Surface Area: [174, 1251]`</div><div class='img'><img src='plotDrugSetEnrichment-133.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: [-144, -15]`</div><div class='img'><img src='plotDrugSetEnrichment-134.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: [-14, -9]`</div><div class='img'><img src='plotDrugSetEnrichment-135.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: [-8, -7]`</div><div class='img'><img src='plotDrugSetEnrichment-136.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: [-6, -5]`</div><div class='img'><img src='plotDrugSetEnrichment-137.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: -4`</div><div class='img'><img src='plotDrugSetEnrichment-138.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: -3`</div><div class='img'><img src='plotDrugSetEnrichment-139.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: -2`</div><div class='img'><img src='plotDrugSetEnrichment-140.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: -1`</div><div class='img'><img src='plotDrugSetEnrichment-141.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: 0`</div><div class='img'><img src='plotDrugSetEnrichment-142.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: 1`</div><div class='img'><img src='plotDrugSetEnrichment-143.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: 2`</div><div class='img'><img src='plotDrugSetEnrichment-144.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: 3`</div><div class='img'><img src='plotDrugSetEnrichment-145.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: 4`</div><div class='img'><img src='plotDrugSetEnrichment-146.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Druglikeness: [5, 12]`</div><div class='img'><img src='plotDrugSetEnrichment-147.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Shape Index: 0`</div><div class='img'><img src='plotDrugSetEnrichment-148.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Shape Index: 1`</div><div class='img'><img src='plotDrugSetEnrichment-149.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Molecular Flexibility: 0`</div><div class='img'><img src='plotDrugSetEnrichment-150.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Molecular Flexibility: 1`</div><div class='img'><img src='plotDrugSetEnrichment-151.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Molecular Complexity: [0, 2]`</div><div class='img'><img src='plotDrugSetEnrichment-152.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Fragments: 1`</div><div class='img'><img src='plotDrugSetEnrichment-153.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Fragments: [2, 6]`</div><div class='img'><img src='plotDrugSetEnrichment-154.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [3, 14]`</div><div class='img'><img src='plotDrugSetEnrichment-155.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [15, 17]`</div><div class='img'><img src='plotDrugSetEnrichment-156.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [18, 19]`</div><div class='img'><img src='plotDrugSetEnrichment-157.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [20, 21]`</div><div class='img'><img src='plotDrugSetEnrichment-158.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: 22`</div><div class='img'><img src='plotDrugSetEnrichment-159.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: 23`</div><div class='img'><img src='plotDrugSetEnrichment-160.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: 24`</div><div class='img'><img src='plotDrugSetEnrichment-161.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [25, 26]`</div><div class='img'><img src='plotDrugSetEnrichment-162.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [27, 28]`</div><div class='img'><img src='plotDrugSetEnrichment-163.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [29, 30]`</div><div class='img'><img src='plotDrugSetEnrichment-164.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [31, 32]`</div><div class='img'><img src='plotDrugSetEnrichment-165.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [33, 35]`</div><div class='img'><img src='plotDrugSetEnrichment-166.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [36, 39]`</div><div class='img'><img src='plotDrugSetEnrichment-167.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [40, 46]`</div><div class='img'><img src='plotDrugSetEnrichment-168.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-H Atoms: [47, 202]`</div><div class='img'><img src='plotDrugSetEnrichment-169.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: [0, 2]`</div><div class='img'><img src='plotDrugSetEnrichment-170.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 3`</div><div class='img'><img src='plotDrugSetEnrichment-171.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 4`</div><div class='img'><img src='plotDrugSetEnrichment-172.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 5`</div><div class='img'><img src='plotDrugSetEnrichment-173.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 6`</div><div class='img'><img src='plotDrugSetEnrichment-174.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 7`</div><div class='img'><img src='plotDrugSetEnrichment-175.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 8`</div><div class='img'><img src='plotDrugSetEnrichment-176.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 9`</div><div class='img'><img src='plotDrugSetEnrichment-177.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 10`</div><div class='img'><img src='plotDrugSetEnrichment-178.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: 11`</div><div class='img'><img src='plotDrugSetEnrichment-179.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: [12, 13]`</div><div class='img'><img src='plotDrugSetEnrichment-180.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Non-C/H Atoms: [14, 108]`</div><div class='img'><img src='plotDrugSetEnrichment-181.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Metal-Atoms: 0`</div><div class='img'><img src='plotDrugSetEnrichment-182.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Metal-Atoms: [1, 4]`</div><div class='img'><img src='plotDrugSetEnrichment-183.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: [0, 2]`</div><div class='img'><img src='plotDrugSetEnrichment-184.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 3`</div><div class='img'><img src='plotDrugSetEnrichment-185.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 4`</div><div class='img'><img src='plotDrugSetEnrichment-186.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 5`</div><div class='img'><img src='plotDrugSetEnrichment-187.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 6`</div><div class='img'><img src='plotDrugSetEnrichment-188.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 7`</div><div class='img'><img src='plotDrugSetEnrichment-189.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 8`</div><div class='img'><img src='plotDrugSetEnrichment-190.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 9`</div><div class='img'><img src='plotDrugSetEnrichment-191.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: 10`</div><div class='img'><img src='plotDrugSetEnrichment-192.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: [11, 12]`</div><div class='img'><img src='plotDrugSetEnrichment-193.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Electronegative Atoms: [13, 108]`</div><div class='img'><img src='plotDrugSetEnrichment-194.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 0`</div><div class='img'><img src='plotDrugSetEnrichment-195.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 1`</div><div class='img'><img src='plotDrugSetEnrichment-196.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 2`</div><div class='img'><img src='plotDrugSetEnrichment-197.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 3`</div><div class='img'><img src='plotDrugSetEnrichment-198.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 4`</div><div class='img'><img src='plotDrugSetEnrichment-199.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 5`</div><div class='img'><img src='plotDrugSetEnrichment-200.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: 6`</div><div class='img'><img src='plotDrugSetEnrichment-201.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: [7, 8]`</div><div class='img'><img src='plotDrugSetEnrichment-202.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: [9, 11]`</div><div class='img'><img src='plotDrugSetEnrichment-203.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Stereo Centers: [12, 50]`</div><div class='img'><img src='plotDrugSetEnrichment-204.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 0`</div><div class='img'><img src='plotDrugSetEnrichment-205.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 1`</div><div class='img'><img src='plotDrugSetEnrichment-206.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 2`</div><div class='img'><img src='plotDrugSetEnrichment-207.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 3`</div><div class='img'><img src='plotDrugSetEnrichment-208.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 4`</div><div class='img'><img src='plotDrugSetEnrichment-209.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 5`</div><div class='img'><img src='plotDrugSetEnrichment-210.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 6`</div><div class='img'><img src='plotDrugSetEnrichment-211.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 7`</div><div class='img'><img src='plotDrugSetEnrichment-212.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: 8`</div><div class='img'><img src='plotDrugSetEnrichment-213.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: [9, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-214.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: [11, 13]`</div><div class='img'><img src='plotDrugSetEnrichment-215.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rotatable Bonds: [14, 89]`</div><div class='img'><img src='plotDrugSetEnrichment-216.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 0`</div><div class='img'><img src='plotDrugSetEnrichment-217.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 1`</div><div class='img'><img src='plotDrugSetEnrichment-218.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 2`</div><div class='img'><img src='plotDrugSetEnrichment-219.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 3`</div><div class='img'><img src='plotDrugSetEnrichment-220.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 4`</div><div class='img'><img src='plotDrugSetEnrichment-221.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 5`</div><div class='img'><img src='plotDrugSetEnrichment-222.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 6`</div><div class='img'><img src='plotDrugSetEnrichment-223.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: 7`</div><div class='img'><img src='plotDrugSetEnrichment-224.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Rings Closures: [8, 38]`</div><div class='img'><img src='plotDrugSetEnrichment-225.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 0`</div><div class='img'><img src='plotDrugSetEnrichment-226.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 1`</div><div class='img'><img src='plotDrugSetEnrichment-227.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 2`</div><div class='img'><img src='plotDrugSetEnrichment-228.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 3`</div><div class='img'><img src='plotDrugSetEnrichment-229.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 4`</div><div class='img'><img src='plotDrugSetEnrichment-230.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 5`</div><div class='img'><img src='plotDrugSetEnrichment-231.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 6`</div><div class='img'><img src='plotDrugSetEnrichment-232.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 7`</div><div class='img'><img src='plotDrugSetEnrichment-233.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: 8`</div><div class='img'><img src='plotDrugSetEnrichment-234.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Small Rings: [9, 289]`</div><div class='img'><img src='plotDrugSetEnrichment-235.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 0`</div><div class='img'><img src='plotDrugSetEnrichment-236.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 1`</div><div class='img'><img src='plotDrugSetEnrichment-237.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 2`</div><div class='img'><img src='plotDrugSetEnrichment-238.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 3`</div><div class='img'><img src='plotDrugSetEnrichment-239.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 4`</div><div class='img'><img src='plotDrugSetEnrichment-240.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: 5`</div><div class='img'><img src='plotDrugSetEnrichment-241.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Rings: [6, 15]`</div><div class='img'><img src='plotDrugSetEnrichment-242.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 0`</div><div class='img'><img src='plotDrugSetEnrichment-243.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 5`</div><div class='img'><img src='plotDrugSetEnrichment-244.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 6`</div><div class='img'><img src='plotDrugSetEnrichment-245.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [8, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-246.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 11`</div><div class='img'><img src='plotDrugSetEnrichment-247.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 12`</div><div class='img'><img src='plotDrugSetEnrichment-248.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [13, 14]`</div><div class='img'><img src='plotDrugSetEnrichment-249.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 15`</div><div class='img'><img src='plotDrugSetEnrichment-250.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 16`</div><div class='img'><img src='plotDrugSetEnrichment-251.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 17`</div><div class='img'><img src='plotDrugSetEnrichment-252.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: 18`</div><div class='img'><img src='plotDrugSetEnrichment-253.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [19, 20]`</div><div class='img'><img src='plotDrugSetEnrichment-254.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [21, 22]`</div><div class='img'><img src='plotDrugSetEnrichment-255.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [23, 24]`</div><div class='img'><img src='plotDrugSetEnrichment-256.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Atoms: [25, 78]`</div><div class='img'><img src='plotDrugSetEnrichment-257.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 0`</div><div class='img'><img src='plotDrugSetEnrichment-258.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 1`</div><div class='img'><img src='plotDrugSetEnrichment-259.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 2`</div><div class='img'><img src='plotDrugSetEnrichment-260.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 3`</div><div class='img'><img src='plotDrugSetEnrichment-261.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 4`</div><div class='img'><img src='plotDrugSetEnrichment-262.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 5`</div><div class='img'><img src='plotDrugSetEnrichment-263.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 6`</div><div class='img'><img src='plotDrugSetEnrichment-264.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 7`</div><div class='img'><img src='plotDrugSetEnrichment-265.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 8`</div><div class='img'><img src='plotDrugSetEnrichment-266.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: 9`</div><div class='img'><img src='plotDrugSetEnrichment-267.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: [10, 11]`</div><div class='img'><img src='plotDrugSetEnrichment-268.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: [12, 13]`</div><div class='img'><img src='plotDrugSetEnrichment-269.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: [14, 16]`</div><div class='img'><img src='plotDrugSetEnrichment-270.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: [17, 22]`</div><div class='img'><img src='plotDrugSetEnrichment-271.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`sp3-Atoms: [23, 126]`</div><div class='img'><img src='plotDrugSetEnrichment-272.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 0`</div><div class='img'><img src='plotDrugSetEnrichment-273.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 1`</div><div class='img'><img src='plotDrugSetEnrichment-274.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 2`</div><div class='img'><img src='plotDrugSetEnrichment-275.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 3`</div><div class='img'><img src='plotDrugSetEnrichment-276.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 4`</div><div class='img'><img src='plotDrugSetEnrichment-277.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 5`</div><div class='img'><img src='plotDrugSetEnrichment-278.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 6`</div><div class='img'><img src='plotDrugSetEnrichment-279.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 7`</div><div class='img'><img src='plotDrugSetEnrichment-280.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: 8`</div><div class='img'><img src='plotDrugSetEnrichment-281.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [9, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-282.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [11, 12]`</div><div class='img'><img src='plotDrugSetEnrichment-283.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [13, 14]`</div><div class='img'><img src='plotDrugSetEnrichment-284.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [15, 17]`</div><div class='img'><img src='plotDrugSetEnrichment-285.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [18, 22]`</div><div class='img'><img src='plotDrugSetEnrichment-286.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Symmetric atoms: [23, 122]`</div><div class='img'><img src='plotDrugSetEnrichment-287.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amides: 0`</div><div class='img'><img src='plotDrugSetEnrichment-288.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amides: 1`</div><div class='img'><img src='plotDrugSetEnrichment-289.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amides: 2`</div><div class='img'><img src='plotDrugSetEnrichment-290.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amides: [3, 22]`</div><div class='img'><img src='plotDrugSetEnrichment-291.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-292.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-293.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amines: 2`</div><div class='img'><img src='plotDrugSetEnrichment-294.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Amines: [3, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-295.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Alkyl-Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-296.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Alkyl-Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-297.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Alkyl-Amines: [2, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-298.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Amines: 0`</div><div class='img'><img src='plotDrugSetEnrichment-299.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Amines: 1`</div><div class='img'><img src='plotDrugSetEnrichment-300.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Amines: [2, 6]`</div><div class='img'><img src='plotDrugSetEnrichment-301.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Nitrogens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-302.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Nitrogens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-303.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Nitrogens: 2`</div><div class='img'><img src='plotDrugSetEnrichment-304.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Nitrogens: 3`</div><div class='img'><img src='plotDrugSetEnrichment-305.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Aromatic Nitrogens: [4, 12]`</div><div class='img'><img src='plotDrugSetEnrichment-306.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Basic Nitrogens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-307.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Basic Nitrogens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-308.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Basic Nitrogens: 2`</div><div class='img'><img src='plotDrugSetEnrichment-309.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Basic Nitrogens: [3, 10]`</div><div class='img'><img src='plotDrugSetEnrichment-310.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Acidic Oxygens: 0`</div><div class='img'><img src='plotDrugSetEnrichment-311.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Acidic Oxygens: 1`</div><div class='img'><img src='plotDrugSetEnrichment-312.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; 
+#&gt; $`Acidic Oxygens: [2, 9]`</div><div class='img'><img src='plotDrugSetEnrichment-313.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -300,7 +516,7 @@ if class of <code>stats</code> is either <code>similarPerturbations</code> or
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

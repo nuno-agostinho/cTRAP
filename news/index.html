@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -127,6 +127,46 @@
       <small>Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="ctrap-18-23-october-2020" class="section level1">
+<h1 class="page-header" data-toc-text="1.8">
+<a href="#ctrap-18-23-october-2020" class="anchor"></a>cTRAP 1.8 (23 October, 2020)</h1>
+<div id="interactive-functions-for-loading-data-and-analysing-results" class="section level2">
+<h2 class="hasAnchor">
+<a href="#interactive-functions-for-loading-data-and-analysing-results" class="anchor"></a>Interactive functions for loading data and analysing results</h2>
+<ul>
+<li>New Shiny-based graphical interface functions:
+<ul>
+<li>
+<code><a href="../reference/launchDiffExprLoader.html">launchDiffExprLoader()</a></code>: load differential expression data</li>
+<li>
+<code><a href="../reference/launchCMapDataLoader.html">launchCMapDataLoader()</a></code>: load CMap data</li>
+<li>
+<code><a href="../reference/launchResultPlotter.html">launchResultPlotter()</a></code>: view and plot data results</li>
+<li>
+<code><a href="../reference/launchMetadataViewer.html">launchMetadataViewer()</a></code>: check metadata of a given object</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="major-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes" class="anchor"></a>Major changes</h2>
+<ul>
+<li>
+<code><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata()</a></code>: metadata is automatically saved to a file in order to avoid downloading metadata every time this function is run</li>
+<li>
+<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:
+<ul>
+<li>automatically look for matching compounds in multiple columns of both datasets</li>
+<li>allow to manually select columns on which to merge datasets</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>: drug sets based on numeric molecular descriptors are now prepared using evenly-distributed intervals</li>
+<li>Simplify tutorial</li>
+</ul>
+</div>
+</div>
     <div id="ctrap-161-17-august-2020" class="section level1">
 <h1 class="page-header" data-toc-text="1.6.1">
 <a href="#ctrap-161-17-august-2020" class="anchor"></a>cTRAP 1.6.1 (17 August, 2020)</h1>
@@ -150,13 +190,13 @@
 <li>Plotting:
 <ul>
 <li>
-<code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> now supports plotting <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> results for a given drug, e.g. <code><a href="https://rdrr.io/r/base/plot.html">plot(targetingDrugs, "1425")</a></code>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> now supports plotting <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> results for a given drug, e.g. <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot(targetingDrugs, "1425")</a></code>
 </li>
 <li>
-<code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> nows allows to set plot title with argument <code>title</code>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> nows allows to set plot title with argument <code>title</code>
 </li>
 <li>
-<code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> now plots results based on available methods instead of trying to plot based on results from <code>spearman</code> method only</li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> now plots results based on available methods instead of trying to plot based on results from <code>spearman</code> method only</li>
 <li>GSEA plots now support two or less gene hits</li>
 <li>GSEA plots now support plotting of multiple perturbations</li>
 <li>GESA plots now show the first and last values of ranked genes</li>
@@ -214,9 +254,9 @@
 </li>
 </ul>
 </div>
-<div id="major-changes" class="section level2">
+<div id="major-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Update the tutorial and function documentation</li>
 <li>Remove most <code>L1000</code> instances, including in function names:
@@ -240,7 +280,7 @@
 <code>compareAgainstL1000()</code> -&gt; <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>
 </li>
 <li>
-<code>plotL1000comparison()</code> -&gt; <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code>
+<code>plotL1000comparison()</code> -&gt; <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>
 </li>
 </ul>
 </li>
@@ -291,11 +331,11 @@
 <li>Show a complete table with metadata (and compound information, if available) when calling <code><a href="https://rdrr.io/r/base/table.html">as.table()</a></code> with a <code>similarPerturbations</code> object</li>
 </ul>
 </li>
-<li>Improve plotting (<code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code>):
+<li>Improve plotting (<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>):
 <ul>
-<li>Plot comparison results against all compared data by calling <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> with the results obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> or <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>; non-ranked compared data can also be plotted with argument <code>plotNonRankedPerturbations = TRUE</code>
+<li>Plot comparison results against all compared data by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> with the results obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> or <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>; non-ranked compared data can also be plotted with argument <code>plotNonRankedPerturbations = TRUE</code>
 </li>
-<li>Render scatter and Gene Set Enrichment Analysis (GSEA) plots between differential expression results and a single perturbation by calling <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> with a <code>perturbationChanges</code> object (if an identifier regarding the summary of multiple perturbations scores across cell lines is given, the plots are coloured by cell line)</li>
+<li>Render scatter and Gene Set Enrichment Analysis (GSEA) plots between differential expression results and a single perturbation by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> with a <code>perturbationChanges</code> object (if an identifier regarding the summary of multiple perturbations scores across cell lines is given, the plots are coloured by cell line)</li>
 <li>When displaying GSEA plots, plot results for most up- and down-regulated user-provided differentially expressed genes (by default)</li>
 <li>Improve GSEA plot style, including rug plot in enrichment score plot (replacing the gene hit plot)</li>
 </ul>
@@ -331,7 +371,7 @@
 <li>Clearly state to the user when no intersecting genes were found between input dataset and CMap data</li>
 </ul>
 </li>
-<li>Minor improvements to <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code>:
+<li>Minor improvements to <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>:
 <ul>
 <li>Improve rendering performance of the GSEA plot</li>
 <li>Fix disproportionate height between top and bottom enrichment score panels in GSEA plots</li>
@@ -398,7 +438,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

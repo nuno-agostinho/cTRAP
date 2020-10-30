@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,14 +133,14 @@
     <p>Analyse drug set enrichment</p>
     </div>
 
-    <pre class="usage"><span class='fu'>analyseDrugSetEnrichment</span>(
-  <span class='no'>sets</span>,
-  <span class='no'>stats</span>,
-  <span class='kw'>col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
-  <span class='kw'>maxSize</span> <span class='kw'>=</span> <span class='fl'>500</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>analyseDrugSetEnrichment</span><span class='op'>(</span>
+  <span class='va'>sets</span>,
+  <span class='va'>stats</span>,
+  col <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nperm <span class='op'>=</span> <span class='fl'>10000</span>,
+  maxSize <span class='op'>=</span> <span class='fl'>500</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,7 +173,7 @@ if class of <code>stats</code> is either <code>similarPerturbations</code> or
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/fgsea/man/fgsea.html'>fgsea::fgsea</a></code></p><dl'>
+      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/fgsea/man/fgsea.html'>fgsea::fgsea</a></code></p><dl>
     <dt><code>minSize</code></dt><dd><p>Minimal size of a gene set to test. All pathways below the threshold are excluded.</p></dd>
     <dt><code>nproc</code></dt><dd><p>If not equal to zero sets BPPARAM to use nproc workers (default = 0).</p></dd>
     <dt><code>gseaParam</code></dt><dd><p>GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
@@ -197,116 +197,40 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <code><a href='prepareDrugSets.html'>prepareDrugSets</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>descriptors</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadDrugDescriptors.html'>loadDrugDescriptors</a></span>()</div><div class='output co'>#&gt; <span class='message'>molecular_descriptors_NCI60_2D.rds not found: downloading data...</span></div><div class='input'><span class='no'>drugSets</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span>(<span class='no'>descriptors</span>)
+    <pre class="examples"><div class='input'><span class='va'>descriptors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadDrugDescriptors.html'>loadDrugDescriptors</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>molecular_descriptors_NCI60_2D.rds not found: downloading data...</span></div><div class='input'><span class='va'>drugSets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span><span class='op'>(</span><span class='va'>descriptors</span><span class='op'>)</span>
 
 <span class='co'># Analyse drug set enrichment in ranked targeting drugs for a differential</span>
 <span class='co'># expression profile</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"diffExprStat"</span>)
-<span class='no'>gdsc</span>      <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span>(<span class='st'>"GDSC"</span>)</div><div class='output co'>#&gt; <span class='message'>expressionDrugSensitivityCorGDSC_7.rds not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='input'><span class='no'>predicted</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span>(<span class='no'>diffExprStat</span>, <span class='no'>gdsc</span>)</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'spearman' performed in 2.15 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'pearson' performed in 0.68 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 266 GDSC 7 compounds (983 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'gsea' (gene size of 150) performed in 5.83 secs</span></div><div class='input'>
-<span class='fu'>analyseDrugSetEnrichment</span>(<span class='no'>drugSets</span>, <span class='no'>predicted</span>)</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Performing enrichment analysis...</span></div><div class='output co'>#&gt;                                     pathway        pval       padj         ES
-#&gt;  1:              FDA_status: Clinical trial 0.003254770 0.09562058 -0.7395954
-#&gt;  2:            Reproductive Effective: high 0.005428292 0.09562058 -0.6651727
-#&gt;  3:                   Aromatic Nitrogens: 6 0.005737235 0.09562058  0.9571429
-#&gt;  4:                         Mutagenic: high 0.016049383 0.11463845 -0.6708012
-#&gt;  5:                          Irritant: high 0.013559673 0.11463845 -0.5684080
-#&gt;  6:                               Amines: 0 0.014109877 0.11463845 -0.4484031
-#&gt;  7:                   Aromatic Nitrogens: 2 0.011547833 0.11463845 -0.6108034
-#&gt;  8:                         Alkyl-Amines: 0 0.020618557 0.12886598 -0.4284566
-#&gt;  9:                               Amines: 1 0.031386491 0.16254876 -0.5018454
-#&gt; 10:                      Aromatic Amines: 0 0.032509753 0.16254876 -0.4013689
-#&gt; 11:                       Aromatic Rings: 5 0.039541161 0.17110710 -0.7921147
-#&gt; 12:                       Aromatic Rings: 6 0.041065705 0.17110710 -0.9822064
-#&gt; 13:                       Acidic Oxygens: 0 0.044904490 0.17270958 -0.3841362
-#&gt; 14:                       Tumorigenic: high 0.062348267 0.19472535 -0.5814620
-#&gt; 15:                       Tumorigenic: none 0.060606061 0.19472535 -0.3818599
-#&gt; 16:                          Metal-Atoms: 0 0.066206621 0.19472535 -0.3715652
-#&gt; 17:                      Basic Nitrogens: 0 0.065685391 0.19472535 -0.4153448
-#&gt; 18:                         Mutagenic: none 0.079607961 0.19664647 -0.3729461
-#&gt; 19:            Reproductive Effective: none 0.107810781 0.19664647 -0.3642183
-#&gt; 20:                          Irritant: none 0.110122024 0.19664647 -0.3675231
-#&gt; 21:                            Fragments: 1 0.082716543 0.19664647 -0.3772780
-#&gt; 22:                            Fragments: 2 0.091049542 0.19664647 -0.4775643
-#&gt; 23:                       Aromatic Rings: 0 0.108170552 0.19664647 -0.4935085
-#&gt; 24:                   Aromatic Nitrogens: 4 0.071445668 0.19664647 -0.6558464
-#&gt; 25:                      Basic Nitrogens: 2 0.099586821 0.19664647 -0.5106646
-#&gt; 26:                      Basic Nitrogens: 4 0.097804391 0.19664647  0.9537367
-#&gt; 27:          Stereo Configuration: racemate 0.099372225 0.19664647 -0.8214286
-#&gt; 28:   Stereo Configuration: this enantiomer 0.097206704 0.19664647 -0.4506119
-#&gt; 29:                   Aromatic Nitrogens: 0 0.127420488 0.21236748 -0.3964133
-#&gt; 30:                       Acidic Oxygens: 1 0.123717654 0.21236748 -0.7998313
-#&gt; 31:                   Aromatic Nitrogens: 3 0.138048996 0.22265967 -0.5308021
-#&gt; 32:                          Metal-Atoms: 1 0.144030449 0.22504758 -0.9288256
-#&gt; 33:                       Aromatic Rings: 4 0.162516929 0.24623777 -0.4578404
-#&gt; 34:                FDA_status: FDA approved 0.187456237 0.26779462 -0.3478354
-#&gt; 35: Stereo Configuration: unknown chirality 0.185909980 0.26779462 -0.4363479
-#&gt; 36:                       Aromatic Rings: 3 0.255024745 0.34895461 -0.3836849
-#&gt; 37:                               Amines: 3 0.272184594 0.34895461 -0.5108696
-#&gt; 38:                      Aromatic Amines: 1 0.260860506 0.34895461 -0.4258960
-#&gt; 39:                      Basic Nitrogens: 3 0.271151418 0.34895461 -0.5113624
-#&gt; 40:                         Alkyl-Amines: 1 0.279840033 0.34980004 -0.3999088
-#&gt; 41:                               Amines: 2 0.333591331 0.40681870  0.4202899
-#&gt; 42:                   Aromatic Nitrogens: 5 0.428685897 0.51034035 -0.7864769
-#&gt; 43:                      Basic Nitrogens: 1 0.479539902 0.55760454 -0.3478278
-#&gt; 44:                       Acidic Oxygens: 2 0.497205589 0.56500635  0.7544484
-#&gt; 45:                          Mutagenic: low 0.533333333 0.57905337  0.7330961
-#&gt; 46:                        Tumorigenic: low 0.533333333 0.57905337  0.7330961
-#&gt; 47:                       Aromatic Rings: 2 0.554434030 0.57905337 -0.3405766
-#&gt; 48:                   Aromatic Nitrogens: 1 0.555891239 0.57905337 -0.3506263
-#&gt; 49:                       Aromatic Rings: 1 0.623408126 0.63613074  0.3682310
-#&gt; 50:                         Alkyl-Amines: 2 0.789378072 0.78937807 -0.3047590
-#&gt;                                     pathway        pval       padj         ES
-#&gt;            NES nMoreExtreme size                                   leadingEdge
-#&gt;  1: -1.7430029           28    7                   174939,656576,330507,706995
-#&gt;  2: -1.6637438           49    9         174939,287459,63878,759877,732517,185
-#&gt;  3:  1.5868793           19    2                                 125066,758612
-#&gt;  4: -1.5808759          142    7                    752782,737754,287459,63878
-#&gt;  5: -1.5696148          130   14      752782,737754,287459,63878,759877,732517
-#&gt;  6: -1.4531939          140   40 174939,656576,752782,737754,759850,628503,...
-#&gt;  7: -1.6029012          108   11              656576,745750,727989,681239,1014
-#&gt;  8: -1.4034833          205   45 174939,656576,752782,737754,759850,628503,...
-#&gt;  9: -1.4657763          308   19       706995,745750,727989,1011,759877,732517
-#&gt; 10: -1.3427976          324   58 174939,656576,752782,737754,759850,628503,...
-#&gt; 11: -1.4489833          292    3                          745750,727989,747599
-#&gt; 12: -1.3102354          204    1                                        656576
-#&gt; 13: -1.3010198          448   68 174939,656576,752782,737754,759850,628503,...
-#&gt; 14: -1.4126881          564    8                        1011,287459,63878,1014
-#&gt; 15: -1.2842916          605   62 174939,656576,752782,737754,759850,628503,...
-#&gt; 16: -1.2610882          661   70 174939,656576,752782,737754,759850,628503,...
-#&gt; 17: -1.3255085          655   35 174939,656576,759850,628503,119875,330507,...
-#&gt; 18: -1.2562423          795   63 174939,656576,759850,628503,119875,330507,...
-#&gt; 19: -1.2249584         1077   62 656576,752782,737754,759850,628503,119875,...
-#&gt; 20: -1.2280085         1100   57 174939,656576,759850,628503,119875,330507,...
-#&gt; 21: -1.2586467          826   56 174939,656576,752782,759850,628503,119875,...
-#&gt; 22: -1.3377566          883   15        737754,727989,63878,757384,90636,49842
-#&gt; 23: -1.3196241         1029   12     119875,330507,287459,63878,683864,185,...
-#&gt; 24: -1.4039553          596    5                                 752782,737754
-#&gt; 25: -1.3401119          939   11              752782,737754,757384,90636,49842
-#&gt; 26:  1.2691779          489    1                                        758612
-#&gt; 27: -1.3171340          648    2                                     1011,1014
-#&gt; 28: -1.3161350          956   19   656576,628503,330507,681239,90636,49842,...
-#&gt; 29: -1.2458887         1269   31 174939,759850,628503,119875,330507,287459,...
-#&gt; 30: -1.2825034          807    2                                          1011
-#&gt; 31: -1.2896075         1250    8                          757441,759877,732517
-#&gt; 32: -1.2390270          718    1                                        119875
-#&gt; 33: -1.2438086         1559   13     752782,737754,757441,1011,1014,758487,...
-#&gt; 34: -1.1636988         1873   58 752782,737754,759850,628503,119875,745750,...
-#&gt; 35: -1.2223010         1804   15  759850,287459,63878,757384,758645,757804,...
-#&gt; 36: -1.1490826         2524   22   706995,759877,732517,757384,90636,49842,...
-#&gt; 37: -1.1557393         2370    6                            757384,90636,49842
-#&gt; 38: -1.1570257         2503   13                706995,1011,757384,90636,49842
-#&gt; 39: -1.1568544         2361    6                                 759877,732517
-#&gt; 40: -1.1341868         2728   16                   745750,727989,759877,732517
-#&gt; 41:  1.0982605          430    6     125066,758612,758247,743414,764040,758487
-#&gt; 42: -1.0491378         2139    1                                        747599
-#&gt; 43: -1.0068789         4710   18               745750,727989,287459,63878,1014
-#&gt; 44:  1.0039765         2490    1                                           740
-#&gt; 45:  0.9755621         2671    1                                            17
-#&gt; 46:  0.9755621         2671    1                                            17
-#&gt; 47: -0.9540257         5382   15 174939,759850,628503,681239,758246,757804,...
-#&gt; 48: -0.9525417         5335   13     706995,1011,757384,90636,49842,684363,...
-#&gt; 49:  0.8874347         1027    5                   295,17,701852,759852,684363
-#&gt; 50: -0.7835660         7386   10                            757384,90636,49842
-#&gt;            NES nMoreExtreme size                                   leadingEdge</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
+<span class='va'>gdsc</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span><span class='op'>(</span><span class='st'>"GDSC"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>expressionDrugSensitivityCorGDSC_7.rds not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='input'><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>gdsc</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'spearman' performed in 2.45 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'pearson' performed in 0.77 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 266 GDSC 7 compounds (983 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'gsea' (gene size of 150) performed in 10.01 secs</span></div><div class='input'>
+<span class='fu'>analyseDrugSetEnrichment</span><span class='op'>(</span><span class='va'>drugSets</span>, <span class='va'>predicted</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Performing enrichment analysis...</span></div><div class='output co'>#&gt;                             pathway         pval       padj         ES
+#&gt;   1:                 Small Rings: 4 0.0002091175 0.02969469 -0.7423058
+#&gt;   2:                   sp3-Atoms: 5 0.0001191469 0.02969469 -0.9039180
+#&gt;   3:              H-Donors: [6, 40] 0.0014409222 0.13640730  0.8884892
+#&gt;   4: Polar Surface Area: [123, 141] 0.0019991582 0.14194024 -0.6515166
+#&gt;   5:     FDA_status: Clinical trial 0.0044147612 0.18258633 -0.7395954
+#&gt;  ---                                                                  
+#&gt; 280:                    H-Donors: 1 0.9607488565 0.97447384 -0.2272251
+#&gt; 281:    Total Molweight: [294, 312] 0.9853853854 0.98886731 -0.5088968
+#&gt; 282:              Stereo Centers: 3 0.9853853854 0.98886731 -0.5088968
+#&gt; 283:                 Small Rings: 3 0.9804475115 0.98886731 -0.1975991
+#&gt; 284:              Rings Closures: 3 0.9970002143 0.99700021 -0.1762806
+#&gt;             NES nMoreExtreme size                                   leadingEdge
+#&gt;   1: -2.0146498            1   13   752782,737754,757441,1011,759877,732517,...
+#&gt;   2: -1.9454159            0    5                          174939,752782,737754
+#&gt;   3:  1.9835693            2    4                   125066,758612,123127,759155
+#&gt;   4: -1.7401222           18   12  174939,752782,737754,287459,63878,759877,...
+#&gt;   5: -1.7393392           38    7                   174939,656576,330507,706995
+#&gt;  ---                                                                           
+#&gt; 280: -0.5955060         9031   11            656576,758487,764040,753686,747856
+#&gt; 281: -0.6776878         4921    1                                        613327
+#&gt; 282: -0.6776878         4921    1                                        613327
+#&gt; 283: -0.5362925         9376   13 706995,683864,339555,758664,606698,226080,...
+#&gt; 284: -0.4531435         9305   10                                        706995</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -322,7 +246,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -61,6 +61,12 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/diffExprStat.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-plotBubbles.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-prepareNavPage.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/downloadENCODEknockdownMetadata.html</loc>
   </url>
   <url>
@@ -68,6 +74,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/filterCMapMetadata.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/findIntersectingCompounds.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/fix.datatypes.html</loc>
@@ -80,6 +89,18 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/getENCODEcontrols.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchCMapDataLoader.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchDiffExprLoader.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchMetadataViewer.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchResultPlotter.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/listExpressionDrugSensitivityAssociation.html</loc>

@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,7 +133,11 @@
     <p>Download metadata for ENCODE knockdown experiments</p>
     </div>
 
-    <pre class="usage"><span class='fu'>downloadENCODEknockdownMetadata</span>(<span class='kw'>cellLine</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>gene</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>downloadENCODEknockdownMetadata</span><span class='op'>(</span>
+  cellLine <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene <span class='op'>=</span> <span class='cn'>NULL</span>,
+  file <span class='op'>=</span> <span class='st'>"ENCODEmetadata.rds"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +149,11 @@
     <tr>
       <th>gene</th>
       <td><p>Character: target gene</p></td>
+    </tr>
+    <tr>
+      <th>file</th>
+      <td><p>Character: RDS file with metadata (if file doesn't exist, it will
+be created)</p></td>
     </tr>
     </table>
 
@@ -159,7 +168,8 @@
 <code><a href='prepareENCODEgeneExpression.html'>prepareENCODEgeneExpression</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>downloadENCODEknockdownMetadata</span>(<span class='st'>"HepG2"</span>, <span class='st'>"EIF4G1"</span>)</div><div class='output co'>#&gt; <span class='message'>Downloading metadata for ENCODE knockdown experiments...</span></div><div class='output co'>#&gt;    File accession File format File type File format type          Output type
+    <pre class="examples"><div class='input'><span class='fu'>downloadENCODEknockdownMetadata</span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"EIF4G1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Downloading metadata for ENCODE knockdown experiments...</span></div><div class='output co'>#&gt;    File accession File format File type File format type          Output type
 #&gt; 1:    ENCFF955TXI         tsv       tsv                  gene quantifications
 #&gt; 2:    ENCFF049UZV         tsv       tsv                  gene quantifications
 #&gt;    File assembly Experiment accession         Assay Biosample term id
@@ -202,17 +212,17 @@
 #&gt; 1:               2015-08-18  ENCODE                         NA
 #&gt; 2:               2015-08-18  ENCODE                         NA
 #&gt;    Library fragmentation method Library size range Biological replicate(s)
-#&gt; 1:                           NA                 NA                       1
-#&gt; 2:                           NA                 NA                       2
+#&gt; 1:   chemical (Illumina TruSeq)               &gt;200                       1
+#&gt; 2:   chemical (Illumina TruSeq)               &gt;200                       2
 #&gt;    Technical replicate(s) Read length Mapped read length Run type Paired end
 #&gt; 1:                    1_1          NA                 NA                  NA
 #&gt; 2:                    2_1          NA                 NA                  NA
-#&gt;    Paired with             Derived from    Size                        Lab
-#&gt; 1:             ENCFF826ONU, ENCFF995LZN 9554701 ENCODE Processing Pipeline
-#&gt; 2:             ENCFF447GOE, ENCFF826ONU 9563218 ENCODE Processing Pipeline
-#&gt;                              md5sum dbxrefs
-#&gt; 1: f9b46cbff89bfe91bdb0879b81cf41e8        
-#&gt; 2: 9f77694ffdf48801edb9c39f75f6d3b7        
+#&gt;    Paired with Index of                             Derived from    Size
+#&gt; 1:                   NA /files/ENCFF995LZN/, /files/ENCFF826ONU/ 9554701
+#&gt; 2:                   NA /files/ENCFF447GOE/, /files/ENCFF826ONU/ 9563218
+#&gt;                           Lab                           md5sum dbxrefs
+#&gt; 1: ENCODE Processing Pipeline f9b46cbff89bfe91bdb0879b81cf41e8        
+#&gt; 2: ENCODE Processing Pipeline 9f77694ffdf48801edb9c39f75f6d3b7        
 #&gt;                                                             File download URL
 #&gt; 1: https://www.encodeproject.org/files/ENCFF955TXI/@@download/ENCFF955TXI.tsv
 #&gt; 2: https://www.encodeproject.org/files/ENCFF049UZV/@@download/ENCFF049UZV.tsv
@@ -222,12 +232,12 @@
 #&gt;                                                                                s3_uri
 #&gt; 1: s3://encode-public/2015/08/26/f02dd75d-a0c9-451f-aae8-23eb5e8a5a2f/ENCFF955TXI.tsv
 #&gt; 2: s3://encode-public/2015/08/26/d03e3680-479e-470b-9126-198e6cefe4dc/ENCFF049UZV.tsv
-#&gt;                         Audit WARNING Audit INTERNAL_ACTION Audit NOT_COMPLIANT
-#&gt; 1: missing biosample characterization                                          
-#&gt; 2: missing biosample characterization                                          
-#&gt;    Audit ERROR     Control      Control Experiments
-#&gt; 1:             ENCSR042QTH ENCFF657KMW, ENCFF726AVT
-#&gt; 2:             ENCSR042QTH ENCFF657KMW, ENCFF726AVT</div></pre>
+#&gt;                         Audit WARNING Audit NOT_COMPLIANT Audit ERROR
+#&gt; 1: missing biosample characterization                                
+#&gt; 2: missing biosample characterization                                
+#&gt;        Control      Control Experiments
+#&gt; 1: ENCSR042QTH ENCFF657KMW, ENCFF726AVT
+#&gt; 2: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -243,7 +253,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

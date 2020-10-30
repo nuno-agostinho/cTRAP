@@ -46,11 +46,12 @@ following code:
 data(&quot;counts&quot;)
 
 # Perform differential gene expression analysis
-diffExpr &amp;amp;lt;- performDifferentialExpression(counts)
+diffExpr &amp;lt;- performDifferentialExpression(counts)
 
 # Get t-statistics of differential expression with respective gene names
-diffExprStat &amp;amp;lt;- diffExpr$t
-names(diffExprStat) &amp;amp;lt;- diffExpr$Gene_symbol
+diffExprStat &amp;lt;- diffExpr$t
+names(diffExprStat) &amp;lt;- diffExpr$Gene_symbol
+
 " />
 
 
@@ -93,7 +94,7 @@ names(diffExprStat) &amp;amp;lt;- diffExpr$Gene_symbol
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -144,14 +145,15 @@ names(diffExprStat) &amp;amp;lt;- diffExpr$Gene_symbol
     <p>Differential expression's t-statistics sample obtained by running the
 following code:</p>
 <pre>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"counts"</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"counts"</span><span class='op'>)</span>
 
 <span class='co'># Perform differential gene expression analysis</span>
-<span class='no'>diffExpr</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='performDifferentialExpression.html'>performDifferentialExpression</a></span>(<span class='no'>counts</span>)
+<span class='va'>diffExpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='performDifferentialExpression.html'>performDifferentialExpression</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span>
 
 <span class='co'># Get t-statistics of differential expression with respective gene names</span>
-<span class='no'>diffExprStat</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>diffExpr</span>$<span class='no'>t</span>
-<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>diffExprStat</span>) <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>diffExpr</span>$<span class='no'>Gene_symbol</span></pre>
+<span class='va'>diffExprStat</span> <span class='op'>&lt;-</span> <span class='va'>diffExpr</span><span class='op'>$</span><span class='va'>t</span>
+<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>diffExprStat</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>diffExpr</span><span class='op'>$</span><span class='va'>Gene_symbol</span>
+</pre>
 
     </div>
 
@@ -173,7 +175,7 @@ following code:</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

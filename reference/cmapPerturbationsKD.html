@@ -44,33 +44,34 @@
 following code:
 
 # Code for loading CMap gene KD HepG2 data
-cellLine &amp;amp;lt;- &quot;HepG2&quot;
-cmapMetadataKD &amp;amp;lt;- filterCMapMetadata(
+cellLine &amp;lt;- &quot;HepG2&quot;
+cmapMetadataKD &amp;lt;- filterCMapMetadata(
   &quot;cmapMetadata.txt&quot;, cellLine=cellLine,
   perturbationType=&quot;Consensus signature from shRNAs targeting the same gene&quot;)
 
-cmapPerturbationsKD &amp;amp;lt;- prepareCMapPerturbations(
+cmapPerturbationsKD &amp;lt;- prepareCMapPerturbations(
   cmapMetadataKD, &quot;cmapZscores.gctx&quot;, &quot;cmapGeneInfo.txt&quot;,
   loadZscores=TRUE)
 
 data(&quot;diffExprStat&quot;)
-compareKD &amp;amp;lt;- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
+compareKD &amp;lt;- rankSimilarPerturbations(diffExprStat, cmapPerturbationsKD)
 
 # Select only some perturbations (to reduce file size)
-filter &amp;amp;lt;- c(head(order(compareKD$spearman_rank)),
+filter &amp;lt;- c(head(order(compareKD$spearman_rank)),
             tail(order(compareKD$spearman_rank)),
             head(order(compareKD$pearson_rank)),
             tail(order(compareKD$pearson_rank)),
             head(order(compareKD$gsea_rank)),
             tail(order(compareKD$gsea_rank)))
-filter &amp;amp;lt;- unique(compareKD[[1]][filter])
-cmapPerturbationsKD &amp;amp;lt;- cmapPerturbationsKD[ , filter]
+filter &amp;lt;- unique(compareKD[[1]][filter])
+cmapPerturbationsKD &amp;lt;- cmapPerturbationsKD[ , filter]
 
 # Remove non-ASCII characters for portability reasons
-metadata &amp;amp;lt;- attr(cmapPerturbationsKD, &quot;metadata&quot;)
-metadata$pert_idose &amp;amp;lt;- gsub(&quot;\u00B5&quot;, &quot;micro&quot;, metadata$pert_idose)
-metadata$pert_dose_unit &amp;amp;lt;- gsub(&quot;\u00B5&quot;, &quot;micro&quot;, metadata$pert_dose_unit)
-attr(cmapPerturbationsKD, &quot;metadata&quot;) &amp;amp;lt;- metadata
+metadata &amp;lt;- attr(cmapPerturbationsKD, &quot;metadata&quot;)
+metadata$pert_idose &amp;lt;- gsub(&quot;\u00B5&quot;, &quot;micro&quot;, metadata$pert_idose)
+metadata$pert_dose_unit &amp;lt;- gsub(&quot;\u00B5&quot;, &quot;micro&quot;, metadata$pert_dose_unit)
+attr(cmapPerturbationsKD, &quot;metadata&quot;) &amp;lt;- metadata
+
 " />
 
 
@@ -113,7 +114,7 @@ attr(cmapPerturbationsKD, &quot;metadata&quot;) &amp;amp;lt;- metadata
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -165,33 +166,34 @@ attr(cmapPerturbationsKD, &quot;metadata&quot;) &amp;amp;lt;- metadata
 following code:</p>
 <pre>
 <span class='co'># Code for loading CMap gene KD HepG2 data</span>
-<span class='no'>cellLine</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='st'>"HepG2"</span>
-<span class='no'>cmapMetadataKD</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span>(
-  <span class='st'>"cmapMetadata.txt"</span>, <span class='kw'>cellLine</span><span class='kw'>=</span><span class='no'>cellLine</span>,
-  <span class='kw'>perturbationType</span><span class='kw'>=</span><span class='st'>"Consensus signature from shRNAs targeting the same gene"</span>)
+<span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span>
+<span class='va'>cmapMetadataKD</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span>
+  <span class='st'>"cmapMetadata.txt"</span>, cellLine<span class='op'>=</span><span class='va'>cellLine</span>,
+  perturbationType<span class='op'>=</span><span class='st'>"Consensus signature from shRNAs targeting the same gene"</span><span class='op'>)</span>
 
-<span class='no'>cmapPerturbationsKD</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span>(
-  <span class='no'>cmapMetadataKD</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,
-  <span class='kw'>loadZscores</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='va'>cmapPerturbationsKD</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span><span class='op'>(</span>
+  <span class='va'>cmapMetadataKD</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,
+  loadZscores<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"diffExprStat"</span>)
-<span class='no'>compareKD</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a></span>(<span class='no'>diffExprStat</span>, <span class='no'>cmapPerturbationsKD</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
+<span class='va'>compareKD</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>cmapPerturbationsKD</span><span class='op'>)</span>
 
 <span class='co'># Select only some perturbations (to reduce file size)</span>
-<span class='no'>filter</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>spearman_rank</span>)),
-            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>spearman_rank</span>)),
-            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>pearson_rank</span>)),
-            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>pearson_rank</span>)),
-            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>gsea_rank</span>)),
-            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>compareKD</span>$<span class='no'>gsea_rank</span>)))
-<span class='no'>filter</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>compareKD</span><span class='kw'>[[</span><span class='fl'>1</span>]][<span class='no'>filter</span>])
-<span class='no'>cmapPerturbationsKD</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>cmapPerturbationsKD</span>[ , <span class='no'>filter</span>]
+<span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>spearman_rank</span><span class='op'>)</span><span class='op'>)</span>,
+            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>spearman_rank</span><span class='op'>)</span><span class='op'>)</span>,
+            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>pearson_rank</span><span class='op'>)</span><span class='op'>)</span>,
+            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>pearson_rank</span><span class='op'>)</span><span class='op'>)</span>,
+            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>gsea_rank</span><span class='op'>)</span><span class='op'>)</span>,
+            <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>$</span><span class='va'>gsea_rank</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>compareKD</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>[</span><span class='va'>filter</span><span class='op'>]</span><span class='op'>)</span>
+<span class='va'>cmapPerturbationsKD</span> <span class='op'>&lt;-</span> <span class='va'>cmapPerturbationsKD</span><span class='op'>[</span> , <span class='va'>filter</span><span class='op'>]</span>
 
 <span class='co'># Remove non-ASCII characters for portability reasons</span>
-<span class='no'>metadata</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>cmapPerturbationsKD</span>, <span class='st'>"metadata"</span>)
-<span class='no'>metadata</span>$<span class='no'>pert_idose</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\u00B5"</span>, <span class='st'>"micro"</span>, <span class='no'>metadata</span>$<span class='no'>pert_idose</span>)
-<span class='no'>metadata</span>$<span class='no'>pert_dose_unit</span> <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\u00B5"</span>, <span class='st'>"micro"</span>, <span class='no'>metadata</span>$<span class='no'>pert_dose_unit</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span>(<span class='no'>cmapPerturbationsKD</span>, <span class='st'>"metadata"</span>) <span class='kw'>&amp;</span><span class='no'>lt</span>;- <span class='no'>metadata</span></pre>
+<span class='va'>metadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsKD</span>, <span class='st'>"metadata"</span><span class='op'>)</span>
+<span class='va'>metadata</span><span class='op'>$</span><span class='va'>pert_idose</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span><span class='op'>(</span><span class='st'>"\u00B5"</span>, <span class='st'>"micro"</span>, <span class='va'>metadata</span><span class='op'>$</span><span class='va'>pert_idose</span><span class='op'>)</span>
+<span class='va'>metadata</span><span class='op'>$</span><span class='va'>pert_dose_unit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span><span class='op'>(</span><span class='st'>"\u00B5"</span>, <span class='st'>"micro"</span>, <span class='va'>metadata</span><span class='op'>$</span><span class='va'>pert_dose_unit</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='op'>(</span><span class='va'>cmapPerturbationsKD</span>, <span class='st'>"metadata"</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>metadata</span>
+</pre>
 
     </div>
 
@@ -213,7 +215,7 @@ following code:</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

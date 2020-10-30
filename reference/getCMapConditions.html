@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,14 +133,14 @@
     <p>Downloads metadata if not available</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getCMapConditions</span>(
-  <span class='no'>metadata</span>,
-  <span class='kw'>cellLine</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>timepoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dosage</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>perturbationType</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>control</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>getCMapConditions</span><span class='op'>(</span>
+  <span class='va'>metadata</span>,
+  cellLine <span class='op'>=</span> <span class='cn'>NULL</span>,
+  timepoint <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dosage <span class='op'>=</span> <span class='cn'>NULL</span>,
+  perturbationType <span class='op'>=</span> <span class='cn'>NULL</span>,
+  control <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -192,10 +192,11 @@ perturbation types are loaded)</p></td>
 <code><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>cmapMetadata</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span>(<span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span>)
-}
-<span class='fu'>getCMapConditions</span>(<span class='no'>cmapMetadata</span>)</div><div class='output co'>#&gt; $perturbationType
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='fu'>getCMapConditions</span><span class='op'>(</span><span class='va'>cmapMetadata</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; $perturbationType
 #&gt; [1] "Peptides and other biological agents (e.g. cytokine)"
 #&gt; 
 #&gt; $cellLine
@@ -229,7 +230,7 @@ perturbation types are loaded)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

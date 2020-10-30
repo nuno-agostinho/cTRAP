@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,7 +133,7 @@
     <p>Load gene expression and drug sensitivity correlation matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>loadExpressionDrugSensitivityAssociation</span>(<span class='no'>source</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>loadExpressionDrugSensitivityAssociation</span><span class='op'>(</span><span class='va'>source</span>, file <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,8 +164,9 @@ association dataset (automatically downloaded if file does not exist)</p></td>
 <code><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>gdsc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='listExpressionDrugSensitivityAssociation.html'>listExpressionDrugSensitivityAssociation</a></span>()<span class='kw'>[[</span><span class='fl'>1</span>]]
-<span class='fu'>loadExpressionDrugSensitivityAssociation</span>(<span class='no'>gdsc</span>)</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='output co'>#&gt;                             1             3             5             6
+    <pre class="examples"><div class='input'><span class='va'>gdsc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='listExpressionDrugSensitivityAssociation.html'>listExpressionDrugSensitivityAssociation</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
+<span class='fu'>loadExpressionDrugSensitivityAssociation</span><span class='op'>(</span><span class='va'>gdsc</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='output co'>#&gt;                             1             3             5             6
 #&gt; TSPAN6           6.538736e-02 -1.206992e-01 -2.143289e-01 -1.493347e-01
 #&gt; TNMD            -7.827041e-02 -1.937831e-03  7.026763e-03  9.236958e-02
 #&gt; DPM1             2.342248e-02 -5.698661e-02 -3.355550e-02 -4.145543e-02
@@ -25514,7 +25515,7 @@ association dataset (automatically downloaded if file does not exist)</p></td>
 #&gt; attr(,"isDrugActivityDirectlyProportionalToSensitivity")
 #&gt; [1] TRUE
 #&gt; attr(,"filename")
-#&gt; [1] "/private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpybw0Pw/filefdce7f608a/reference/expressionDrugSensitivityCorGDSC_7.rds"</div></span></pre>
+#&gt; [1] "/private/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpadW3lv/file1fc4452f917b/reference/expressionDrugSensitivityCorGDSC_7.rds"</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -25530,7 +25531,7 @@ association dataset (automatically downloaded if file does not exist)</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -133,14 +133,14 @@
     <p>Compare differential expression results against CMap perturbations.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rankSimilarPerturbations</span>(
-  <span class='no'>input</span>,
-  <span class='no'>perturbations</span>,
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"spearman"</span>, <span class='st'>"pearson"</span>, <span class='st'>"gsea"</span>),
-  <span class='kw'>geneSize</span> <span class='kw'>=</span> <span class='fl'>150</span>,
-  <span class='kw'>cellLineMean</span> <span class='kw'>=</span> <span class='st'>"auto"</span>,
-  <span class='kw'>rankPerCellLine</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span>
+  <span class='va'>input</span>,
+  <span class='va'>perturbations</span>,
+  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"spearman"</span>, <span class='st'>"pearson"</span>, <span class='st'>"gsea"</span><span class='op'>)</span>,
+  geneSize <span class='op'>=</span> <span class='fl'>150</span>,
+  cellLineMean <span class='op'>=</span> <span class='st'>"auto"</span>,
+  rankPerCellLine <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -216,25 +216,26 @@ cell line conditions are always ranked.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Example of a differential expression profile</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"diffExprStat"</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
 
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Download and load CMap perturbations to compare with</span>
-<span class='no'>cellLine</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"HepG2"</span>, <span class='st'>"HUH7"</span>)
-<span class='no'>cmapMetadataCompounds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span>(
-    <span class='st'>"cmapMetadata.txt"</span>, <span class='kw'>cellLine</span><span class='kw'>=</span><span class='no'>cellLine</span>, <span class='kw'>timepoint</span><span class='kw'>=</span><span class='st'>"24 h"</span>,
-    <span class='kw'>dosage</span><span class='kw'>=</span><span class='st'>"5 \u00B5M"</span>, <span class='kw'>perturbationType</span><span class='kw'>=</span><span class='st'>"Compound"</span>)
+<span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"HUH7"</span><span class='op'>)</span>
+<span class='va'>cmapMetadataCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span>
+    <span class='st'>"cmapMetadata.txt"</span>, cellLine<span class='op'>=</span><span class='va'>cellLine</span>, timepoint<span class='op'>=</span><span class='st'>"24 h"</span>,
+    dosage<span class='op'>=</span><span class='st'>"5 \u00B5M"</span>, perturbationType<span class='op'>=</span><span class='st'>"Compound"</span><span class='op'>)</span>
 
-<span class='no'>cmapPerturbationsCompounds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span>(
-    <span class='no'>cmapMetadataCompounds</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,
-    <span class='st'>"cmapCompoundInfo_drugs.txt"</span>, <span class='kw'>loadZscores</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
-}
-<span class='no'>perturbations</span> <span class='kw'>&lt;-</span> <span class='no'>cmapPerturbationsCompounds</span>
+<span class='va'>cmapPerturbationsCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span><span class='op'>(</span>
+    <span class='va'>cmapMetadataCompounds</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,
+    <span class='st'>"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='op'>}</span>
+<span class='va'>perturbations</span> <span class='op'>&lt;-</span> <span class='va'>cmapPerturbationsCompounds</span>
 
 <span class='co'># Rank similar CMap perturbations (by default, Spearman's and Pearson's</span>
 <span class='co'># correlation are used, as well as GSEA with the top and bottom 150 genes of</span>
 <span class='co'># the differential expression profile used as reference)</span>
-<span class='fu'>rankSimilarPerturbations</span>(<span class='no'>diffExprStat</span>, <span class='no'>perturbations</span>)</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.54 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'pearson' performed in 0.37 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 22 CMap perturbations (2 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'gsea' (gene size of 150) performed in 0.72 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
+<span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.61 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'pearson' performed in 0.43 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 22 CMap perturbations (2 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'gsea' (gene size of 150) performed in 1.24 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
 #&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
 #&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
 #&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278
@@ -340,7 +341,8 @@ cell line conditions are always ranked.</p></td>
 #&gt; 33:  0.00000000            NA           NA        NA               NA
 #&gt;            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</div><div class='input'>
 <span class='co'># Rank similar CMap perturbations using only Spearman's correlation</span>
-<span class='fu'>rankSimilarPerturbations</span>(<span class='no'>diffExprStat</span>, <span class='no'>perturbations</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"spearman"</span>)</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.46 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
+<span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.48 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
 #&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
 #&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
 #&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278
@@ -425,7 +427,7 @@ cell line conditions are always ranked.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

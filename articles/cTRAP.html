@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
       </span>
     </div>
 
@@ -76,13 +76,14 @@
 
       
 
-      </header><script src="cTRAP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="cTRAP_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="cTRAP_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="cTRAP_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>cTRAP: identifying candidate causal perturbations from differential gene expression data</h1>
                         <h4 class="author">Bernardo P. de Almeida &amp; Nuno Saraiva-Agostinho</h4>
             
-            <h4 class="date">2020-08-17</h4>
+            <h4 class="date">2020-10-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/master/vignettes/cTRAP.Rmd"><code>vignettes/cTRAP.Rmd</code></a></small>
       <div class="hidden name"><code>cTRAP.Rmd</code></div>
@@ -102,52 +103,60 @@
 <h1 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting started</h1>
 <p>To load the <code>cTRAP</code> package into your R environment type:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">cTRAP</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nuno-agostinho.github.io/cTRAP">cTRAP</a></span><span class="op">)</span></pre></div>
+<pre><code>## Registered S3 method overwritten by 'quantmod':
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
 </div>
 <div id="load-encode-rna-seq-data-and-perform-differential-gene-expression-analysis" class="section level1">
 <h1 class="hasAnchor">
 <a href="#load-encode-rna-seq-data-and-perform-differential-gene-expression-analysis" class="anchor"></a>Load ENCODE RNA-seq data and perform differential gene expression analysis</h1>
 <p>In this example, we will use the EIF4G1 shRNA knockdown followed by RNA-seq experiment in HepG2 cell line from the ENCODE project as the dataset of interest. The RNA-seq processed data (gene quantifications from RSEM method) for the EIF4G1 knock-down and respective controls (two replicates each) can be automatically downloaded and loaded by typing:</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">gene</span> <span class="kw">&lt;-</span> <span class="st">"EIF4G1"</span>
-<span class="no">cellLine</span> <span class="kw">&lt;-</span> <span class="st">"HepG2"</span>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="va">gene</span> <span class="op">&lt;-</span> <span class="st">"EIF4G1"</span>
+<span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="st">"HepG2"</span>
 
-<span class="no">ENCODEmetadata</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata</a></span>(<span class="no">cellLine</span>, <span class="no">gene</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">ENCODEmetadata</span>$<span class="no">`Experiment target`</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">ENCODEmetadata</span>$<span class="no">`Experiment target`</span>))
+<span class="va">ENCODEmetadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata</a></span><span class="op">(</span><span class="va">cellLine</span>, <span class="va">gene</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">ENCODEmetadata</span><span class="op">$</span><span class="va">`Experiment target`</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">ENCODEmetadata</span><span class="op">$</span><span class="va">`Experiment target`</span><span class="op">)</span><span class="op">)</span>
 
-<span class="no">ENCODEsamples</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadENCODEsamples.html">loadENCODEsamples</a></span>(<span class="no">ENCODEmetadata</span>)<span class="kw">[[</span><span class="fl">1</span>]]
-<span class="no">counts</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepareENCODEgeneExpression.html">prepareENCODEgeneExpression</a></span>(<span class="no">ENCODEsamples</span>)</pre></body></html></div>
+<span class="va">ENCODEsamples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadENCODEsamples.html">loadENCODEsamples</a></span><span class="op">(</span><span class="va">ENCODEmetadata</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
+<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareENCODEgeneExpression.html">prepareENCODEgeneExpression</a></span><span class="op">(</span><span class="va">ENCODEsamples</span><span class="op">)</span></pre></div>
 <p>Gene expression data (read counts) were quantile-normalized using <a href="https://www.ncbi.nlm.nih.gov/pubmed/24485249"><code>voom</code></a> and differential expression analysis was performed using the <a href="https://www.ncbi.nlm.nih.gov/pubmed/25605792"><code>limma</code></a> R package.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># Remove low coverage (at least 10 counts shared across two samples)</span>
-<span class="no">minReads</span>   <span class="kw">&lt;-</span> <span class="fl">10</span>
-<span class="no">minSamples</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
-<span class="no">filter</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span>(<span class="no">counts</span>[ , -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">2</span>)] <span class="kw">&gt;=</span> <span class="no">minReads</span>) <span class="kw">&gt;=</span> <span class="no">minSamples</span>
-<span class="no">counts</span> <span class="kw">&lt;-</span> <span class="no">counts</span>[<span class="no">filter</span>, ]
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="co"># Remove low coverage (at least 10 counts shared across two samples)</span>
+<span class="va">minReads</span>   <span class="op">&lt;-</span> <span class="fl">10</span>
+<span class="va">minSamples</span> <span class="op">&lt;-</span> <span class="fl">2</span>
+<span class="va">filter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">counts</span><span class="op">[</span> , <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="va">minReads</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">minSamples</span>
+<span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">counts</span><span class="op">[</span><span class="va">filter</span>, <span class="op">]</span>
 
 <span class="co"># Convert ENSEMBL identifier to gene symbol</span>
-<span class="no">counts</span>$<span class="no">gene_id</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/convertENSEMBLtoGeneSymbols.html">convertENSEMBLtoGeneSymbols</a></span>(<span class="no">counts</span>$<span class="no">gene_id</span>)
+<span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convertENSEMBLtoGeneSymbols.html">convertENSEMBLtoGeneSymbols</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span><span class="op">)</span>
 
 <span class="co"># Perform differential gene expression analysis</span>
-<span class="no">diffExpr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/performDifferentialExpression.html">performDifferentialExpression</a></span>(<span class="no">counts</span>)</pre></body></html></div>
+<span class="va">diffExpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performDifferentialExpression.html">performDifferentialExpression</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></pre></div>
 <p>For our metric of differential expression after EIF4G1 shRNA knock-down, we will use the respective t-statistic.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Get t-statistics of differential expression with respective gene names </span>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="co"># Get t-statistics of differential expression with respective gene names </span>
 <span class="co"># (expected input for downstream analyses)</span>
-<span class="no">diffExprStat</span> <span class="kw">&lt;-</span> <span class="no">diffExpr</span>$<span class="no">t</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">diffExprStat</span>) <span class="kw">&lt;-</span> <span class="no">diffExpr</span>$<span class="no">Gene_symbol</span></pre></body></html></div>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"diffExprStat"</span>)</pre></body></html></div>
+<span class="va">diffExprStat</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">t</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">diffExprStat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">Gene_symbol</span></pre></div>
 </div>
 <div id="load-cmap-perturbation-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#load-cmap-perturbation-data" class="anchor"></a>Load CMap perturbation data</h1>
 <p>We will use our differential gene expression metric to compare with CMap’s gene knock-down perturbations in the same cell line (HepG2). Note that this comparison can also be done to perturbations in a different cell line (or in all cell lines using the average result across cell lines).</p>
 <p>To summarise conditions and check available data in CMap, we can use the following commands to download CMap metadata:</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># Download CMap metadata (if not found in current directory)</span>
-<span class="no">cmapMetadata</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadCMapData.html">loadCMapData</a></span>(<span class="st">"cmapMetadata.txt"</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"metadata"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="co"># Load CMap metadata (automatically downloaded if not found)</span>
+<span class="va">cmapMetadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadCMapData.html">loadCMapData</a></span><span class="op">(</span><span class="st">"cmapMetadata.txt"</span>, type<span class="op">=</span><span class="st">"metadata"</span><span class="op">)</span></pre></div>
 <pre><code>## cmapMetadata.txt not found: downloading data...</code></pre>
 <pre><code>## Extracting cmapMetadata.txt.gz...</code></pre>
 <pre><code>## Loading CMap metadata from cmapMetadata.txt...</code></pre>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="co"># Summarise conditions for all CMap perturbations</span>
-<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span>(<span class="no">cmapMetadata</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="co"># Summarise conditions for all CMap perturbations</span>
+<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span><span class="op">(</span><span class="va">cmapMetadata</span><span class="op">)</span></pre></div>
 <pre><code>## $perturbationType
 ## [1] "Compound"                                               
 ## [2] "Peptides and other biological agents (e.g. cytokine)"   
@@ -194,8 +203,9 @@
 ## $timepoint
 ##  [1] "1 h"   "2 h"   "3 h"   "4 h"   "6 h"   "24 h"  "48 h"  "72 h"  "96 h" 
 ## [10] "120 h" "144 h" "168 h"</code></pre>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="co"># Summarise conditions for CMap perturbations in HepG2 cell line</span>
-<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span>(<span class="no">cmapMetadata</span>, <span class="kw">cellLine</span><span class="kw">=</span><span class="st">"HepG2"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="co"># Summarise conditions for CMap perturbations in HepG2 cell line</span>
+<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span><span class="op">(</span><span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HepG2"</span><span class="op">)</span></pre></div>
 <pre><code>## $perturbationType
 ## [1] "Compound"                                               
 ## [2] "Peptides and other biological agents (e.g. cytokine)"   
@@ -224,10 +234,11 @@
 ## 
 ## $timepoint
 ## [1] "2 h"  "4 h"  "6 h"  "24 h" "96 h"</code></pre>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="co"># Summarise conditions for a specific CMap perturbation in HepG2 cell line</span>
-<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span>(
-    <span class="no">cmapMetadata</span>, <span class="kw">cellLine</span><span class="kw">=</span><span class="st">"HepG2"</span>,
-    <span class="kw">perturbationType</span><span class="kw">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="co"># Summarise conditions for a specific CMap perturbation in HepG2 cell line</span>
+<span class="fu"><a href="../reference/getCMapConditions.html">getCMapConditions</a></span><span class="op">(</span>
+    <span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HepG2"</span>,
+    perturbationType<span class="op">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span><span class="op">)</span></pre></div>
 <pre><code>## $perturbationType
 ## [1] "Consensus signature from shRNAs targeting the same gene"
 ## 
@@ -244,24 +255,26 @@
 <p>Differential gene expression data for each CMap perturbation are available in normalised z-score values (read <a href="https://doi.org/10.1016/j.cell.2017.10.049">Subramanian et al., Cell 2017</a> for more details). As this file’s size is big (around 20GB), a prompt will ask you to confirm whether to start downloading the file.</p>
 <p>Alternatively, you can download the file from the following link (do not forget to use the same filename as the argument of <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>): <a href="ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz" class="uri">ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz</a></p>
 </blockquote>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># Filter CMap gene knockdown HepG2 data to be loaded</span>
-<span class="no">cmapMetadataKD</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span>(
-    <span class="no">cmapMetadata</span>, <span class="kw">cellLine</span><span class="kw">=</span><span class="st">"HepG2"</span>,
-    <span class="kw">perturbationType</span><span class="kw">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span>)
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="co"># Filter CMap gene knockdown HepG2 data to be loaded</span>
+<span class="va">cmapMetadataKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span>
+    <span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HepG2"</span>,
+    perturbationType<span class="op">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span><span class="op">)</span>
 
 <span class="co"># Load filtered data (data will be downloaded if not found)</span>
-<span class="no">cmapPerturbationsKD</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span>(
-    <span class="kw">metadata</span><span class="kw">=</span><span class="no">cmapMetadataKD</span>, <span class="kw">zscores</span><span class="kw">=</span><span class="st">"cmapZscores.gctx"</span>,
-    <span class="kw">geneInfo</span><span class="kw">=</span><span class="st">"cmapGeneInfo.txt"</span>)</pre></body></html></div>
+<span class="va">cmapPerturbationsKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span>
+    metadata<span class="op">=</span><span class="va">cmapMetadataKD</span>, zscores<span class="op">=</span><span class="st">"cmapZscores.gctx"</span>,
+    geneInfo<span class="op">=</span><span class="st">"cmapGeneInfo.txt"</span><span class="op">)</span></pre></div>
 <p>If interested in small molecules, the differential gene expression z-scores from CMap can be downloaded for each small molecule perturbation:</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co"># Filter CMap gene small molecule HepG2 data to be loaded</span>
-<span class="no">cmapMetadataCompounds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span>(
-    <span class="no">cmapMetadata</span>, <span class="kw">cellLine</span><span class="kw">=</span><span class="st">"HepG2"</span>, <span class="kw">perturbationType</span><span class="kw">=</span><span class="st">"Compound"</span>)
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="co"># Filter CMap gene small molecule HepG2 data to be loaded</span>
+<span class="va">cmapMetadataCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span>
+    <span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HepG2"</span>, perturbationType<span class="op">=</span><span class="st">"Compound"</span><span class="op">)</span>
 
 <span class="co"># Load filtered data (data will be downloaded if not found)</span>
-<span class="no">cmapPerturbationsCompounds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span>(
-    <span class="kw">metadata</span><span class="kw">=</span><span class="no">cmapMetadataCompounds</span>, <span class="kw">zscores</span><span class="kw">=</span><span class="st">"cmapZscores.gctx"</span>,
-    <span class="kw">geneInfo</span><span class="kw">=</span><span class="st">"cmapGeneInfo.txt"</span>, <span class="kw">compoundInfo</span><span class="kw">=</span><span class="st">"cmapCompoundInfo.txt"</span>)</pre></body></html></div>
+<span class="va">cmapPerturbationsCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span>
+    metadata<span class="op">=</span><span class="va">cmapMetadataCompounds</span>, zscores<span class="op">=</span><span class="st">"cmapZscores.gctx"</span>,
+    geneInfo<span class="op">=</span><span class="st">"cmapGeneInfo.txt"</span>, compoundInfo<span class="op">=</span><span class="st">"cmapCompoundInfo.txt"</span><span class="op">)</span></pre></div>
 </div>
 <div id="comparison-with-cmap-perturbations" class="section level1">
 <h1 class="hasAnchor">
@@ -273,15 +286,18 @@
 <li>Gene Set Enrichment Analysis (GSEA), where the most up- and down-regulated <em>n</em> genes from the user’s differential expression profile are used as gene sets (by default, <em>n</em> = 150 genes)</li>
 </ul>
 <p>To compare against CMap knockdown perturbations using all the previous methods:</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">compareKD</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations</a></span>(<span class="no">diffExprStat</span>, <span class="no">cmapPerturbationsKD</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="va">compareKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">cmapPerturbationsKD</span><span class="op">)</span></pre></div>
 <p>To compare against selected CMap small molecule perturbations:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">compareCompounds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations</a></span>(<span class="no">diffExprStat</span>,
-                                             <span class="no">cmapPerturbationsCompounds</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit">
+<span class="va">compareCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations</a></span><span class="op">(</span><span class="va">diffExprStat</span>, 
+                                             <span class="va">cmapPerturbationsCompounds</span><span class="op">)</span></pre></div>
 <p>The output table contains the results of the comparison with each perturbation tested, including the test statistics (Spearman’s correlation coefficient, Pearson’s correlation coefficient and/or GSEA score), the respective p-value and the Benjamini-Hochberg-adjusted p-value (for correlation statistics only). When performing multiple methods, the <a href="https://en.wikipedia.org/wiki/Rank_product">rank product</a>’s rank will be included to summarise other method’s rankings.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co"># Most positively associated perturbations (note that EIF4G1 knockdown is the</span>
+<div class="sourceCode" id="cb20"><pre class="downlit">
+<span class="co"># Most positively associated perturbations (note that EIF4G1 knockdown is the</span>
 <span class="co"># 7th, 1st and 2nd most positively associated perturbation based on Spearman's</span>
 <span class="co"># correlation, Pearson's correlation and GSEA, respectively)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">spearman_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="kw">n</span><span class="kw">=</span><span class="fl">10</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></pre></div>
 <pre><code>##                 gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
 ##  1:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    1.506067e-74    1.305258e-73
 ##  2: CGS001_HEPG2_96H:KIAA0196:1.5     0.1894301    8.237226e-72    5.354197e-71
@@ -315,7 +331,8 @@
 ##  8:            3        10                6
 ##  9:            6         7               10
 ## 10:           11         6               12</code></pre>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">pearson_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <pre><code>##                gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
 ## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62
 ## 2:    CGS001_HEPG2_96H:STAT1:1.5     0.1833382    2.626628e-67    9.756048e-67
@@ -337,7 +354,8 @@
 ## 4:            4        14                4
 ## 5:            5         9                7
 ## 6:            6         7               10</code></pre>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">GSEA_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb24"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <pre><code>##              gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
 ## 1: CGS001_HEPG2_96H:SKIV2L:1.5     0.1423207    5.305914e-41    8.114927e-41
 ## 2: CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62
@@ -359,7 +377,8 @@
 ## 4:           13         4               13
 ## 5:           12         5               14
 ## 6:           11         6               12</code></pre>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">rankProduct_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb26"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <pre><code>##                gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
 ## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62
 ## 2:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    1.506067e-74    1.305258e-73
@@ -381,107 +400,116 @@
 ## 4:            4        14                4
 ## 5:            2        13                5
 ## 6:            3        10                6</code></pre>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co"># Most negatively associated perturbations</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">spearman_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
+<div class="sourceCode" id="cb28"><pre class="downlit">
+<span class="co"># Most negatively associated perturbations</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <pre><code>##              gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
-## 1:    CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50
-## 2: CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53
-## 3:  CGS001_HEPG2_96H:EHMT2:1.5    -0.1640525    4.479303e-54    8.958605e-54
-## 4: CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56
-## 5:  CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
-## 6:   CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
+## 1:   CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
+## 2:  CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
+## 3: CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56
+## 4:  CGS001_HEPG2_96H:EHMT2:1.5    -0.1640525    4.479303e-54    8.958605e-54
+## 5: CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53
+## 6:    CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50
 ##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
-## 1:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21
-## 2:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22
-## 3:   -0.1590654   6.637816e-51   9.587957e-51 -0.3716818            23
-## 4:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24
-## 5:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
-## 6:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
-##    pearson_rank GSEA_rank rankProduct_rank
-## 1:           22        16               19
-## 2:           25        16               22
-## 3:           20        18               21
-## 4:           21        16               20
-## 5:           24        26               26
-## 6:           26        19               25</code></pre>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">pearson_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
-<pre><code>##               gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
-## 1:  CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56
-## 2:     CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50
-## 3: CGS001_HEPG2_96H:SULT1A2:1.5    -0.1414914    1.533416e-40    2.214934e-40
-## 4:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
-## 5:  CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53
-## 6:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
-##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
-## 1:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24
-## 2:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21
-## 3:   -0.1742848   6.666242e-61   1.444352e-60 -0.4086520            20
-## 4:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
+## 1:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
+## 2:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
+## 3:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24
+## 4:   -0.1590654   6.637816e-51   9.587957e-51 -0.3716818            23
 ## 5:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22
-## 6:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
+## 6:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21
 ##    pearson_rank GSEA_rank rankProduct_rank
-## 1:           21        16               20
-## 2:           22        16               19
-## 3:           23        20               24
-## 4:           24        26               26
+## 1:           26        19               25
+## 2:           24        26               26
+## 3:           21        16               20
+## 4:           20        18               21
 ## 5:           25        16               22
-## 6:           26        19               25</code></pre>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">GSEA_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
-<pre><code>##             gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
-## 1: CGS001_HEPG2_96H:PLOD2:1.5   -0.12393601    1.970762e-31    2.439991e-31
-## 2:   CGS001_HEPG2_96H:SHB:1.5   -0.11094246    1.768452e-25    1.915823e-25
-## 3: CGS001_HEPG2_96H:GNAI2:1.5   -0.05956052    2.293513e-08    2.293513e-08
-## 4: CGS001_HEPG2_96H:SIAH2:1.5   -0.07825242    2.030400e-13    2.111616e-13
-## 5: CGS001_HEPG2_96H:DHX16:1.5   -0.14109904    2.527811e-40    3.459110e-40
-## 6: CGS001_HEPG2_96H:CDCA8:1.5   -0.19418619    1.951544e-75    2.537007e-74
-##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
-## 1:  -0.13259151   9.070613e-36   1.025374e-35 -0.4130739            18
-## 2:  -0.12875045   8.300805e-34   8.992538e-34 -0.4131576            17
-## 3:  -0.08923031   5.233713e-17   5.233713e-17 -0.4166373            15
-## 4:  -0.11367900   1.119976e-26   1.164775e-26 -0.4224346            16
-## 5:  -0.15642416   2.883756e-49   3.946193e-49 -0.4379221            19
-## 6:  -0.19269443   2.740646e-74   2.375227e-73 -0.4739211            25
-##    pearson_rank GSEA_rank rankProduct_rank
-## 1:           18        21               18
-## 2:           17        22               17
-## 3:           15        23               15
-## 4:           16        24               16
-## 5:           19        25               23
-## 6:           24        26               26</code></pre>
-<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">rankProduct_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)])</pre></body></html></div>
+## 6:           22        16               19</code></pre>
+<div class="sourceCode" id="cb30"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
 <pre><code>##               gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
-## 1:   CGS001_HEPG2_96H:EHMT2:1.5    -0.1640525    4.479303e-54    8.958605e-54
+## 1:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
 ## 2:  CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53
-## 3:   CGS001_HEPG2_96H:DHX16:1.5    -0.1410990    2.527811e-40    3.459110e-40
+## 3:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
 ## 4: CGS001_HEPG2_96H:SULT1A2:1.5    -0.1414914    1.533416e-40    2.214934e-40
-## 5:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
-## 6:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
+## 5:     CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50
+## 6:  CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56
 ##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
-## 1:   -0.1590654   6.637816e-51   9.587957e-51 -0.3716818            23
+## 1:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
 ## 2:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22
-## 3:   -0.1564242   2.883756e-49   3.946193e-49 -0.4379221            19
+## 3:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
 ## 4:   -0.1742848   6.666242e-61   1.444352e-60 -0.4086520            20
-## 5:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
-## 6:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
+## 5:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21
+## 6:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24
 ##    pearson_rank GSEA_rank rankProduct_rank
-## 1:           20        18               21
+## 1:           26        19               25
 ## 2:           25        16               22
-## 3:           19        25               23
+## 3:           24        26               26
 ## 4:           23        20               24
-## 5:           26        19               25
-## 6:           24        26               26</code></pre>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="co"># Plot list of compared pertubations</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">compareKD</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"spearman"</span>, <span class="kw">n</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">10</span>, <span class="fl">3</span>))</pre></body></html></div>
+## 5:           22        16               19
+## 6:           21        16               20</code></pre>
+<div class="sourceCode" id="cb32"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
+<pre><code>##             gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
+## 1: CGS001_HEPG2_96H:CDCA8:1.5   -0.19418619    1.951544e-75    2.537007e-74
+## 2: CGS001_HEPG2_96H:DHX16:1.5   -0.14109904    2.527811e-40    3.459110e-40
+## 3: CGS001_HEPG2_96H:SIAH2:1.5   -0.07825242    2.030400e-13    2.111616e-13
+## 4: CGS001_HEPG2_96H:GNAI2:1.5   -0.05956052    2.293513e-08    2.293513e-08
+## 5:   CGS001_HEPG2_96H:SHB:1.5   -0.11094246    1.768452e-25    1.915823e-25
+## 6: CGS001_HEPG2_96H:PLOD2:1.5   -0.12393601    1.970762e-31    2.439991e-31
+##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
+## 1:  -0.19269443   2.740646e-74   2.375227e-73 -0.4739211            25
+## 2:  -0.15642416   2.883756e-49   3.946193e-49 -0.4379221            19
+## 3:  -0.11367900   1.119976e-26   1.164775e-26 -0.4224346            16
+## 4:  -0.08923031   5.233713e-17   5.233713e-17 -0.4166373            15
+## 5:  -0.12875045   8.300805e-34   8.992538e-34 -0.4131576            17
+## 6:  -0.13259151   9.070613e-36   1.025374e-35 -0.4130739            18
+##    pearson_rank GSEA_rank rankProduct_rank
+## 1:           24        26               26
+## 2:           19        25               23
+## 3:           16        24               16
+## 4:           15        23               15
+## 5:           17        22               17
+## 6:           18        21               18</code></pre>
+<div class="sourceCode" id="cb34"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></pre></div>
+<pre><code>##               gene_perturbation spearman_coef spearman_pvalue spearman_qvalue
+## 1:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74
+## 2:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78
+## 3: CGS001_HEPG2_96H:SULT1A2:1.5    -0.1414914    1.533416e-40    2.214934e-40
+## 4:   CGS001_HEPG2_96H:DHX16:1.5    -0.1410990    2.527811e-40    3.459110e-40
+## 5:  CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53
+## 6:   CGS001_HEPG2_96H:EHMT2:1.5    -0.1640525    4.479303e-54    8.958605e-54
+##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank
+## 1:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25
+## 2:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26
+## 3:   -0.1742848   6.666242e-61   1.444352e-60 -0.4086520            20
+## 4:   -0.1564242   2.883756e-49   3.946193e-49 -0.4379221            19
+## 5:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22
+## 6:   -0.1590654   6.637816e-51   9.587957e-51 -0.3716818            23
+##    pearson_rank GSEA_rank rankProduct_rank
+## 1:           24        26               26
+## 2:           26        19               25
+## 3:           23        20               24
+## 4:           19        25               23
+## 5:           25        16               22
+## 6:           20        18               21</code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit">
+<span class="co"># Plot list of compared pertubations</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"spearman"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-1.png" width="576"></p>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">compareKD</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"pearson"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb37"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"pearson"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-2.png" width="576"></p>
-<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">compareKD</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"gsea"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb38"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-3.png" width="576"></p>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">compareKD</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"rankProduct"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb39"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"rankProduct"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-4.png" width="576"></p>
 <p>For small molecules:</p>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="co"># Most positively and negatively associated perturbations</span>
-<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">rankProduct_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)]</pre></body></html></div>
+<div class="sourceCode" id="cb40"><pre class="downlit">
+<span class="co"># Most positively and negatively associated perturbations</span>
+<span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span></pre></div>
 <pre><code>##                              compound_perturbation spearman_coef
 ##  1:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666
 ##  2: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810
@@ -518,7 +546,8 @@
 ##  9:  0.0000000            10           10       5.5                9
 ## 10: -0.2621164             9            9       9.0               10
 ## 11: -0.3381341            11           11      11.0               11</code></pre>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">compareCompounds</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"rankProduct"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb42"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="st">"rankProduct"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/order%20small%20molecule%20perturbation%20comparison-1.png" width="576"></p>
 <blockquote>
 <p>The Gene Set Enrichment Analysis (GSEA) score is based on the Weighted Connectivity Score (WTCS), a composite and bi-directional version of the weighted Kolmogorov-Smirnov enrichment statistic (ES) (<a href="https://doi.org/10.1016/j.cell.2017.10.049">Subramanian et al., Cell 2017</a>).</p>
@@ -534,9 +563,10 @@
 <h1 class="hasAnchor">
 <a href="#information-on-perturbations" class="anchor"></a>Information on perturbations</h1>
 <p>To get associated information as made available from CMap:</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="co"># Information on the EIF4G1 knockdown perturbation</span>
-<span class="no">EIF4G1knockdown</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span>(<span class="st">"EIF4G1"</span>, <span class="no">compareKD</span><span class="kw">[[</span><span class="fl">1</span>]], <span class="kw">value</span><span class="kw">=</span><span class="fl">TRUE</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">compareKD</span>, <span class="no">EIF4G1knockdown</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb43"><pre class="downlit">
+<span class="co"># Information on the EIF4G1 knockdown perturbation</span>
+<span class="va">EIF4G1knockdown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"EIF4G1"</span>, <span class="va">compareKD</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, value<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span><span class="op">)</span></pre></div>
 <pre><code>## $metadata
 ##                         sig_id     pert_id pert_iname  pert_type cell_id
 ## 1: CGS001_HEPG2_96H:EIF4G1:1.5 CGS001-1981     EIF4G1 trt_sh.cgs   HEPG2
@@ -544,9 +574,10 @@
 ## 1:       1.5         microL 1.5 microL        96              h       96 h
 ##                                                                                                         distil_id
 ## 1: KDA004_HEPG2_96H:TRCN0000061769:-666|KDA004_HEPG2_96H:TRCN0000061770:-666|KDA004_HEPG2_96H:TRCN0000061772:-666</code></pre>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="co"># Information on the top 10 most similar compound perturbations (based on</span>
+<div class="sourceCode" id="cb45"><pre class="downlit">
+<span class="co"># Information on the top 10 most similar compound perturbations (based on</span>
 <span class="co"># Spearman's correlation)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">rankProduct_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>:<span class="fl">10</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></pre></div>
 <pre><code>## $metadata
 ##                            sig_id      pert_id pert_iname  pert_type cell_id
 ##  1:    CGS001_HEPG2_96H:COPS5:1.5 CGS001-10987      COPS5 trt_sh.cgs   HEPG2
@@ -581,10 +612,11 @@
 ##  8:                                                                                                                                                                                          KDB008_HEPG2_96H:TRCN0000051813:-666|KDB008_HEPG2_96H:TRCN0000051815:-666|KDB008_HEPG2_96H:TRCN0000051816:-666
 ##  9:                                                                                                                                                                                          KDB009_HEPG2_96H:TRCN0000039004:-666|KDB009_HEPG2_96H:TRCN0000039005:-666|KDB009_HEPG2_96H:TRCN0000039007:-666
 ## 10: KDA005_HEPG2_96H:TRCN0000004265:-666|KDB007_HEPG2_96H:TRCN0000004265:-666|KDD006_HEPG2_96H:TRCN0000004265:-666|KDA005_HEPG2_96H:TRCN0000004266:-666|KDB007_HEPG2_96H:TRCN0000004266:-666|KDD006_HEPG2_96H:TRCN0000004266:-666|KDA005_HEPG2_96H:TRCN0000004267:-666|KDB007_HEPG2_96H:TRCN0000004267:-666</code></pre>
-<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="co"># Get table with all information available (including ranks, metadata, compound</span>
+<div class="sourceCode" id="cb47"><pre class="downlit">
+<span class="co"># Get table with all information available (including ranks, metadata, compound</span>
 <span class="co"># information, etc.)</span>
-<span class="no">table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">as.table</a></span>(<span class="no">compareKD</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">table</span>)</pre></body></html></div>
+<span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">as.table</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span></pre></div>
 <pre><code>##                gene_perturbation spearman_coef pearson_coef      GSEA
 ## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    0.1915142 0.4861485
 ## 2:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    0.1756788 0.3903862
@@ -613,13 +645,15 @@
 ## 4:                                            KIAA0196        1          1
 ## 5:  signal transducer and activator of transcription 1        1          1
 ## 6:                        mesoderm specific transcript        1          1</code></pre>
-<div class="sourceCode" id="cb49"><html><body><pre class="r"><span class="co"># Obtain available raw information from compared perturbations</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span>(<span class="no">compareKD</span>)) <span class="co"># Data available in compared perturbations</span></pre></body></html></div>
+<div class="sourceCode" id="cb49"><pre class="downlit">
+<span class="co"># Obtain available raw information from compared perturbations</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">)</span><span class="op">)</span> <span class="co"># Data available in compared perturbations</span></pre></div>
 <pre><code>##  [1] "class"             "row.names"         ".internal.selfref"
 ##  [4] "names"             "metadata"          "geneInfo"         
 ##  [7] "input"             "rankingInfo"       "geneset"          
 ## [10] "runtime"</code></pre>
-<div class="sourceCode" id="cb51"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="no">compareKD</span>, <span class="st">"metadata"</span>)  <span class="co"># Perturbation metadata</span></pre></body></html></div>
+<div class="sourceCode" id="cb51"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"metadata"</span><span class="op">)</span>  <span class="co"># Perturbation metadata</span></pre></div>
 <pre><code>##                            sig_id      pert_id pert_iname  pert_type cell_id
 ##  1:    CGS001_HEPG2_96H:CDCA8:1.5 CGS001-55143      CDCA8 trt_sh.cgs   HEPG2
 ##  2:    CGS001_HEPG2_96H:COPS5:1.5 CGS001-10987      COPS5 trt_sh.cgs   HEPG2
@@ -704,7 +738,8 @@
 ## 25:                                                                                                                                                                                          KDA003_HEPG2_96H:TRCN0000007677:-666|KDA003_HEPG2_96H:TRCN0000007680:-666|KDA003_HEPG2_96H:TRCN0000007681:-666
 ## 26:                                                                                                                                                                                          KDB008_HEPG2_96H:TRCN0000107435:-666|KDB008_HEPG2_96H:TRCN0000107437:-666|KDB008_HEPG2_96H:TRCN0000107438:-666
 ##                                                                                                                                                                                                                                                                                                   distil_id</code></pre>
-<div class="sourceCode" id="cb53"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="no">compareKD</span>, <span class="st">"geneInfo"</span>)  <span class="co"># Gene information</span></pre></body></html></div>
+<div class="sourceCode" id="cb53"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"geneInfo"</span><span class="op">)</span>  <span class="co"># Gene information</span></pre></div>
 <pre><code>##        pr_gene_id pr_gene_symbol
 ##     1:        780           DDR1
 ##     2:       7849           PAX8
@@ -747,55 +782,46 @@
 <a href="#relationship-plots" class="anchor"></a>Relationship plots</h1>
 <p>To analyse the relationship between the user-provided differential expression profile with that associated with a specific perturbation, scatter plots (for Spearman and Pearson analyses) and GSEA plots are available.</p>
 <p>For instance, let’s plot the relationship between EIF4G1 shRNA knockdown from ENCODE with the CMap knockdown perturbations:</p>
-<div class="sourceCode" id="cb55"><html><body><pre class="r"><span class="co"># Plot relationship with EIF4G1 knockdown from CMap</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>, <span class="no">EIF4G1knockdown</span>, <span class="no">diffExprStat</span>, <span class="st">"spearman"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb55"><pre class="downlit">
+<span class="co"># Plot relationship with EIF4G1 knockdown from CMap</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"spearman"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-1.png" width="480"></p>
-<div class="sourceCode" id="cb56"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>, <span class="no">EIF4G1knockdown</span>, <span class="no">diffExprStat</span>, <span class="st">"pearson"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb56"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"pearson"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-2.png" width="480"></p>
-<div class="sourceCode" id="cb57"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>, <span class="no">EIF4G1knockdown</span>, <span class="no">diffExprStat</span>, <span class="st">"gsea"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb57"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-3.png" width="480"></p>
-<div class="sourceCode" id="cb58"><html><body><pre class="r"><span class="co"># Plot relationship with most negatively associated perturbation</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">spearman_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"spearman"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb58"><pre class="downlit">
+<span class="co"># Plot relationship with most negatively associated perturbation</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-4.png" width="480"></p>
-<div class="sourceCode" id="cb59"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">pearson_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"pearson"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb59"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-5.png" width="480"></p>
-<div class="sourceCode" id="cb60"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsKD</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareKD</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">GSEA_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"gsea"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb60"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-6.png" width="480"></p>
-<blockquote>
-<p>By default, <code><a href="https://rdrr.io/r/base/plot.html">plot()</a></code> plots both the up- and down-regulated genes based on the <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> arguments.</p>
-</blockquote>
 <p>For small molecules:</p>
-<div class="sourceCode" id="cb61"><html><body><pre class="r"><span class="co"># Plot relationship with most positively associated perturbation</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">spearman_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"spearman"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb61"><pre class="downlit">
+<span class="co"># Plot relationship with most positively associated perturbation</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-1.png" width="480"></p>
-<div class="sourceCode" id="cb62"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">pearson_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>,<span class="st">"pearson"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb62"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-2.png" width="480"></p>
-<div class="sourceCode" id="cb63"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">GSEA_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"gsea"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb63"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-3.png" width="480"></p>
-<div class="sourceCode" id="cb64"><html><body><pre class="r"><span class="co"># Plot relationship with most negatively associated perturbation</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">spearman_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"spearman"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb64"><pre class="downlit">
+<span class="co"># Plot relationship with most negatively associated perturbation</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-4.png" width="480"></p>
-<div class="sourceCode" id="cb65"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">pearson_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"pearson"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb65"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-5.png" width="480"></p>
-<div class="sourceCode" id="cb66"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">cmapPerturbationsCompounds</span>,
-     <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">compareCompounds</span>[<span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span>(<span class="no">GSEA_rank</span>, <span class="kw">na.last</span><span class="kw">=</span><span class="fl">NA</span>)], <span class="fl">1</span>),
-     <span class="no">diffExprStat</span>, <span class="st">"gsea"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb66"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-6.png" width="480"></p>
 </div>
 <div id="predict-targeting-drugs" class="section level1">
@@ -827,76 +853,91 @@
 </tbody>
 </table>
 <p>To use an expression and drug sensitivity association based on <code>CTRP 2.1</code> (<code>GDSC 7</code> and <code>NCI60</code> could be used instead) to infer targeting drugs for the user’s differential expression profile:</p>
-<div class="sourceCode" id="cb67"><html><body><pre class="r"><span class="fu"><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb67"><pre class="downlit">
+<span class="fu"><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="op">)</span></pre></div>
 <pre><code>## [1] "GDSC 7"   "CTRP 2.1" "NCI60"</code></pre>
-<div class="sourceCode" id="cb69"><html><body><pre class="r"><span class="no">ctrp</span>      <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></span>()<span class="kw">[[</span><span class="fl">2</span>]]
-<span class="no">assoc</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span>(<span class="no">ctrp</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb69"><pre class="downlit">
+<span class="va">ctrp</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="va">assoc</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="va">ctrp</span><span class="op">)</span></pre></div>
 <pre><code>## expressionDrugSensitivityCorCTRP_2.1.rds not found: downloading data...</code></pre>
 <pre><code>## Loading data from expressionDrugSensitivityCorCTRP_2.1.rds...</code></pre>
-<div class="sourceCode" id="cb72"><html><body><pre class="r"><span class="no">predicted</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span>(<span class="no">diffExprStat</span>, <span class="no">assoc</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb72"><pre class="downlit">
+<span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></pre></div>
 <pre><code>## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</code></pre>
 <pre><code>## Correlating against 545 CTRP 2.1 compounds (823 cell lines; Spearman's correlation)...</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'spearman' performed in 5.99 secs</code></pre>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'spearman' performed in 5.59 secs</code></pre>
 <pre><code>## Correlating against 545 CTRP 2.1 compounds (823 cell lines; Pearson's correlation)...</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'pearson' performed in 1.38 secs</code></pre>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'pearson' performed in 1.51 secs</code></pre>
 <pre><code>## Performing GSEA against 545 CTRP 2.1 compounds (823 cell lines)......</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'gsea' (gene size of 150) performed in 12.89 secs</code></pre>
-<div class="sourceCode" id="cb80"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">predicted</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"rankProduct"</span>)</pre></body></html></div>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-2-1.png" width="480"></p>
-<div class="sourceCode" id="cb81"><html><body><pre class="r"><span class="co"># Plot results for a given drug</span>
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">predicted</span>, <span class="no">predicted</span><span class="kw">[[</span><span class="fl">1</span>, <span class="fl">1</span>]], <span class="kw">method</span><span class="kw">=</span><span class="st">"spearman"</span>)</pre></body></html></div>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'gsea' (gene size of 150) performed in 56.87 secs</code></pre>
+<div class="sourceCode" id="cb80"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></pre></div>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
+<div class="sourceCode" id="cb81"><pre class="downlit">
+<span class="co"># Plot results for a given drug</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></pre></div>
 <pre><code>## Loading data from /Users/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP_2.1.rds...</code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-2-2.png" width="480"></p>
-<div class="sourceCode" id="cb83"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">predicted</span>, <span class="no">predicted</span><span class="kw">[[</span><span class="fl">1</span>, <span class="fl">1</span>]], <span class="kw">method</span><span class="kw">=</span><span class="st">"gsea"</span>)</pre></body></html></div>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-2.png" width="480"></p>
+<div class="sourceCode" id="cb83"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></pre></div>
 <pre><code>## Loading data from /Users/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP_2.1.rds...</code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-2-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-3.png" width="480"></p>
 <blockquote>
 <p>Compounds are ranked by their relative targeting potential based on the input differential expression profile (i.e. the 1st-ranked compound has higher targeting potential than the 2nd-ranked one).</p>
 </blockquote>
 <p>Candidate targeting drugs can be plotted against the similarity ranking of their perturbations towards the user’s differential expression profile. Note that the highlighted values are the same compounds for the following plots annotated with their name, gene target and mechanism of action (MOA), respectively.</p>
-<div class="sourceCode" id="cb85"><html><body><pre class="r"><span class="co"># Label by compound name</span>
-<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span>(
-  <span class="no">predicted</span>, <span class="no">compareCompounds</span>, <span class="kw">column</span><span class="kw">=</span><span class="st">"spearman_rank"</span>)</pre></body></html></div>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-3-1.png" width="480"></p>
-<div class="sourceCode" id="cb86"><html><body><pre class="r"><span class="co"># Label by compound's gene target</span>
-<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span>(
-  <span class="no">predicted</span>, <span class="no">compareCompounds</span>, <span class="kw">column</span><span class="kw">=</span><span class="st">"spearman_rank"</span>, <span class="kw">labelBy</span><span class="kw">=</span><span class="st">"target"</span>)</pre></body></html></div>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-3-2.png" width="480"></p>
-<div class="sourceCode" id="cb87"><html><body><pre class="r"><span class="co"># Label by compound's mechanism of action (MOA)</span>
-<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span>(
-  <span class="no">predicted</span>, <span class="no">compareCompounds</span>, <span class="kw">column</span><span class="kw">=</span><span class="st">"spearman_rank"</span>, <span class="kw">labelBy</span><span class="kw">=</span><span class="st">"moa"</span>)</pre></body></html></div>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-3-3.png" width="480"></p>
+<div class="sourceCode" id="cb85"><pre class="downlit">
+<span class="co"># Label by compound name</span>
+<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span>
+  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span><span class="op">)</span></pre></div>
+<pre><code>## Columns 'pubchem_cid' and 'broad id' were matched based on 0 common values; to manually select columns to compare, please set the arguments 'keyColTargetingDrugs' and 'keyColSimilarPerturbations'</code></pre>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
+<div class="sourceCode" id="cb87"><pre class="downlit">
+<span class="co"># Label by compound's gene target</span>
+<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span>
+  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span>, labelBy<span class="op">=</span><span class="st">"target"</span><span class="op">)</span></pre></div>
+<pre><code>## Columns 'pubchem_cid' and 'broad id' were matched based on 0 common values; to manually select columns to compare, please set the arguments 'keyColTargetingDrugs' and 'keyColSimilarPerturbations'</code></pre>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-2.png" width="480"></p>
+<div class="sourceCode" id="cb89"><pre class="downlit">
+<span class="co"># Label by compound's mechanism of action (MOA)</span>
+<span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span>
+  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span>, labelBy<span class="op">=</span><span class="st">"moa"</span><span class="op">)</span></pre></div>
+<pre><code>## Columns 'pubchem_cid' and 'broad id' were matched based on 0 common values; to manually select columns to compare, please set the arguments 'keyColTargetingDrugs' and 'keyColSimilarPerturbations'</code></pre>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-3.png" width="480"></p>
 </div>
 <div id="molecular-descriptor-enrichment-analysis" class="section level1">
 <h1 class="hasAnchor">
 <a href="#molecular-descriptor-enrichment-analysis" class="anchor"></a>Molecular descriptor enrichment analysis</h1>
 <p>Next, from our candidate targeting drugs, we will analyse the enrichment of 2D and 3D molecular descriptors based on CMap and NCI60 compounds. This allows to check if targeting drugs are particularly enriched in specific drug descriptors and may be useful to think about the relevance of these descriptors for targeting a phenotype of interest.</p>
-<div class="sourceCode" id="cb88"><html><body><pre class="r"><span class="no">descriptors</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/loadDrugDescriptors.html">loadDrugDescriptors</a></span>(<span class="st">"CMap"</span>, <span class="st">"2D"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb91"><pre class="downlit">
+<span class="va">descriptors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadDrugDescriptors.html">loadDrugDescriptors</a></span><span class="op">(</span><span class="st">"CMap"</span>, <span class="st">"2D"</span><span class="op">)</span></pre></div>
 <pre><code>## molecular_descriptors_CMap_2D.rds not found: downloading data...</code></pre>
-<div class="sourceCode" id="cb90"><html><body><pre class="r"><span class="no">drugSets</span>    <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/prepareDrugSets.html">prepareDrugSets</a></span>(<span class="no">descriptors</span>)
-<span class="no">dsea</span>        <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment</a></span>(<span class="no">drugSets</span>, <span class="no">predicted</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb93"><pre class="downlit">
+<span class="va">drugSets</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareDrugSets.html">prepareDrugSets</a></span><span class="op">(</span><span class="va">descriptors</span><span class="op">)</span>
+<span class="va">dsea</span>        <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment</a></span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></pre></div>
 <pre><code>## Matching compounds with those available in drug sets...</code></pre>
 <pre><code>## Performing enrichment analysis...</code></pre>
-<div class="sourceCode" id="cb93"><html><body><pre class="r"><span class="co"># Plot the 6 most significant drug set enrichment results</span>
-<span class="fu"><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment</a></span>(<span class="no">drugSets</span>, <span class="no">predicted</span>, <span class="kw">selectedSets</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">dsea</span>$<span class="no">pathway</span>, <span class="fl">6</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb96"><pre class="downlit">
+<span class="co"># Plot the 6 most significant drug set enrichment results</span>
+<span class="fu"><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment</a></span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span>, selectedSets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dsea</span><span class="op">$</span><span class="va">pathway</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## Matching compounds with those available in drug sets...</code></pre>
 <pre><code>## Plotting enrichment analysis...</code></pre>
-<pre><code>## $`is_touchstone: 0`</code></pre>
+<pre><code>## $`Total.Molweight: [391, 411]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
 <pre><code>## 
-## $`Aromatic.Rings: 0`</code></pre>
+## $`Total Molweight: [391, 411]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
 <pre><code>## 
-## $`Aromatic.Rings: 1`</code></pre>
+## $`Total Surface Area: [293, 307]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
 <pre><code>## 
-## $`Aromatic.Rings: 2`</code></pre>
+## $`Rotatable Bonds: 5`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-4.png" width="480"></p>
 <pre><code>## 
-## $`Aromatic.Rings: 3`</code></pre>
+## $`Polar.Surface.Area: [138, 1153]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-5.png" width="480"></p>
 <pre><code>## 
-## $`Aromatic.Rings: 4`</code></pre>
+## $`cLogP: 0`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-6.png" width="480"></p>
 </div>
 <div id="contact-information" class="section level1">
@@ -926,7 +967,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
