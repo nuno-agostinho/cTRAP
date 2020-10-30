@@ -865,11 +865,11 @@
 <span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></pre></div>
 <pre><code>## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</code></pre>
 <pre><code>## Correlating against 545 CTRP 2.1 compounds (823 cell lines; Spearman's correlation)...</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'spearman' performed in 5.59 secs</code></pre>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'spearman' performed in 5.43 secs</code></pre>
 <pre><code>## Correlating against 545 CTRP 2.1 compounds (823 cell lines; Pearson's correlation)...</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'pearson' performed in 1.51 secs</code></pre>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'pearson' performed in 1.47 secs</code></pre>
 <pre><code>## Performing GSEA against 545 CTRP 2.1 compounds (823 cell lines)......</code></pre>
-<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'gsea' (gene size of 150) performed in 56.87 secs</code></pre>
+<pre><code>## Comparison against 545 CTRP 2.1 compounds using 'gsea' (gene size of 150) performed in 54.84 secs</code></pre>
 <div class="sourceCode" id="cb80"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></pre></div>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
@@ -922,13 +922,13 @@
 <span class="fu"><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment</a></span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span>, selectedSets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dsea</span><span class="op">$</span><span class="va">pathway</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## Matching compounds with those available in drug sets...</code></pre>
 <pre><code>## Plotting enrichment analysis...</code></pre>
-<pre><code>## $`Total.Molweight: [391, 411]`</code></pre>
+<pre><code>## $`Total Surface Area: [293, 307]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
 <pre><code>## 
-## $`Total Molweight: [391, 411]`</code></pre>
+## $`Total.Molweight: [391, 411]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
 <pre><code>## 
-## $`Total Surface Area: [293, 307]`</code></pre>
+## $`Total Molweight: [391, 411]`</code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
 <pre><code>## 
 ## $`Rotatable Bonds: 5`</code></pre>
