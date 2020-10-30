@@ -111,9 +111,9 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+#' \dontrun{
 #' perts <- prepareCMapPerturbations(metadata, "cmapZscores.gctx",
 #'                                   "cmapGeneInfo.txt")
 #' zscores <- loadCMapZscores(perts[ , 1:10])
@@ -190,6 +190,7 @@ loadCMapCompoundInfo <- function(file, nas) {
     return(data)
 }
 
+#' @include utils.R
 loadCMapGeneInfo <- function(file, nas) {
     link <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742",
                    "&format=file&file=GSE92742_Broad_LINCS_gene_info.txt.gz")
@@ -313,9 +314,7 @@ getCMapConditions <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
-#' }
 #' filterCMapMetadata(cmapMetadata, cellLine="HEPG2", timepoint="2 h",
 #'                    dosage="25 ng/mL")
 filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
@@ -372,9 +371,9 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 #' metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+#' \dontrun{
 #' prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
 prepareCMapPerturbations <- function(metadata, zscores, geneInfo,

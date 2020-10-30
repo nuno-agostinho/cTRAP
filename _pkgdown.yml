@@ -4,6 +4,12 @@ template:
   params:
     ganalytics: UA-156449666-2
 reference:
+  - title: "Interactive functions"
+    contents:
+      - launchDiffExprLoader
+      - launchCMapDataLoader
+      - launchResultPlotter
+      - launchMetadataViewer
   - title: "Prepare ENCODE data"
     contents:
       - matches("ENCODE")

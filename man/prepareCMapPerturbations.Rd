@@ -37,9 +37,9 @@ CMap perturbation data attributes and filename
 Prepare CMap perturbation data
 }
 \examples{
-\dontrun{
 metadata <- loadCMapData("cmapMetadata.txt", "metadata")
 metadata <- filterCMapMetadata(metadata, cellLine="HepG2")
+\dontrun{
 prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 }
 }

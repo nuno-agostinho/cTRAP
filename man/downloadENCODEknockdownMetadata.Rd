@@ -4,12 +4,19 @@
 \alias{downloadENCODEknockdownMetadata}
 \title{Download metadata for ENCODE knockdown experiments}
 \usage{
-downloadENCODEknockdownMetadata(cellLine = NULL, gene = NULL)
+downloadENCODEknockdownMetadata(
+  cellLine = NULL,
+  gene = NULL,
+  file = "ENCODEmetadata.rds"
+)
 }
 \arguments{
 \item{cellLine}{Character: cell line}
 
 \item{gene}{Character: target gene}
+
+\item{file}{Character: RDS file with metadata (if file doesn't exist, it will
+be created)}
 }
 \value{
 Data frame containing ENCODE knockdown experiment metadata

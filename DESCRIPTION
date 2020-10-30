@@ -1,7 +1,7 @@
 Package: cTRAP
 Title: Identification of candidate causal perturbations from differential gene 
     expression data
-Version: 1.6.1
+Version: 1.8
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
@@ -30,13 +30,16 @@ Suggests:
     spelling
 RoxygenNote: 7.1.1
 Imports: biomaRt,
+    binr,
     cowplot,
     data.table,
     dplyr,
+    DT,
     fgsea,
     ggplot2,
     ggrepel,
     graphics,
+    highcharter,
     httr,
     limma,
     methods,
@@ -46,8 +49,20 @@ Imports: biomaRt,
     reshape2,
     rhdf5,
     scales,
+    shiny,
     stats,
     tools,
     utils
 VignetteBuilder: knitr
 Language: en-GB
+Collate: 
+    'utils.R'
+    'CMap.R'
+    'ENCODE.R'
+    'cTRAP-package.r'
+    'cmapR_subset.R'
+    'compare.R'
+    'drugSensitivity.R'
+    'drugSetEnrichment.R'
+    'plots.R'
+    'shinyInterface.R'

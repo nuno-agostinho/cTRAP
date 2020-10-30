@@ -1,3 +1,25 @@
+# cTRAP 1.8 (23 October, 2020)
+
+## Interactive functions for loading data and analysing results
+
+* New Shiny-based graphical interface functions:
+    - `launchDiffExprLoader()`: load differential expression data
+    - `launchCMapDataLoader()`: load CMap data
+    - `launchResultPlotter()`: view and plot data results
+    - `launchMetadataViewer()`: check metadata of a given object
+
+## Major changes
+
+* `downloadENCODEknockdownMetadata()`: metadata is automatically saved to a file
+in order to avoid downloading metadata every time this function is run
+* `plotTargetingDrugsVSsimilarPerturbations()`:
+    - automatically look for matching compounds in multiple columns of both
+    datasets
+    - allow to manually select columns on which to merge datasets
+* `prepareDrugSets()`: drug sets based on numeric molecular descriptors are now
+prepared using evenly-distributed intervals
+* Simplify tutorial
+
 # cTRAP 1.6.1 (17 August, 2020)
 
 * `listExpressionDrugSensitivityAssociation()` lists available gene expression

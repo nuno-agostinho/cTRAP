@@ -16,6 +16,8 @@ getENCODEcontrols <- function(control, table) {
 #'
 #' @param cellLine Character: cell line
 #' @param gene Character: target gene
+#' @param file Character: RDS file with metadata (if file doesn't exist, it will
+#' be created)
 #'
 #' @importFrom httr content GET
 #' @importFrom data.table fread
@@ -25,57 +27,65 @@ getENCODEcontrols <- function(control, table) {
 #' @export
 #' @examples
 #' downloadENCODEknockdownMetadata("HepG2", "EIF4G1")
-downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL) {
-    # Retrieve metadata for knockdown experiments from ENCODE (JSON format) ----
-    message("Downloading metadata for ENCODE knockdown experiments...")
-    url <- paste(
-        sep="&", "https://www.encodeproject.org/search/?type=Experiment",
-        "searchTerm=knockdown", "limit=all", "frame=object", "format=json")
-    jsonMetadata <- content(GET(url))
+downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL,
+                                            file="ENCODEmetadata.rds") {
+    if (!file.exists(file)) {
+        # Retrieve metadata for ENCODE KD experiments (JSON format) ------------
+        message("Downloading metadata for ENCODE knockdown experiments...")
+        url <- paste(
+            sep="&", "https://www.encodeproject.org/search/?type=Experiment",
+            "searchTerm=knockdown", "limit=all", "frame=object", "format=json")
+        jsonMetadata <- content(GET(url))
 
-    # Parse an experiment's control --------------------------------------------
-    # E.g. for a given experiment, we will obtain the possible controls with
-    # strings such as "/experiments/ENCSR942UNX/"; strings are then parsed to
-    # retrieve but the control identifier (in this case, "ENCSR942UNX")
-    parseControl <- function(experiment) {
-        control <- experiment$"possible_controls"
-        control <- gsub("/experiments/(.*)/", "\\1", control)
-        return(control)
+        # Parse an experiment's control ----------------------------------------
+        # E.g. for a given experiment, we will obtain the possible controls with
+        # strings such as "/experiments/ENCSR942UNX/"; strings are then parsed
+        # to retrieve but the control identifier (in this case, "ENCSR942UNX")
+        parseControl <- function(experiment) {
+            control <- experiment$"possible_controls"
+            control <- gsub("/experiments/(.*)/", "\\1", control)
+            return(control)
+        }
+        control <- sapply(jsonMetadata$"@graph", parseControl)
+        names(control) <- sapply(jsonMetadata$"@graph", "[[", "accession")
+
+        # Retrieve metadata for ENCODE KD experiments (table format) -----------
+        url <- paste(
+            sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
+            "limit=all", "searchTerm=knockdown/metadata.tsv")
+        table <- suppressWarnings(suppressMessages(fread(url)))
+        table <- table[table$`File assembly` == "hg19" &
+                           table$`Output type` == "gene quantifications" &
+                           table$Lab == "ENCODE Processing Pipeline", ]
+
+        # Retrieve gene quantification experiment files per control ------------
+        controlUnique     <- unique(unlist(control))
+        controlExperiment <- sapply(controlUnique, getENCODEcontrols, table)
+        names(controlExperiment) <- controlUnique
+        controlExperiment2  <- sapply(controlExperiment, paste, collapse=", ")
+
+        # Add controls in a table column ---------------------------------------
+        controlCollapsed <- sapply(control, paste, collapse=", ")
+        table$Control    <- controlCollapsed[table$`Experiment accession`]
+        controlAll <- control[table$`Experiment accession`]
+        controlAll[sapply(controlAll, length) == 0] <- NA
+
+        # Parse control-specific experiment files and add in a table column ----
+        index <- rep(seq(controlAll), sapply(controlAll, length))
+        exp   <- controlExperiment2[unlist(controlAll)]
+        exp   <- split(exp, index)
+        table$`Control Experiments` <- sapply(exp, paste, collapse=", ")
+
+        # Sanitize experiment targets ------------------------------------------
+        term <- "Non-specific target control-human"
+        control <- table$`Experiment target` == term
+        table$`Experiment target` <- gsub(
+            "\\-.*", "", table$`Experiment target`)
+        table$`Experiment target`[control] <- term
+        saveRDS(table, file)
+    } else {
+        table <- readRDS(file)
     }
-    control <- sapply(jsonMetadata$"@graph", parseControl)
-    names(control) <- sapply(jsonMetadata$"@graph", "[[", "accession")
-
-    # Retrieve metadata for ENCODE knockdown experiments (table format) --------
-    url <- paste(
-        sep="&", "https://www.encodeproject.org/metadata/type=Experiment",
-        "limit=all", "searchTerm=knockdown/metadata.tsv")
-    table <- suppressWarnings(suppressMessages(fread(url)))
-    table <- table[table$`File assembly` == "hg19" &
-                       table$`Output type` == "gene quantifications" &
-                       table$Lab == "ENCODE Processing Pipeline", ]
-
-    # Retrieve gene quantification experiment files per control ----------------
-    controlUnique     <- unique(unlist(control))
-    controlExperiment <- sapply(controlUnique, getENCODEcontrols, table)
-    names(controlExperiment) <- controlUnique
-    controlExperiment2  <- sapply(controlExperiment, paste, collapse=", ")
-
-    # Add controls in a table column -------------------------------------------
-    controlCollapsed <- sapply(control, paste, collapse=", ")
-    table$Control    <- controlCollapsed[table$`Experiment accession`]
-    controlAll <- control[table$`Experiment accession`]
-    controlAll[sapply(controlAll, length) == 0] <- NA
-
-    # Parse experiment files of each control and add them in a table column ----
-    index <- rep(seq(controlAll), sapply(controlAll, length))
-    exp   <- controlExperiment2[unlist(controlAll)]
-    exp   <- split(exp, index)
-    table$`Control Experiments` <- sapply(exp, paste, collapse=", ")
-
-    # Sanitize experiment targets ----------------------------------------------
-    control <- table$`Experiment target` == "Non-specific target control-human"
-    table$`Experiment target` <- gsub("\\-.*", "", table$`Experiment target`)
-    table$`Experiment target`[control] <- "Non-specific target control-human"
 
     if (!is.null(gene)) table <- table[table$`Experiment target` == gene, ]
     if (!is.null(cellLine)) table <- table[
@@ -155,7 +165,7 @@ loadENCODEsamples <- function(metadata) {
     return(res)
 }
 
-#' Load an ENCODE gene expression data
+#' Load ENCODE gene expression data
 #'
 #' @param samples List of loaded ENCODE samples
 #'

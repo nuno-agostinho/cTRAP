@@ -20,3 +20,4 @@ docs/
 # RDS files
 expressionDrugSensitivity*.rds
 molecular_descriptors*.rds
+ENCODEmetadata.RDS
