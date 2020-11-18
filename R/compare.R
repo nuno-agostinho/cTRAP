@@ -13,7 +13,8 @@ chunkVector <- function(x, nElems) {
 
 processChunk <- function(chunk, data, FUN, ..., progress) {
     zscores <- loadCMapZscores(data[ , chunk], verbose=FALSE)
-    processCall(zscores, chunk, FUN, ..., progress=progress)
+    res <- processCall(zscores, chunk, FUN, ..., progress=progress)
+    return(res)
 }
 
 processCall <- function(data, cols, calledFUN, ..., progress) {
@@ -202,7 +203,8 @@ prepareGSEAgenesets <- function(input, geneSize) {
 #' @inheritParams rankSimilarPerturbations
 #' @inheritParams fgsea::fgsea
 #'
-#' @importFrom fgsea fgsea
+#' @importFrom fgsea calcGseaStat
+#' @importFrom fastmatch fmatch
 #' @importFrom data.table data.table
 #' @importFrom dplyr bind_rows
 #'
@@ -214,24 +216,27 @@ performGSEAagainstReference <- function(reference, geneset) {
     gseaPerColumn <- function(k, data, geneset) {
         signature        <- data[ , k]
         names(signature) <- rownames(data)
-        signature        <- sort(signature)
-        score            <- fgsea(pathways=geneset, stats=signature,
-                                  minSize=15, maxSize=500, nperm=1)
+        gseaParam        <- 1
+        signature        <- sort(signature, decreasing=TRUE) ^ gseaParam
+
+        filterPathways  <- function(p, stats) na.omit(fmatch(p, names(stats)))
+        genesetFiltered <- lapply(geneset, filterPathways, signature)
+        score <- sapply(genesetFiltered, calcGseaStat, stats=signature)
         return(score)
     }
     gsa <- processByChunks(reference, gseaPerColumn, geneset)
     gsaRes <- bind_rows(gsa)
 
-    calcWTCS <- all(sort(unique(gsaRes$pathway)) == c("bottom", "top"))
+    calcWTCS <- all(sort(unique(names(gsaRes))) == c("bottom", "top"))
     if (calcWTCS) {
         # Weighted connectivity score (WTCS) as per CMap paper (page e8)
-        isTop  <- gsaRes$pathway == "top"
-        top    <- gsaRes[["ES"]][isTop]
-        bottom <- gsaRes[["ES"]][!isTop]
+        isTop  <- names(gsaRes) == "top"
+        top    <- gsaRes[[which(isTop)]]
+        bottom <- gsaRes[[which(!isTop)]]
         wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
         score  <- wtcs
     } else {
-        score  <- gsaRes[["ES"]]
+        score  <- gsaRes[[1]]
     }
     if (length(score) == 0) score <- NA
     results <- data.table("identifier"=colnames(reference), "GSEA"=score)

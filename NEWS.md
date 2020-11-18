@@ -1,3 +1,8 @@
+# cTRAP 1.8.1 (18 November, 2020)
+
+* `rankSimilarPerturbations()` and `predictTargetingDrugs()`: GSEA-based scores
+are now calculated much faster
+ 
 # cTRAP 1.8 (23 October, 2020)
 
 ## Interactive functions for loading data and analysing results
