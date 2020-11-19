@@ -261,26 +261,25 @@ messageComparisonStats <- function(reference, method, cellLines, geneSize) {
     message(msg)
 }
 
+compareAgainstMethod <- function(m, cols, reference, geneset, referenceSubset,
+                                 diffExprGenes, progress) {
+    if (any(m %in% c("spearman", "pearson"))) {
+        suppressWarnings(lapply(cols, correlateAgainstReference,
+                                referenceSubset, progress=progress,
+                                diffExprGenes=diffExprGenes, method=m))
+    } else if (m %in% "gsea") {
+        lapply(cols, performGSEAagainstReference, reference, geneset,
+               progress=progress)
+    }
+}
+
 runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
                               geneset, progress) {
     names(cols) <- cols
-    data <- unclass(data)
+    reference   <- unclass(reference)
     gc()
     if (any(c("spearman", "pearson") %in% method)) {
         referenceSubset <- reference[genes, ]
-    }
-
-    compareAgainstMethod <- function(m, cols, reference, geneset,
-                                     referenceSubset, diffExprGenes,
-                                     progress) {
-        if (any(m %in% c("spearman", "pearson"))) {
-            suppressWarnings(lapply(cols, correlateAgainstReference,
-                                    referenceSubset, progress=progress,
-                                    diffExprGenes=diffExprGenes, method=m))
-        } else if (m %in% "gsea") {
-            lapply(cols, performGSEAagainstReference, reference, geneset,
-                   progress=progress)
-        }
     }
     names(method) <- method
     res <- lapply(method, compareAgainstMethod, cols, reference, geneset,
