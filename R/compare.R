@@ -56,6 +56,7 @@ processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
         names(ull) <- NULL
         ull2 <- unlist(ull, recursive=FALSE)
         res  <- split(ull2, rep(methods, len))
+        res  <- res[methods]
     } else {
         res <- FUN(data, colnames(data), ..., progress=pb)
     }
