@@ -13,24 +13,7 @@ chunkVector <- function(x, nElems) {
 
 processChunk <- function(chunk, data, FUN, ..., progress) {
     zscores <- loadCMapZscores(data[ , chunk], verbose=FALSE)
-    res <- processCall(zscores, chunk, FUN, ..., progress=progress)
-    return(res)
-}
-
-processCall <- function(data, cols, calledFUN, ..., progress) {
-    data <- unclass(data)
-    gc()
-
-    setFUNprogress <- function(col, data, ..., progress, calledFUN) {
-        res <- calledFUN(col, data, ...)
-        setpb(progress, getpb(progress) + 1)
-        return(res)
-    }
-
-    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    res <- suppressWarnings(lapply(cols, setFUNprogress, data, ...,
-                                   progress=progress, calledFUN=calledFUN))
-    # res <- plyr::compact(res) # in case of NULL elements for GSEA
+    res <- FUN(zscores, chunk, ..., progress=progress)
     return(res)
 }
 
@@ -45,16 +28,16 @@ processCall <- function(data, cols, calledFUN, ..., progress) {
 #'
 #' @param data Data matrix or \code{perturbationChanges} object
 #' @param FUN Function: function to run for each chunk
+#' @param num Numeric: numbers of methods to run per chunk
+#' @param method Character: methods to run
 #' @param ... Arguments passed to \code{FUN}
 #' @param chunkSize Integer: number of columns to load on-demand (a higher value
 #'   increases RAM usage, but decreases running time)
 #'
-#' @importFrom pbapply startpb getpb setpb closepb
-#'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, ..., chunkSize=10000) {
-    pb <- startpb(max=ncol(data))
+processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
+    pb <- startpb(max=ncol(data) * num)
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         msg <- "%s not found: has the CMap z-scores file been moved or deleted?"
@@ -63,10 +46,18 @@ processByChunks <- function(data, FUN, ..., chunkSize=10000) {
 
     if (loadFromFile) {
         chunks <- chunkVector(colnames(data), chunkSize)
-        res <- lapply(chunks, processChunk, data, FUN, ..., progress=pb)
-        res <- unlist(res, recursive=FALSE, use.names=FALSE)
+        resTmp <- lapply(chunks, processChunk, data, FUN, ..., progress=pb)
+        names(resTmp) <- NULL
+
+        # Organise lists by the results of each method
+        ull        <- unlist(resTmp, recursive=FALSE)
+        len        <- sapply(ull, length)
+        methods    <- names(ull)
+        names(ull) <- NULL
+        ull2 <- unlist(ull, recursive=FALSE)
+        res  <- split(ull2, rep(methods, len))
     } else {
-        res <- processCall(data, colnames(data), FUN, ..., progress=pb)
+        res <- FUN(data, colnames(data), ..., progress=pb)
     }
     closepb(pb)
     return(res)
@@ -120,34 +111,18 @@ rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
     return(table)
 }
 
-#' Correlate against data columns
-#'
-#' @inheritParams rankSimilarPerturbations
-#' @param pAdjust Character: method to use for p-value adjustment
-#'
-#' @importFrom stats p.adjust cor.test
-#' @importFrom data.table data.table
-#'
-#' @return Data frame with correlation results per data column
-#'
-#' @keywords internal
-correlateAgainstReference <- function(diffExprGenes, reference, method,
-                                      pAdjust="BH") {
-    # Subset based on intersecting genes
-    genes <- intersect(names(diffExprGenes), rownames(reference))
-    diffExprGenes <- diffExprGenes[genes]
-    reference     <- reference[genes, ]
+correlateAgainstReference <- function(k, data, diffExprGenes, method,
+                                      progress) {
+    res <- cor.test(data[ , k], diffExprGenes, method=method)
+    setpb(progress, getpb(progress) + 1)
+    return(res)
+}
 
-    # Correlate per data column
-    corPerColumn <- function(k, data, diffExprGenes, method) {
-        cor.test(data[ , k], diffExprGenes, method=method)
-    }
-    cors <- processByChunks(reference, corPerColumn,
-                            diffExprGenes=diffExprGenes, method=method)
+prepareCorrelationResults <- function(cors, method, pAdjust="BH") {
     cor  <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
     qval <- p.adjust(pval, pAdjust)
-    names(cor) <- names(pval) <- names(qval) <- colnames(reference)
+    names(cor) <- names(pval) <- names(qval) <- names(cors)
 
     res  <- data.table(names(cor), cor, pval, qval)
     cols <- sprintf("%s_%s", method, c("coef", "pvalue", "qvalue"))
@@ -198,50 +173,120 @@ prepareGSEAgenesets <- function(input, geneSize) {
     return(geneset)
 }
 
-#' Perform gene set enrichment (GSA) against data columns
-#'
-#' @inheritParams rankSimilarPerturbations
-#' @inheritParams fgsea::fgsea
-#'
-#' @importFrom fgsea calcGseaStat
 #' @importFrom fastmatch fmatch
-#' @importFrom data.table data.table
-#' @importFrom dplyr bind_rows
-#'
-#' @return Data frame containing gene set enrichment analysis (GSEA) results per
-#' data column
-#' @keywords internal
-performGSEAagainstReference <- function(reference, geneset) {
-    # Calculate GSEA per data column
-    gseaPerColumn <- function(k, data, geneset) {
-        signature        <- data[ , k]
-        names(signature) <- rownames(data)
-        gseaParam        <- 1
-        signature        <- sort(signature, decreasing=TRUE) ^ gseaParam
+performGSEAagainstReference <- function(k, data, geneset, progress) {
+    signature        <- data[ , k]
+    names(signature) <- rownames(data)
+    gseaParam        <- 1
+    signature        <- sort(signature, decreasing=TRUE) ^ gseaParam
 
-        filterPathways  <- function(p, stats) na.omit(fmatch(p, names(stats)))
-        genesetFiltered <- lapply(geneset, filterPathways, signature)
-        score <- sapply(genesetFiltered, calcGseaStat, stats=signature)
-        return(score)
-    }
-    gsa <- processByChunks(reference, gseaPerColumn, geneset)
-    gsaRes <- bind_rows(gsa)
+    filterPathways  <- function(p, stats) na.omit(fmatch(p, names(stats)))
+    genesetFiltered <- lapply(geneset, filterPathways, signature)
+    score <- sapply(genesetFiltered, calcGseaStat, stats=signature)
+    setpb(progress, getpb(progress) + 1)
+    return(score)
+}
 
-    calcWTCS <- all(sort(unique(names(gsaRes))) == c("bottom", "top"))
+prepareGSEAresults <- function(gsa) {
+    gsaRes <- do.call(rbind, gsa)
+    calcWTCS <- all(sort(unique(colnames(gsaRes))) == c("bottom", "top"))
     if (calcWTCS) {
         # Weighted connectivity score (WTCS) as per CMap paper (page e8)
-        isTop  <- names(gsaRes) == "top"
-        top    <- gsaRes[[which(isTop)]]
-        bottom <- gsaRes[[which(!isTop)]]
+        isTop  <- colnames(gsaRes) == "top"
+        top    <- gsaRes[ , which(isTop)]
+        bottom <- gsaRes[ , which(!isTop)]
         wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
         score  <- wtcs
     } else {
         score  <- gsaRes[[1]]
     }
     if (length(score) == 0) score <- NA
-    results <- data.table("identifier"=colnames(reference), "GSEA"=score)
+    results <- data.table("identifier"=rownames(gsaRes), "GSEA"=score)
     attr(results, "colsToRank") <- "GSEA"
     return(results)
+}
+
+prepareRankedResults <- function(rankedRef, cellLineMean, cellLines, reference,
+                                 rankPerCellLine, geneset) {
+    colsToRank <- attr(rankedRef, "colsToRank")
+
+    # Set whether to calculate the mean value across cell lines
+    if (cellLineMean == "auto") cellLineMean <- cellLines > 1
+
+    # Retrieve ranking information
+    if (is(reference, "perturbationChanges")) {
+        cellLine <- parseCMapID(rankedRef[["identifier"]], cellLine=TRUE)
+        names(cellLine) <- rankedRef[["identifier"]]
+    } else {
+        cellLine <- rankedRef[["identifier"]]
+        names(cellLine) <- cellLine
+    }
+
+    metadata <- attr(reference, "metadata")
+    if (cellLineMean) {
+        aggregated  <- calculateCellLineMean(rankedRef, cellLine, metadata,
+                                             rankPerCellLine)
+        rankedRef   <- aggregated$reference
+        rankingInfo <- aggregated$rankingInfo
+        metadata    <- aggregated$metadata
+    } else {
+        rankingInfo <- data.table(names(cellLine), TRUE)
+    }
+    names(rankingInfo) <- c("cTRAP_id", colsToRank)
+
+    # Inherit information of interest
+    attr(rankedRef, "rankingInfo") <- rankingInfo
+    attr(rankedRef, "metadata")    <- metadata
+    attr(rankedRef, "geneset")     <- geneset
+    return(rankedRef)
+}
+
+messageComparisonStats <- function(reference, method, cellLines, geneSize) {
+    type <- attr(reference, "type")
+    if (is.null(type)) type <- "comparisons"
+    compareMsg <- paste(c(ncol(reference), attr(reference, "source"), type),
+                        collapse=" ")
+
+    if (is.null(cellLines) || cellLines == 0) {
+        msg <- compareMsg
+    } else {
+        cellLinesMsg <- sprintf("(%s cell line%s)", cellLines,
+                                ifelse(cellLines == 1, "", "s"))
+        msg <- paste(compareMsg, cellLinesMsg)
+    }
+    geneSizeMsg <- ifelse("gsea" %in% method,
+                          sprintf(" (gene size of %s) ", geneSize), "")
+    msg <- sprintf("Comparing against %s using '%s'%s...", msg,
+                   paste(method, collapse=", "), geneSizeMsg)
+    message(msg)
+}
+
+runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
+                              geneset, progress) {
+    names(cols) <- cols
+    data <- unclass(data)
+    gc()
+    if (any(c("spearman", "pearson") %in% method)) {
+        referenceSubset <- reference[genes, ]
+    }
+
+    compareAgainstMethod <- function(m, cols, reference, geneset,
+                                     referenceSubset, diffExprGenes,
+                                     progress) {
+        if (any(m %in% c("spearman", "pearson"))) {
+            suppressWarnings(lapply(cols, correlateAgainstReference,
+                                    referenceSubset, progress=progress,
+                                    diffExprGenes=diffExprGenes, method=m))
+        } else if (m %in% "gsea") {
+            lapply(cols, performGSEAagainstReference, reference, geneset,
+                   progress=progress)
+        }
+    }
+    names(method) <- method
+    res <- lapply(method, compareAgainstMethod, cols, reference, geneset,
+                  referenceSubset, diffExprGenes, progress)
+    setpb(progress, getpb(progress) + 1)
+    return(res)
 }
 
 #' Compare single method
@@ -275,6 +320,7 @@ performGSEAagainstReference <- function(reference, geneset) {
 #'
 #' @importFrom utils head tail
 #' @importFrom R.utils capitalize
+#' @importFrom pbapply startpb getpb setpb closepb
 #'
 #' @keywords internal
 #' @return Data frame containing the results per method of comparison
@@ -283,75 +329,35 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
                                              cellLineMean="auto",
                                              rankPerCellLine=FALSE) {
     startTime <- Sys.time()
+    geneset <- NULL
+    if ("gsea" %in% method) {
+        # Check if there is something wrong with the geneset(s)
+        geneset  <- prepareGSEAgenesets(input, geneSize)
+        geneSize <- attr(geneset, "geneSize")
+    }
+    genes   <- NULL
+    if (any(c("spearman", "pearson") %in% method)) {
+        # Subset based on intersecting genes
+        genes <- intersect(names(input), rownames(reference))
+        input <- input[genes]
+    }
+    messageComparisonStats(reference, method, cellLines, geneSize)
 
-    # Check immediately if there is something wrong with the geneset(s)
-    if (method == "gsea") geneset <- prepareGSEAgenesets(input, geneSize)
-
-    type <- attr(reference, "type")
-    if (is.null(type)) type <- "comparisons"
-    compareMsg <- paste(c(ncol(reference),
-                          attr(reference, "source"), type), collapse=" ")
-
-    if (method %in% c("spearman", "pearson")) {
-        methodStr <- paste0(capitalize(method), "'s correlation")
-        if (is.null(cellLines) || cellLines == 0) {
-            msg <- methodStr
+    rankedRef <- processByChunks(
+        reference, runComparisonWith, length(method), method=method,
+        diffExprGenes=input, genes=genes, geneset=geneset)
+    for (m in method) {
+        if (m == "gsea") {
+            rankedRef[[m]] <- prepareGSEAresults(rankedRef[[m]])
         } else {
-            msg <- sprintf("%s cell line%s; %s", cellLines,
-                           ifelse(cellLines == 1, "", "s"), methodStr)
+            rankedRef[[m]] <- prepareCorrelationResults(rankedRef[[m]], m)
         }
-        message(sprintf("Correlating against %s (%s)...", compareMsg, msg))
-        geneset  <- NULL
-        rankedRef <- correlateAgainstReference(input, reference, method)
-    } else if (method == "gsea") {
-        if (is.null(cellLines) || cellLines == 0) {
-            msg <- compareMsg
-        } else {
-            cellLinesMsg <- sprintf("(%s cell line%s)...", cellLines,
-                                    ifelse(cellLines == 1, "", "s"))
-            msg <- paste(compareMsg, cellLinesMsg)
-        }
-        message(sprintf("Performing GSEA against %s...", msg))
-        geneSize  <- attr(geneset, "geneSize")
-        rankedRef <- performGSEAagainstReference(reference, geneset)
     }
-    colsToRank <- attr(rankedRef, "colsToRank")
-
-    # Set whether to calculate the mean value across cell lines
-    if (cellLineMean == "auto") cellLineMean <- cellLines > 1
-
-    # Retrieve ranking information
-    if (is(reference, "perturbationChanges")) {
-        cellLine <- parseCMapID(rankedRef[["identifier"]], cellLine=TRUE)
-        names(cellLine) <- rankedRef[["identifier"]]
-    } else {
-        cellLine <- rankedRef[["identifier"]]
-        names(cellLine) <- cellLine
-    }
-
-    metadata <- attr(reference, "metadata")
-    if (cellLineMean) {
-        aggregated  <- calculateCellLineMean(rankedRef, cellLine, metadata,
-                                             rankPerCellLine)
-        rankedRef   <- aggregated$reference
-        rankingInfo <- aggregated$rankingInfo
-        metadata    <- aggregated$metadata
-    } else {
-        rankingInfo <- data.table(names(cellLine), TRUE)
-    }
-    names(rankingInfo) <- c("cTRAP_id", colsToRank)
-
-    # Inherit information of interest
-    attr(rankedRef, "rankingInfo") <- rankingInfo
-    attr(rankedRef, "metadata")    <- metadata
-    attr(rankedRef, "geneset")     <- geneset
-
+    rankedRef <- lapply(rankedRef, prepareRankedResults, cellLineMean,
+                        cellLines, reference, rankPerCellLine, geneset)
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
-    msg      <- "Comparison against %s using '%s' %sperformed in %s\n"
-    extra    <- ifelse(method == "gsea",
-                       sprintf("(gene size of %s) ", geneSize), "")
-    message(sprintf(msg, compareMsg, method, extra, diffTime))
+    message(sprintf("Comparison performed in %s\n", diffTime))
     return(rankedRef)
 }
 
@@ -418,9 +424,10 @@ compareAgainstReference <- function(input, reference,
     }
 
     names(method) <- method
-    res <- lapply(method, compareAgainstReferencePerMethod, input=input,
-                  reference=reference, geneSize=geneSize, cellLines=cellLines,
-                  cellLineMean=cellLineMean, rankPerCellLine=rankPerCellLine)
+    res <- compareAgainstReferencePerMethod(
+        method=method, input=input, reference=reference, geneSize=geneSize,
+        cellLines=cellLines, cellLineMean=cellLineMean,
+        rankPerCellLine=rankPerCellLine)
 
     # Rank columns
     rankingInfo <- Reduce(merge, lapply(res, attr, "rankingInfo"))

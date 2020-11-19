@@ -1,7 +1,9 @@
 # cTRAP 1.8.1 (18 November, 2020)
 
+* `rankSimilarPerturbations()`: reduce redundant loading of CMap differential
+expression z-scores file, decreasing run time by up to 7 minutes
 * `rankSimilarPerturbations()` and `predictTargetingDrugs()`: GSEA-based scores
-are now calculated much faster
+are now calculated much faster (up to 4-7 times faster than older releases)
  
 # cTRAP 1.8 (23 October, 2020)
 

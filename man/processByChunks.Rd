@@ -4,17 +4,21 @@
 \alias{processByChunks}
 \title{Process data column by chunks}
 \usage{
-processByChunks(data, FUN, ..., chunkSize = 10000)
+processByChunks(data, FUN, num, ..., chunkSize = 10000)
 }
 \arguments{
 \item{data}{Data matrix or \code{perturbationChanges} object}
 
 \item{FUN}{Function: function to run for each chunk}
 
+\item{num}{Numeric: numbers of methods to run per chunk}
+
 \item{...}{Arguments passed to \code{FUN}}
 
 \item{chunkSize}{Integer: number of columns to load on-demand (a higher value
 increases RAM usage, but decreases running time)}
+
+\item{method}{Character: methods to run}
 }
 \value{
 Results of running \code{FUN}
