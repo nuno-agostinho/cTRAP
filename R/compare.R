@@ -50,13 +50,12 @@ processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
         names(resTmp) <- NULL
 
         # Organise lists by the results of each method
-        ull        <- unlist(resTmp, recursive=FALSE)
-        len        <- sapply(ull, length)
-        methods    <- names(ull)
-        names(ull) <- NULL
-        ull2 <- unlist(ull, recursive=FALSE)
-        res  <- split(ull2, rep(methods, len))
-        res  <- res[methods]
+        unlisted        <- unlist(resTmp, recursive=FALSE)
+        len             <- sapply(unlisted, length)
+        methods         <- names(unlisted)
+        names(unlisted) <- NULL
+        groups          <- factor(rep(methods, len), unique(methods))
+        res             <- split(unlist(unlisted, recursive=FALSE), groups)
     } else {
         res <- FUN(data, colnames(data), ..., progress=pb)
     }
@@ -112,6 +111,7 @@ rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
     return(table)
 }
 
+#' @importFrom stats cor.test
 correlateAgainstReference <- function(k, data, diffExprGenes, method,
                                       progress) {
     res <- cor.test(data[ , k], diffExprGenes, method=method)
@@ -119,6 +119,7 @@ correlateAgainstReference <- function(k, data, diffExprGenes, method,
     return(res)
 }
 
+#' @importFrom stats p.adjust
 prepareCorrelationResults <- function(cors, method, pAdjust="BH") {
     cor  <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
