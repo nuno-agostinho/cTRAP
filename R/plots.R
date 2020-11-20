@@ -210,6 +210,7 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
 #'
 #' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab
 #' geom_density_2d theme guides guide_legend theme_bw ggtitle
+#' @importFrom dplyr bind_rows
 #'
 #' @keywords internal
 #' @return Scatter plot

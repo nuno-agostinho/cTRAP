@@ -434,6 +434,8 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
 #' @param metadata Data table: \code{data} metadata
 #' @inheritParams rankSimilarPerturbations
 #'
+#' @importFrom dplyr bind_rows
+#'
 #' @return A list with two items:
 #' \describe{
 #' \item{\code{data}}{input \code{data} with extra rows containing cell line
