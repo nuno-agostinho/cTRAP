@@ -189,9 +189,8 @@ performGSEAagainstReference <- function(k, data, geneset, progress) {
     return(score)
 }
 
-#' @importFrom dplyr bind_rows
 prepareGSEAresults <- function(gsa) {
-    gsaRes <- bind_rows(gsa)
+    gsaRes <- do.call(rbind, gsa)
     calcWTCS <- all(sort(unique(colnames(gsaRes))) == c("bottom", "top"))
     if (calcWTCS) {
         # Weighted connectivity score (WTCS) as per CMap paper (page e8)
