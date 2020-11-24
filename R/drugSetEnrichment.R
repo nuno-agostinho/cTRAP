@@ -36,15 +36,30 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
     return(table)
 }
 
+#' Calculate evenly-distributed bins
+#'
+#' @param numbers Numeric
+#' @param maxBins Numeric: maximum number of bins for numeric columns
+#' @param k Numeric: constant; the higher the constant, the smaller the bin size
+#'   (check \code{minpts})
+#' @param minPoints Numeric: minimum number of points in a bin (if \code{NULL},
+#'   the minimum number of points is the number of non-missing values divided by
+#'   \code{maxBins} divided by \code{k})
+#' @inheritDotParams binr::bins -x -target.bins -minpts
+#'
 #' @importFrom binr bins bins.getvals
-calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
-                                           ..., ids=NULL) {
+#'
+#' @return Factor containing the respective group of each element in
+#'   \code{numbers}
+#' @keywords internal
+calculateEvenlyDistributedBins <- function(numbers, maxBins=15, k=5,
+                                           minPoints=NULL, ..., ids=NULL) {
     nas     <- is.na(numbers)
     numbers <- round(numbers[!nas])
     if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids))
-    if (is.null(minpts)) minpts <- round( length(numbers) / target.bins / 5 )
+    if (is.null(minPoints)) minPoints <- round( length(numbers) / maxBins / k )
 
-    bin <- bins(numbers, target.bins=target.bins, minpts=minpts, ...)
+    bin <- bins(numbers, target.bins=maxBins, minpts=minPoints, ...)
 
     # Replace labels of single number intervals
     names(bin$binct) <- gsub("\\[([-]?[0-9]*), \\1\\]", "\\1", names(bin$binct))
@@ -57,11 +72,16 @@ calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
 
 #' Prepare drug sets from a table with compound descriptors
 #'
+#' Create a list of drug sets for each character and numeric column. For each
+#' character column, drugs are split across that column's unique values (see
+#' argument \code{maxUniqueElems}). For each numeric column, drugs are split
+#' across evenly-distributed bins.
+#'
 #' @param table Data frame: drug descriptors
-#' @param id Integer or character: index or name of the column containing
-#'   identifiers
-#' @param maxUniqueElems Numeric: maximum number of unique elements in a
-#'   descriptor to consider when creating discrete drug sets
+#' @param id Integer or character: index or name of the identifier column
+#' @param maxUniqueElems Numeric: ignore character columns with more unique
+#'   elements than \code{maxUniqueElems}
+#' @inheritParams calculateEvenlyDistributedBins
 #'
 #' @importFrom pbapply pblapply
 #'
@@ -73,14 +93,14 @@ calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
 #' @examples
 #' descriptors <- loadDrugDescriptors("NCI60")
 #' prepareDrugSets(descriptors)
-prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
+prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
+                            minPoints=NULL) {
     # Remove elements with no ID
     valid <- !is.na(table[[id]])
     table <- table[valid, ]
 
-    isCharacter <- sapply(table, class) == "character"
-
     # Prepare sets from character columns if # unique values <= maxUniqueElems
+    isCharacter <- sapply(table, is.character)
     uniqueElems <- sapply(lapply(table[ , isCharacter, with=FALSE], unique),
                           length)
     sets <- names(uniqueElems[uniqueElems <= maxUniqueElems])
@@ -91,7 +111,7 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
 
     nonCharacterTable <- table[ , !isCharacter, with=FALSE]
     res2 <- pblapply(nonCharacterTable, calculateEvenlyDistributedBins,
-                     ids=table[[id]])
+                     ids=table[[id]], maxBins=maxBins, k=k, minPoints=minPoints)
     res2 <- lapply(res2, function(x) split(names(x), x, drop=TRUE))
 
     res <- c(res, res2)

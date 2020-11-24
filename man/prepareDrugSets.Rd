@@ -4,23 +4,41 @@
 \alias{prepareDrugSets}
 \title{Prepare drug sets from a table with compound descriptors}
 \usage{
-prepareDrugSets(table, id = 1, maxUniqueElems = 15)
+prepareDrugSets(
+  table,
+  id = 1,
+  maxUniqueElems = 15,
+  maxBins = 15,
+  k = 5,
+  minPoints = NULL
+)
 }
 \arguments{
 \item{table}{Data frame: drug descriptors}
 
-\item{id}{Integer or character: index or name of the column containing
-identifiers}
+\item{id}{Integer or character: index or name of the identifier column}
 
-\item{maxUniqueElems}{Numeric: maximum number of unique elements in a
-descriptor to consider when creating discrete drug sets}
+\item{maxUniqueElems}{Numeric: ignore character columns with more unique
+elements than \code{maxUniqueElems}}
+
+\item{maxBins}{Numeric: maximum number of bins for numeric columns}
+
+\item{k}{Numeric: constant; the higher the constant, the smaller the bin size
+(check \code{minpts})}
+
+\item{minPoints}{Numeric: minimum number of points in a bin (if \code{NULL},
+the minimum number of points is the number of non-missing values divided by
+\code{maxBins} divided by \code{k})}
 }
 \value{
 Named list of characters: named drug sets with respective compound
   identifiers as list elements
 }
 \description{
-Prepare drug sets from a table with compound descriptors
+Create a list of drug sets for each character and numeric column. For each
+character column, drugs are split across that column's unique values (see
+argument \code{maxUniqueElems}). For each numeric column, drugs are split
+across evenly-distributed bins.
 }
 \examples{
 descriptors <- loadDrugDescriptors("NCI60")

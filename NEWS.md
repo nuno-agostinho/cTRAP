@@ -1,4 +1,3 @@
-# cTRAP 1.8.1 (18 November, 2020)
 # cTRAP 1.8.1 (24 November, 2020)
 
 * `rankSimilarPerturbations()`: reduce redundant loading of CMap differential
@@ -8,6 +7,9 @@ expression z-scores file, decreasing run time by up to 7 minutes
     than older releases)
     - New `threads` argument allows to set number of threads to parallelise; not
     available on Windows
+* `prepareDrugSets()`: allow greater control on the creation of bins based on
+numeric columns, including the setting of maximum number of bins per column and
+minimum bin size
  
 # cTRAP 1.8 (23 October, 2020)
 
