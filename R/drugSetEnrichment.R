@@ -244,6 +244,8 @@ processStats <- function(stats, col) {
 #' @inheritParams fgsea::fgsea
 #' @inheritDotParams fgsea::fgsea -pathways -stats -nperm -maxSize
 #'
+#' @importFrom fgsea fgsea
+#'
 #' @family functions for drug set enrichment analysis
 #' @return Enrichment analysis based on GSEA
 #' @export
