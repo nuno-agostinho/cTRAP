@@ -502,7 +502,7 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 #'   or \code{gsea}; multiple methods may be selected at once)
 #' @param perturbations \code{perturbationChanges} object: CMap perturbations
 #'   (check \code{\link{prepareCMapPerturbations}})
-#' @inheritParams compareAgainstReference
+#' @inheritParams rankAgainstReference
 #'
 #' @section GSEA score:
 #' Weighted connectivity scores (WTCS) are calculated when \code{method
@@ -541,13 +541,13 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 rankSimilarPerturbations <- function(input, perturbations,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150, cellLineMean="auto",
-                                     rankPerCellLine=FALSE) {
+                                     rankPerCellLine=FALSE, threads=1) {
     metadata  <- attr(perturbations, "metadata")
     cellLines <- length(unique(metadata$cell_id))
-    rankedPerts <- compareAgainstReference(
+    rankedPerts <- rankAgainstReference(
         input, perturbations, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean, rankByAscending=TRUE,
-        rankPerCellLine=rankPerCellLine)
+        rankPerCellLine=rankPerCellLine, threads=threads)
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -577,7 +577,7 @@ rankSimilarPerturbations <- function(input, perturbations,
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @inheritParams plot.referenceComparison
 #' @param title Character: plot title (if \code{NULL}, the default title depends
 #'   on the context; ignored when plotting multiple perturbations)

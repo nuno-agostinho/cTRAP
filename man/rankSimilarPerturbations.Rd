@@ -11,7 +11,8 @@ rankSimilarPerturbations(
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
   cellLineMean = "auto",
-  rankPerCellLine = FALSE
+  rankPerCellLine = FALSE,
+  threads = 1
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ added when data for more than one cell line is available.}
 lines and mean scores across cell lines (\code{TRUE}) or based on mean
 scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 cell line conditions are always ranked.}
+
+\item{threads}{Integer: number of parallel threads}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

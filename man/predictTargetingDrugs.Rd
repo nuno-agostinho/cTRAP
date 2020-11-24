@@ -9,7 +9,8 @@ predictTargetingDrugs(
   expressionDrugSensitivityCor,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
-  isDrugActivityDirectlyProportionalToSensitivity = NULL
+  isDrugActivityDirectlyProportionalToSensitivity = NULL,
+  threads = 1
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ is not a gene set}
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
 See details.}
+
+\item{threads}{Integer: number of parallel threads}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

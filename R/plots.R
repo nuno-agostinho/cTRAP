@@ -421,7 +421,7 @@ plotComparison <- function(x, method, n, showMetadata,
 #'   genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 #'   if \code{method = "gsea"} and \code{geneset = NULL}
 #' @inheritParams prepareCMapPerturbations
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @inheritParams plot.perturbationChanges
 #'
 #' @param ... Extra arguments currently not used

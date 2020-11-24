@@ -449,7 +449,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 #' user-provided differential expression profile by comparing such against a
 #' correlation matrix of gene expression and drug sensitivity.
 #'
-#' @inheritParams compareAgainstReference
+#' @inheritParams rankAgainstReference
 #' @param expressionDrugSensitivityCor Matrix: correlation matrix of gene
 #'   expression (rows) and drug sensitivity (columns) across cell lines.
 #'   Pre-prepared gene expression and drug sensitivity associations are
@@ -486,7 +486,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
 predictTargetingDrugs <- function(
     input, expressionDrugSensitivityCor,
     method=c("spearman", "pearson", "gsea"), geneSize=150,
-    isDrugActivityDirectlyProportionalToSensitivity=NULL) {
+    isDrugActivityDirectlyProportionalToSensitivity=NULL, threads=1) {
 
     cellLines <- length(attr(expressionDrugSensitivityCor, "cellLines"))
 
@@ -502,9 +502,9 @@ predictTargetingDrugs <- function(
              " 'expressionDrugSensitivityCor' cannot be NULL")
     }
 
-    rankedDrugs <- compareAgainstReference(
+    rankedDrugs <- rankAgainstReference(
         input, expressionDrugSensitivityCor, method=method, geneSize=geneSize,
-        cellLines=cellLines, cellLineMean=FALSE,
+        cellLines=cellLines, cellLineMean=FALSE, threads=threads,
         rankByAscending=isDrugActivityDirectlyProportionalToSensitivity)
     colnames(rankedDrugs)[[1]] <- "compound"
 

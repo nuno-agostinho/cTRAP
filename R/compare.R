@@ -29,24 +29,30 @@ processChunk <- function(chunk, data, FUN, ..., progress) {
 #' @param data Data matrix or \code{perturbationChanges} object
 #' @param FUN Function: function to run for each chunk
 #' @param num Numeric: numbers of methods to run per chunk
-#' @param method Character: methods to run
 #' @param ... Arguments passed to \code{FUN}
 #' @param chunkSize Integer: number of columns to load on-demand (a higher value
 #'   increases RAM usage, but decreases running time)
+#' @inheritParams compareWithAllMethods
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
-    pb <- startpb(max=ncol(data) * num)
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkSize=10000) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         msg <- "%s not found: has the CMap z-scores file been moved or deleted?"
         stop(sprintf(msg, data))
     }
 
+    # Display progress per chunk (if multi-threaded and on-demand file loading)
+    # or per perturbation (if single-threaded)
+    pb <- NULL
+    if (threads == 1) pb <- startpb(max=ncol(data) * num)
+
     if (loadFromFile) {
         chunks <- chunkVector(colnames(data), chunkSize)
-        resTmp <- lapply(chunks, processChunk, data, FUN, ..., progress=pb)
+        if (threads > 1) pb <- startpb(max=length(chunks))
+        resTmp <- lapply(chunks, processChunk, data, FUN, ..., threads=threads,
+                         progress=pb)
         names(resTmp) <- NULL
 
         # Organise lists by the results of each method
@@ -57,9 +63,9 @@ processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
         groups          <- factor(rep(methods, len), unique(methods))
         res             <- split(unlist(unlisted, recursive=FALSE), groups)
     } else {
-        res <- FUN(data, colnames(data), ..., progress=pb)
+        res <- FUN(data, colnames(data), ..., threads=threads, progress=pb)
     }
-    closepb(pb)
+    if (!is.null(pb)) closepb(pb)
     return(res)
 }
 
@@ -77,7 +83,7 @@ processByChunks <- function(data, FUN, num, ..., chunkSize=10000) {
 #'   argument \code{table}); first column must be identifiers
 #' @param sort Boolean: sort data based on rank product's rank (if multiple
 #'   methods are available) or by available ranks
-#' @inheritParams compareAgainstReference
+#' @inheritParams rankAgainstReference
 #'
 #' @importFrom data.table setkeyv
 #'
@@ -115,7 +121,7 @@ rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
 correlateAgainstReference <- function(k, data, diffExprGenes, method,
                                       progress) {
     res <- cor.test(data[ , k], diffExprGenes, method=method)
-    setpb(progress, getpb(progress) + 1)
+    if (!is.null(progress)) setpb(progress, getpb(progress) + 1)
     return(res)
 }
 
@@ -135,7 +141,7 @@ prepareCorrelationResults <- function(cors, method, pAdjust="BH") {
 
 #' Prepare GSEA gene sets
 #'
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @return List of gene sets
 #' @keywords internal
 prepareGSEAgenesets <- function(input, geneSize) {
@@ -185,7 +191,7 @@ performGSEAagainstReference <- function(k, data, geneset, progress) {
     filterPathways  <- function(p, stats) na.omit(fmatch(p, names(stats)))
     genesetFiltered <- lapply(geneset, filterPathways, signature)
     score <- sapply(genesetFiltered, calcGseaStat, stats=signature)
-    setpb(progress, getpb(progress) + 1)
+    if (!is.null(progress)) setpb(progress, getpb(progress) + 1)
     return(score)
 }
 
@@ -257,26 +263,29 @@ messageComparisonStats <- function(reference, method, cellLines, geneSize) {
         msg <- paste(compareMsg, cellLinesMsg)
     }
     geneSizeMsg <- ifelse("gsea" %in% method,
-                          sprintf(" (gene size of %s) ", geneSize), "")
+                          sprintf(" (gene size of %s)", geneSize), "")
     msg <- sprintf("Comparing against %s using '%s'%s...", msg,
                    paste(method, collapse=", "), geneSizeMsg)
     message(msg)
 }
 
-compareAgainstMethod <- function(m, cols, reference, geneset, referenceSubset,
-                                 diffExprGenes, progress) {
+#' @importFrom parallel mclapply
+comparePerMethod <- function(m, cols, reference, geneset, referenceSubset,
+                             diffExprGenes, progress, threads=1) {
     if (any(m %in% c("spearman", "pearson"))) {
-        suppressWarnings(lapply(cols, correlateAgainstReference,
-                                referenceSubset, progress=progress,
-                                diffExprGenes=diffExprGenes, method=m))
+        suppressWarnings(mclapply(cols, correlateAgainstReference,
+                                  referenceSubset, progress=progress,
+                                  diffExprGenes=diffExprGenes, method=m,
+                                  mc.cores=threads))
     } else if (m %in% "gsea") {
-        lapply(cols, performGSEAagainstReference, reference, geneset,
-               progress=progress)
+        mclapply(cols, performGSEAagainstReference, reference, geneset,
+                 progress=progress, mc.cores=threads)
     }
 }
 
-runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
-                              geneset, progress) {
+#' @keywords internal
+compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
+                         progress, threads=1) {
     names(cols) <- cols
     reference   <- unclass(reference)
     gc()
@@ -284,13 +293,13 @@ runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
         referenceSubset <- reference[genes, ]
     }
     names(method) <- method
-    res <- lapply(method, compareAgainstMethod, cols, reference, geneset,
-                  referenceSubset, diffExprGenes, progress)
-    setpb(progress, getpb(progress) + 1)
+    res <- lapply(method, comparePerMethod, cols, reference, geneset,
+                  referenceSubset, diffExprGenes, progress, threads=threads)
+    if (threads > 1 && !is.null(progress)) setpb(progress, getpb(progress) + 1)
     return(res)
 }
 
-#' Compare single method
+#' Compare reference using all methods
 #'
 #' @param input \code{Named numeric vector} of differentially expressed genes
 #'   whose names are gene identifiers and respective values are a statistic that
@@ -318,6 +327,7 @@ runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
 #'   lines and mean scores across cell lines (\code{TRUE}) or based on mean
 #'   scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 #'   cell line conditions are always ranked.
+#' @param threads Integer: number of parallel threads
 #'
 #' @importFrom utils head tail
 #' @importFrom R.utils capitalize
@@ -325,10 +335,9 @@ runComparisonWith <- function(reference, cols, method, diffExprGenes, genes,
 #'
 #' @keywords internal
 #' @return Data frame containing the results per method of comparison
-compareAgainstReferencePerMethod <- function(method, input, reference,
-                                             geneSize=150, cellLines=NULL,
-                                             cellLineMean="auto",
-                                             rankPerCellLine=FALSE) {
+compareWithAllMethods <- function(method, input, reference, geneSize=150,
+                                  cellLines=NULL, cellLineMean="auto",
+                                  rankPerCellLine=FALSE, threads=1) {
     startTime <- Sys.time()
     geneset <- NULL
     if ("gsea" %in% method) {
@@ -345,8 +354,8 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
     messageComparisonStats(reference, method, cellLines, geneSize)
 
     rankedRef <- processByChunks(
-        reference, runComparisonWith, length(method), method=method,
-        diffExprGenes=input, genes=genes, geneset=geneset)
+        reference, compareChunk, length(method), method=method,
+        diffExprGenes=input, genes=genes, geneset=geneset, threads=threads)
     for (m in method) {
         if (m == "gsea") {
             rankedRef[[m]] <- prepareGSEAresults(rankedRef[[m]])
@@ -378,19 +387,19 @@ prepareGeneInput <- function(input) {
     return(input)
 }
 
-#' Compare multiple methods and rank reference accordingly
+#' Compare multiple methods and rank against reference accordingly
 #'
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #'
 #' @importFrom data.table :=
 #'
 #' @keywords internal
 #' @return List of data frame containing the results per methods of comparison
-compareAgainstReference <- function(input, reference,
-                                    method=c("spearman", "pearson", "gsea"),
-                                    geneSize=150, cellLines=NULL,
-                                    cellLineMean="auto", rankByAscending=TRUE,
-                                    rankPerCellLine=FALSE) {
+rankAgainstReference <- function(input, reference,
+                                 method=c("spearman", "pearson", "gsea"),
+                                 geneSize=150, cellLines=NULL,
+                                 cellLineMean="auto", rankByAscending=TRUE,
+                                 rankPerCellLine=FALSE, threads=1) {
     startTime <- Sys.time()
     # Check if any of supplied methods are supported
     supported <- c("spearman", "pearson", "gsea")
@@ -425,10 +434,10 @@ compareAgainstReference <- function(input, reference,
     }
 
     names(method) <- method
-    res <- compareAgainstReferencePerMethod(
+    res <- compareWithAllMethods(
         method=method, input=input, reference=reference, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean,
-        rankPerCellLine=rankPerCellLine)
+        rankPerCellLine=rankPerCellLine, threads=threads)
 
     # Rank columns
     rankingInfo <- Reduce(merge, lapply(res, attr, "rankingInfo"))
