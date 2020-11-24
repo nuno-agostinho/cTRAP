@@ -273,14 +273,33 @@ messageComparisonStats <- function(reference, method, cellLines, geneSize) {
 comparePerMethod <- function(m, cols, reference, geneset, referenceSubset,
                              diffExprGenes, progress, threads=1) {
     if (any(m %in% c("spearman", "pearson"))) {
-        suppressWarnings(mclapply(cols, correlateAgainstReference,
-                                  referenceSubset, progress=progress,
-                                  diffExprGenes=diffExprGenes, method=m,
-                                  mc.cores=threads))
+        cmp <- suppressWarnings(mclapply(cols, correlateAgainstReference,
+                                         referenceSubset, progress=progress,
+                                         diffExprGenes=diffExprGenes, method=m,
+                                         mc.cores=threads))
     } else if (m %in% "gsea") {
-        mclapply(cols, performGSEAagainstReference, reference, geneset,
-                 progress=progress, mc.cores=threads)
+        cmp          <- NULL
+        nulls        <- sapply(geneset, is.null) # Genesets with size of 0
+        validGeneset <- geneset[!nulls]
+        if (length(validGeneset) > 0) {
+            cmp <- mclapply(cols, performGSEAagainstReference, reference,
+                            validGeneset, progress=progress, mc.cores=threads)
+        }
+
+        if (any(nulls)) {
+            ns   <- names(geneset)[nulls]
+            gsea <- rep(NA, length(ns))
+            names(gsea) <- ns
+
+            if (!is.null(cmp)) {
+                cmp <- lapply(cmp, c, gsea)
+            } else {
+                cmp <- rep(list(gsea), length(cols))
+                names(cmp) <- cols
+            }
+        }
     }
+    return(cmp)
 }
 
 #' @keywords internal
