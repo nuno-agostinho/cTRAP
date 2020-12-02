@@ -1,5 +1,7 @@
-# cTRAP 1.8.1 (24 November, 2020)
+# cTRAP 1.8.1 (2 December, 2020)
 
+* `prepareCMapPerturbations()`: directly set perturbation type, cell line,
+timepoint and dosage conditions as arguments
 * `rankSimilarPerturbations()`: reduce redundant loading of CMap differential
 expression z-scores file, decreasing run time by up to 7 minutes
 * `rankSimilarPerturbations()` and `predictTargetingDrugs()`:

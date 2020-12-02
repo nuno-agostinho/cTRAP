@@ -358,6 +358,7 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
 #'   filepath to load data from file)
+#' @inheritDotParams filterCMapMetadata
 #' @param loadZscores Boolean: load matrix of perturbation z-scores? Not
 #'   recommended in systems with less than 30GB of RAM; if \code{FALSE},
 #'   downstream functions will read the file chunk by chunk (this strategy
@@ -377,8 +378,11 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
 prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
-                                     compoundInfo=NULL, loadZscores=FALSE) {
+                                     compoundInfo=NULL, ...,
+                                     loadZscores=FALSE) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
+    if (!is.null(list(...))) metadata <- filterCMapMetadata(metadata, ...)
+
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {
         zscores <- loadCMapData(zscores, "zscores", metadata$sig_id)
@@ -406,7 +410,7 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")
     summaryMsg <- sprintf(
-        "\nSummary: %s CMap perturbations measured across %s genes",
+        "\nSummary: %s CMap perturbations and %s genes",
         ncol(zscores), nrow(zscores))
     if (!is.null(filters)) {
         filterNames <- c("cellLine"="Cell lines",

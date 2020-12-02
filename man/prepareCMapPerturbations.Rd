@@ -9,6 +9,7 @@ prepareCMapPerturbations(
   zscores,
   geneInfo,
   compoundInfo = NULL,
+  ...,
   loadZscores = FALSE
 )
 }
@@ -24,6 +25,16 @@ filepath to load data from file)}
 
 \item{compoundInfo}{Data frame (CMap compound info) or character (respective
 filepath to load data from file)}
+
+\item{...}{
+  Arguments passed on to \code{\link[=filterCMapMetadata]{filterCMapMetadata}}
+  \describe{
+    \item{\code{cellLine}}{Character: cell line (if \code{NULL}, all values are loaded)}
+    \item{\code{timepoint}}{Character: timepoint (if \code{NULL}, all values are loaded)}
+    \item{\code{dosage}}{Character: dosage (if \code{NULL}, all values are loaded)}
+    \item{\code{perturbationType}}{Character: type of perturbation (if \code{NULL}, all
+perturbation types are loaded)}
+  }}
 
 \item{loadZscores}{Boolean: load matrix of perturbation z-scores? Not
 recommended in systems with less than 30GB of RAM; if \code{FALSE},
