@@ -12,7 +12,12 @@ expression z-scores file, decreasing run time by up to 7 minutes
 * `prepareDrugSets()`: allow greater control on the creation of bins based on
 numeric columns, including the setting of maximum number of bins per column and
 minimum bin size
- 
+
+# Bug fixes
+
+* `prepareDrugSets()`: properly prepare drug sets for 3D descriptors (fix issues
+with descriptors containing missing values)
+
 # cTRAP 1.8 (23 October, 2020)
 
 ## Interactive functions for loading data and analysing results

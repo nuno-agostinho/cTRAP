@@ -55,10 +55,14 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
 calculateEvenlyDistributedBins <- function(numbers, maxBins=15, k=5,
                                            minPoints=NULL, ..., ids=NULL) {
     nas     <- is.na(numbers)
-    numbers <- round(numbers[!nas])
-    if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids))
-    if (is.null(minPoints)) minPoints <- round( length(numbers) / maxBins / k )
+    if (all(nas)) return(NULL)
 
+    numbers <- round(numbers[!nas])
+    if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids[!nas]))
+    if (is.null(minPoints)) {
+        minPoints <- round( length(numbers) / maxBins / k )
+        if (minPoints == 0) return(NULL)
+    }
     bin <- bins(numbers, target.bins=maxBins, minpts=minPoints, ...)
 
     # Replace labels of single number intervals
@@ -112,6 +116,7 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
     nonCharacterTable <- table[ , !isCharacter, with=FALSE]
     res2 <- pblapply(nonCharacterTable, calculateEvenlyDistributedBins,
                      ids=table[[id]], maxBins=maxBins, k=k, minPoints=minPoints)
+    res2 <- Filter(length, res2)
     res2 <- lapply(res2, function(x) split(names(x), x, drop=TRUE))
 
     res <- c(res, res2)
