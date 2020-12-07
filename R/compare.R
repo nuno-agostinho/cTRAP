@@ -1,3 +1,5 @@
+# Process a function by chunks of loaded CMap z-scores -------------------------
+
 #' Assign vector elements into chunks
 #'
 #' @param x Vector of elements
@@ -69,53 +71,7 @@ processByChunks <- function(data, FUN, num, ..., threads=1, chunkSize=10000) {
     return(res)
 }
 
-#' Rank columns in a dataset
-#'
-#' @details The rank product's rank is calculated if more than one method is
-#'   ranked.
-#'
-#' @note The first column of \code{data} and \code{rankingInfo} must contain
-#'   common identifiers.
-#'
-#' @param table Data table: data; first column must be identifiers
-#' @param rankingInfo Data table: boolean values of which rows to rank based on
-#'   columns (column names to be ranked must exactly match those available in
-#'   argument \code{table}); first column must be identifiers
-#' @param sort Boolean: sort data based on rank product's rank (if multiple
-#'   methods are available) or by available ranks
-#' @inheritParams rankAgainstReference
-#'
-#' @importFrom data.table setkeyv
-#'
-#' @return Data table with the contents of \code{table} and extra columns with
-#'   respective rankings
-#' @keywords internal
-rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
-    setkeyv(table, colnames(table)[[1]])
-    colsToRank <- colnames(rankingInfo)[-1]
-    rankedCols <- NULL
-    for(col in colsToRank) {
-        toRank     <- rankingInfo[[col]]
-        rowsToRank <- rankingInfo[[1]][toRank]
-        dataToRank <- table[rowsToRank][[col]]
-        if (rankByAscending) dataToRank <- -dataToRank
-        ranked     <- rank(dataToRank, na.last="keep")
-        newCol     <- paste0(gsub("(.*)_.*$", "\\1", col), "_rank")
-        table[rowsToRank, newCol] <- ranked
-        rankedCols <- c(rankedCols, newCol)
-    }
-    if (length(rankedCols) > 1) {
-        # Calculate rank product's rank
-        ranks    <- table[rowsToRank, rankedCols, with=FALSE]
-        rankProd <- apply(ranks, 1, prod) ^ (1 / ncol(ranks))
-        table[rowsToRank, "rankProduct_rank"] <- rank(rankProd, na.last="keep")
-        sortingCol <- "rankProduct_rank"
-    } else {
-        sortingCol <- rankedCols
-    }
-    if (sort) table <- table[order(table[[sortingCol]])]
-    return(table)
-}
+# Compare similarity of data against reference ---------------------------------
 
 #' @importFrom stats cor.test
 correlateAgainstReference <- function(k, data, diffExprGenes, method,
@@ -249,26 +205,6 @@ prepareRankedResults <- function(rankedRef, cellLineMean, cellLines, reference,
     return(rankedRef)
 }
 
-messageComparisonStats <- function(reference, method, cellLines, geneSize) {
-    type <- attr(reference, "type")
-    if (is.null(type)) type <- "comparisons"
-    compareMsg <- paste(c(ncol(reference), attr(reference, "source"), type),
-                        collapse=" ")
-
-    if (is.null(cellLines) || cellLines == 0) {
-        msg <- compareMsg
-    } else {
-        cellLinesMsg <- sprintf("(%s cell line%s)", cellLines,
-                                ifelse(cellLines == 1, "", "s"))
-        msg <- paste(compareMsg, cellLinesMsg)
-    }
-    geneSizeMsg <- ifelse("gsea" %in% method,
-                          sprintf(" (gene size of %s)", geneSize), "")
-    msg <- sprintf("Comparing against %s using '%s'%s...", msg,
-                   paste(method, collapse=", "), geneSizeMsg)
-    message(msg)
-}
-
 #' @importFrom parallel mclapply
 comparePerMethod <- function(m, cols, reference, geneset, referenceSubset,
                              diffExprGenes, progress, threads=1) {
@@ -302,7 +238,26 @@ comparePerMethod <- function(m, cols, reference, geneset, referenceSubset,
     return(cmp)
 }
 
-#' @keywords internal
+messageComparisonStats <- function(reference, method, cellLines, geneSize) {
+    type <- attr(reference, "type")
+    if (is.null(type)) type <- "comparisons"
+    compareMsg <- paste(c(ncol(reference), attr(reference, "source"), type),
+                        collapse=" ")
+
+    if (is.null(cellLines) || cellLines == 0) {
+        msg <- compareMsg
+    } else {
+        cellLinesMsg <- sprintf("(%s cell line%s)", cellLines,
+                                ifelse(cellLines == 1, "", "s"))
+        msg <- paste(compareMsg, cellLinesMsg)
+    }
+    geneSizeMsg <- ifelse("gsea" %in% method,
+                          sprintf(" (gene size of %s)", geneSize), "")
+    msg <- sprintf("Comparing against %s using '%s'%s...", msg,
+                   paste(method, collapse=", "), geneSizeMsg)
+    message(msg)
+}
+
 compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
                          progress, threads=1) {
     names(cols) <- cols
@@ -406,6 +361,54 @@ prepareGeneInput <- function(input) {
     return(input)
 }
 
+#' Rank columns in a dataset
+#'
+#' @details The rank product's rank is calculated if more than one method is
+#'   ranked.
+#'
+#' @note The first column of \code{data} and \code{rankingInfo} must contain
+#'   common identifiers.
+#'
+#' @param table Data table: data; first column must be identifiers
+#' @param rankingInfo Data table: boolean values of which rows to rank based on
+#'   columns (column names to be ranked must exactly match those available in
+#'   argument \code{table}); first column must be identifiers
+#' @param sort Boolean: sort data based on rank product's rank (if multiple
+#'   methods are available) or by available ranks
+#' @inheritParams rankAgainstReference
+#'
+#' @importFrom data.table setkeyv
+#'
+#' @return Data table with the contents of \code{table} and extra columns with
+#'   respective rankings
+#' @keywords internal
+rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
+    setkeyv(table, colnames(table)[[1]])
+    colsToRank <- colnames(rankingInfo)[-1]
+    rankedCols <- NULL
+    for(col in colsToRank) {
+        toRank     <- rankingInfo[[col]]
+        rowsToRank <- rankingInfo[[1]][toRank]
+        dataToRank <- table[rowsToRank][[col]]
+        if (rankByAscending) dataToRank <- -dataToRank
+        ranked     <- rank(dataToRank, na.last="keep")
+        newCol     <- paste0(gsub("(.*)_.*$", "\\1", col), "_rank")
+        table[rowsToRank, newCol] <- ranked
+        rankedCols <- c(rankedCols, newCol)
+    }
+    if (length(rankedCols) > 1) {
+        # Calculate rank product's rank
+        ranks    <- table[rowsToRank, rankedCols, with=FALSE]
+        rankProd <- apply(ranks, 1, prod) ^ (1 / ncol(ranks))
+        table[rowsToRank, "rankProduct_rank"] <- rank(rankProd, na.last="keep")
+        sortingCol <- "rankProduct_rank"
+    } else {
+        sortingCol <- rankedCols
+    }
+    if (sort) table <- table[order(table[[sortingCol]])]
+    return(table)
+}
+
 #' Compare multiple methods and rank against reference accordingly
 #'
 #' @inheritParams compareWithAllMethods
@@ -484,6 +487,104 @@ rankAgainstReference <- function(input, reference,
 
     class(ranked) <- c("referenceComparison", class(ranked))
     return(ranked)
+}
+
+# Match compound identifiers between datasets ----------------------------------
+
+filterKeys <- function(keys, cols, keyList) {
+    if (is.null(keys)) keys <- keyList[keyList %in% cols]
+    if (length(keys) == 0) keys <- cols[[1]]
+    names(keys) <- keys
+    return(keys)
+}
+
+compareDatasetIds <- function(key1, key2, data1, data2) {
+    values1 <- stripStr(data1[[key1]])
+    values2 <- stripStr(data2[[key2]])
+    matches <- which(values1 %in% na.omit(values2)) # Avoid matching NAs
+    return(data1[[key1]][matches])
+}
+
+#' Check for intersecting compounds across specific columns on both datasets
+#'
+#' @return List containing three elements: matching compounds
+#'   \code{commonCompounds} between column \code{key 1} and \code{key 2} from
+#'   the first and second datasets, respectively
+#' @keywords internal
+findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
+    showSelectedCols <- is.null(keys1) || is.null(keys2)
+
+    keyList       <- list()
+    keyList$cmap  <- c("compound_perturbation", "pert_iname", "pert_id",
+                       "smiles", "InChIKey", "pubchem_cid")
+    keyList$nci60 <- c("compound", "PubChem SID", "PubChem CID", "SMILES")
+    keyList$ctrp  <- c("compound", "name", "broad id", "SMILES")
+    keyList$gdsc  <- c("compound", "name")
+    keyList       <- unique(unlist(keyList))
+
+    # Filter keys based on dataset columns
+    keys1 <- filterKeys(keys1, colnames(data1), keyList)
+    keys2 <- filterKeys(keys2, colnames(data2), keyList)
+
+    # Compare dataset key columns
+    res <- list(key1=NULL, key2=NULL, commonCompounds=NULL)
+    for (col1 in keys1) {
+        for (col2 in keys2) {
+            cmp <- compareDatasetIds(col1, col2, data1, data2)
+            if (length(cmp) >= length(res$commonCompounds)) {
+                # Save params if number of matching compounds is same or larger
+                res$key1 <- col1
+                res$key2 <- col2
+                res$commonCompounds <- cmp
+            }
+        }
+    }
+
+    if (showSelectedCols) {
+        message(sprintf(paste(
+            "Columns '%s' and '%s' were matched based on %s common values; to",
+            "manually select columns to compare, please set arguments starting",
+            "with 'keyCol'"),
+            res$key1, res$key2, length(res$commonCompounds)))
+    }
+    return(res)
+}
+
+mergeDatasets <- function(data2, data1, key2=NULL, key1=NULL,
+                          suffixes=paste0(".", 1:2), ...,
+                          removeKey2ColNAs=FALSE) {
+    keys <- findIntersectingCompounds(data1, data2, key1, key2)
+    key1 <- keys$key1
+    key2 <- keys$key2
+
+    # Convert key columns to same class if needed
+    key1val <- data1[[key1]]
+    key2val <- data2[[key2]]
+    areNotClass <- function(key1val, key2val, cmp) cmp(key1val) && !cmp(key2val)
+
+    FUN <- NULL
+    if (length(keys$commonCompounds) > 0) {
+        if (areNotClass(key1val, key2val, is.character)) {
+            FUN <- as.character
+        } else if (areNotClass(key1val, key2val, is.integer)) {
+            FUN <- as.integer
+        } else if (areNotClass(key1val, key2val, is.numeric)) {
+            FUN <- as.numeric
+        } else if (areNotClass(key1val, key2val, is.factor)) {
+            FUN <- as.factor
+        } else if (areNotClass(key1val, key2val, is.logical)) {
+            FUN <- as.logical
+        }
+    }
+    if (!is.null(FUN)) data2[[key2]] <- FUN(data2[[key2]])
+
+    # Avoid matching NAs from key2 column of data2
+    if (removeKey2ColNAs) data2 <- data2[!is.na(data2[[key2]]), ]
+
+    # Merge data based on intersecting compounds
+    df <- merge(data2, data1, by.x=key2, by.y=key1, suffixes=rev(suffixes), ...)
+    attr(df, "keys") <- keys
+    return(df)
 }
 
 # referenceComparison object ---------------------------------------------------

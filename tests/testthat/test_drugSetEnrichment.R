@@ -31,6 +31,7 @@ test_that("Match ranked CMap perturbations to drug set identifiers", {
                        "rankProduct_rank"=sequence)
     # Metadata
     metadata <- data.table("sig_id"=paste("sig_id", sequence),
+                           "distil_id"=paste("distil_id", sequence),
                            "pert_id"=paste("BRD", sequence),
                            "pert_iname"=paste("compound", sequence))
     attr(data, "metadata") <- metadata
@@ -45,8 +46,8 @@ test_that("Match ranked CMap perturbations to drug set identifiers", {
     attr(data, "compoundInfo") <- compoundInfo
 
     class(data) <- c("similarPerturbations", "referenceComparison", class(data))
-    matched <- matchStatsWithDrugSetsID(drugSets, data)
-    expect_identical(attr(matched, "valuesCol"), "rankProduct_rank")
+    col     <- prepareStatsCol(NULL, data)
+    matched <- matchStatsWithDrugSetsID(drugSets, data, col=col)
 
     # Expected result
     expected <- setNames(data[["rankProduct_rank"]],
@@ -69,7 +70,8 @@ test_that("Match ranked CMap perturbations to drug set identifiers", {
     names(expected)[is.na(names(expected))] <- rep(
         data[["compound_perturbation"]], valuesRep)[is.na(names(expected))]
 
-    expect_identical(sort(matched), sort(expected))
+    expect_identical(matched[sort(names(matched))],
+                     expected[sort(names(expected))])
 
     # Match data based on name (information found within metadata)
     metadata[seq(nrow(drugSets_compoundInfo)), "pert_iname"] <-
@@ -79,7 +81,8 @@ test_that("Match ranked CMap perturbations to drug set identifiers", {
         drugSets_compoundInfo["name"]
     attr(data, "compoundInfo") <- compoundInfo
 
-    expect_identical(sort(matched), sort(expected))
+    expect_identical(matched[sort(names(matched))],
+                     expected[sort(names(expected))])
 })
 
 test_that("Match putative targeting drugs to drug set identifiers", {
@@ -97,9 +100,8 @@ test_that("Match putative targeting drugs to drug set identifiers", {
     class(predicted) <- c("targetingDrugs", "referenceComparison",
                           class(predicted))
 
-    matched <- matchStatsWithDrugSetsID(drugSets, predicted)
-    expect_identical(attr(matched, "valuesCol"), "rankProduct_rank")
-
+    col     <- prepareStatsCol(NULL, predicted)
+    matched <- matchStatsWithDrugSetsID(drugSets, predicted, col=col)
     # Use compound names (if matches more than one identifier, return them all)
     res <- setNames(predicted[["rankProduct_rank"]], predicted[["compound"]])
     compoundNames <- compoundInfo$name[match(names(res), compoundInfo$id)]
@@ -132,12 +134,11 @@ test_that("Match a named numeric vector to drug set identifiers", {
     customDrugStat        <- sort(customDrugStat)
     names(customDrugStat) <- selectDrugSet
     names(customDrugStat)[is.na(names(customDrugStat))] <-
-        seq(sum(is.na(names(customDrugStat))))
+        paste0("gf", seq(sum(is.na(names(customDrugStat)))))
     names(customDrugStat) <- make.unique(names(customDrugStat))
 
     matched <- matchStatsWithDrugSetsID(drugSets, customDrugStat)
     expect_identical(sort(matched), sort(customDrugStat))
-    expect_identical(attr(matched, "valuesCol"), "values")
 
     # Use different identifiers between drug sets and stats
     compoundInfo <- attr(drugSets, "compoundInfo")
@@ -151,7 +152,6 @@ test_that("Match a named numeric vector to drug set identifiers", {
 
     matched <- matchStatsWithDrugSetsID(drugSets, customDrugStat2)
     expect_identical(sort(matched), sort(customDrugStat))
-    expect_identical(attr(matched, "valuesCol"), "values")
 })
 
 test_that("Match a custom list of drug sets to drug set identifiers", {
@@ -161,7 +161,6 @@ test_that("Match a custom list of drug sets to drug set identifiers", {
                        "random"=sample(compounds, 20))
     matched <- matchStatsWithDrugSetsID(customSets, customDrugStat)
     expect_identical(sort(matched), sort(customDrugStat))
-    expect_identical(attr(matched, "valuesCol"), "values")
 })
 
 # Analyse drug set enrichment --------------------------------------------------

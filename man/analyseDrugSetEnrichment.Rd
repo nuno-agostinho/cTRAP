@@ -10,7 +10,9 @@ analyseDrugSetEnrichment(
   col = NULL,
   nperm = 10000,
   maxSize = 500,
-  ...
+  ...,
+  keyColSets = NULL,
+  keyColStats = NULL
 )
 }
 \arguments{
@@ -41,6 +43,12 @@ before calculation of GSEA enrichment scores.}
 Can be used to specify cluster to run. If not initialized explicitly or
 by setting `nproc` default value `bpparam()` is used.}
   }}
+
+\item{keyColSets}{Character: column from \code{sets} to compare with column
+\code{keyColStats} from \code{stats}; automatically selected if \code{NULL}}
+
+\item{keyColStats}{Character: column from \code{stats} to compare with column
+\code{keyColSets} from \code{sets}; automatically selected if \code{NULL}}
 }
 \value{
 Enrichment analysis based on GSEA

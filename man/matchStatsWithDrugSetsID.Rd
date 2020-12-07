@@ -4,7 +4,13 @@
 \alias{matchStatsWithDrugSetsID}
 \title{Match identifiers between data and drug sets}
 \usage{
-matchStatsWithDrugSetsID(sets, stats, col = NULL)
+matchStatsWithDrugSetsID(
+  sets,
+  stats,
+  col = "values",
+  keyColSets = NULL,
+  keyColStats = NULL
+)
 }
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
@@ -18,6 +24,12 @@ a \code{targetingDrugs} object (obtained after running
 \item{col}{Character: name of the column to use for statistics (only required
 if class of \code{stats} is either \code{similarPerturbations} or
 \code{targetingDrugs})}
+
+\item{keyColSets}{Character: column from \code{sets} to compare with column
+\code{keyColStats} from \code{stats}; automatically selected if \code{NULL}}
+
+\item{keyColStats}{Character: column from \code{stats} to compare with column
+\code{keyColSets} from \code{sets}; automatically selected if \code{NULL}}
 }
 \value{
 Statistic values from input data and corresponding identifiers as
