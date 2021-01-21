@@ -4,15 +4,7 @@
 \alias{processByChunks}
 \title{Process data column by chunks}
 \usage{
-processByChunks(
-  data,
-  FUN,
-  num,
-  ...,
-  genes = TRUE,
-  threads = 1,
-  chunkSize = 10000
-)
+processByChunks(data, FUN, num, ..., threads = 1, chunkSize = 10000)
 }
 \arguments{
 \item{data}{Data matrix or \code{perturbationChanges} object}
@@ -22,8 +14,6 @@ processByChunks(
 \item{num}{Numeric: numbers of methods to run per chunk}
 
 \item{...}{Arguments passed to \code{FUN}}
-
-\item{genes}{Character: genes to compare}
 
 \item{threads}{Integer: number of parallel threads}
 

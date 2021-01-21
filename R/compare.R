@@ -13,14 +13,14 @@ chunkVector <- function(x, nElems) {
     split(x, factor(sort(rank(x) %% groups)))
 }
 
-processChunk <- function(chunk, data, FUN, ..., genes=TRUE, progress) {
+processChunk <- function(chunk, data, FUN, ..., progress) {
     if (is(data, "perturbationChanges")) {
-        loaded <- loadCMapZscores(data[genes, chunk], verbose=FALSE)
+        loaded <- loadCMapZscores(data[ , chunk], verbose=FALSE)
     } else if (is(data, "expressionDrugSensitivityAssociation")) {
         loaded <- readExpressionDrugSensitivityCorHDF5(
-            data, rows=genes, cols=chunk, loadValues=TRUE)
+            data, cols=chunk, loadValues=TRUE)
     }
-    res <- FUN(loaded, chunk, ..., genes=genes, progress=progress)
+    res <- FUN(loaded, chunk, ..., progress=progress)
     return(res)
 }
 
@@ -37,15 +37,13 @@ processChunk <- function(chunk, data, FUN, ..., genes=TRUE, progress) {
 #' @param FUN Function: function to run for each chunk
 #' @param num Numeric: numbers of methods to run per chunk
 #' @param ... Arguments passed to \code{FUN}
-#' @param genes Character: genes to compare
 #' @param chunkSize Integer: number of columns to load on-demand (a higher value
 #'   increases RAM usage, but decreases running time)
 #' @inheritParams compareWithAllMethods
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, num, ..., genes=TRUE, threads=1,
-                            chunkSize=10000) {
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkSize=10000) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         if (is(data, "perturbationChanges")) {
@@ -66,8 +64,8 @@ processByChunks <- function(data, FUN, num, ..., genes=TRUE, threads=1,
     if (loadFromFile) {
         chunks <- chunkVector(colnames(data), chunkSize)
         if (threads > 1) pb <- startpb(max=length(chunks))
-        resTmp <- lapply(chunks, processChunk, data, FUN, ..., genes=genes,
-                         threads=threads, progress=pb)
+        resTmp <- lapply(chunks, processChunk, data, FUN, ..., threads=threads,
+                         progress=pb)
         names(resTmp) <- NULL
 
         # Organise lists by the results of each method
@@ -78,8 +76,7 @@ processByChunks <- function(data, FUN, num, ..., genes=TRUE, threads=1,
         groups          <- factor(rep(methods, len), unique(methods))
         res             <- split(unlist(unlisted, recursive=FALSE), groups)
     } else {
-        res <- FUN(data, colnames(data), ..., genes=genes, threads=threads,
-                   progress=pb)
+        res <- FUN(data, colnames(data), ..., threads=threads, progress=pb)
     }
     if (!is.null(pb)) closepb(pb)
     return(res)
