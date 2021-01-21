@@ -53,6 +53,7 @@ Imports: biomaRt,
     scales,
     shiny,
     stats,
+    tibble,
     tools,
     utils
 VignetteBuilder: knitr
