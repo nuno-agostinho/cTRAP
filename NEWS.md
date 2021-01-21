@@ -1,4 +1,4 @@
-# cTRAP 1.8.1 (2 December, 2020)
+# cTRAP 1.8.1 (21 January, 2021)
 
 * `prepareCMapPerturbations()`: directly set perturbation type, cell line,
 timepoint and dosage conditions as arguments
@@ -9,6 +9,9 @@ expression z-scores file, decreasing run time by up to 7 minutes
     than older releases)
     - New `threads` argument allows to set number of threads to parallelise; not
     available on Windows
+* `predictTargetingDrugs()`: significantly reduce memory footprint when using
+NCI60's gene expression and drug sensitivity association by loading and
+processing data in chunks
 * `prepareDrugSets()`: allow greater control on the creation of bins based on
 numeric columns, including the setting of maximum number of bins per column and
 minimum bin size

@@ -103,3 +103,20 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
     converted <- setNames(ifelse(converted != "", converted, genes), genes)
     return(converted)
 }
+
+#' Subset rows or columns based on a given index
+#' @keywords internal
+subsetDim <- function(k, dims, nargs, areCols=TRUE) {
+    hasK <- !missing(k)
+    # Allow to search based on characters
+    names(dims) <- dims
+    if (hasK && nargs == 2) {
+        dims <- dims[k]
+    } else if (hasK && areCols && nargs == 1) {
+        dims <- dims[k]
+    }
+    if (anyNA(dims)) {
+        stop(ifelse(areCols, "columns", "rows"), " out of bounds")
+    }
+    return(unname(dims))
+}

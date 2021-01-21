@@ -22,3 +22,5 @@ expressionDrugSensitivity*.rds
 molecular_descriptors*.rds
 ENCODEmetadata.RDS
 *.txt
+*.xls
+*.h5

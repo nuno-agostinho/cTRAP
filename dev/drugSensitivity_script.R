@@ -1,11 +1,19 @@
-# genomicsDrugSensitivityCorGDSC <- prepareGenomicsDrugSensitivityAssociation("GDSC")
-# genomicsDrugSensitivityCorCTRP <- prepareGenomicsDrugSensitivityAssociation("CTRP")
-# genomicsDrugSensitivityCorNCI60 <- prepareGenomicsDrugSensitivityAssociation("NCI60")
+# Prepare expression and drug sensitivity association data ---------------------
+# ctrp  <- prepareExpressionDrugSensitivityAssociation("CTRP")
+# gdsc  <- prepareExpressionDrugSensitivityAssociation("GDSC")
+# nci60 <- prepareExpressionDrugSensitivityAssociation("NCI60")
 
-ctrp  <- prepareExpressionDrugSensitivityAssociation("CTRP")
-gdsc  <- prepareExpressionDrugSensitivityAssociation("GDSC")
-nci60 <- prepareExpressionDrugSensitivityAssociation("NCI60")
+# Save (and manually upload) objects as RDS/h5 files ---------------------------
+saveRDS(ctrp,  "expressionDrugSensitivityCorCTRP2.1.rds")
+saveRDS(gdsc,  "expressionDrugSensitivityCorGDSC7.rds")
+# saveRDS(nci60, "expressionDrugSensitivityCorNCI60.rds")
 
+# Download and load expression and drug sensitivity association data -----------
+ctrp  <- loadExpressionDrugSensitivityAssociation("CTRP")
+gdsc  <- loadExpressionDrugSensitivityAssociation("GDSC")
+nci60 <- loadExpressionDrugSensitivityAssociation("NCI60")
+
+# Predict targeting drugs ------------------------------------------------------
 corCTRP  <- predictTargetingDrugs(diffExprStat, ctrp)
 corGDSC  <- predictTargetingDrugs(diffExprStat, gdsc)
 corNCI60 <- predictTargetingDrugs(diffExprStat, nci60)
@@ -39,16 +47,3 @@ plot_targetingDrugsVScmapResults(corCTRP,  cmapResults2, "spearman_rank",
                                  labelColumn="target")
 plot_targetingDrugsVScmapResults(corGDSC,  cmapResults2, "spearman_rank")
 plot_targetingDrugsVScmapResults(corNCI60, cmapResults2, "spearman_rank")
-
-# Drug set enrichment analysis -------------------------------------------------
-
-# Create drug sets from 2D and 3D descriptors
-descriptors2D <- data.table::fread("compound_descriptors_NCI60_2D.txt",
-                                   na.strings=c("", "NA"))
-descriptors2D$V45 <- NULL
-descriptors2D <- descriptors2D[seq(nrow(descriptors2D) - 1)]
-drugSets <- prepareDrugSets(descriptors2D, "PubChem_SID")
-
-descriptors3D <- data.table::fread("compound_descriptors_3D.csv",
-                                   na.strings=c("", "NA"))
-# analyseDrugSetEnrichment(cmapResults, drugSets)

@@ -693,24 +693,10 @@ plotPerturbationChanges <- function(x, perturbation, input,
     if (is.character(x)) {
         out <- x
         nargs <- nargs() - length(list(...)) - 1
-
-        hasI <- !missing(i)
-        hasJ <- !missing(j)
-        genes <- attr(out, "genes")
-        perts <- attr(out, "perturbations")
-        # Allow to search based on characters
-        names(genes) <- genes
-        names(perts) <- perts
-
-        if (nargs == 2) {
-            if (hasI) genes <- genes[i]
-            if (hasJ) perts <- perts[j]
-        } else if (hasI && nargs == 1) {
-            perts <- perts[i]
-        }
-        if (anyNA(perts) || anyNA(genes)) stop("subscript out of bounds")
-        attr(out, "genes") <- unname(genes)
-        attr(out, "perturbations") <- unname(perts)
+        genes <- subsetDim(i, attr(out, "genes"), nargs, areCols=FALSE)
+        perts <- subsetDim(j, attr(out, "perturbations"), nargs, areCols=TRUE)
+        attr(out, "genes") <- genes
+        attr(out, "perturbations") <- perts
     } else {
         out <- NextMethod("[", drop=drop)
     }

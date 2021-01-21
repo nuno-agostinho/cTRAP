@@ -383,6 +383,56 @@ prepareExpressionDrugSensitivityAssociation <- function(
     return(cor)
 }
 
+#' @keywords internal
+#' @importFrom utils askYesNo
+#' @importFrom rhdf5 h5createFile h5write h5createDataset
+writeExpressionDrugSensitivityCorHDF5 <- function(
+    data, filename="expressionDrugSensitivityCorNCI60.h5") {
+    # Create file with given name
+    if (file.exists(filename)) {
+        continue <- askYesNo(paste(filename, "already exists. Overwrite file?"),
+                             default=FALSE)
+        if (continue) {
+            message("Overwriting file...")
+        } else {
+            return(invisible(FALSE))
+        }
+    }
+    time <- Sys.time()
+    unlink(filename)
+    h5createFile(filename)
+
+    attrs <- attributes(data)
+    classes <- sapply(sapply(attributes(data), class), "[[", 1)
+    attr(data, "classes") <- unname(cbind(names(classes), classes))
+
+    # Save data.frame as datasets (data.frame attributes are unsupported)
+    attrsDF <- names(attrs)[sapply(attrs, is.data.frame)]
+    attributes(data)[attrsDF] <- NULL
+    for (k in attrsDF) h5write(attrs[[k]], filename, k)
+
+    # Save dim names as datasets (large character attributes are unsupported)
+    h5write(colnames(data), filename, "colnames")
+    h5write(rownames(data), filename, "rownames")
+    attr(data, "dimnames") <- NULL
+
+    # Convert logical values to 1 or 0 (logical attributes are unsupported)
+    attributes(data)[sapply(attributes(data), isTRUE)]  <- 1
+    attributes(data)[sapply(attributes(data), isFALSE)] <- 0
+
+    # Convert date to string (POSIXt attributes are unsupported)
+    attr(data, "date") <- as.character(attr(data, "date"))
+
+    # Split data in appropriate chunks (faster reading of smaller subsets)
+    chunk <- c( nrow(data), ceiling(ncol(data) / 10) )
+    h5createDataset(filename, "data", dims=dim(data), chunk=chunk)
+
+    # h5write(data, filename, "data", write.attributes=TRUE)
+    h5write(data, filename, "data", write.attributes=TRUE)
+    message(paste("HDF5 file written in", format(round(Sys.time() - time, 2))))
+    return(invisible(TRUE))
+}
+
 # Load gene expression/drug sensitivity associations ---------------------------
 
 #' List available gene expression and drug sensitivity correlation matrices
@@ -400,7 +450,7 @@ listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
     options <- c(
         "GDSC 7"="5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds",
         "CTRP 2.1"="zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds",
-        "NCI60"="p6596ym2f08zroh/expressionDrugSensitivityCorNCI60.rds")
+        "NCI60"="20ko9lyyyoilfz6/expressionDrugSensitivityCorNCI60.h5")
     link <- sprintf("https://www.dropbox.com/s/%s?raw=1", options)
     names(link) <- names(options)
 
@@ -409,35 +459,164 @@ listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
     return(res)
 }
 
+#' @keywords internal
+#' @importFrom tibble tibble
+#' @importFrom rhdf5 h5ls h5read h5readAttributes
+readExpressionDrugSensitivityCorHDF5 <- function(
+    filename="expressionDrugSensitivityCorNCI60.h5", rows=NULL, cols=NULL,
+    loadValues=FALSE) {
+    # Check which datasets are attributes or not
+    info   <- h5ls(filename)
+    isAttr <- info[["name"]] != "data"
+
+    # Match character rows/cols with respective index
+    readDimNames <- function(filename, type, index=NULL) {
+        attr <- h5read(filename, type)
+        if (!is.null(index)) attr <- attr[index]
+        return(as.character(attr))
+    }
+    matchIndex <- function(dim, type) {
+        if (is.character(dim)) {
+            dim <- sort(unique(match(dim, readDimNames(filename, type))))
+        }
+        return(dim)
+    }
+    rows <- matchIndex(rows, "rownames")
+    cols <- matchIndex(cols, "colnames")
+
+    # Read data from file
+    name <- "data"
+    attrs <- h5readAttributes(filename, name)
+    if (loadValues) {
+        data <- h5read(filename, name, index=list(rows, cols),
+                       read.attributes=TRUE)
+    } else {
+        data <- filename
+        mostattributes(data) <- attrs
+    }
+
+    # Convert attributes to original classes
+    classes <- attr(data, "classes")
+    classes <- setNames(classes[ , 2], classes[ , 1])
+    classes <- classes[names(classes) %in% names(attributes(data))]
+    attr(data, "classes") <- NULL
+
+    for (k in seq(classes)) {
+        this <- classes[[k]]
+        name <- names(classes[k])
+        if ( this == "character" ) {
+            attr(data, name) <- as.character(attr(data, name))
+        } else if ( this == "POSIXct" ) {
+            attr(data, name) <- as.POSIXct(attr(data, name))
+        } else if ( this == "logical" ) {
+            attr(data, name) <- as.logical(attr(data, name))
+        }
+    }
+
+    # Convert COMPOUND (data.frames) to tibbles and add them as attributes
+    attrsDF <- info[["name"]][info[["dclass"]] == "COMPOUND"]
+    for (i in attrsDF) {
+        attr(data, i) <- suppressWarnings(tibble(h5read(filename, i)))
+    }
+
+    # Add rownames and colnames as attributes
+    attr(data, "compounds") <- readDimNames(filename, "colnames", cols)
+    attr(data, "genes")     <- readDimNames(filename, "rownames", rows)
+    if (loadValues) {
+        colnames(data) <- attr(data, "compounds")
+        rownames(data) <- attr(data, "genes")
+    }
+    return(data)
+}
+
+#' Operations on \code{expressionDrugSensitivityAssociation} objects
+#' @param x An \code{expressionDrugSensitivityAssociation} object
+#' @export
+dimnames.expressionDrugSensitivityAssociation <- function(x) {
+    if (is.character(x)) {
+        res <- list(attr(x, "genes"), attr(x, "compounds"))
+    } else {
+        res <- NextMethod("dimnames")
+    }
+    return(res)
+}
+
+#' @rdname dimnames.expressionDrugSensitivityAssociation
+#' @export
+dim.expressionDrugSensitivityAssociation <- function(x) {
+    if (is.character(x)) {
+        res <- vapply(dimnames(x), length, numeric(1))
+    } else {
+        res <- NextMethod("dim")
+    }
+    return(res)
+}
+
+#' @rdname dimnames.expressionDrugSensitivityAssociation
+#'
+#' @param i,j Character or numeric indexes specifying elements to extract
+#' @param drop Boolean: coerce result to the lowest possible dimension?
+#' @param ... Extra arguments given to other methods
+#'
+#' @export
+`[.expressionDrugSensitivityAssociation` <- function(x, i, j, drop=FALSE, ...) {
+    if (is.character(x)) {
+        out <- x
+        nargs <- nargs() - length(list(...)) - 1
+        genes <- subsetDim(i, attr(out, "genes"), nargs, areCols=FALSE)
+        drugs <- subsetDim(j, attr(out, "compounds"), nargs, areCols=TRUE)
+        attr(out, "genes")     <- genes
+        attr(out, "compounds") <- drugs
+    } else {
+        out <- NextMethod("[", drop=drop)
+    }
+    return(out)
+}
+
 #' Load gene expression and drug sensitivity correlation matrix
 #'
 #' @param source Character: source of matrix to load; see
 #'   \code{\link{listExpressionDrugSensitivityAssociation}}
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
+#' @param rows Character or integer: rows
+#' @param cols Character or integer: columns
+#' @param loadValues Boolean: load data values? Only available for some sources
 #'
 #' @family functions related with the prediction of targeting drugs
 #' @return Correlation matrix between gene expression (rows) and drug
 #'   sensitivity (columns)
 #' @export
 #'
+#' @importFrom tools file_ext
+#'
 #' @examples
 #' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
 #' loadExpressionDrugSensitivityAssociation(gdsc)
-loadExpressionDrugSensitivityAssociation <- function(source, file=NULL) {
+loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
+                                                     rows=NULL, cols=NULL,
+                                                     loadValues=FALSE) {
     available <- listExpressionDrugSensitivityAssociation(url=TRUE)
     source    <- match.arg(source, names(available))
     link      <- available[source]
 
-    if (is.null(file)) {
-        filename <- "expressionDrugSensitivityCor%s.rds"
-        file <- sprintf(filename, gsub(" ", "_", source))
-    }
-
+    if (is.null(file)) file <- gsub("\\?.*", "", basename(link))
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
-    cor <- readRDS(file)
+    if (file_ext(file) == "rds") {
+        if (is.null(cols)) cols <- TRUE
+        if (is.null(rows)) rows <- TRUE
+        res <- readRDS(file)
+        cor <- res[rows, cols, drop=FALSE]
+        attrs <- attributes(res)
+        attrs <- attrs[!names(attrs) %in% names(attributes(cor))]
+        attributes(cor) <- c(attributes(cor), attrs)
+    } else {
+        cor <- readExpressionDrugSensitivityCorHDF5(file, rows=rows, cols=cols,
+                                                    loadValues=loadValues)
+    }
     attr(cor, "filename") <- normalizePath(file)
+    class(cor) <- c("expressionDrugSensitivityAssociation", class(cor))
     return(cor)
 }
 
