@@ -2,12 +2,12 @@
 % Please edit documentation in R/compare.R
 \name{processByChunks}
 \alias{processByChunks}
-\title{Process data column by chunks}
+\title{Process data columns by chunks}
 \usage{
-processByChunks(data, FUN, num, ..., threads = 1, chunkSize = 10000)
+processByChunks(data, FUN, num, ..., threads = 1, chunkGB = 1)
 }
 \arguments{
-\item{data}{Data matrix or \code{perturbationChanges} object}
+\item{data}{Data matrix or character containing a file path}
 
 \item{FUN}{Function: function to run for each chunk}
 
@@ -17,19 +17,21 @@ processByChunks(data, FUN, num, ..., threads = 1, chunkSize = 10000)
 
 \item{threads}{Integer: number of parallel threads}
 
-\item{chunkSize}{Integer: number of columns to load on-demand (a higher value
-increases RAM usage, but decreases running time)}
+\item{chunkGiB}{Integer: size in gibibyte of file to load on-demand (higher
+values increase RAM usage)}
 }
 \value{
 Results of running \code{FUN}
 }
 \description{
-Columns will be processed per chunk if argument \code{data} is a
-\code{perturbationChanges} object containing a file path instead of a data
-matrix. Otherwise, the data will be processed as a single chunk.
+By loading and processing chunks of data, the usage of RAM is minimized. For
+instance, loading a chunk of 10000 columns and 14000 rows takes ~1 GiB RAM
+(10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB).
 }
 \details{
-For instance, loading a chunk of 10000 CMap pertubations requires ~1GB of RAM
-compared to loading the whole dataset.
+If argument \code{data} is a data matrix, it will be processed as a single
+chunk. Otherwise, if it is a file path, data columns will be loaded and
+processed from file in chunks with size of \code{chunkGiB}. All rows are
+processed simultaneously (i.e. chunks only apply to columns).
 }
 \keyword{internal}

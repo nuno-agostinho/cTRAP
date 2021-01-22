@@ -1,16 +1,17 @@
 # Process a function by chunks of loaded CMap z-scores -------------------------
 
-#' Assign vector elements into chunks
+#' Assign columns into chunks
 #'
 #' @param x Vector of elements
-#' @param nElems Numeric: number of chunks
+#' @param nrows Numeric: number of rows
+#' @param chunkGiB Numeric: maximum estimated chunk size in gibibytes (GiB)
 #'
+#' @return List of chunks with equally distributed columns
 #' @keywords internal
-#'
-#' @return List of chunks with the original vector elements divided
-chunkVector <- function(x, nElems) {
-    groups <- ceiling(length(x)/nElems)
-    split(x, factor(sort(rank(x) %% groups)))
+chunkColumns <- function(x, nrows, chunkGiB) {
+    ncolsPerChunk <- ceiling( 1024^3 / (nrows * 8) )
+    nchunks <- ceiling( length(x) / ncolsPerChunk )
+    return( split(x, factor(sort(rank(x) %% nchunks))) )
 }
 
 processChunk <- function(chunk, data, FUN, ..., progress) {
@@ -24,26 +25,28 @@ processChunk <- function(chunk, data, FUN, ..., progress) {
     return(res)
 }
 
-#' Process data column by chunks
+#' Process data columns by chunks
 #'
-#' Columns will be processed per chunk if argument \code{data} is a
-#' \code{perturbationChanges} object containing a file path instead of a data
-#' matrix. Otherwise, the data will be processed as a single chunk.
+#' By loading and processing chunks of data, the usage of RAM is minimized. For
+#' instance, loading a chunk of 10000 columns and 14000 rows takes ~1 GiB RAM
+#' (10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB).
 #'
-#' For instance, loading a chunk of 10000 CMap pertubations requires ~1GB of RAM
-#' compared to loading the whole dataset.
+#' If argument \code{data} is a data matrix, it will be processed as a single
+#' chunk. Otherwise, if it is a file path, data columns will be loaded and
+#' processed from file in chunks with size of \code{chunkGiB}. All rows are
+#' processed simultaneously (i.e. chunks only apply to columns).
 #'
-#' @param data Data matrix or \code{perturbationChanges} object
+#' @param data Data matrix or character containing a file path
 #' @param FUN Function: function to run for each chunk
 #' @param num Numeric: numbers of methods to run per chunk
 #' @param ... Arguments passed to \code{FUN}
-#' @param chunkSize Integer: number of columns to load on-demand (a higher value
-#'   increases RAM usage, but decreases running time)
+#' @param chunkGiB Integer: size in gibibyte of file to load on-demand (higher
+#' values increase RAM usage)
 #' @inheritParams compareWithAllMethods
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, num, ..., threads=1, chunkSize=10000) {
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkGB=1) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         if (is(data, "perturbationChanges")) {
@@ -62,7 +65,7 @@ processByChunks <- function(data, FUN, num, ..., threads=1, chunkSize=10000) {
     if (threads == 1) pb <- startpb(max=ncol(data) * num)
 
     if (loadFromFile) {
-        chunks <- chunkVector(colnames(data), chunkSize)
+        chunks <- chunkColumns(colnames(data), nrow(data), chunkGiB)
         if (threads > 1) pb <- startpb(max=length(chunks))
         resTmp <- lapply(chunks, processChunk, data, FUN, ..., threads=threads,
                          progress=pb)
@@ -300,8 +303,10 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #'   is not a gene set
 #' @param method Character: one or more methods to compare data
 #'   (\code{spearman}, \code{pearson} or \code{gsea})
-#' @param reference Data matrix or \code{perturbationChanges} object (CMap
-#'   perturbations; see \code{\link{prepareCMapPerturbations}()})
+#' @param reference Data matrix or \code{character} object with file path to
+#'   CMap perturbations (see \code{\link{prepareCMapPerturbations}()}) or gene
+#'   expression and drug sensitivity association (see
+#'   \code{\link{loadExpressionDrugSensitivityAssociation}()})
 #' @param cellLines Integer: number of unique cell lines
 #' @param cellLineMean Boolean: add a column with the mean score across cell
 #'   lines? If \code{cellLineMean = "auto"} (default), the mean score will be

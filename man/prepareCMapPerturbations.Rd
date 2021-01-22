@@ -38,8 +38,8 @@ perturbation types are loaded)}
 
 \item{loadZscores}{Boolean: load matrix of perturbation z-scores? Not
 recommended in systems with less than 30GB of RAM; if \code{FALSE},
-downstream functions will read the file chunk by chunk (this strategy
-impacts performance at the expense of a much lower memory footprint)}
+downstream functions will load and process the file directly chunk by
+chunk, resulting in a lower memory footprint}
 }
 \value{
 CMap perturbation data attributes and filename

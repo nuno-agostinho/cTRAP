@@ -21,10 +21,9 @@ represents significance and magnitude of differentially expressed genes
 set that is tested for enrichment in reference data (only used if
 \code{method} includes \code{gsea})}
 
-\item{expressionDrugSensitivityCor}{Matrix: correlation matrix of gene
-expression (rows) and drug sensitivity (columns) across cell lines.
-Pre-prepared gene expression and drug sensitivity associations are
-available to download using
+\item{expressionDrugSensitivityCor}{Matrix or character: correlation matrix
+of gene expression (rows) and drug sensitivity (columns) across cell lines
+or path to file containing such data; see
 \code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
 \item{method}{Character: one or more methods to compare data
@@ -39,7 +38,9 @@ is not a gene set}
 
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
-See details.}
+If \code{NULL}, the argument \code{expressionDrugSensitivityCor} must have
+a non-\code{NULL} value for attribute
+\code{isDrugActivityDirectlyProportionalToSensitivity}.}
 
 \item{threads}{Integer: number of parallel threads}
 }
@@ -51,12 +52,6 @@ Data table with correlation or GSEA results comparing differential
 Identify compounds that may target the phenotype associated with a
 user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
-}
-\details{
-If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
-  attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
-  \code{expressionDrugSensitivityCor} is used (see
-  \code{\link{loadExpressionDrugSensitivityAssociation}()}).
 }
 \section{GSEA score}{
 

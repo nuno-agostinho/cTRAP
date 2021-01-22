@@ -426,8 +426,6 @@ writeExpressionDrugSensitivityCorHDF5 <- function(
     # Split data in appropriate chunks (faster reading of smaller subsets)
     chunk <- c( nrow(data), ceiling(ncol(data) / 10) )
     h5createDataset(filename, "data", dims=dim(data), chunk=chunk)
-
-    # h5write(data, filename, "data", write.attributes=TRUE)
     h5write(data, filename, "data", write.attributes=TRUE)
     message(paste("HDF5 file written in", format(round(Sys.time() - time, 2))))
     return(invisible(TRUE))
@@ -581,7 +579,9 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #'   association dataset (automatically downloaded if file does not exist)
 #' @param rows Character or integer: rows
 #' @param cols Character or integer: columns
-#' @param loadValues Boolean: load data values? Only available for some sources
+#' @param loadValues Boolean: load data values (if available)? If \code{FALSE},
+#'   downstream functions will load and process directly from the file chunk by
+#'   chunk, resulting in a lower memory footprint
 #'
 #' @family functions related with the prediction of targeting drugs
 #' @return Correlation matrix between gene expression (rows) and drug
@@ -629,24 +629,19 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
 #' correlation matrix of gene expression and drug sensitivity.
 #'
 #' @inheritParams rankAgainstReference
-#' @param expressionDrugSensitivityCor Matrix: correlation matrix of gene
-#'   expression (rows) and drug sensitivity (columns) across cell lines.
-#'   Pre-prepared gene expression and drug sensitivity associations are
-#'   available to download using
+#' @param expressionDrugSensitivityCor Matrix or character: correlation matrix
+#'   of gene expression (rows) and drug sensitivity (columns) across cell lines
+#'   or path to file containing such data; see
 #'   \code{\link{loadExpressionDrugSensitivityAssociation}()}.
 #' @param isDrugActivityDirectlyProportionalToSensitivity Boolean: are the
 #'   values used for drug activity directly proportional to drug sensitivity?
-#'   See details.
+#'   If \code{NULL}, the argument \code{expressionDrugSensitivityCor} must have
+#'   a non-\code{NULL} value for attribute
+#'   \code{isDrugActivityDirectlyProportionalToSensitivity}.
 #'
 #' @importFrom pbapply pbapply
 #'
 #' @inheritSection rankSimilarPerturbations GSEA score
-#'
-#' @details
-#'   If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
-#'   attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
-#'   \code{expressionDrugSensitivityCor} is used (see
-#'   \code{\link{loadExpressionDrugSensitivityAssociation}()}).
 #'
 #' @family functions related with the prediction of targeting drugs
 #' @return Data table with correlation or GSEA results comparing differential

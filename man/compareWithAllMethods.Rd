@@ -26,8 +26,10 @@ represents significance and magnitude of differentially expressed genes
 set that is tested for enrichment in reference data (only used if
 \code{method} includes \code{gsea})}
 
-\item{reference}{Data matrix or \code{perturbationChanges} object (CMap
-perturbations; see \code{\link{prepareCMapPerturbations}()})}
+\item{reference}{Data matrix or \code{character} object with file path to
+CMap perturbations (see \code{\link{prepareCMapPerturbations}()}) or gene
+expression and drug sensitivity association (see
+\code{\link{loadExpressionDrugSensitivityAssociation}()})}
 
 \item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric

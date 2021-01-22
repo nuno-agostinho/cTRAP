@@ -23,7 +23,9 @@ association dataset (automatically downloaded if file does not exist)}
 
 \item{cols}{Character or integer: columns}
 
-\item{loadValues}{Boolean: load data values? Only available for some sources}
+\item{loadValues}{Boolean: load data values (if available)? If \code{FALSE},
+downstream functions will load and process directly from the file chunk by
+chunk, resulting in a lower memory footprint}
 }
 \value{
 Correlation matrix between gene expression (rows) and drug
