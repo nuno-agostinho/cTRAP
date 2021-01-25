@@ -46,7 +46,7 @@ processChunk <- function(chunk, data, FUN, ..., progress) {
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, num, ..., threads=1, chunkGB=1) {
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkGiB=1) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         if (is(data, "perturbationChanges")) {

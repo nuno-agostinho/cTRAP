@@ -462,7 +462,13 @@ listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
 #' @importFrom rhdf5 h5ls h5read h5readAttributes
 readExpressionDrugSensitivityCorHDF5 <- function(
     filename="expressionDrugSensitivityCorNCI60.h5", rows=NULL, cols=NULL,
-    loadValues=FALSE) {
+    loadValues=FALSE, verbose=FALSE) {
+    if (verbose) {
+        msg <- paste("Loading gene expresion and drug sensitivity correlation",
+                     "matrix from %s...")
+        message(sprintf(msg, filename))
+    }
+
     # Check which datasets are attributes or not
     info   <- h5ls(filename)
     isAttr <- info[["name"]] != "data"
