@@ -10,7 +10,8 @@ predictTargetingDrugs(
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
   isDrugActivityDirectlyProportionalToSensitivity = NULL,
-  threads = 1
+  threads = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ a non-\code{NULL} value for attribute
 \code{isDrugActivityDirectlyProportionalToSensitivity}.}
 
 \item{threads}{Integer: number of parallel threads}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

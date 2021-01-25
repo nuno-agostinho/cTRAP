@@ -12,7 +12,8 @@ rankSimilarPerturbations(
   geneSize = 150,
   cellLineMean = "auto",
   rankPerCellLine = FALSE,
-  threads = 1
+  threads = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 cell line conditions are always ranked.}
 
 \item{threads}{Integer: number of parallel threads}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 Data table with correlation or GSEA results comparing differential

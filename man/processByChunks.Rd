@@ -4,7 +4,15 @@
 \alias{processByChunks}
 \title{Process data columns by chunks}
 \usage{
-processByChunks(data, FUN, num, ..., threads = 1, chunkGB = 1)
+processByChunks(
+  data,
+  FUN,
+  num,
+  ...,
+  threads = 1,
+  chunkGiB = 1,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{Data matrix or character containing a file path}
@@ -19,6 +27,8 @@ processByChunks(data, FUN, num, ..., threads = 1, chunkGB = 1)
 
 \item{chunkGiB}{Integer: size in gibibyte of file to load on-demand (higher
 values increase RAM usage)}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 Results of running \code{FUN}

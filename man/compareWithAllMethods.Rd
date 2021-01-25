@@ -12,7 +12,8 @@ compareWithAllMethods(
   cellLines = NULL,
   cellLineMean = "auto",
   rankPerCellLine = FALSE,
-  threads = 1
+  threads = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 cell line conditions are always ranked.}
 
 \item{threads}{Integer: number of parallel threads}
+
+\item{verbose}{Boolean: print additional details?}
 
 \item{rankByAscending}{Boolean: rank values based on their ascending
 (\code{TRUE}) or descending (\code{FALSE}) order?}

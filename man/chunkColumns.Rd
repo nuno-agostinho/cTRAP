@@ -11,7 +11,8 @@ chunkColumns(x, nrows, chunkGiB)
 
 \item{nrows}{Numeric: number of rows}
 
-\item{chunkGiB}{Numeric: maximum estimated chunk size in gibibytes (GiB)}
+\item{chunkGiB}{Integer: size in gibibyte of file to load on-demand (higher
+values increase RAM usage)}
 }
 \value{
 List of chunks with equally distributed columns

@@ -13,7 +13,8 @@ rankAgainstReference(
   cellLineMean = "auto",
   rankByAscending = TRUE,
   rankPerCellLine = FALSE,
-  threads = 1
+  threads = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -54,6 +55,8 @@ scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 cell line conditions are always ranked.}
 
 \item{threads}{Integer: number of parallel threads}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 List of data frame containing the results per methods of comparison

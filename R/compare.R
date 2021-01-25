@@ -4,7 +4,7 @@
 #'
 #' @param x Vector of elements
 #' @param nrows Numeric: number of rows
-#' @param chunkGiB Numeric: maximum estimated chunk size in gibibytes (GiB)
+#' @inheritParams processByChunks
 #'
 #' @return List of chunks with equally distributed columns
 #' @keywords internal
@@ -14,13 +14,15 @@ chunkColumns <- function(x, nrows, chunkGiB) {
     return( split(x, factor(sort(rank(x) %% nchunks))) )
 }
 
-processChunk <- function(chunk, data, FUN, ..., progress) {
+processChunk <- function(chunk, data, FUN, ..., progress, verbose=FALSE) {
+    if (verbose) message(Sys.time(), " - starting to load data chunk")
     if (is(data, "perturbationChanges")) {
         loaded <- loadCMapZscores(data[ , chunk], verbose=FALSE)
     } else if (is(data, "expressionDrugSensitivityAssociation")) {
         loaded <- readExpressionDrugSensitivityCorHDF5(
-            data, cols=chunk, loadValues=TRUE)
+            data, cols=chunk, loadValues=TRUE, verbose=FALSE)
     }
+    if (verbose) message(Sys.time(), " - loaded data chunk")
     res <- FUN(loaded, chunk, ..., progress=progress)
     return(res)
 }
@@ -46,7 +48,8 @@ processChunk <- function(chunk, data, FUN, ..., progress) {
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, num, ..., threads=1, chunkGiB=1) {
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkGiB=1,
+                            verbose=FALSE) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
         if (is(data, "perturbationChanges")) {
@@ -68,7 +71,7 @@ processByChunks <- function(data, FUN, num, ..., threads=1, chunkGiB=1) {
         chunks <- chunkColumns(colnames(data), nrow(data), chunkGiB)
         if (threads > 1) pb <- startpb(max=length(chunks))
         resTmp <- lapply(chunks, processChunk, data, FUN, ..., threads=threads,
-                         progress=pb)
+                         progress=pb, verbose=verbose)
         names(resTmp) <- NULL
 
         # Organise lists by the results of each method
@@ -318,6 +321,7 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #'   scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 #'   cell line conditions are always ranked.
 #' @param threads Integer: number of parallel threads
+#' @param verbose Boolean: print additional details?
 #'
 #' @importFrom utils head tail
 #' @importFrom R.utils capitalize
@@ -327,7 +331,8 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #' @return Data frame containing the results per method of comparison
 compareWithAllMethods <- function(method, input, reference, geneSize=150,
                                   cellLines=NULL, cellLineMean="auto",
-                                  rankPerCellLine=FALSE, threads=1) {
+                                  rankPerCellLine=FALSE, threads=1,
+                                  verbose=FALSE) {
     startTime <- Sys.time()
     geneset <- NULL
     if ("gsea" %in% method) {
@@ -344,7 +349,7 @@ compareWithAllMethods <- function(method, input, reference, geneSize=150,
     messageComparisonStats(reference, method, cellLines, geneSize)
 
     rankedRef <- processByChunks(
-        reference, compareChunk, length(method), method=method,
+        reference, compareChunk, length(method), method=method, verbose=verbose,
         diffExprGenes=input, genes=genes, geneset=geneset, threads=threads)
     for (m in method) {
         if (m == "gsea") {
@@ -437,7 +442,8 @@ rankAgainstReference <- function(input, reference,
                                  method=c("spearman", "pearson", "gsea"),
                                  geneSize=150, cellLines=NULL,
                                  cellLineMean="auto", rankByAscending=TRUE,
-                                 rankPerCellLine=FALSE, threads=1) {
+                                 rankPerCellLine=FALSE, threads=1,
+                                 verbose=FALSE) {
     startTime <- Sys.time()
     # Check if any of supplied methods are supported
     supported <- c("spearman", "pearson", "gsea")
@@ -475,7 +481,7 @@ rankAgainstReference <- function(input, reference,
     res <- compareWithAllMethods(
         method=method, input=input, reference=reference, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean,
-        rankPerCellLine=rankPerCellLine, threads=threads)
+        rankPerCellLine=rankPerCellLine, threads=threads, verbose=verbose)
 
     # Rank columns
     rankingInfo <- Reduce(merge, lapply(res, attr, "rankingInfo"))

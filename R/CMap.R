@@ -103,7 +103,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #' @param data \code{perturbationChanges} object
 #' @param inheritAttrs Boolean: convert to \code{perturbationChanges} object and
 #'   inherit attributes from \code{data}?
-#' @param verbose Boolean: print messages?
+#' @param verbose Boolean: print additional details?
 #'
 #' @family functions related with the ranking of CMap perturbations
 #' @return Matrix containing CMap perturbation z-scores (genes as rows,
@@ -545,13 +545,14 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 rankSimilarPerturbations <- function(input, perturbations,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150, cellLineMean="auto",
-                                     rankPerCellLine=FALSE, threads=1) {
+                                     rankPerCellLine=FALSE, threads=1,
+                                     verbose=FALSE) {
     metadata  <- attr(perturbations, "metadata")
     cellLines <- length(unique(metadata$cell_id))
     rankedPerts <- rankAgainstReference(
         input, perturbations, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean, rankByAscending=TRUE,
-        rankPerCellLine=rankPerCellLine, threads=threads)
+        rankPerCellLine=rankPerCellLine, threads=threads, verbose=verbose)
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)

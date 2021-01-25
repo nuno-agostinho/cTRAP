@@ -1,22 +1,20 @@
-# cTRAP 1.8.1 (21 January, 2021)
+# cTRAP 1.8.1 (25 January, 2021)
 
 * `prepareCMapPerturbations()`: directly set perturbation type, cell line,
 timepoint and dosage conditions as arguments
-* `rankSimilarPerturbations()`: reduce redundant loading of CMap differential
-expression z-scores file, decreasing run time by up to 7 minutes
 * `rankSimilarPerturbations()` and `predictTargetingDrugs()`:
-    - GSEA-based scores are now calculated much faster (up to 4-7 times faster
-    than older releases)
+    - Avoid redundant loading of data chunks, slightly decreasing run time
+    - Lower memory footprint when using NCI60's gene expression and drug
+    sensitivity association by loading and processing data in chunks
+    - Faster GSEA-based score calculation (up to 4-7 times faster)
     - New `threads` argument allows to set number of threads to parallelise; not
     available on Windows
-* `predictTargetingDrugs()`: significantly reduce memory footprint when using
-NCI60's gene expression and drug sensitivity association by loading and
-processing data in chunks
+    - New `verbose` argument allows to increase details printed in the console
 * `prepareDrugSets()`: allow greater control on the creation of bins based on
 numeric columns, including the setting of maximum number of bins per column and
 minimum bin size
-* `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to set
-columns containing identifiers to compare between datasets
+* `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to select
+columns to use when comparing compound identifiers between datasets
 
 # Bug fixes
 

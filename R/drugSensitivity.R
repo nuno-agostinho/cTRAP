@@ -666,7 +666,8 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
 predictTargetingDrugs <- function(
     input, expressionDrugSensitivityCor,
     method=c("spearman", "pearson", "gsea"), geneSize=150,
-    isDrugActivityDirectlyProportionalToSensitivity=NULL, threads=1) {
+    isDrugActivityDirectlyProportionalToSensitivity=NULL, threads=1,
+    verbose=FALSE) {
 
     cellLines <- length(attr(expressionDrugSensitivityCor, "cellLines"))
 
@@ -685,6 +686,7 @@ predictTargetingDrugs <- function(
     rankedDrugs <- rankAgainstReference(
         input, expressionDrugSensitivityCor, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=FALSE, threads=threads,
+        verbose=verbose,
         rankByAscending=isDrugActivityDirectlyProportionalToSensitivity)
     colnames(rankedDrugs)[[1]] <- "compound"
 
