@@ -1,4 +1,4 @@
-# cTRAP 1.8.1 (25 January, 2021)
+# cTRAP 1.8.1 (9 February, 2021)
 
 * `prepareCMapPerturbations()`: directly set perturbation type, cell line,
 timepoint and dosage conditions as arguments
@@ -7,8 +7,10 @@ timepoint and dosage conditions as arguments
     - Lower memory footprint when using NCI60's gene expression and drug
     sensitivity association by loading and processing data in chunks
     - Faster GSEA-based score calculation (up to 4-7 times faster)
-    - New `threads` argument allows to set number of threads to parallelise; not
-    available on Windows
+    - New `threads` argument allows to set number of parallel threads (not
+    supported on Windows)
+    - New `chunkGiB` argument allows to set size of data chunks when reading
+    from supported HDF5 files (decreases peak RAM usage)
     - New `verbose` argument allows to increase details printed in the console
 * `prepareDrugSets()`: allow greater control on the creation of bins based on
 numeric columns, including the setting of maximum number of bins per column and

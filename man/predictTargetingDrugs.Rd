@@ -11,6 +11,7 @@ predictTargetingDrugs(
   geneSize = 150,
   isDrugActivityDirectlyProportionalToSensitivity = NULL,
   threads = 1,
+  chunkGiB = 1,
   verbose = FALSE
 )
 }
@@ -27,8 +28,8 @@ of gene expression (rows) and drug sensitivity (columns) across cell lines
 or path to file containing such data; see
 \code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
-\item{method}{Character: one or more methods to compare data
-(\code{spearman}, \code{pearson} or \code{gsea})}
+\item{method}{Character: comparison method (\code{spearman}, \code{pearson}
+or \code{gsea}; multiple methods may be selected at once)}
 
 \item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
@@ -45,21 +46,35 @@ a non-\code{NULL} value for attribute
 
 \item{threads}{Integer: number of parallel threads}
 
+\item{chunkGiB}{Numeric: if second argument is a path to an HDF5 file
+(\code{.h5} extension), that file is loaded and processed in chunks of a
+given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+details below)}
+
 \item{verbose}{Boolean: print additional details?}
 }
 \value{
-Data table with correlation or GSEA results comparing differential
-  expression values against gene expression and drug sensitivity associations
+Data table with correlation and/or GSEA score results
 }
 \description{
 Identify compounds that may target the phenotype associated with a
 user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
 }
+\section{Process data by chunks}{
+
+  If a file path to a valid HDF5 (\code{.h5}) file is provided instead of a
+  data matrix, that file can be loaded and processed in chunks of size
+  \code{chunkGiB}, resulting in decreased peak memory usage.
+
+  The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+  14000 rows (\code{10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB}).
+}
+
 \section{GSEA score}{
 
-Weighted connectivity scores (WTCS) are calculated when \code{method
-  = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
+  When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+  calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
 }
 
 \examples{

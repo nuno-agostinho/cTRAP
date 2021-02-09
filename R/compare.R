@@ -27,23 +27,15 @@ processChunk <- function(chunk, data, FUN, ..., progress, verbose=FALSE) {
     return(res)
 }
 
-#' Process data columns by chunks
+#' Process data by chunks
 #'
-#' By loading and processing chunks of data, the usage of RAM is minimized. For
-#' instance, loading a chunk of 10000 columns and 14000 rows takes ~1 GiB RAM
-#' (10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB).
+#' @note All rows from file are currently loaded when processing chunks.
 #'
-#' If argument \code{data} is a data matrix, it will be processed as a single
-#' chunk. Otherwise, if it is a file path, data columns will be loaded and
-#' processed from file in chunks with size of \code{chunkGiB}. All rows are
-#' processed simultaneously (i.e. chunks only apply to columns).
-#'
-#' @param data Data matrix or character containing a file path
+#' @param data Character containing a HDF5 file path (allowing partial loading)
+#'   or data matrix (processed as single chunk if data matrix)
 #' @param FUN Function: function to run for each chunk
 #' @param num Numeric: numbers of methods to run per chunk
 #' @param ... Arguments passed to \code{FUN}
-#' @param chunkGiB Integer: size in gibibyte of file to load on-demand (higher
-#' values increase RAM usage)
 #' @inheritParams compareWithAllMethods
 #'
 #' @return Results of running \code{FUN}
@@ -304,8 +296,8 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #'   second index is the number of down-regulated genes used to create gene
 #'   sets; only used if \code{method} includes \code{gsea} and if \code{input}
 #'   is not a gene set
-#' @param method Character: one or more methods to compare data
-#'   (\code{spearman}, \code{pearson} or \code{gsea})
+#' @param method Character: comparison method (\code{spearman}, \code{pearson}
+#'   or \code{gsea}; multiple methods may be selected at once)
 #' @param reference Data matrix or \code{character} object with file path to
 #'   CMap perturbations (see \code{\link{prepareCMapPerturbations}()}) or gene
 #'   expression and drug sensitivity association (see
@@ -322,16 +314,22 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #'   cell line conditions are always ranked.
 #' @param threads Integer: number of parallel threads
 #' @param verbose Boolean: print additional details?
+#' @param chunkGiB Numeric: size (in gibibytes) of chunks to load
+#'   \code{reference} file; only if argument \code{reference} is a file path
+#'
+#' @section GSEA score:
+#'   When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+#'   calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
 #'
 #' @importFrom utils head tail
 #' @importFrom R.utils capitalize
 #' @importFrom pbapply startpb getpb setpb closepb
 #'
+#' @return List of data tables with correlation and/or GSEA score results
 #' @keywords internal
-#' @return Data frame containing the results per method of comparison
 compareWithAllMethods <- function(method, input, reference, geneSize=150,
                                   cellLines=NULL, cellLineMean="auto",
-                                  rankPerCellLine=FALSE, threads=1,
+                                  rankPerCellLine=FALSE, threads=1, chunkGiB=1,
                                   verbose=FALSE) {
     startTime <- Sys.time()
     geneset <- NULL
@@ -350,7 +348,8 @@ compareWithAllMethods <- function(method, input, reference, geneSize=150,
 
     rankedRef <- processByChunks(
         reference, compareChunk, length(method), method=method, verbose=verbose,
-        diffExprGenes=input, genes=genes, geneset=geneset, threads=threads)
+        diffExprGenes=input, genes=genes, geneset=geneset, threads=threads,
+        chunkGiB=chunkGiB)
     for (m in method) {
         if (m == "gsea") {
             rankedRef[[m]] <- prepareGSEAresults(rankedRef[[m]])
@@ -431,18 +430,28 @@ rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
 }
 
 #' Compare multiple methods and rank against reference accordingly
+#' @inherit compareWithAllMethods
+#' @param chunkGiB Numeric: if second argument is a path to an HDF5 file
+#'   (\code{.h5} extension), that file is loaded and processed in chunks of a
+#'   given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+#'   details below)
 #'
-#' @inheritParams compareWithAllMethods
+#' @section Process data by chunks:
+#'   If a file path to a valid HDF5 (\code{.h5}) file is provided instead of a
+#'   data matrix, that file can be loaded and processed in chunks of size
+#'   \code{chunkGiB}, resulting in decreased peak memory usage.
+#'
+#'   The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+#'   14000 rows (\code{10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB}).
 #'
 #' @importFrom data.table :=
-#'
+#' @return Data table with correlation and/or GSEA score results
 #' @keywords internal
-#' @return List of data frame containing the results per methods of comparison
 rankAgainstReference <- function(input, reference,
                                  method=c("spearman", "pearson", "gsea"),
                                  geneSize=150, cellLines=NULL,
                                  cellLineMean="auto", rankByAscending=TRUE,
-                                 rankPerCellLine=FALSE, threads=1,
+                                 rankPerCellLine=FALSE, threads=1, chunkGiB=1,
                                  verbose=FALSE) {
     startTime <- Sys.time()
     # Check if any of supplied methods are supported
@@ -481,7 +490,8 @@ rankAgainstReference <- function(input, reference,
     res <- compareWithAllMethods(
         method=method, input=input, reference=reference, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean,
-        rankPerCellLine=rankPerCellLine, threads=threads, verbose=verbose)
+        rankPerCellLine=rankPerCellLine, threads=threads, chunkGiB=chunkGiB,
+        verbose=verbose)
 
     # Rank columns
     rankingInfo <- Reduce(merge, lapply(res, attr, "rankingInfo"))

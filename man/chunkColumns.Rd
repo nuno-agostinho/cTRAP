@@ -11,8 +11,8 @@ chunkColumns(x, nrows, chunkGiB)
 
 \item{nrows}{Numeric: number of rows}
 
-\item{chunkGiB}{Integer: size in gibibyte of file to load on-demand (higher
-values increase RAM usage)}
+\item{chunkGiB}{Numeric: size (in gibibytes) of chunks to load
+\code{reference} file; only if argument \code{reference} is a file path}
 }
 \value{
 List of chunks with equally distributed columns

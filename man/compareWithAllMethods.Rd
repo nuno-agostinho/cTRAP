@@ -13,12 +13,13 @@ compareWithAllMethods(
   cellLineMean = "auto",
   rankPerCellLine = FALSE,
   threads = 1,
+  chunkGiB = 1,
   verbose = FALSE
 )
 }
 \arguments{
-\item{method}{Character: one or more methods to compare data
-(\code{spearman}, \code{pearson} or \code{gsea})}
+\item{method}{Character: comparison method (\code{spearman}, \code{pearson}
+or \code{gsea}; multiple methods may be selected at once)}
 
 \item{input}{\code{Named numeric vector} of differentially expressed genes
 whose names are gene identifiers and respective values are a statistic that
@@ -52,15 +53,24 @@ cell line conditions are always ranked.}
 
 \item{threads}{Integer: number of parallel threads}
 
+\item{chunkGiB}{Numeric: size (in gibibytes) of chunks to load
+\code{reference} file; only if argument \code{reference} is a file path}
+
 \item{verbose}{Boolean: print additional details?}
 
 \item{rankByAscending}{Boolean: rank values based on their ascending
 (\code{TRUE}) or descending (\code{FALSE}) order?}
 }
 \value{
-Data frame containing the results per method of comparison
+List of data tables with correlation and/or GSEA score results
 }
 \description{
 Compare reference using all methods
 }
+\section{GSEA score}{
+
+  When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+  calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
+}
+
 \keyword{internal}

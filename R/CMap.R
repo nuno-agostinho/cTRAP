@@ -498,24 +498,16 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
     return(res)
 }
 
-#' Rank CMap perturbations' similarity to a differential expression profile
+#' Rank differential expression profile against CMap perturbations by similarity
 #'
 #' Compare differential expression results against CMap perturbations.
 #'
-#' @param method Character: comparison method (\code{spearman}, \code{pearson}
-#'   or \code{gsea}; multiple methods may be selected at once)
+#' @inherit rankAgainstReference
 #' @param perturbations \code{perturbationChanges} object: CMap perturbations
-#'   (check \code{\link{prepareCMapPerturbations}})
-#' @inheritParams rankAgainstReference
-#'
-#' @section GSEA score:
-#' Weighted connectivity scores (WTCS) are calculated when \code{method
-#'   = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
+#'   (check \code{\link{prepareCMapPerturbations}()})
 #'
 #' @aliases compareAgainstCMap
 #' @family functions related with the ranking of CMap perturbations
-#' @return Data table with correlation or GSEA results comparing differential
-#'   expression values with those associated with CMap perturbations
 #' @export
 #'
 #' @examples
@@ -546,13 +538,14 @@ rankSimilarPerturbations <- function(input, perturbations,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150, cellLineMean="auto",
                                      rankPerCellLine=FALSE, threads=1,
-                                     verbose=FALSE) {
+                                     chunkGiB=1, verbose=FALSE) {
     metadata  <- attr(perturbations, "metadata")
     cellLines <- length(unique(metadata$cell_id))
     rankedPerts <- rankAgainstReference(
         input, perturbations, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean, rankByAscending=TRUE,
-        rankPerCellLine=rankPerCellLine, threads=threads, verbose=verbose)
+        rankPerCellLine=rankPerCellLine, threads=threads, chunkGiB=chunkGiB,
+        verbose=verbose)
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)

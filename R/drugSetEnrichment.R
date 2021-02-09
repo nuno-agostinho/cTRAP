@@ -134,8 +134,6 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
 #' Match identifiers between data and drug sets
 #'
 #' @inheritParams analyseDrugSetEnrichment
-#'
-#' @importFrom pbapply pbapply
 #' @importFrom data.table data.table
 #' @keywords internal
 #'

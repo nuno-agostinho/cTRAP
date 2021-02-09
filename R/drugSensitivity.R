@@ -634,7 +634,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
 #' user-provided differential expression profile by comparing such against a
 #' correlation matrix of gene expression and drug sensitivity.
 #'
-#' @inheritParams rankAgainstReference
+#' @inherit rankAgainstReference
 #' @param expressionDrugSensitivityCor Matrix or character: correlation matrix
 #'   of gene expression (rows) and drug sensitivity (columns) across cell lines
 #'   or path to file containing such data; see
@@ -645,13 +645,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
 #'   a non-\code{NULL} value for attribute
 #'   \code{isDrugActivityDirectlyProportionalToSensitivity}.
 #'
-#' @importFrom pbapply pbapply
-#'
-#' @inheritSection rankSimilarPerturbations GSEA score
-#'
 #' @family functions related with the prediction of targeting drugs
-#' @return Data table with correlation or GSEA results comparing differential
-#'   expression values against gene expression and drug sensitivity associations
 #' @export
 #'
 #' @examples
@@ -666,7 +660,7 @@ loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
 predictTargetingDrugs <- function(
     input, expressionDrugSensitivityCor,
     method=c("spearman", "pearson", "gsea"), geneSize=150,
-    isDrugActivityDirectlyProportionalToSensitivity=NULL, threads=1,
+    isDrugActivityDirectlyProportionalToSensitivity=NULL, threads=1, chunkGiB=1,
     verbose=FALSE) {
 
     cellLines <- length(attr(expressionDrugSensitivityCor, "cellLines"))
@@ -686,7 +680,7 @@ predictTargetingDrugs <- function(
     rankedDrugs <- rankAgainstReference(
         input, expressionDrugSensitivityCor, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=FALSE, threads=threads,
-        verbose=verbose,
+        chunkGiB=chunkGiB, verbose=verbose,
         rankByAscending=isDrugActivityDirectlyProportionalToSensitivity)
     colnames(rankedDrugs)[[1]] <- "compound"
 

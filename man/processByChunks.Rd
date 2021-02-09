@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare.R
 \name{processByChunks}
 \alias{processByChunks}
-\title{Process data columns by chunks}
+\title{Process data by chunks}
 \usage{
 processByChunks(
   data,
@@ -15,7 +15,8 @@ processByChunks(
 )
 }
 \arguments{
-\item{data}{Data matrix or character containing a file path}
+\item{data}{Character containing a HDF5 file path (allowing partial loading)
+or data matrix (processed as single chunk if data matrix)}
 
 \item{FUN}{Function: function to run for each chunk}
 
@@ -25,8 +26,8 @@ processByChunks(
 
 \item{threads}{Integer: number of parallel threads}
 
-\item{chunkGiB}{Integer: size in gibibyte of file to load on-demand (higher
-values increase RAM usage)}
+\item{chunkGiB}{Numeric: size (in gibibytes) of chunks to load
+\code{reference} file; only if argument \code{reference} is a file path}
 
 \item{verbose}{Boolean: print additional details?}
 }
@@ -34,14 +35,9 @@ values increase RAM usage)}
 Results of running \code{FUN}
 }
 \description{
-By loading and processing chunks of data, the usage of RAM is minimized. For
-instance, loading a chunk of 10000 columns and 14000 rows takes ~1 GiB RAM
-(10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB).
+Process data by chunks
 }
-\details{
-If argument \code{data} is a data matrix, it will be processed as a single
-chunk. Otherwise, if it is a file path, data columns will be loaded and
-processed from file in chunks with size of \code{chunkGiB}. All rows are
-processed simultaneously (i.e. chunks only apply to columns).
+\note{
+All rows from file are currently loaded when processing chunks.
 }
 \keyword{internal}

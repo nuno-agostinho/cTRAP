@@ -38,8 +38,8 @@ represents significance and magnitude of differentially expressed genes
 set that is tested for enrichment in reference data (only used if
 \code{method} includes \code{gsea})}
 
-\item{method}{Character: one or more methods to compare data
-(\code{spearman}, \code{pearson} or \code{gsea})}
+\item{method}{Character: comparison method (\code{spearman}, \code{pearson}
+or \code{gsea}; multiple methods may be selected at once)}
 
 \item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
