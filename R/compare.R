@@ -537,6 +537,17 @@ compareDatasetIds <- function(key1, key2, data1, data2) {
     return(data1[[key1]][matches])
 }
 
+getCompoundIntersectingKeyList <- function() {
+    keyList       <- list()
+    keyList$cmap  <- c("compound_perturbation", "pert_iname", "pert_id",
+                       "smiles", "InChIKey", "pubchem_cid")
+    keyList$nci60 <- c("compound", "PubChem SID", "PubChem CID", "SMILES")
+    keyList$ctrp  <- c("compound", "name", "broad id", "SMILES")
+    keyList$gdsc  <- c("compound", "name")
+    keyList       <- unique(unlist(keyList))
+    return(keyList)
+}
+
 #' Check for intersecting compounds across specific columns on both datasets
 #'
 #' @return List containing three elements: matching compounds
@@ -546,15 +557,8 @@ compareDatasetIds <- function(key1, key2, data1, data2) {
 findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
     showSelectedCols <- is.null(keys1) || is.null(keys2)
 
-    keyList       <- list()
-    keyList$cmap  <- c("compound_perturbation", "pert_iname", "pert_id",
-                       "smiles", "InChIKey", "pubchem_cid")
-    keyList$nci60 <- c("compound", "PubChem SID", "PubChem CID", "SMILES")
-    keyList$ctrp  <- c("compound", "name", "broad id", "SMILES")
-    keyList$gdsc  <- c("compound", "name")
-    keyList       <- unique(unlist(keyList))
-
     # Filter keys based on dataset columns
+    keyList <- getCompoundIntersectingKeyList()
     keys1 <- filterKeys(keys1, colnames(data1), keyList)
     keys2 <- filterKeys(keys2, colnames(data2), keyList)
 

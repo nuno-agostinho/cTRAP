@@ -120,3 +120,31 @@ subsetDim <- function(k, dims, nargs, areCols=TRUE) {
     }
     return(unname(dims))
 }
+
+#' Create word break opportunities (for HTML) using given characters
+#'
+#' @param str Character: text
+#' @param pattern Character: pattern(s) of interest to be used as word break
+#' opportunities
+#' @param html Boolean: convert to HTML?
+#'
+#' @importFrom shiny HTML
+#'
+#' @return String containing HTML elements
+#' @keywords internal
+prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",",
+                                            " ", "+", "="),
+                             html=TRUE) {
+    res <- str
+    # wbr: word break opportunity
+    for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
+
+    if (html) {
+        if (length(res) == 1) {
+            res <- HTML(res)
+        } else {
+            res <- lapply(res, HTMLfast)
+        }
+    }
+    return(res)
+}

@@ -131,31 +131,17 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
     return(res)
 }
 
-#' Match identifiers between data and drug sets
-#'
-#' @inheritParams analyseDrugSetEnrichment
-#' @importFrom data.table data.table
+#' Prepare stats' compound information
 #' @keywords internal
-#'
-#' @return Statistic values from input data and corresponding identifiers as
-#'   names (if no match is found, the original identifier from argument
-#'   \code{stats} is used)
-matchStatsWithDrugSetsID <- function(sets, stats, col="values",
-                                     keyColSets=NULL, keyColStats=NULL) {
-    # Prepare stats' compound information
+prepareStatsCompoundInfo <- function(stats) {
     statsCompoundInfo <- attr(stats, "compoundInfo")
     if (is.vector(stats)) {
         statsInfo  <- data.table("id"=names(stats), "values"=stats)
-        info       <- statsInfo
         statsIDcol <- colnames(statsInfo)[[1]]
     } else if (is(stats, "referenceComparison")) {
         statsInfo  <- as.table(stats, clean=FALSE)
-        info       <- statsInfo
         statsIDcol <- colnames(statsInfo)[[1]]
     } else if (!is.null(statsCompoundInfo)) {
-        info <- statsCompoundInfo
-        colnames(info)[[1]] <- statsIDcol
-
         if (is(stats, "data.table") && !is(statsCompoundInfo, "data.table")) {
             statsCompoundInfo <- data.table(statsCompoundInfo)
         }
@@ -170,8 +156,12 @@ matchStatsWithDrugSetsID <- function(sets, stats, col="values",
             "object or have an attribute called 'compoundInfo'")
         stop(msg)
     }
+    return(list("statsInfo"=statsInfo, "statsIDcol"=statsIDcol))
+}
 
-    # Get drug sets' compound info
+#' Get drug sets' compound info
+#' @keywords internal
+prepareSetsCompoundInfo <- function(sets) {
     setsCompoundInfo <- attr(sets, "compoundInfo")
     setsIDcol <- "id"
     if (is.null(setsCompoundInfo)) {
@@ -179,6 +169,27 @@ matchStatsWithDrugSetsID <- function(sets, stats, col="values",
     } else if (!setsIDcol %in% colnames(setsCompoundInfo)) {
         setsIDcol <- colnames(setsCompoundInfo)[[1]]
     }
+    return(list("setsCompoundInfo"=setsCompoundInfo, "setsIDcol"=setsIDcol))
+}
+
+#' Match identifiers between data and drug sets
+#'
+#' @inheritParams analyseDrugSetEnrichment
+#' @importFrom data.table data.table
+#' @keywords internal
+#'
+#' @return Statistic values from input data and corresponding identifiers as
+#'   names (if no match is found, the original identifier from argument
+#'   \code{stats} is used)
+matchStatsWithDrugSetsID <- function(sets, stats, col="values",
+                                     keyColSets=NULL, keyColStats=NULL) {
+    res        <- prepareStatsCompoundInfo(stats)
+    statsInfo  <- res$statsInfo
+    statsIDcol <- res$statsIDcol
+
+    res              <- prepareSetsCompoundInfo(sets)
+    setsCompoundInfo <- res$setsCompoundInfo
+    setsIDcol        <- res$setsIDcol
 
     checkIfIDwasReplacedAfterMerging <- function(statsIDcol, data) {
         keys <- attr(data, "keys")
@@ -268,6 +279,7 @@ analyseDrugSetEnrichment <- function(sets, stats, col=NULL, nperm=10000,
     gseaRes <- suppressWarnings(
         fgsea(sets, stats, nperm=nperm, maxSize=maxSize, ...))
     gseaRes <- gseaRes[order(gseaRes$padj), ]
+    colnames(gseaRes)[[1]] <- "descriptor"
     return(gseaRes)
 }
 

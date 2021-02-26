@@ -19,6 +19,7 @@ View metadata via a visual interface
 Other visual interface functions: 
 \code{\link{launchCMapDataLoader}()},
 \code{\link{launchDiffExprLoader}()},
+\code{\link{launchDrugSetEnrichmentAnalyser}()},
 \code{\link{launchResultPlotter}()}
 }
 \concept{visual interface functions}

@@ -45,30 +45,34 @@
 
 
 #' @importFrom DT datatable formatSignif
-.prepareDT <- function(table, suffixes=NULL, ..., columnDefs=NULL) {
+.prepareDT <- function(table, suffixes=NULL, ..., columnDefs=NULL,
+                       scrollX=FALSE, pagingType="simple_numbers") {
     if (is.null(table)) return(NULL)
     if (nrow(table) == 0) return(table)
 
     # Prepare columns whose significant digits will be rounded
     cols <- unlist(lapply(c("_coef", "_pvalue", "_qvalue", "GSEA", "WTCS"),
                           paste0, suffixes))
-    cols <- lapply(cols, function(i) endsWith(names(table), i))
+    cols <- c(cols, "pval", "padj", "ES", "NES") # DSEA results
+    cols <- lapply(cols, function(i) endsWith(colnames(table), i))
     cols <- which(Reduce("|", cols))
     cols <- cols[!sapply(table, class)[cols] %in% c("character", "logical")]
 
     # Convert to factor if there are low number of unique values
-    lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
-    for (col in names(lenUniqValuesPerCol[lenUniqValuesPerCol < 50])) {
-        if (!col %in% names(table)[cols]) { # Ignore columns that are to round
-            table[[col]] <- as.factor(table[[col]])
+    if (!all(c("Key", "Value") %in% colnames(table))) {
+        lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
+        for (col in names(lenUniqValuesPerCol[lenUniqValuesPerCol < 50])) {
+            if (!col %in% names(table)[cols]) { # Ignore columns to round
+                table[[col]] <- as.factor(table[[col]])
+            }
         }
     }
     dt <- datatable(
-        table, style="bootstrap", rownames=FALSE, ...,
+        table, rownames=FALSE, ..., escape=FALSE,
         selection="single", extensions="Buttons", filter="top",
         options=list(dom="Bfrtip", buttons=list(list(extend="colvis")),
-                     columnDefs=columnDefs))
-
+                     columnDefs=columnDefs, scrollX=scrollX,
+                     pagingType=pagingType))
     # Round significant digits
     if (length(cols) > 0) dt <- formatSignif(dt, cols)
     return(dt)
@@ -77,14 +81,13 @@
 .prepareMetadata <- function(x) {
     input <- attr(x, "input")
     if (!is.null(input)) {
-        attr(x, "input") <- as.data.frame(
-            cbind("Element"=names(input), "Value"=input))
+        attr(x, "input") <- data.frame("Element"=names(input), "Value"=input)
     }
     geneset <- attr(x, "geneset")
     if (!is.null(geneset)) {
         category           <- rep(names(geneset), sapply(geneset, length))
-        attr(x, "geneset") <- as.data.frame(
-            cbind("Element"=unname(unlist(geneset)), "Category"=category))
+        attr(x, "geneset") <- data.frame("Element"=unname(unlist(geneset)),
+                                         "Category"=category)
     }
 
     tables <- sapply(attributes(x), is, "data.frame")
@@ -92,7 +95,7 @@
 
     if (is(x, "perturbationChanges")) {
         data <- rbind(
-            cbind("Z-scores filename", x),
+            cbind("Z-scores filename", prepareWordBreak(x)),
             cbind("Source", attr(x, "source")),
             cbind("Type", attr(x, "type")),
             cbind("Gene size", length(attr(x, "genes"))),
@@ -103,7 +106,7 @@
     } else {
         data <- tryCatch(as.table(x, clean=FALSE), error=return)
         if (is(data, "error")) data <- data.frame("Value"=x)
-        dataName <- "Object values"
+        dataName <- "Data"
     }
 
     tables <- c(list(data), tables)
@@ -134,7 +137,7 @@
 #' sidebarLayout
 #' @importFrom DT DTOutput
 .diffExprENCODEloaderUI <- function(id, metadata, cellLine=NULL, gene=NULL,
-                              title="Differential Expression Loader") {
+                                    title="ENCODE Knockdown Data Loader") {
     ns <- NS(id)
     cellLines <- sort(unique(metadata$`Biosample term name`))
     genes     <- sort(unique(metadata$`Experiment target`))
@@ -217,7 +220,7 @@
     unname(sapply(what, grep, where, ignore.case=ignore.case, value=TRUE))
 }
 
-#' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel
+#' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel helpText
 .cmapDataLoaderUI <- function(id, metadata, zscores, geneInfo, compoundInfo,
                               cellLine, timepoint, dosage, perturbationType,
                               title="CMap Data Loader") {
@@ -244,6 +247,7 @@
         selectizeCondition(ns("timepoint"), "Time points", multiple=TRUE,
                            conditions$timepoint, timepoint),
         checkboxGroupInput(ns("data"), "Data to load", dataTypes, dataTypes),
+        helpText("By default, data will be downloaded if not found."),
         actionButton(ns("cancel"), "Cancel"),
         actionButton(ns("load"), "Load data", class="btn-primary"))
     mainPanel <- mainPanel(
@@ -273,8 +277,9 @@
         id,
         function(input, output, session) {
             # Update conditions based on selected perturbation type
-            observeEvent(input$type, {
-                available <- getCMapConditions(metadata)
+            observe({
+                available <- getCMapConditions(metadata,
+                                               perturbationType=input$type)
                 updateSelectizeCondition(
                     session, "cellLine", selected=cellLine,
                     choices=available$cellLine)
@@ -512,14 +517,13 @@
         selectizeInput(
             ns("data1"), "Dataset with predicted targeting drugs",
             names(x)[elemClasses == "targetingDrugs"]),
-        # selectizeInput(ns("col1"), "Column to plot in X axis", choices=NULL),
         selectizeInput(
-            ns("data2"), "Dataset with similar perturbations",
-            names(x)[elemClasses == "similarPerturbations"]))
-        # selectizeInput(ns("col2"), "Column to plot in Y axis", choices=NULL))
+            ns("data2"), "Dataset with similar CMap perturbations",
+            names(x)[elemClasses == "similarPerturbations"]),
+        selectizeInput(ns("col"), "Column to plot in both axes", choices=NULL))
+    sidebar[[3]][[2]] <- plotOutput(ns("plot"), brush=ns("brush"))
 
-    mainPanel <- mainPanel(plotOutput(ns("plot"), brush=ns("brush")),
-                           DTOutput(ns("table")))
+    mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
 }
@@ -551,6 +555,137 @@
                     return(.prepareDT(data, attr(plot, "suffixes"),
                                       columnDefs=columnDefs))
                 })
+            })
+        }
+    )
+}
+
+#' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
+#' tabPanel
+#' @importFrom DT DTOutput
+.drugSetEnrichmentAnalyserUI <- function(id, sets, x,
+                                         title="Drug Set Enrichment Analyser") {
+    ns <- NS(id)
+    sidebar <- sidebarPanel(
+        selectizeInput(ns("object"), "Dataset", names(x)),
+        selectizeInput(ns("sort"), "Sorting metric", choices=NULL), hr(),
+        selectizeInput(ns("statsKey"), "Dataset column to match compounds",
+                       choices=NULL),
+        selectizeInput(ns("setsKey"), "Drug set column to match compounds",
+                       choices=NULL),
+        uiOutput(ns("msg")),
+        actionButton(ns("analyse"), "Analyse", class="btn-primary"))
+    sidebar[[3]][[2]] <- tagList(
+        selectizeInput(ns("element"), "Row ID", choices=NULL),
+        plotOutput(ns("plot")))
+
+    mainPanel <- mainPanel(DTOutput(ns("table")))
+    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
+    return(ui)
+}
+
+#' @importFrom shiny renderPlot observeEvent observe isolate
+#' @importFrom DT renderDT
+.drugSetEnrichmentAnalyserServer <- function(id, sets, x) {
+    moduleServer(
+        id,
+        function(input, output, session) {
+            getSelectedObject <- reactive(x[[input$object]])
+            getDSEAresult     <- reactive({
+                isolate({
+                    obj      <- getSelectedObject()
+                    sort     <- input$sort
+                    statsKey <- input$statsKey
+                    setsKey  <- input$setsKey
+                })
+                isValid <- function(e) !is.null(e) && e != ""
+                if (is.null(obj) || !isValid(sort)) return(NULL)
+                if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
+
+                analyseDrugSetEnrichment(
+                    sets, obj, col=sort,
+                    keyColSets=setsKey, keyColStats=statsKey)
+            })
+
+            observeEvent(input$object, {
+                obj <- getSelectedObject()
+                numericCols <- names(obj)[vapply(obj, is.numeric, logical(1))]
+                updateSelectizeInput(session, "sort", choices=numericCols)
+            })
+
+            # Update available keys to select for datasets
+            observeEvent(input$sort, {
+                obj <- getSelectedObject()
+                if (is.null(obj)) return(NULL)
+
+                statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
+                setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
+
+                probableKey <- findIntersectingCompounds(setsInfo, statsInfo)
+                statsKey    <- probableKey$key1
+                setsKey     <- probableKey$key2
+
+                keyList      <- getCompoundIntersectingKeyList()
+                statsOptions <- intersect(names(statsInfo), keyList)
+                setsOptions  <- intersect(names(setsInfo), keyList)
+
+                updateSelectizeInput(session, "statsKey", selected=statsKey,
+                                     choices=statsOptions)
+                updateSelectizeInput(session, "setsKey", selected=setsKey,
+                                     choices=setsOptions)
+            })
+
+            # Update number of intersecting compounds based on selected keys
+            observe({
+                obj <- getSelectedObject()
+                if (is.null(obj)) return(NULL)
+
+                statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
+                setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
+
+                statsKey <- input$statsKey
+                setsKey  <- input$setsKey
+                isValid <- function(e) !is.null(e) && e != ""
+                if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
+
+                probableKey <- findIntersectingCompounds(setsInfo, statsInfo,
+                                                         setsKey, statsKey)
+                num <- length(probableKey[[3]])
+                msg <- "cross-matches found using the selected keys"
+                output$msg <- renderUI(helpText(paste(num, msg)))
+            })
+
+            observeEvent(input$analyse, {
+                dsea <- getDSEAresult()
+                updateSelectizeInput(session, "element", choices=dsea[[1]])
+                output$table <- renderDT(.prepareDT(dsea))
+
+                output$plot <- renderPlot({
+                    obj <- getSelectedObject()
+                    if (is.null(obj)) return(NULL)
+
+                    element <- input$element
+                    if (element == "") element <- NULL
+                    if (is.null(element) || !element %in% names(sets)) {
+                        return(NULL)
+                    }
+
+                    isolate({
+                        setsKey  <- input$setsKey
+                        statsKey <- input$statsKey
+                    })
+                    isValid <- function(e) !is.null(e) && e != ""
+                    if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
+                    plotDrugSetEnrichment(sets, obj, selectedSets=element,
+                                          keyColStats=statsKey,
+                                          keyColSets=setsKey)[[1]]
+                })
+            })
+
+            # Update selected element
+            observeEvent(input$table_rows_selected, {
+                selected <- getDSEAresult()[[1]][input$table_rows_selected]
+                updateSelectizeInput(session, "element", selected=selected)
             })
         }
     )
@@ -672,3 +807,34 @@ launchResultPlotter <- function(...) {
     app <- runApp(shinyApp(ui, server))
     return(app)
 }
+
+#' View and plot results via a visual interface
+#'
+#' @inheritParams analyseDrugSetEnrichment
+#'
+#' @importFrom shiny tagList
+#'
+#' @return Launches result viewer and plotter (returns \code{NULL})
+#' @family visual interface functions
+#' @export
+launchDrugSetEnrichmentAnalyser <- function(sets, ...) {
+    dataId     <- "dataPlotter"
+    metadataId <- "metadataViewer"
+    dseaId     <- "drugSetAnalyser"
+
+    elems <- .prepareEllipsis(...)
+
+    uiList <- tagList(
+        .drugSetEnrichmentAnalyserUI(dseaId, sets, elems),
+        .dataPlotterUI(dataId, elems),
+        .metadataViewerUI(metadataId, elems))
+    uiList <- Filter(length, uiList)
+    ui     <- do.call(.prepareNavPage, uiList)
+
+    server <- function(input, output, session) {
+        .drugSetEnrichmentAnalyserServer(dseaId, sets, elems)
+        .dataPlotterServer(dataId, elems)
+        .metadataViewerServer(metadataId, elems)
+    }
+    app <- runApp(shinyApp(ui, server))
+    return(app)

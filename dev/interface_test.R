@@ -1,9 +1,12 @@
 # Action verbs: launch, start, open, run
+# - launchDiffExprLoader()
+# - launchCMapDataLoader()
+# - launchMetadataViewer()
+# - launchResultPlotter()
 
-# launchDiffExprLoader() -------------------------------------------------------
 diffExpr <- launchDiffExprLoader()
 
-# launchCMapDataLoader() -------------------------------------------------------
+# Rank similar perturbations ---------------------------------------------------
 cmapKD <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
@@ -11,9 +14,8 @@ cmapCompounds <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Compound")
 
-launchMetadataViewer(cmapPerturbationsKD)
+launchMetadataViewer(cmapKD)
 
-# Rank similar perturbations ---------------------------------------------------
 compareKD        <- rankSimilarPerturbations(diffExpr, cmapKD)
 compareCompounds <- rankSimilarPerturbations(diffExpr, cmapCompounds)
 
@@ -27,16 +29,13 @@ launchMetadataViewer(compareKD)
 listExpressionDrugSensitivityAssociation()
 assocMatrix <- listExpressionDrugSensitivityAssociation()[[1]]
 assoc       <- loadExpressionDrugSensitivityAssociation(assocMatrix)
-predicted   <- predictTargetingDrugs(diffExprStat, assoc)
+predicted   <- predictTargetingDrugs(diffExpr, assoc)
 launchResultPlotter(predicted)
 
 # Plot targeting drugs vs similar perturbations
 launchResultPlotter(predicted, compareCompounds)
 
-# Drug set enrichment analysis -------------------------------------------------
+# Analyse drug set enrichment --------------------------------------------------
 descriptors <- loadDrugDescriptors("NCI60", "2D")
 drugSets    <- prepareDrugSets(descriptors)
-dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
-
-# launchDrugSetEnrichmentAnalysis(drugSets, predicted) -------------------------
-plotDrugSetEnrichment(drugSets, predicted, selectedSets=head(dsea$pathway, 6))
+launchDrugSetEnrichmentAnalyser(drugSets, predicted)

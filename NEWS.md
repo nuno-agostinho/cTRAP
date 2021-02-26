@@ -17,6 +17,9 @@ numeric columns, including the setting of maximum number of bins per column and
 minimum bin size
 * `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to select
 columns to use when comparing compound identifiers between datasets
+* Improvements to graphical interface functions:
+    - New `launchDrugSetEnrichmentAnalysis()` function
+    - Values from `Input` attributes are now correctly parsed as numeric
 
 # Bug fixes
 

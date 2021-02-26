@@ -706,7 +706,7 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
         data <- loadExpressionDrugSensitivityAssociation(info$source,
                                                          info$filename)
     }
-    cor   <- data[ , drug]
+    cor   <- data[ , drug, drop=TRUE]
     input <- attr(x, "input")
 
     if (method %in% c("spearman", "pearson")) {
