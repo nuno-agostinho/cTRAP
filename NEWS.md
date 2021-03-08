@@ -19,12 +19,16 @@ minimum bin size
 columns to use when comparing compound identifiers between datasets
 * Improvements to graphical interface functions:
     - New `launchDrugSetEnrichmentAnalysis()` function
-    - Values from `Input` attributes are now correctly parsed as numeric
+    - `launchMetadataViewer()` now correctly parses values from `Input`
+    attributes as numeric
+    - `launchCMapDataLoader()` now allows to load multiple CMap perturbation
+    types simultaneously
 
 # Bug fixes
 
-* `prepareDrugSets()`: properly prepare drug sets for 3D descriptors (fix issues
-with descriptors containing missing values)
+* `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
+perturbation types
+* `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
 
 # cTRAP 1.8 (23 October, 2020)
 

@@ -231,14 +231,14 @@
                    "Compound information"="compoundInfo")
     selectizeCondition <- function(id, label, choices, selected, ...) {
         selected <- .findMatch(selected, choices)
-        plugins  <- list("remove_button", "restore_on_backspace")
+        plugins  <- list("remove_button")
         return(selectizeInput(id, label, choices, selected, ...,
                               options=list(plugins=plugins)))
     }
 
     conditions <- getCMapConditions(metadata)
     sidebar <- sidebarPanel(
-        selectizeCondition(ns("type"), "Perturbation type",
+        selectizeCondition(ns("type"), "Perturbation type", multiple=TRUE,
                            conditions$perturbationType, perturbationType),
         selectizeCondition(ns("cellLine"), "Cell lines", multiple=TRUE,
                            conditions$cellLine, cellLine),
