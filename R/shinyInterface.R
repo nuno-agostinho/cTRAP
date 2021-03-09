@@ -267,7 +267,8 @@
 #' observeEvent
 .cmapDataLoaderServer <- function(id, metadata, zscores, geneInfo, compoundInfo,
                                   cellLine, timepoint, dosage) {
-    updateSelectizeCondition <- function(session, id, choices, selected, ...) {
+    updateSelectizeCondition <- function(session, input, id, choices, ...) {
+        selected <- isolate(input[[id]])
         selected <- .findMatch(selected, choices)
         return(updateSelectizeInput(session, id, choices=choices,
                                     selected=selected, ...))
@@ -280,15 +281,12 @@
             observe({
                 available <- getCMapConditions(metadata,
                                                perturbationType=input$type)
-                updateSelectizeCondition(
-                    session, "cellLine", selected=cellLine,
-                    choices=available$cellLine)
-                updateSelectizeCondition(
-                    session, "dosage", selected=dosage,
-                    choices=available$dosage)
-                updateSelectizeCondition(
-                    session, "timepoint", selected=timepoint,
-                    choices=available$timepoint)
+                updateSelectizeCondition(session, input, "cellLine",
+                                         choices=available$cellLine)
+                updateSelectizeCondition(session, input, "dosage",
+                                         choices=available$dosage)
+                updateSelectizeCondition(session, input, "timepoint",
+                                         choices=available$timepoint)
             })
 
             # Filter metadata based on selected inputs

@@ -1,4 +1,17 @@
-# cTRAP 1.8.1 (9 February, 2021)
+# cTRAP 1.8.1 (9 March, 2021)
+
+## Improvements to graphical interface functions:
+
+* New `launchDrugSetEnrichmentAnalysis()` function to analyse drug set
+enrichment and visualize respective results
+* `launchCMapDataLoader()`:
+    - Now allows to load multiple CMap perturbation types simultaneously
+    - Keep selected timepoint, dosage and cell line options when selecting
+    another perturbation type
+* `launchMetadataViewer()` now correctly parses values from `Input`
+attributes as numeric
+
+## Major changes
 
 * `prepareCMapPerturbations()`: directly set perturbation type, cell line,
 timepoint and dosage conditions as arguments
@@ -17,14 +30,8 @@ numeric columns, including the setting of maximum number of bins per column and
 minimum bin size
 * `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to select
 columns to use when comparing compound identifiers between datasets
-* Improvements to graphical interface functions:
-    - New `launchDrugSetEnrichmentAnalysis()` function
-    - `launchMetadataViewer()` now correctly parses values from `Input`
-    attributes as numeric
-    - `launchCMapDataLoader()` now allows to load multiple CMap perturbation
-    types simultaneously
 
-# Bug fixes
+## Bug fixes
 
 * `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
 perturbation types
