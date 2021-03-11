@@ -565,12 +565,7 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #' @export
 `[.expressionDrugSensitivityAssociation` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
-        out <- x
-        nargs <- nargs() - length(list(...)) - 1
-        genes <- subsetDim(i, attr(out, "genes"), nargs, areCols=FALSE)
-        drugs <- subsetDim(j, attr(out, "compounds"), nargs, areCols=TRUE)
-        attr(out, "genes")     <- genes
-        attr(out, "compounds") <- drugs
+        out <- subsetData(x, i, j, "genes", "compounds", nargs(), ...)
     } else {
         out <- NextMethod("[", drop=drop)
     }

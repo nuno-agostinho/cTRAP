@@ -644,7 +644,7 @@ plotPerturbationChanges <- function(x, perturbation, input,
     if (!isSummaryPert) cellLinePerts <- perturbation
     names(cellLinePerts) <- cellLinePerts
     if (is.character(x)) {
-        zscores <- loadCMapZscores(x[cellLinePerts], verbose=FALSE)
+        zscores <- loadCMapZscores(x[ , cellLinePerts], verbose=FALSE)
     } else {
         zscores <- unclass(x)
     }
@@ -685,12 +685,7 @@ plotPerturbationChanges <- function(x, perturbation, input,
 #' @export
 `[.perturbationChanges` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
-        out <- x
-        nargs <- nargs() - length(list(...)) - 1
-        genes <- subsetDim(i, attr(out, "genes"), nargs, areCols=FALSE)
-        perts <- subsetDim(j, attr(out, "perturbations"), nargs, areCols=TRUE)
-        attr(out, "genes") <- genes
-        attr(out, "perturbations") <- perts
+        out <- subsetData(x, i, j, "genes", "perturbations", nargs(), ...)
     } else {
         out <- NextMethod("[", drop=drop)
     }

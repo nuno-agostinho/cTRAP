@@ -38,6 +38,9 @@ perturbation types
 * `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
 * `plot()`: labels for plots showing correlation coefficients and rankings now
 do not print "NA"
+* When subsetting a `perturbationChanges` or a
+`expressionDrugSensitivityAssociation` object, pass only one argument to extract
+its columns (similarly to when subsetting a `data.frame`)
 
 # cTRAP 1.8 (23 October, 2020)
 

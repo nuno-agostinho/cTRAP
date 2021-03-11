@@ -121,6 +121,22 @@ subsetDim <- function(k, dims, nargs, areCols=TRUE) {
     return(unname(dims))
 }
 
+#' Subset data by rows and/or columns
+#' @keywords internal
+subsetData <- function(x, i, j, rowAttr, colAttr, nargs, ...) {
+    nargs <- nargs - length(list(...)) - 1
+    rows  <- attr(x, rowAttr)
+    rows  <- subsetDim(i, rows, nargs, areCols=FALSE)
+    attr(x, rowAttr) <- rows
+
+    # If no j is provided explicitly, replace j with i
+    if (missing(j) && nargs == 1) j <- i
+    cols <- attr(x, colAttr)
+    cols <- subsetDim(j, cols, nargs, areCols=TRUE)
+    attr(x, colAttr) <- cols
+    return(x)
+}
+
 #' Create word break opportunities (for HTML) using given characters
 #'
 #' @param str Character: text
