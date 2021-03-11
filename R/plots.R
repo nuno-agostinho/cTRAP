@@ -282,7 +282,22 @@ prepareLabel <- function(data) {
 
         dose       <- collapse(info$metadata$pert_idose)
         timepoint  <- collapse(info$metadata$pert_itime)
-        res <- sprintf("%s (%s, %s at %s)", name, cellLine, dose, timepoint)
+
+        # Prepare text to avoid
+        if (cellLine == "NA") cellLine <- NULL
+        if (dose == "NA") dose <- NULL
+        if (timepoint == "NA") timepoint <- NULL
+
+        dosePlusTimepoint <- paste(c(dose, timepoint), collapse=" at ")
+        if (dosePlusTimepoint == "") dosePlusTimepoint <- NULL
+
+        extra <- paste(c(cellLine, dosePlusTimepoint), collapse=", ")
+
+        if (extra == "") {
+            res <- name
+        } else {
+            res <- sprintf("%s (%s)", name, extra)
+        }
         return(res)
     }
 

@@ -1,4 +1,4 @@
-# cTRAP 1.8.1 (9 March, 2021)
+# cTRAP 1.8.1 (11 March, 2021)
 
 ## Improvements to graphical interface functions:
 
@@ -36,6 +36,8 @@ columns to use when comparing compound identifiers between datasets
 * `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
 perturbation types
 * `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
+* `plot()`: labels for plots showing correlation coefficients and rankings now
+do not print "NA"
 
 # cTRAP 1.8 (23 October, 2020)
 
