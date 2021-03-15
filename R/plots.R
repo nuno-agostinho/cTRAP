@@ -302,13 +302,8 @@ prepareLabel <- function(data) {
     }
 
     prepareLabel_targetingDrugs <- function(k, data) {
-        compoundInfo    <- attr(data, "compoundInfo")
-        data$compound   <- as.character(data$compound)
-        compoundInfo$id <- as.character(compoundInfo$id)
-
-        merged          <- merge(data, compoundInfo, by.x="compound", by.y="id")
-        compound        <- merged[k]
-        name            <- compound[["name"]]
+        compound <- as.table(data)[k, ]
+        name     <- compound[["name"]]
         if (is.null(name) || is.na(name) || name == "") {
             name <- compound[["compound"]]
             if (is.na(name)) name <- "NA"
@@ -332,7 +327,6 @@ prepareLabel <- function(data) {
     } else if (is(data, "targetingDrugs")) {
         FUN <- prepareLabel_targetingDrugs
     }
-
     res <- sapply(seq(nrow(data)), FUN, data)
     return(res)
 }

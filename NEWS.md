@@ -36,8 +36,10 @@ columns to use when comparing compound identifiers between datasets
 * `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
 perturbation types
 * `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
-* `plot()`: labels for plots showing correlation coefficients and rankings now
-do not print "NA"
+* `plot()`:
+    - Fix wrong labels when plotting `targetingDrugs` objects
+    - Avoid printing "NA" in labels regarding plots showing correlation
+    coefficients and rankings
 * When subsetting a `perturbationChanges` or a
 `expressionDrugSensitivityAssociation` object, pass only one argument to extract
 its columns (similarly to when subsetting a `data.frame`)
