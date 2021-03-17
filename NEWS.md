@@ -44,6 +44,8 @@ perturbation types
 * When subsetting a `perturbationChanges` or a
 `expressionDrugSensitivityAssociation` object, pass only one argument to extract
 its columns (similarly to when subsetting a `data.frame`)
+* `analyseDrugSetEnrichment()`: for the resulting table, the name of the first
+column was renamed from `pathway` to `descriptor`
 
 # cTRAP 1.8 (23 October, 2020)
 

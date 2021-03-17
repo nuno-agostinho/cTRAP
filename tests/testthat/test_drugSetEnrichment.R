@@ -176,9 +176,10 @@ test_that("Analyse drug set enrichment for ranked CMap perturbations", {
     dsea <- analyseDrugSetEnrichment(drugSets, data)
     expect_is(dsea, "data.table")
     expect_identical(dsea$padj, sort(dsea$padj))
-    expect_identical(colnames(dsea), c("pathway", "pval", "padj", "ES", "NES",
-                                       "nMoreExtreme", "size", "leadingEdge"))
-    expect_equal(head(dsea$pathway),
+    expect_identical(colnames(dsea),
+                     c("descriptor", "pval", "padj", "ES", "NES",
+                       "nMoreExtreme", "size", "leadingEdge"))
+    expect_equal(head(dsea$descriptor),
                  c("FDA_status: Clinical trial", "Mutagenic: none",
                    "Tumorigenic: high", "Tumorigenic: none",
                    "Reproductive Effective: high",
@@ -191,12 +192,14 @@ test_that("Analyse drug set enrichment for putative targeting drugs", {
     dsea      <- analyseDrugSetEnrichment(drugSets, predicted)
     expect_is(dsea, "data.table")
     expect_identical(dsea$padj, sort(dsea$padj))
-    expect_identical(colnames(dsea), c("pathway", "pval", "padj", "ES", "NES",
-                                       "nMoreExtreme", "size", "leadingEdge"))
-    expect_true(all(c("Aromatic Nitrogens: [4, 12]",
-                      "FDA_status: Clinical trial",
-                      "Reproductive Effective: high", "Irritant: high",
-                      "Aromatic Nitrogens: 2", "Amines: 0") %in% dsea$pathway))
+    expect_identical(colnames(dsea),
+                     c("descriptor", "pval", "padj", "ES", "NES",
+                       "nMoreExtreme", "size", "leadingEdge"))
+    expect_true(all(
+        c("Aromatic Nitrogens: [4, 12]",
+          "FDA_status: Clinical trial",
+          "Reproductive Effective: high", "Irritant: high",
+          "Aromatic Nitrogens: 2", "Amines: 0") %in% dsea$descriptor))
 })
 
 customDrugStat <- runif(100, -5, 5)
@@ -206,11 +209,12 @@ test_that("Analyse drug set enrichment for a named numeric vector", {
     dsea <- analyseDrugSetEnrichment(drugSets, customDrugStat)
     expect_is(dsea, "data.table")
     expect_identical(dsea$padj, sort(dsea$padj))
-    expect_identical(colnames(dsea), c("pathway", "pval", "padj", "ES", "NES",
-                                       "nMoreExtreme", "size", "leadingEdge"))
+    expect_identical(colnames(dsea),
+                     c("descriptor", "pval", "padj", "ES", "NES",
+                       "nMoreExtreme", "size", "leadingEdge"))
     expect_true(all(c("Mutagenic: high", "Mutagenic: none", "Tumorigenic: none",
                       "Reproductive Effective: none", "Irritant: none",
-                      "Fragments: [2, 6]") %in% dsea$pathway))
+                      "Fragments: [2, 6]") %in% dsea$descriptor))
 })
 
 test_that("Analyse drug set enrichment using a custom list of drug sets", {
@@ -220,9 +224,10 @@ test_that("Analyse drug set enrichment using a custom list of drug sets", {
     dsea <- analyseDrugSetEnrichment(customSets, customDrugStat)
     expect_is(dsea, "data.table")
     expect_identical(dsea$padj, sort(dsea$padj))
-    expect_identical(colnames(dsea), c("pathway", "pval", "padj", "ES", "NES",
-                                       "nMoreExtreme", "size", "leadingEdge"))
-    expect_equal(sort(dsea$pathway), sort(names(customSets)))
+    expect_identical(colnames(dsea),
+                     c("descriptor", "pval", "padj", "ES", "NES",
+                       "nMoreExtreme", "size", "leadingEdge"))
+    expect_equal(sort(dsea$descriptor), sort(names(customSets)))
 })
 
 test_that("Plot drug set enrichment", {
