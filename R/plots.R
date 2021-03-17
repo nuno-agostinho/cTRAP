@@ -650,28 +650,44 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
 
     cols   <- attr(df, "cols")
     isRank <- attr(df, "isRank")
-    highlight <- compareQuantile(
-        df[[cols[[1]]]], quantileThreshold, lte=TRUE) &
-        compareQuantile(df[[cols[[2]]]], quantileThreshold, lte=!isRank)
+
+    # Correctly highlight targeting drugs depending on drug activity direction
+    isDrugActivityDirectlyProportionalToSensitivity <- attr(
+        targetingDrugs, "expressionDrugSensitivityCor")[[
+            "isDrugActivityDirectlyProportionalToSensitivity"]]
+    if (isRank) {
+        lteTargetingDrugs <- TRUE
+    } else {
+        lteTargetingDrugs <- !isDrugActivityDirectlyProportionalToSensitivity
+    }
+
+    highlightY <- compareQuantile(
+        df[[cols[[1]]]], quantileThreshold, lte=lteTargetingDrugs)
+    highlightX <- compareQuantile(df[[cols[[2]]]], quantileThreshold,
+                                  lte=!isRank)
+    highlight <- highlightX & highlightY
 
     xlabel <- "Gene expression and drug sensitivity association"
     source <- attr(targetingDrugs, "expressionDrugSensitivityCor")$source
     if (!is.null(source)) xlabel <- sprintf("%s (%s)", xlabel, source)
     xlabel <- sprintf("%s: %s", xlabel, column)
     ylabel <- paste("CMap comparison:", column)
+    df$highlight <- highlight
 
-    plot <- ggplot(df, aes_string(cols[[1]], cols[[2]])) +
-        geom_point(data=df[highlight],  colour="orange", show.legend=FALSE) +
-        geom_point(data=df[!highlight], colour="grey",   show.legend=FALSE,
-                   alpha=0.7) +
+    plot <- ggplot(df, aes_string(cols[[1]], cols[[2]], colour=highlight)) +
+        geom_point(alpha=0.7, show.legend=FALSE) +
+        geom_rug(alpha=0.3, show.legend=FALSE) +
         xlab(xlabel) +
         ylab(ylabel) +
-        theme_bw()
+        theme_bw() +
+        scale_colour_manual(values=c("TRUE"="orange", "FALSE"="gray"))
 
     if (!is.null(labelBy) && labelBy %in% colnames(df)) {
         label             <- df[[labelBy]]
         label[!highlight] <- NA
-        plot              <- plot + geom_text_repel(label=label, na.rm=TRUE)
+        plot              <- plot +
+            geom_text_repel(label=label, color="black", alpha=0.7, na.rm=TRUE,
+                            show.legend=FALSE)
     }
     attr(plot, "data")     <- df
     attr(plot, "suffixes") <- suffixes

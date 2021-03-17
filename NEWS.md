@@ -32,18 +32,22 @@ minimum bin size
 * `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to select
 columns to use when comparing compound identifiers between datasets
 
-## Bug fixes
+## Bug fixes and minor changes
 
 * `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
 perturbation types
 * `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
 * `plot()`:
     - Fix wrong labels when plotting `targetingDrugs` objects
-    - Avoid printing "NA" in labels regarding plots showing correlation
-    coefficients and rankings
-* When subsetting a `perturbationChanges` or a
-`expressionDrugSensitivityAssociation` object, pass only one argument to extract
-its columns (similarly to when subsetting a `data.frame`)
+    - Avoid printing "NA" in labels identifying metadata for perturbations
+* `plotTargetingDrugsVSsimilarPerturbations()`:
+    - Fix highlighting of plot points depending whether drug activity is
+    directly proportional to drug sensitivity
+    - Include rug plot
+* When subsetting a `perturbationChanges` or an
+`expressionDrugSensitivityAssociation` object, passing only one argument
+extracts its columns as in previous versions of cTRAP (similarly to when
+subsetting a `data.frame`)
 * `analyseDrugSetEnrichment()`: for the resulting table, the name of the first
 column was renamed from `pathway` to `descriptor`
 
