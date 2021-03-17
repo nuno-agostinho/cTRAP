@@ -459,15 +459,10 @@ listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
 
 #' @keywords internal
 #' @importFrom tibble tibble
-#' @importFrom rhdf5 h5ls h5read h5readAttributes
+#' @importFrom rhdf5 h5ls h5read h5readAttributes h5closeAll
 readExpressionDrugSensitivityCorHDF5 <- function(
     filename="expressionDrugSensitivityCorNCI60.h5", rows=NULL, cols=NULL,
     loadValues=FALSE, verbose=FALSE) {
-    if (verbose) {
-        msg <- paste("Loading gene expresion and drug sensitivity correlation",
-                     "matrix from %s...")
-        message(sprintf(msg, filename))
-    }
 
     # Check which datasets are attributes or not
     info   <- h5ls(filename)
@@ -485,8 +480,20 @@ readExpressionDrugSensitivityCorHDF5 <- function(
         }
         return(dim)
     }
+    if (is.null(rows)) rows <- rownames(filename)
     rows <- matchIndex(rows, "rownames")
+    if (is.null(cols)) cols <- colnames(filename)
     cols <- matchIndex(cols, "colnames")
+
+    if (verbose) {
+        msg <- paste("Loading gene expresion and drug sensitivity correlation",
+                     "matrix from %s (%s rows x %s cols)...")
+        nrows <- length(rows)
+        ncols <- length(cols)
+        if (nrows == 0) nrows <- length(readDimNames(filename, "rownames"))
+        if (ncols == 0) ncols <- length(readDimNames(filename, "colnames"))
+        message(sprintf(msg, filename, nrows, ncols))
+    }
 
     # Read data from file
     name <- "data"
@@ -530,6 +537,7 @@ readExpressionDrugSensitivityCorHDF5 <- function(
         colnames(data) <- attr(data, "compounds")
         rownames(data) <- attr(data, "genes")
     }
+    h5closeAll()
     return(data)
 }
 
@@ -705,8 +713,16 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
     input <- attr(x, "input")
 
     if (method %in% c("spearman", "pearson")) {
-        intersecting <- intersect(names(input), names(cor))
-        df <- data.frame(input=input[intersecting], cor=cor[intersecting])
+        if (is.character(cor)) {
+            intersecting <- intersect(names(input), rownames(cor))
+            val <- readExpressionDrugSensitivityCorHDF5(
+                cor[intersecting, drug], loadValues=TRUE, verbose=FALSE)
+            val <- val[intersecting, 1, drop=TRUE]
+        } else {
+            intersecting <- intersect(names(input), names(cor))
+            val          <- cor[intersecting]
+        }
+        df <- data.frame(input=input[intersecting], cor=val)
 
         plot <- ggplot(df, aes_string("input", "cor")) +
             geom_point(alpha=0.1) +

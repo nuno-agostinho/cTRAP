@@ -18,7 +18,8 @@ timepoint and dosage conditions as arguments
 * `rankSimilarPerturbations()` and `predictTargetingDrugs()`:
     - Avoid redundant loading of data chunks, slightly decreasing run time
     - Lower memory footprint when using NCI60's gene expression and drug
-    sensitivity association by loading and processing data in chunks
+    sensitivity association (now available in HDF5 files) by loading and
+    processing data in chunks
     - Faster GSEA-based score calculation (up to 4-7 times faster)
     - New `threads` argument allows to set number of parallel threads (not
     supported on Windows)

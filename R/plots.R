@@ -304,20 +304,22 @@ prepareLabel <- function(data) {
     prepareLabel_targetingDrugs <- function(k, data) {
         compound <- as.table(data)[k, ]
         name     <- compound[["name"]]
-        if (is.null(name) || is.na(name) || name == "") {
+        if (is.null(name) || is.na(name) || name == "" || name =="NA") {
             name <- compound[["compound"]]
             if (is.na(name)) name <- "NA"
         }
         target <- compound[["target"]]
         target <- gsub(", |;", "/", target)
-        if (is.null(target) || target == "") target <- "?"
+        if (is.null(target) || length(target) == 0 || target == "") {
+            target <- NULL
+        }
 
         targetPathway <- compound[["target pathway"]]
-        if (is.null(targetPathway)) {
-            targetPathway <- NA
-            res <- sprintf("%s (%s)", name, target)
+        info <- paste(c(target, targetPathway), collapse=": ")
+        if (is.null(info) || info == "") {
+            res <- name
         } else {
-            res <- sprintf("%s (%s: %s)", name, target, targetPathway)
+            res <- sprintf("%s (%s)", name, info)
         }
         return(res)
     }
