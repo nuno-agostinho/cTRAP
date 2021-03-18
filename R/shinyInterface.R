@@ -11,7 +11,9 @@
 #' @return \code{highchart} object
 #' @keywords internal
 .plotBubbles <- function(data, title, colour="orange") {
-    df <- as.data.frame(table(data))
+    if (!is.table(data)) data <- table(data)
+    df <- as.data.frame(data)
+    names(df) <- c("data", "Freq")
     if (nrow(df) == 0) {
         hc <- highchart()
     } else {
@@ -236,7 +238,12 @@
                               options=list(plugins=plugins)))
     }
 
-    conditions <- getCMapConditions(metadata)
+    plots <- fluidRow(
+        column(3, highchartOutput(ns("perturbationPlot"), height="200px")),
+        column(3, highchartOutput(ns("cellLinePlot"), height="200px")),
+        column(3, highchartOutput(ns("dosagePlot"), height="200px")),
+        column(3, highchartOutput(ns("timepointPlot"), height="200px")))
+    conditions <- getCMapConditions(metadata, control=TRUE)
     sidebar <- sidebarPanel(
         selectizeCondition(ns("type"), "Perturbation type", multiple=TRUE,
                            conditions$perturbationType, perturbationType),
@@ -250,16 +257,10 @@
         helpText("By default, data will be downloaded if not found."),
         actionButton(ns("cancel"), "Cancel"),
         actionButton(ns("load"), "Load data", class="btn-primary"))
-    mainPanel <- mainPanel(
-        fluidRow(column(4, highchartOutput(ns("cellLinePlot"),
-                                           height="200px")),
-                 column(4, highchartOutput(ns("dosagePlot"),
-                                           height="200px")),
-                 column(4, highchartOutput(ns("timepointPlot"),
-                                           height="200px")),
-        ),
-        DTOutput(ns("table")))
+    mainPanel <- mainPanel(DTOutput(ns("table")))
+
     ui <- tabPanel(title, sidebar, mainPanel)
+    ui[[3]] <- c(list(plots), ui[[3]])
     return(ui)
 }
 
@@ -299,6 +300,13 @@
             })
 
             # Show plots
+            output$perturbationPlot <- renderHighchart({
+                subset <- getFilteredMetadata()
+                labels <- getCMapPerturbationTypes(control=TRUE)
+                types  <- table(subset$pert_type)
+                names(types) <- names(labels)[match(names(types), labels)]
+                .plotBubbles(types, "Perturbations", "red")
+            })
             output$cellLinePlot <- renderHighchart({
                 subset <- getFilteredMetadata()
                 .plotBubbles(subset$cell_id, "Cell lines", "orange")

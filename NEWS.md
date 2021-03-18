@@ -8,6 +8,7 @@ enrichment and visualize respective results
     - Now allows to load multiple CMap perturbation types simultaneously
     - Keep selected timepoint, dosage and cell line options when selecting
     another perturbation type
+    - Add bubble plot of CMap perturbation types
 * `launchMetadataViewer()` now correctly parses values from `Input`
 attributes as numeric
 
