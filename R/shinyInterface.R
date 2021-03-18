@@ -598,12 +598,11 @@
         function(input, output, session) {
             getSelectedObject <- reactive(x[[input$object]])
             getDSEAresult     <- reactive({
-                isolate({
-                    obj      <- getSelectedObject()
-                    sort     <- input$sort
-                    statsKey <- input$statsKey
-                    setsKey  <- input$setsKey
-                })
+                obj      <- getSelectedObject()
+                sort     <- input$sort
+                statsKey <- input$statsKey
+                setsKey  <- input$setsKey
+
                 isValid <- function(e) !is.null(e) && e != ""
                 if (is.null(obj) || !isValid(sort)) return(NULL)
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
@@ -620,16 +619,16 @@
             })
 
             # Update available keys to select for datasets
-            observeEvent(input$sort, {
+            observe({
                 obj <- getSelectedObject()
                 if (is.null(obj)) return(NULL)
 
                 statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
                 setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
 
-                probableKey <- findIntersectingCompounds(setsInfo, statsInfo)
-                statsKey    <- probableKey$key1
-                setsKey     <- probableKey$key2
+                probableKey <- findIntersectingCompounds(statsInfo, setsInfo)
+                statsKey    <- probableKey$key2
+                setsKey     <- probableKey$key1
 
                 keyList      <- getCompoundIntersectingKeyList()
                 statsOptions <- intersect(names(statsInfo), keyList)
@@ -654,8 +653,8 @@
                 isValid <- function(e) !is.null(e) && e != ""
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
 
-                probableKey <- findIntersectingCompounds(setsInfo, statsInfo,
-                                                         setsKey, statsKey)
+                probableKey <- findIntersectingCompounds(statsInfo, setsInfo,
+                                                         statsKey, setsKey)
                 num <- length(probableKey[[3]])
                 msg <- "cross-matches found using the selected keys"
                 output$msg <- renderUI(helpText(paste(num, msg)))
@@ -679,10 +678,12 @@
                     isolate({
                         setsKey  <- input$setsKey
                         statsKey <- input$statsKey
+                        sort     <- input$sort
                     })
                     isValid <- function(e) !is.null(e) && e != ""
                     if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-                    plotDrugSetEnrichment(sets, obj, selectedSets=element,
+                    plotDrugSetEnrichment(sets, obj, col=sort,
+                                          selectedSets=element,
                                           keyColStats=statsKey,
                                           keyColSets=setsKey)[[1]]
                 })
