@@ -339,7 +339,7 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 
     if (!is.null(perturbationType)) {
         filter$perturbationType <- perturbationType
-        tmp <- getCMapPerturbationTypes()[perturbationType]
+        tmp <- getCMapPerturbationTypes(control=TRUE)[perturbationType]
         if (!all(is.na(tmp))) perturbationType <- tmp
         metadata <- metadata[metadata$pert_type %in% perturbationType, ]
     }
