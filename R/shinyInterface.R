@@ -412,9 +412,12 @@
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(ns("object"), "Dataset", names(x)),
-        selectizeInput(ns("element"), "Element", choices=NULL),
         selectizeInput(ns("method"), "Method", choices=NULL))
-    sidebar[[3]][[2]] <- plotOutput(ns("plot"))
+    sidebar[[3]][[2]] <- tagList(
+        selectizeInput(ns("element"), "Row ID to plot", choices=NULL,
+                       width="100%"),
+        plotOutput(ns("plot"), brush=ns("brush")),
+        DTOutput(ns("pointTable")))
 
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
@@ -422,8 +425,9 @@
 }
 
 #' @importFrom shiny renderPlot observeEvent observe
-#' @importFrom DT renderDT
+#' @importFrom DT renderDT formatSignif dataTableProxy replaceData
 .dataPlotterServer <- function(id, x) {
+    isValid <- function(e) !is.null(e) && e != ""
     moduleServer(
         id,
         function(input, output, session) {
@@ -432,7 +436,8 @@
             # Update element and methods choices depending on selected object
             observeEvent(input$object, {
                 obj <- getSelectedObject()
-                updateSelectizeInput(session, "element", choices=obj[[1]])
+                updateSelectizeInput(session, "element", choices=obj[[1]],
+                                     selected=list(), server=TRUE)
                 # Update methods depending on selected object
                 methods <- c("Spearman's correlation"="spearman",
                              "Pearson's correlation"="pearson",
@@ -449,21 +454,48 @@
                 updateSelectizeInput(session, "element", selected=selected)
             })
 
-            output$plot <- renderPlot({
+            output$table <- renderDT({
+                data <- as.table(getSelectedObject(), clean=FALSE)
+                .prepareDT(data)
+            })
+
+            # Filter table based on overall plot
+            proxy <- dataTableProxy("table")
+            observe({
+                elem <- input$element
+                if (is.null(elem) || elem == "") {
+                    obj   <- as.table(getSelectedObject(), clean=FALSE)
+                    brush <- input$brush
+                    if (!is.null(brush)) {
+                        val  <- obj[[brush$mapping$y]]
+                        rows <- val >= brush$ymin & val <= brush$ymax
+                        obj  <- obj[rows, ]
+                    }
+                    replaceData(proxy, obj, rownames=FALSE)
+                }
+            })
+
+            plotData <- reactive({
                 obj <- getSelectedObject()
-
                 method <- input$method
-                if (is.null(method) || method == "") return(NULL)
-
+                if (!isValid(method)) return(NULL)
                 element <- input$element
                 if (element == "") element <- NULL
                 if (!is.null(element) && !element %in% obj[[1]]) return(NULL)
-
                 plot(obj, element, method=method, n=6)
             })
 
-            output$table <- renderDT(
-                .prepareDT(as.table(getSelectedObject(), clean=FALSE)))
+            output$plot <- renderPlot(plotData())
+            output$pointTable <- renderDT({
+                data <- attr(plotData(), "data")
+                if (is.null(data)) return(NULL)
+                brush <- input$brush
+                if (!is.null(brush)) data <- brushedPoints(data, brush)
+                numericCols <- sapply(data, is.numeric)
+                dt <- .prepareDT(data, scrollX=TRUE, pagingType="simple",
+                                 class="compact hover stripe")
+                return(formatSignif(dt, numericCols))
+            })
         }
     )
 }

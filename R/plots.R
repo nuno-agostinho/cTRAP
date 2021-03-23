@@ -254,6 +254,7 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes, title=NULL) {
             ggtitle(title) +
             theme(plot.title = element_text(hjust = 0.5))
     }
+    attr(plot, "data") <- cbind("Genes"=rownames(dfAllPerts), dfAllPerts)
     return(plot)
 }
 

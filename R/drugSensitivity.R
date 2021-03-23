@@ -737,6 +737,7 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
                 ggtitle(title) +
                 theme(plot.title = element_text(hjust = 0.5))
         }
+        attr(plot, "data") <- cbind("Genes"=rownames(df), df)
     } else if (method == "gsea") {
         geneset <- c(attr(x, "pathways"), # legacy
                      attr(x, "geneset"))

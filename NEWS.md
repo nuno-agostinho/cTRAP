@@ -9,6 +9,8 @@ enrichment and visualize respective results
     - Keep selected timepoint, dosage and cell line options when selecting
     another perturbation type
     - Add bubble plot of CMap perturbation types
+* `launchResultPlotter()` now allows to view tables below specific plots and
+drag-and-select those plots to filter data in those same tables
 * `launchMetadataViewer()` now correctly parses values from `Input`
 attributes as numeric
 
