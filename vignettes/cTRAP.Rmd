@@ -381,7 +381,8 @@ descriptors <- loadDrugDescriptors("CMap", "2D")
 drugSets    <- prepareDrugSets(descriptors)
 dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
 # Plot the 6 most significant drug set enrichment results
-plotDrugSetEnrichment(drugSets, predicted, selectedSets=head(dsea$pathway, 6))
+plotDrugSetEnrichment(drugSets, predicted,
+                      selectedSets=head(dsea$descriptor, 6))
 ```
 
 # Contact information
