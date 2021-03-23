@@ -594,10 +594,30 @@
             getSelectedDataset2 <- reactive(x[[input$data2]])
 
             observe({
+                data1 <- getSelectedDataset1()
+                data2 <- getSelectedDataset2()
+                if (is.null(data1) || is.null(data2)) return(NULL)
+                cols <- intersect(colnames(data1), colnames(data2))
+                # Select first ranked column
+                rankCol <- grep("rank$", cols, value=TRUE)[1]
+                if (is.na(rankCol)) rankCol <- NULL
+
+                updateSelectizeInput(session, "col", choices=cols,
+                                     selected=rankCol)
+            })
+
+            observe({
+                data1 <- getSelectedDataset1()
+                data2 <- getSelectedDataset2()
+                col <- input$col
+                isColValid <- !is.null(col) && col != ""
+                if (is.null(data1) || is.null(data2) || !isColValid) {
+                    return(NULL)
+                }
+
                 plot <- suppressMessages(
                     plotTargetingDrugsVSsimilarPerturbations(
-                        getSelectedDataset1(), getSelectedDataset2(),
-                        column="spearman_rank", labelBy=NULL) + theme_bw(16))
+                        data1, data2, column=col, labelBy=NULL) + theme_bw(16))
 
                 output$plot  <- renderPlot(plot)
                 output$table <- renderDT({
@@ -632,7 +652,8 @@
         uiOutput(ns("msg")),
         actionButton(ns("analyse"), "Analyse", class="btn-primary"))
     sidebar[[3]][[2]] <- tagList(
-        selectizeInput(ns("element"), "Row ID", choices=NULL),
+        selectizeInput(ns("element"), "Row ID to plot", choices=NULL,
+                       width="100%"),
         plotOutput(ns("plot")))
 
     mainPanel <- mainPanel(DTOutput(ns("table")))
