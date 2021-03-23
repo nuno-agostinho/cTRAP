@@ -135,15 +135,25 @@
 
 # Internal interface server and UI ---------------------------------------------
 
+.getENCODEconditions <- function(metadata) {
+    cellLines <- sort(unique(metadata$`Biosample term name`))
+    genes     <- sort(unique(metadata$`Experiment target`))
+    genes     <- genes[genes != ""]
+
+    res <- list(genes=genes, cellLines=cellLines)
+    return(res)
+}
+
 #' @importFrom shiny NS sidebarPanel selectizeInput mainPanel tabPanel
 #' sidebarLayout
 #' @importFrom DT DTOutput
 .diffExprENCODEloaderUI <- function(id, metadata, cellLine=NULL, gene=NULL,
                                     title="ENCODE Knockdown Data Loader") {
     ns <- NS(id)
-    cellLines <- sort(unique(metadata$`Biosample term name`))
-    genes     <- sort(unique(metadata$`Experiment target`))
-    genes     <- genes[genes != ""]
+
+    conditions <- .getENCODEconditions(metadata)
+    cellLines  <- conditions$cellLines
+    genes      <- conditions$genes
 
     onInitializeCellLine <- NULL
     if (is.null(cellLine)) {
@@ -175,14 +185,19 @@
     moduleServer(
         id, function(input, output, session) {
             output$table <- renderDT({
+                .prepareDT(downloadENCODEknockdownMetadata())
+            })
+            proxy <- dataTableProxy("table")
+            observe({
                 cellLine <- input$cellLine
                 if (cellLine == "") cellLine <- NULL
 
                 gene <- input$gene
                 if (gene == "") gene <- NULL
-
-                .prepareDT(downloadENCODEknockdownMetadata(cellLine, gene))
+                data <- downloadENCODEknockdownMetadata(cellLine, gene)
+                observe(replaceData(proxy, data, rownames=FALSE))
             })
+
             observeEvent(input$load, {
                 message("Filtering data...")
                 ENCODEmetadata <- downloadENCODEknockdownMetadata(
@@ -266,6 +281,7 @@
 
 #' @importFrom shiny isolate updateSelectizeInput moduleServer stopApp
 #' observeEvent
+#' @importFrom DT dataTableProxy replaceData
 .cmapDataLoaderServer <- function(id, metadata, zscores, geneInfo, compoundInfo,
                                   cellLine, timepoint, dosage) {
     updateSelectizeCondition <- function(session, input, id, choices, ...) {
@@ -275,87 +291,89 @@
                                     selected=selected, ...))
     }
 
-    moduleServer(
-        id,
-        function(input, output, session) {
-            # Update conditions based on selected perturbation type
-            observe({
-                available <- getCMapConditions(metadata,
-                                               perturbationType=input$type)
-                updateSelectizeCondition(session, input, "cellLine",
-                                         choices=available$cellLine)
-                updateSelectizeCondition(session, input, "dosage",
-                                         choices=available$dosage)
-                updateSelectizeCondition(session, input, "timepoint",
-                                         choices=available$timepoint)
-            })
+    server <- function(input, output, session) {
+        # Update conditions based on selected perturbation type
+        observe({
+            available <- getCMapConditions(metadata,
+                                           perturbationType=input$type)
+            updateSelectizeCondition(session, input, "cellLine",
+                                     choices=available$cellLine)
+            updateSelectizeCondition(session, input, "dosage",
+                                     choices=available$dosage)
+            updateSelectizeCondition(session, input, "timepoint",
+                                     choices=available$timepoint)
+        })
 
-            # Filter metadata based on selected inputs
-            getFilteredMetadata <- reactive({
-                filterCMapMetadata(
-                    metadata, perturbationType=input$type,
-                    cellLine=input$cellLine,
-                    dosage=input$dosage,
-                    timepoint=input$timepoint)
-            })
+        # Filter metadata based on selected inputs
+        getFilteredMetadata <- reactive({
+            filterCMapMetadata(
+                metadata, perturbationType=input$type,
+                cellLine=input$cellLine,
+                dosage=input$dosage,
+                timepoint=input$timepoint)
+        })
 
-            # Show plots
-            output$perturbationPlot <- renderHighchart({
-                subset <- getFilteredMetadata()
-                labels <- getCMapPerturbationTypes(control=TRUE)
-                types  <- table(subset$pert_type)
-                names(types) <- names(labels)[match(names(types), labels)]
-                .plotBubbles(types, "Perturbations", "red")
-            })
-            output$cellLinePlot <- renderHighchart({
-                subset <- getFilteredMetadata()
-                .plotBubbles(subset$cell_id, "Cell lines", "orange")
-            })
-            output$dosagePlot <- renderHighchart({
-                subset <- getFilteredMetadata()
-                .plotBubbles(subset$pert_idose, "Dosages", "green")
-            })
-            output$timepointPlot <- renderHighchart({
-                subset <- getFilteredMetadata()
-                .plotBubbles(subset$pert_itime, "Time points", "purple")
-            })
+        # Show plots
+        output$perturbationPlot <- renderHighchart({
+            subset <- getFilteredMetadata()
+            labels <- getCMapPerturbationTypes(control=TRUE)
+            types  <- table(subset$pert_type)
+            names(types) <- names(labels)[match(names(types), labels)]
+            .plotBubbles(types, "Perturbations", "red")
+        })
 
-            # Show table
-            output$table <- renderDT({
-                hiddenCols <- c("pert_dose", "pert_dose_unit", "pert_time",
-                                "pert_time_unit")
-                hiddenCols <- match(hiddenCols, colnames(metadata))
-                columnDefs <- list(list(visible=FALSE, targets=hiddenCols - 1))
-                .prepareDT(getFilteredMetadata(), columnDefs=columnDefs)
+        renderBubbleChart <- function(subset, title, colour) {
+            renderHighchart({
+                data <- getFilteredMetadata()[[subset]]
+                data[is.na(data)] <- "NA"
+                .plotBubbles(data, title, colour)
             })
-
-            # Load data
-            observeEvent(input$load, {
-                types <- isolate(input$data)
-
-                returnIf <- function(bool, val) {
-                    res <- NULL
-                    if (bool) res <- val
-                    return(res)
-                }
-                metadata     <- returnIf("metadata" %in% types,
-                                         getFilteredMetadata())
-                zscores      <- returnIf("zscores" %in% types, zscores)
-                geneInfo     <- returnIf("geneInfo" %in% types, geneInfo)
-                compoundInfo <- returnIf("compoundInfo" %in% types,
-                                         compoundInfo)
-
-                perturbations <- prepareCMapPerturbations(
-                    metadata=metadata, zscores=zscores,
-                    geneInfo=geneInfo, compoundInfo=compoundInfo)
-                stopApp(perturbations)
-            })
-
-            # Cancel
-            observeEvent(input$cancel, stopApp(stop("User cancel",
-                                                    call.=FALSE)))
         }
-    )
+        output$cellLinePlot  <- renderBubbleChart("cell_id", "Cell lines",
+                                                  "orange")
+        output$dosagePlot    <- renderBubbleChart("pert_idose", "Dosages",
+                                                  "green")
+        output$timepointPlot <- renderBubbleChart("pert_itime", "Time points",
+                                                "purple")
+
+        # Show table
+        output$table <- renderDT({
+            hiddenCols <- c("pert_dose", "pert_dose_unit", "pert_time",
+                            "pert_time_unit")
+            hiddenCols <- match(hiddenCols, colnames(metadata))
+            columnDefs <- list(list(visible=FALSE, targets=hiddenCols - 1))
+            .prepareDT(isolate(getFilteredMetadata()), columnDefs=columnDefs,
+                               scrollX=TRUE)
+        })
+        proxy <- dataTableProxy("table")
+        observe(replaceData(proxy, getFilteredMetadata(), rownames=FALSE))
+
+        # Load data
+        observeEvent(input$load, {
+            types <- isolate(input$data)
+
+            returnIf <- function(bool, val) {
+                res <- NULL
+                if (bool) res <- val
+                return(res)
+            }
+            metadata     <- returnIf("metadata" %in% types,
+                                     getFilteredMetadata())
+            zscores      <- returnIf("zscores" %in% types, zscores)
+            geneInfo     <- returnIf("geneInfo" %in% types, geneInfo)
+            compoundInfo <- returnIf("compoundInfo" %in% types, compoundInfo)
+
+            perturbations <- prepareCMapPerturbations(
+                metadata=metadata, zscores=zscores,
+                geneInfo=geneInfo, compoundInfo=compoundInfo)
+            stopApp(perturbations)
+        })
+
+        # Cancel
+        observeEvent(input$cancel, stopApp(stop("User cancel", call.=FALSE)))
+    }
+
+    moduleServer(id, server)
 }
 
 #' @importFrom shiny NS sidebarPanel mainPanel tabPanel sidebarLayout
