@@ -1,5 +1,31 @@
 # Skeleton for common elements -------------------------------------------------
 
+#' @importFrom shiny div h3 tags
+.panel <- function(
+    title=NULL, ..., footer=NULL, collapse=TRUE,
+    type=c("default", "primary", "success", "info", "warning", "danger")) {
+
+    type <- match.arg(type)
+    if (!is.null(title)) {
+        if (collapse) {
+            title <- tags$a(role="button", "data-toggle"="collapse",
+                            "data-parent"="#accordion", href="#collapseOne",
+                            "aria-expanded"="false",
+                            "aria-controls"="collapseOne", title)
+        }
+        title <- div(class="panel-heading", h3(class="panel-title", title))
+    }
+
+    body <- list(...)
+    if (length(body) > 0) body <- div(class="panel-body", ...)
+    if (collapse) {
+        body <- div(id="collapseOne", class="panel-collapse collapse in",
+                    role="tabpanel", "aria-labelledby"="headingOne", body)
+    }
+    if (!is.null(footer)) footer <- div(class="panel-footer", footer)
+    div(class=paste0("panel panel-", type), title, body, footer)
+}
+
 #' Plot packed bubbles
 #'
 #' @importFrom highcharter hchart hcaes hc_title hc_tooltip %>% highchart JS
@@ -45,30 +71,38 @@
     return(ui)
 }
 
-
 #' @importFrom DT datatable formatSignif
 .prepareDT <- function(table, suffixes=NULL, ..., columnDefs=NULL,
-                       scrollX=FALSE, pagingType="simple_numbers") {
+                       scrollX=TRUE, pagingType="simple_numbers") {
     if (is.null(table)) return(NULL)
-    if (nrow(table) == 0) return(table)
 
-    # Prepare columns whose significant digits will be rounded
-    cols <- unlist(lapply(c("_coef", "_pvalue", "_qvalue", "GSEA", "WTCS"),
-                          paste0, suffixes))
-    cols <- c(cols, "pval", "padj", "ES", "NES") # DSEA results
-    cols <- lapply(cols, function(i) endsWith(colnames(table), i))
-    cols <- which(Reduce("|", cols))
-    cols <- cols[!sapply(table, class)[cols] %in% c("character", "logical")]
+    cols <- NULL
+    if (nrow(table) > 0) {
+        # Prepare columns whose significant digits will be rounded
+        cols <- unlist(lapply(c("_coef", "_pvalue", "_qvalue", "GSEA", "WTCS"),
+                              paste0, suffixes))
+        cols <- c(cols, "pval", "padj", "ES", "NES") # DSEA results
+        cols <- lapply(cols, function(i) endsWith(colnames(table), i))
+        cols <- which(Reduce("|", cols))
+        cols <- cols[!sapply(table, class)[cols] %in% c("character", "logical")]
 
-    # Convert to factor if there are low number of unique values
-    if (!all(c("Key", "Value") %in% colnames(table))) {
-        lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
-        for (col in names(lenUniqValuesPerCol[lenUniqValuesPerCol < 50])) {
-            if (!col %in% names(table)[cols]) { # Ignore columns to round
-                table[[col]] <- as.factor(table[[col]])
+        # Convert to factor if there are low number of unique values
+        if (!all(c("Key", "Value") %in% colnames(table))) {
+            lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
+            for (col in names(lenUniqValuesPerCol[lenUniqValuesPerCol < 50])) {
+                if (!col %in% names(table)[cols]) { # Ignore columns to round
+                    table[[col]] <- as.factor(table[[col]])
+                }
             }
         }
     }
+
+    # # Fix specific bug with targetingDrugs columns when using NCI-60 data
+    # if (all(c("PubChem SID", "PubChem CID") %in% colnames(table))) {
+    #     table$`PubChem CID` <- as.numeric(table$`PubChem CID`)
+    #     table$`PubChem SID` <- as.numeric(table$`PubChem SID`)
+    # }
+
     dt <- datatable(
         table, rownames=FALSE, ..., escape=FALSE,
         selection="single", extensions="Buttons", filter="top",
@@ -511,17 +545,21 @@
         hr(),
         selectizeInput(ns("data2"), "Dataset 2", names(x), selected=2),
         selectizeInput(ns("col2"), "Column to plot in Y axis", choices=NULL))
-    sidebar[[3]][[2]] <- plotOutput(ns("plot"))
+    sidebar[[3]][[2]] <- tagList(
+        plotOutput(ns("plot"), brush=ns("brush")),
+        helpText("Click-and-drag points in the plot to filter the table."))
 
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
 }
 
-
 #' @importFrom shiny renderPlot observe
 #' @importFrom DT renderDT
+#' @importFrom ggplot2 theme_bw geom_density_2d geom_rug geom_point
 .datasetComparisonServer <- function(id, x) {
+    getNumericCols <- function(x) colnames(x)[vapply(x, is.numeric, logical(1))]
+
     moduleServer(
         id,
         function(input, output, session) {
@@ -530,12 +568,14 @@
 
             observe({
                 dataset1 <- getSelectedDataset1()
-                updateSelectizeInput(session, "col1", choices=names(dataset1))
+                numericCols <- getNumericCols(dataset1)
+                updateSelectizeInput(session, "col1", choices=numericCols)
             })
 
             observe({
                 dataset2 <- getSelectedDataset2()
-                updateSelectizeInput(session, "col2", choices=names(dataset2))
+                numericCols <- getNumericCols(dataset2)
+                updateSelectizeInput(session, "col2", choices=numericCols)
             })
 
             output$plot <- renderPlot({
@@ -552,13 +592,55 @@
                 if (!isColValid(col2, dataset2)) return(NULL)
 
                 if (any(dataset1[[1]] %in% dataset2[[1]])) {
-                    return(plot(dataset1[[col1]], dataset2[[col2]]))
+                    plot <- ggplot(data=NULL, aes(x=dataset1[[col1]],
+                                                  y=dataset2[[col2]])) +
+                        geom_rug(alpha=0.1) +
+                        geom_abline(slope=1, intercept=0, colour="orange") +
+                        geom_point(size=0.1, alpha=0.3) +
+                        geom_density_2d(alpha=0.3) +
+                        xlab(paste(input$data1, input$col1, sep="_")) +
+                        ylab(paste(input$data2, input$col2, sep="_")) +
+                        theme_bw()
+                    return(plot)
                 } else {
                     stop("no common identifiers between datasets")
                 }
             })
-            # output$table <- renderDT(
-            #     .prepareDT(as.table(getSelectedObject(), clean=FALSE)))
+
+            output$table <- renderDT({
+                isColValid <- function(col, dataset) {
+                    !is.null(col) && col != "" && col %in% colnames(dataset)
+                }
+
+                dataset1 <- getSelectedDataset1()
+                col1 <- input$col1
+                if (!isColValid(col1, dataset1)) return(NULL)
+
+                dataset2 <- getSelectedDataset2()
+                col2 <- input$col2
+                if (!isColValid(col2, dataset2)) return(NULL)
+                common <- dataset1[[1]] %in% dataset2[[1]]
+
+                if (any(common)) {
+                    df <- data.frame(dataset1[[1]][common],
+                                     getSelectedDataset1()[[col1]][common],
+                                     getSelectedDataset2()[[col2]][common])
+                    colnames(df) <- c("id",
+                                      paste(input$data1, input$col1, sep="_"),
+                                      paste(input$data2, input$col2, sep="_"))
+
+                    brush <- input$brush
+                    if (!is.null(brush)) {
+                        df <- brushedPoints(df, brush,
+                                            xvar=names(df)[[2]],
+                                            yvar=names(df)[[3]])
+                    }
+
+                    return(.prepareDT(df))
+                } else {
+                    stop("no common identifiers between datasets")
+                }
+            })
         }
     )
 }
@@ -865,21 +947,21 @@ launchResultPlotter <- function(...) {
     showTwoKindPlot   <- hasSimilarPerts && hasTargetingDrugs
 
     uiList <- tagList(
-        # .datasetComparisonUI(compareId, elems),
+        .dataPlotterUI(dataId, elems),
         .targetingDrugsVSsimilarPerturbationsPlotterUI(
             comparePlotId, elems, elemClasses),
-        .dataPlotterUI(dataId, elems),
+        .datasetComparisonUI(compareId, elems),
         .metadataViewerUI(metadataId, elems))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
 
     server <- function(input, output, session) {
-        # .datasetComparisonServer(compareId, elems)
+        .dataPlotterServer(dataId, elems)
         if (showTwoKindPlot) {
             .targetingDrugsVSsimilarPerturbationsPlotterServer(
                 comparePlotId, elems)
         }
-        .dataPlotterServer(dataId, elems)
+        .datasetComparisonServer(compareId, elems)
         .metadataViewerServer(metadataId, elems)
     }
     app <- runApp(shinyApp(ui, server))
@@ -916,3 +998,4 @@ launchDrugSetEnrichmentAnalyser <- function(sets, ...) {
     }
     app <- runApp(shinyApp(ui, server))
     return(app)
+}
