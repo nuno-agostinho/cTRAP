@@ -1,4 +1,4 @@
-# cTRAP 1.8.1 (11 March, 2021)
+# cTRAP 1.10.0 (18 March, 2021)
 
 ## Improvements to graphical interface functions:
 
