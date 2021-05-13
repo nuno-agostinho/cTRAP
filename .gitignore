@@ -24,3 +24,4 @@ ENCODEmetadata.RDS
 *.txt
 *.xls
 *.h5
+.DS_Store
