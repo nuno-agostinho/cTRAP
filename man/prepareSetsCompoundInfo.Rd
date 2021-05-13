@@ -6,6 +6,13 @@
 \usage{
 prepareSetsCompoundInfo(sets)
 }
+\arguments{
+\item{sets}{Named list of characters: named sets containing compound
+identifiers (obtain drug sets by running \code{prepareDrugSets()})}
+}
+\value{
+List containing drug sets' compound info
+}
 \description{
 Get drug sets' compound info
 }

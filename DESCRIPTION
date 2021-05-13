@@ -13,7 +13,7 @@ Description: Compare differential gene expression results with those from known
     to infer the molecular causes of the observed difference in gene expression 
     but also to identify small molecules that could drive or revert specific 
     transcriptomic alterations.
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

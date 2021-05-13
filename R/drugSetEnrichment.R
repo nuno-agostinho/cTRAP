@@ -132,6 +132,10 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
 }
 
 #' Prepare stats' compound information
+#'
+#' @inheritParams matchStatsWithDrugSetsID
+#'
+#' @return List containing stats' compound info
 #' @keywords internal
 prepareStatsCompoundInfo <- function(stats) {
     statsCompoundInfo <- attr(stats, "compoundInfo")
@@ -160,6 +164,10 @@ prepareStatsCompoundInfo <- function(stats) {
 }
 
 #' Get drug sets' compound info
+#'
+#' @inheritParams matchStatsWithDrugSetsID
+#'
+#' @return List containing drug sets' compound info
 #' @keywords internal
 prepareSetsCompoundInfo <- function(sets) {
     setsCompoundInfo <- attr(sets, "compoundInfo")

@@ -6,6 +6,9 @@
 \usage{
 subsetDim(k, dims, nargs, areCols = TRUE)
 }
+\value{
+Subset rows/columns
+}
 \description{
 Subset rows or columns based on a given index
 }

@@ -21,6 +21,9 @@
 
 \item{...}{Extra arguments given to other methods}
 }
+\value{
+Subset, dimension or dimension names
+}
 \description{
 Operations on \code{expressionDrugSensitivityAssociation} objects
 }

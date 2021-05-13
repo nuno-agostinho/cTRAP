@@ -6,6 +6,15 @@
 \usage{
 prepareStatsCompoundInfo(stats)
 }
+\arguments{
+\item{stats}{Named numeric vector or either a \code{similarPerturbations} or
+a \code{targetingDrugs} object (obtained after running
+\code{\link{rankSimilarPerturbations}} or
+\code{\link{predictTargetingDrugs}}, respectively)}
+}
+\value{
+List containing stats' compound info
+}
 \description{
 Prepare stats' compound information
 }

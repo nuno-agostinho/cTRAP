@@ -543,6 +543,7 @@ readExpressionDrugSensitivityCorHDF5 <- function(
 
 #' Operations on \code{expressionDrugSensitivityAssociation} objects
 #' @param x An \code{expressionDrugSensitivityAssociation} object
+#' @return Subset, dimension or dimension names
 #' @export
 dimnames.expressionDrugSensitivityAssociation <- function(x) {
     if (is.character(x)) {

@@ -6,6 +6,9 @@
 \usage{
 subsetData(x, i, j, rowAttr, colAttr, nargs, ...)
 }
+\value{
+Subset data
+}
 \description{
 Subset data by rows and/or columns
 }

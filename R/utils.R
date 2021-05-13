@@ -105,6 +105,7 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
 }
 
 #' Subset rows or columns based on a given index
+#' @return Subset rows/columns
 #' @keywords internal
 subsetDim <- function(k, dims, nargs, areCols=TRUE) {
     hasK <- !missing(k)
@@ -122,6 +123,8 @@ subsetDim <- function(k, dims, nargs, areCols=TRUE) {
 }
 
 #' Subset data by rows and/or columns
+#'
+#' @return Subset data
 #' @keywords internal
 subsetData <- function(x, i, j, rowAttr, colAttr, nargs, ...) {
     nargs <- nargs - length(list(...)) - 1
