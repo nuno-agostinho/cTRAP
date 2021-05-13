@@ -13,17 +13,15 @@ cmapKD <- launchCMapDataLoader(
 cmapCompounds <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Compound")
+cmapPerts <- launchCMapDataLoader(cellLine="HepG2")
 
-launchMetadataViewer(cmapKD)
+launchMetadataViewer(cmapKD, cmapCompounds, cmapPerts)
 
 compareKD        <- rankSimilarPerturbations(diffExpr, cmapKD)
 compareCompounds <- rankSimilarPerturbations(diffExpr, cmapCompounds)
+comparePerts     <- rankSimilarPerturbations(diffExpr, cmapPerts)
 
-launchResultPlotter(compareKD)
-launchResultPlotter(compareCompounds)
-launchResultPlotter(compareCompounds, compareKD)
-
-launchMetadataViewer(compareKD)
+launchResultPlotter(compareCompounds, compareKD, comparePerts)
 
 # Predict targeting drugs ------------------------------------------------------
 listExpressionDrugSensitivityAssociation()
@@ -36,6 +34,6 @@ launchResultPlotter(predicted)
 launchResultPlotter(predicted, compareCompounds)
 
 # Analyse drug set enrichment --------------------------------------------------
-descriptors <- loadDrugDescriptors("NCI60", "2D")
+descriptors <- loadDrugDescriptors("NCI60", "3D")
 drugSets    <- prepareDrugSets(descriptors)
 launchDrugSetEnrichmentAnalyser(drugSets, predicted)

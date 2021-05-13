@@ -223,6 +223,11 @@ prepareStatsCol <- function(col, stats) {
         col  <- cols[cols %in% colnames(stats)][[1]]
         if (!col %in% colnames(stats)) {
             stop("no suitable column to analyse; explicitly set argument 'col'")
+        } else {
+            msg <- sprintf(
+                paste("Ordering results by column '%s'; to manually select",
+                      "column to order by, please set argument 'col'"), col)
+            message(msg)
         }
     } else if (!col %in% colnames(stats)) {
         stop(sprintf("specified column '%s' not found", col))

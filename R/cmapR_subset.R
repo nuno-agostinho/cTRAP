@@ -141,7 +141,6 @@ readGctxIds <- function(gctx_path, dimension="row") {
     } else {
         name <- "0/META/COL/id"
     }
-    # ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=TRUE)
     ids <- trimws(h5read(gctx_path, name=name), which="right")
     ids <- as.character(ids)
     return(ids)
