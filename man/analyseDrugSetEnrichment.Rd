@@ -33,9 +33,10 @@ if class of \code{stats} is either \code{similarPerturbations} or
 \item{maxSize}{Maximal size of a gene set to test. All pathways above the threshold are excluded.}
 
 \item{...}{
-  Arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}
+  Arguments passed on to \code{\link[fgsea:fgseaSimple]{fgsea::fgseaSimple}}
   \describe{
     \item{\code{minSize}}{Minimal size of a gene set to test. All pathways below the threshold are excluded.}
+    \item{\code{scoreType}}{This parameter defines the GSEA score type. Possible options are ("std", "pos", "neg")}
     \item{\code{nproc}}{If not equal to zero sets BPPARAM to use nproc workers (default = 0).}
     \item{\code{gseaParam}}{GSEA parameter value, all gene-level statis are raised to the power of `gseaParam`
 before calculation of GSEA enrichment scores.}

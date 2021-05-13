@@ -137,6 +137,18 @@ subsetData <- function(x, i, j, rowAttr, colAttr, nargs, ...) {
     return(x)
 }
 
+#' Faster version of \code{shiny::HTML}
+#'
+#' @param text Character: text
+#'
+#' @return HTML element
+#' @keywords internal
+HTMLfast <- function(text) {
+    attr(text, "html") <- TRUE
+    class(text) <- c("html", "character")
+    return(text)
+}
+
 #' Create word break opportunities (for HTML) using given characters
 #'
 #' @param str Character: text

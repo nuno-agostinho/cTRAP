@@ -719,7 +719,7 @@
 }
 
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
-#' tabPanel
+#' tabPanel uiOutput
 #' @importFrom DT DTOutput
 .drugSetEnrichmentAnalyserUI <- function(id, sets, x,
                                          title="Drug Set Enrichment Analyser") {
@@ -743,7 +743,7 @@
     return(ui)
 }
 
-#' @importFrom shiny renderPlot observeEvent observe isolate
+#' @importFrom shiny renderPlot observeEvent observe isolate renderUI
 #' @importFrom DT renderDT
 .drugSetEnrichmentAnalyserServer <- function(id, sets, x) {
     moduleServer(
@@ -971,6 +971,7 @@ launchResultPlotter <- function(...) {
 #' View and plot results via a visual interface
 #'
 #' @inheritParams analyseDrugSetEnrichment
+#' @param ... Objects
 #'
 #' @importFrom shiny tagList
 #'

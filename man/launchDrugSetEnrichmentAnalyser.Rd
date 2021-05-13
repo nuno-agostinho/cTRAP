@@ -9,6 +9,8 @@ launchDrugSetEnrichmentAnalyser(sets, ...)
 \arguments{
 \item{sets}{Named list of characters: named sets containing compound
 identifiers (obtain drug sets by running \code{prepareDrugSets()})}
+
+\item{...}{Objects}
 }
 \value{
 Launches result viewer and plotter (returns \code{NULL})

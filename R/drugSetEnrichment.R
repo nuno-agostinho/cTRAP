@@ -246,8 +246,8 @@ prepareStatsCol <- function(col, stats) {
 #' @param col Character: name of the column to use for statistics (only required
 #'   if class of \code{stats} is either \code{similarPerturbations} or
 #'   \code{targetingDrugs})
-#' @inheritParams fgsea::fgsea
-#' @inheritDotParams fgsea::fgsea -pathways -stats -nperm -maxSize
+#' @inheritParams fgsea::fgseaSimple
+#' @inheritDotParams fgsea::fgseaSimple -pathways -stats -nperm -maxSize
 #' @param keyColSets Character: column from \code{sets} to compare with column
 #'   \code{keyColStats} from \code{stats}; automatically selected if \code{NULL}
 #' @param keyColStats Character: column from \code{stats} to compare with column
