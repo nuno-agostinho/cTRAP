@@ -75,7 +75,7 @@ jobs:
 
       - name: Cache R packages
         if: "!contains(github.event.head_commit.message, '/nocache')"
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.biocversion }}-r-${{ env.rversion }}-${{ hashFiles('.github/depends.Rds') }}
