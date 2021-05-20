@@ -103,3 +103,79 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
     converted <- setNames(ifelse(converted != "", converted, genes), genes)
     return(converted)
 }
+
+#' Subset rows or columns based on a given index
+#' @return Subset rows/columns
+#' @keywords internal
+subsetDim <- function(k, dims, nargs, areCols=TRUE) {
+    hasK <- !missing(k)
+    # Allow to search based on characters
+    names(dims) <- dims
+    if (hasK && nargs == 2) {
+        dims <- dims[k]
+    } else if (hasK && areCols && nargs == 1) {
+        dims <- dims[k]
+    }
+    if (anyNA(dims)) {
+        stop(ifelse(areCols, "columns", "rows"), " out of bounds")
+    }
+    return(unname(dims))
+}
+
+#' Subset data by rows and/or columns
+#'
+#' @return Subset data
+#' @keywords internal
+subsetData <- function(x, i, j, rowAttr, colAttr, nargs, ...) {
+    nargs <- nargs - length(list(...)) - 1
+    rows  <- attr(x, rowAttr)
+    rows  <- subsetDim(i, rows, nargs, areCols=FALSE)
+    attr(x, rowAttr) <- rows
+
+    # If no j is provided explicitly, replace j with i
+    if (missing(j) && nargs == 1) j <- i
+    cols <- attr(x, colAttr)
+    cols <- subsetDim(j, cols, nargs, areCols=TRUE)
+    attr(x, colAttr) <- cols
+    return(x)
+}
+
+#' Faster version of \code{shiny::HTML}
+#'
+#' @param text Character: text
+#'
+#' @return HTML element
+#' @keywords internal
+HTMLfast <- function(text) {
+    attr(text, "html") <- TRUE
+    class(text) <- c("html", "character")
+    return(text)
+}
+
+#' Create word break opportunities (for HTML) using given characters
+#'
+#' @param str Character: text
+#' @param pattern Character: pattern(s) of interest to be used as word break
+#' opportunities
+#' @param html Boolean: convert to HTML?
+#'
+#' @importFrom shiny HTML
+#'
+#' @return String containing HTML elements
+#' @keywords internal
+prepareWordBreak <- function(str, pattern=c(".", "-", "\\", "/", "_", ",",
+                                            " ", "+", "="),
+                             html=TRUE) {
+    res <- str
+    # wbr: word break opportunity
+    for (p in pattern) res <- gsub(p, paste0(p, "<wbr>"), res, fixed=TRUE)
+
+    if (html) {
+        if (length(res) == 1) {
+            res <- HTML(res)
+        } else {
+            res <- lapply(res, HTMLfast)
+        }
+    }
+    return(res)
+}

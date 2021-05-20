@@ -8,7 +8,9 @@ plotDrugSetEnrichment(
   sets,
   stats,
   col = "rankProduct_rank",
-  selectedSets = NULL
+  selectedSets = NULL,
+  keyColSets = NULL,
+  keyColStats = NULL
 )
 }
 \arguments{
@@ -25,6 +27,12 @@ if class of \code{stats} is either \code{similarPerturbations} or
 \code{targetingDrugs})}
 
 \item{selectedSets}{Character: drug sets to plot (if \code{NULL}, plot all)}
+
+\item{keyColSets}{Character: column from \code{sets} to compare with column
+\code{keyColStats} from \code{stats}; automatically selected if \code{NULL}}
+
+\item{keyColStats}{Character: column from \code{stats} to compare with column
+\code{keyColSets} from \code{sets}; automatically selected if \code{NULL}}
 }
 \value{
 List of GSEA plots per drug set

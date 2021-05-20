@@ -103,8 +103,7 @@ readGctxMeta <- function(gctx_path, dimension="row", ids=NULL,
     for (i in seq(length(fields))) {
         field <- fields[i]
         # Remove any trailing spaces and cast as vector
-        annots[,i] <- as.vector(gsub("\\s*$", "", raw_annots[[field]],
-                                     perl=TRUE))
+        annots[,i] <- as.vector(trimws(raw_annots[[field]], which="right"))
     }
     annots <- fix.datatypes(annots)
     # Subset to the provided set of identifiers, if any
@@ -142,7 +141,7 @@ readGctxIds <- function(gctx_path, dimension="row") {
     } else {
         name <- "0/META/COL/id"
     }
-    ids <- gsub("\\s*$", "", h5read(gctx_path, name=name), perl=TRUE)
+    ids <- trimws(h5read(gctx_path, name=name), which="right")
     ids <- as.character(ids)
     return(ids)
 }

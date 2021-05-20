@@ -38,10 +38,10 @@ plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
         rugAlpha  <- 0.2
     }
     enrichmentPlot <- ggplot(enrichmentScore, aes(x=rank, y=score)) +
-        geom_rug(alpha=rugAlpha, sides="b", length=unit(rugLength, "npc")) +
-        geom_line(colour="orange", na.rm=TRUE, size=0.7) +
         geom_hline(yintercept=0, colour="darkgrey", linetype="longdash") +
         geom_hline(yintercept=ES, colour="#3895D3") +
+        geom_rug(alpha=rugAlpha, sides="b", length=unit(rugLength, "npc")) +
+        geom_line(colour="orange", na.rm=TRUE, size=0.7) +
         scale_x_continuous(expand=c(0,0)) +
         labs(y="Enrichment score") +
         theme_bw() +
@@ -210,6 +210,7 @@ plotGSEA <- function(stats, geneset, genes=c("both", "top", "bottom"),
 #'
 #' @importFrom ggplot2 ggplot geom_point geom_rug geom_abline xlab ylab
 #' geom_density_2d theme guides guide_legend theme_bw ggtitle
+#' @importFrom dplyr bind_rows
 #'
 #' @keywords internal
 #' @return Scatter plot
@@ -253,6 +254,7 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes, title=NULL) {
             ggtitle(title) +
             theme(plot.title = element_text(hjust = 0.5))
     }
+    attr(plot, "data") <- cbind("Genes"=rownames(dfAllPerts), dfAllPerts)
     return(plot)
 }
 
@@ -281,32 +283,44 @@ prepareLabel <- function(data) {
 
         dose       <- collapse(info$metadata$pert_idose)
         timepoint  <- collapse(info$metadata$pert_itime)
-        res <- sprintf("%s (%s, %s at %s)", name, cellLine, dose, timepoint)
+
+        # Prepare text to avoid
+        if (cellLine == "NA") cellLine <- NULL
+        if (dose == "NA") dose <- NULL
+        if (timepoint == "NA") timepoint <- NULL
+
+        dosePlusTimepoint <- paste(c(dose, timepoint), collapse=" at ")
+        if (dosePlusTimepoint == "") dosePlusTimepoint <- NULL
+
+        extra <- paste(c(cellLine, dosePlusTimepoint), collapse=", ")
+
+        if (extra == "") {
+            res <- name
+        } else {
+            res <- sprintf("%s (%s)", name, extra)
+        }
         return(res)
     }
 
     prepareLabel_targetingDrugs <- function(k, data) {
-        compoundInfo    <- attr(data, "compoundInfo")
-        data$compound   <- as.character(data$compound)
-        compoundInfo$id <- as.character(compoundInfo$id)
-
-        merged          <- merge(data, compoundInfo, by.x="compound", by.y="id")
-        compound        <- merged[k]
-        name            <- compound[["name"]]
-        if (is.null(name) || is.na(name) || name == "") {
+        compound <- as.table(data)[k, ]
+        name     <- compound[["name"]]
+        if (is.null(name) || is.na(name) || name == "" || name =="NA") {
             name <- compound[["compound"]]
             if (is.na(name)) name <- "NA"
         }
         target <- compound[["target"]]
         target <- gsub(", |;", "/", target)
-        if (is.null(target) || target == "") target <- "?"
+        if (is.null(target) || length(target) == 0 || target == "") {
+            target <- NULL
+        }
 
         targetPathway <- compound[["target pathway"]]
-        if (is.null(targetPathway)) {
-            targetPathway <- NA
-            res <- sprintf("%s (%s)", name, target)
+        info <- paste(c(target, targetPathway), collapse=": ")
+        if (is.null(info) || info == "") {
+            res <- name
         } else {
-            res <- sprintf("%s (%s: %s)", name, target, targetPathway)
+            res <- sprintf("%s (%s)", name, info)
         }
         return(res)
     }
@@ -316,7 +330,6 @@ prepareLabel <- function(data) {
     } else if (is(data, "targetingDrugs")) {
         FUN <- prepareLabel_targetingDrugs
     }
-
     res <- sapply(seq(nrow(data)), FUN, data)
     return(res)
 }
@@ -420,7 +433,7 @@ plotComparison <- function(x, method, n, showMetadata,
 #'   genes (\code{genes = "bottom"}) or both (\code{genes = "both"}); only used
 #'   if \code{method = "gsea"} and \code{geneset = NULL}
 #' @inheritParams prepareCMapPerturbations
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @inheritParams plot.perturbationChanges
 #'
 #' @param ... Extra arguments currently not used
@@ -559,98 +572,14 @@ compareQuantile <- function(vec, prob, lte=FALSE) {
     return(res)
 }
 
-#' Check for intersecting compounds across specific columns on both datasets
-#'
-#' @return List containing three elements: matching compounds
-#'   \code{commonCompounds} between column \code{key 1} and \code{key 2} from
-#'   the first and second datasets, respectively
-#' @keywords internal
-findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
-    showSelectedCols <- is.null(keys1) || is.null(keys2)
-
-    keys <- list()
-    keys$cmap  <- c("compound_perturbation", "pert_iname", "pert_id", "smiles",
-                    "InChIKey", "pubchem_cid")
-    keys$nci60 <- c("compound", "PubChem SID", "PubChem CID", "SMILES")
-    keys$ctrp  <- c("compound", "name", "broad id", "SMILES")
-    keys$gdsc  <- c("compound", "name")
-    keys       <- unique(unlist(keys))
-
-    # Filter keys based on dataset columns
-    if (is.null(keys1)) keys1 <- keys[keys %in% colnames(data1)]
-    names(keys1) <- keys1
-    if (is.null(keys2)) keys2 <- keys[keys %in% colnames(data2)]
-    names(keys2) <- keys2
-
-    compareDatasetIds <- function(key1, key2, data1, data2) {
-        values1 <- stripStr(data1[[key1]])
-        values2 <- stripStr(data2[[key2]])
-        matches <- which(values1 %in% na.omit(values2)) # Avoid matching NAs
-        return(data1[[key1]][matches])
-    }
-
-    res <- list(key1=NULL, key2=NULL, commonCompounds=NULL)
-    for (col1 in keys1) {
-        for (col2 in keys2) {
-            cmp <- compareDatasetIds(col1, col2, data1, data2)
-            if (length(cmp) >= length(res$commonCompounds)) {
-                # Save params if number of matching compounds is same or larger
-                res$key1 <- col1
-                res$key2 <- col2
-                res$commonCompounds <- cmp
-            }
-        }
-    }
-
-    if (showSelectedCols) {
-        message(sprintf(paste(
-            "Columns '%s' and '%s' were matched based on %s common values; to",
-            "manually select columns to compare, please set the arguments",
-            "'keyColTargetingDrugs' and 'keyColSimilarPerturbations'"),
-            res$key1, res$key2, length(res$commonCompounds)))
-    }
-    return(res)
-}
-
-mergeDatasetsBy <- function(column, data1, data2, showAllScores=FALSE,
-                            key1=NULL, key2=NULL, suffixes=paste0(".", 1:2)) {
+mergeDatasetsCol <- function(column, data1, data2, showAllScores=FALSE,
+                             key1=NULL, key2=NULL, suffixes=paste0(".", 1:2)) {
     if (!column %in% colnames(data1) && !column %in% colnames(data2)) {
         error <- "Selected column ('%s') not available in provided datasets"
         stop(sprintf(error, column))
     }
-
-    # Find intersecting compounds between datasets
-    data1table <- as.table(data2, clean=FALSE)
-    data2table <- as.table(data1, clean=FALSE)
-
-    res  <- findIntersectingCompounds(data1table, data2table, key1, key2)
-    key1 <- res$key1
-    key2 <- res$key2
-
-    # Convert key columns to same class if needed
-    key1val <- data1table[[key1]]
-    key2val <- data2table[[key2]]
-    areSameClass <- function(key1val, key2val, cmp) cmp(key1val) && cmp(key2val)
-
-    FUN <- NULL
-    if (length(res$commonCompounds) > 0) {
-        if (!areSameClass(key1val, key2val, is.character)) {
-            FUN <- as.character
-        } else if (!areSameClass(key1val, key2val, is.integer)) {
-            FUN <- as.integer
-        } else if (!areSameClass(key1val, key2val, is.numeric)) {
-            FUN <- as.numeric
-        } else if (!areSameClass(key1val, key2val, is.factor)) {
-            FUN <- as.factor
-        } else if (!areSameClass(key1val, key2val, is.logical)) {
-            FUN <- as.logical
-        }
-    }
-    if (!is.null(FUN)) data2table[[key2]] <- FUN(data2table[[key2]])
-
-    # Merge data based on intersecting compounds
-    df <- merge(data2table, data1table, by.x=key2, by.y=key1,
-                suffixes=suffixes, allow.cartesian=TRUE)
+    df <- mergeDatasets(data2, data1, key2, key1, suffixes,
+                        allow.cartesian=TRUE)
 
     # Discard missing values
     cols <- paste0(column, suffixes)
@@ -679,11 +608,12 @@ mergeDatasetsBy <- function(column, data1, data2, showAllScores=FALSE,
 #' @param quantileThreshold Numeric: quantile (between 0 and 1) to highlight
 #'   values of interest
 #' @param keyColTargetingDrugs Character: column from \code{targetingDrugs} to
-#'   match against \code{keyColSimilarPerturbations}; if not set, it will be
-#'   automatically determined
+#'   compare with column \code{keyColSimilarPerturbations} from
+#'   \code{similarPerturbations}; automatically selected if \code{NULL}
 #' @param keyColSimilarPerturbations Character: column from
-#'   \code{similarPerturbations} to match against \code{keyColTargetingDrugs};
-#'   if not set, it will be automatically determined
+#'   \code{similarPerturbations} to compare with column
+#'   \code{keyColTargetingDrugs} from \code{targetingDrugs}; automatically
+#'   selected if \code{NULL}
 #'
 #' @importFrom ggplot2 ggplot geom_point xlab ylab theme_bw
 #' @importFrom ggrepel geom_text_repel
@@ -710,36 +640,55 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
     quantileThreshold=0.25, showAllScores=FALSE,
     keyColTargetingDrugs=NULL, keyColSimilarPerturbations=NULL) {
 
-    suffixes <- c(".targetingDrugs", ".similarPerturbations")
-    df <- mergeDatasetsBy(
-        column, targetingDrugs, similarPerturbations, showAllScores,
+    # Find intersecting compounds between datasets
+    targetingDrugsTable <- as.table(targetingDrugs, clean=FALSE)
+    simPertsTable       <- as.table(similarPerturbations, clean=FALSE)
+    suffixes            <- c(".targetingDrugs", ".similarPerturbations")
+    df <- mergeDatasetsCol(
+        column, targetingDrugsTable, simPertsTable, showAllScores,
         suffixes=suffixes,
         key1=keyColTargetingDrugs, key2=keyColSimilarPerturbations)
 
     cols   <- attr(df, "cols")
     isRank <- attr(df, "isRank")
-    highlight <- compareQuantile(
-        df[[cols[[1]]]], quantileThreshold, lte=TRUE) &
-        compareQuantile(df[[cols[[2]]]], quantileThreshold, lte=!isRank)
+
+    # Correctly highlight targeting drugs depending on drug activity direction
+    isDrugActivityDirectlyProportionalToSensitivity <- attr(
+        targetingDrugs, "expressionDrugSensitivityCor")[[
+            "isDrugActivityDirectlyProportionalToSensitivity"]]
+    if (isRank) {
+        lteTargetingDrugs <- TRUE
+    } else {
+        lteTargetingDrugs <- !isDrugActivityDirectlyProportionalToSensitivity
+    }
+
+    highlightY <- compareQuantile(
+        df[[cols[[1]]]], quantileThreshold, lte=lteTargetingDrugs)
+    highlightX <- compareQuantile(df[[cols[[2]]]], quantileThreshold,
+                                  lte=!isRank)
+    highlight <- highlightX & highlightY
 
     xlabel <- "Gene expression and drug sensitivity association"
     source <- attr(targetingDrugs, "expressionDrugSensitivityCor")$source
     if (!is.null(source)) xlabel <- sprintf("%s (%s)", xlabel, source)
     xlabel <- sprintf("%s: %s", xlabel, column)
     ylabel <- paste("CMap comparison:", column)
+    df$highlight <- highlight
 
-    plot <- ggplot(df, aes_string(cols[[1]], cols[[2]])) +
-        geom_point(data=df[highlight],  colour="orange", show.legend=FALSE) +
-        geom_point(data=df[!highlight], colour="grey",   show.legend=FALSE,
-                   alpha=0.7) +
+    plot <- ggplot(df, aes_string(cols[[1]], cols[[2]], colour=highlight)) +
+        geom_point(alpha=0.7, show.legend=FALSE) +
+        geom_rug(alpha=0.3, show.legend=FALSE) +
         xlab(xlabel) +
         ylab(ylabel) +
-        theme_bw()
+        theme_bw() +
+        scale_colour_manual(values=c("TRUE"="orange", "FALSE"="gray"))
 
     if (!is.null(labelBy) && labelBy %in% colnames(df)) {
         label             <- df[[labelBy]]
         label[!highlight] <- NA
-        plot              <- plot + geom_text_repel(label=label, na.rm=TRUE)
+        plot              <- plot +
+            geom_text_repel(label=label, color="black", alpha=0.7, na.rm=TRUE,
+                            show.legend=FALSE)
     }
     attr(plot, "data")     <- df
     attr(plot, "suffixes") <- suffixes

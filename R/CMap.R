@@ -103,7 +103,7 @@ prepareCMapZscores <- function(file, zscoresID=NULL) {
 #' @param data \code{perturbationChanges} object
 #' @param inheritAttrs Boolean: convert to \code{perturbationChanges} object and
 #'   inherit attributes from \code{data}?
-#' @param verbose Boolean: print messages?
+#' @param verbose Boolean: print additional details?
 #'
 #' @family functions related with the ranking of CMap perturbations
 #' @return Matrix containing CMap perturbation z-scores (genes as rows,
@@ -339,8 +339,8 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 
     if (!is.null(perturbationType)) {
         filter$perturbationType <- perturbationType
-        tmp <- getCMapPerturbationTypes()[perturbationType]
-        if (!is.na(tmp)) perturbationType <- tmp
+        tmp <- getCMapPerturbationTypes(control=TRUE)[perturbationType]
+        if (!all(is.na(tmp))) perturbationType <- tmp
         metadata <- metadata[metadata$pert_type %in% perturbationType, ]
     }
     if (length(filter) > 0) attr(metadata, "filter") <- filter
@@ -358,10 +358,11 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #'   filepath to load data from file)
 #' @param compoundInfo Data frame (CMap compound info) or character (respective
 #'   filepath to load data from file)
+#' @inheritDotParams filterCMapMetadata
 #' @param loadZscores Boolean: load matrix of perturbation z-scores? Not
 #'   recommended in systems with less than 30GB of RAM; if \code{FALSE},
-#'   downstream functions will read the file chunk by chunk (this strategy
-#'   impacts performance at the expense of a much lower memory footprint)
+#'   downstream functions will load and process the file directly chunk by
+#'   chunk, resulting in a lower memory footprint
 #'
 #' @importFrom R.utils gunzip
 #' @importFrom methods new
@@ -377,8 +378,11 @@ filterCMapMetadata <- function(metadata, cellLine=NULL, timepoint=NULL,
 #' prepareCMapPerturbations(metadata, "cmapZscores.gctx", "cmapGeneInfo.txt")
 #' }
 prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
-                                     compoundInfo=NULL, loadZscores=FALSE) {
+                                     compoundInfo=NULL, ...,
+                                     loadZscores=FALSE) {
     if (is.character(metadata)) metadata <- loadCMapData(metadata, "metadata")
+    if (!is.null(list(...))) metadata <- filterCMapMetadata(metadata, ...)
+
     if (is.character(geneInfo)) geneInfo <- loadCMapData(geneInfo, "geneInfo")
     if (is.character(zscores)) {
         zscores <- loadCMapData(zscores, "zscores", metadata$sig_id)
@@ -406,7 +410,7 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
     # Display summary message of loaded perturbations
     filters <- attr(metadata, "filter")
     summaryMsg <- sprintf(
-        "\nSummary: %s CMap perturbations measured across %s genes",
+        "\nSummary: %s CMap perturbations and %s genes",
         ncol(zscores), nrow(zscores))
     if (!is.null(filters)) {
         filterNames <- c("cellLine"="Cell lines",
@@ -433,6 +437,8 @@ prepareCMapPerturbations <- function(metadata, zscores, geneInfo,
 #' cell lines as values
 #' @param metadata Data table: \code{data} metadata
 #' @inheritParams rankSimilarPerturbations
+#'
+#' @importFrom dplyr bind_rows
 #'
 #' @return A list with two items:
 #' \describe{
@@ -492,24 +498,16 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
     return(res)
 }
 
-#' Rank CMap perturbations' similarity to a differential expression profile
+#' Rank differential expression profile against CMap perturbations by similarity
 #'
 #' Compare differential expression results against CMap perturbations.
 #'
-#' @param method Character: comparison method (\code{spearman}, \code{pearson}
-#'   or \code{gsea}; multiple methods may be selected at once)
+#' @inherit rankAgainstReference
 #' @param perturbations \code{perturbationChanges} object: CMap perturbations
-#'   (check \code{\link{prepareCMapPerturbations}})
-#' @inheritParams compareAgainstReference
-#'
-#' @section GSEA score:
-#' Weighted connectivity scores (WTCS) are calculated when \code{method
-#'   = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
+#'   (check \code{\link{prepareCMapPerturbations}()})
 #'
 #' @aliases compareAgainstCMap
 #' @family functions related with the ranking of CMap perturbations
-#' @return Data table with correlation or GSEA results comparing differential
-#'   expression values with those associated with CMap perturbations
 #' @export
 #'
 #' @examples
@@ -539,13 +537,15 @@ calculateCellLineMean <- function(data, cellLine, metadata, rankPerCellLine) {
 rankSimilarPerturbations <- function(input, perturbations,
                                      method=c("spearman", "pearson", "gsea"),
                                      geneSize=150, cellLineMean="auto",
-                                     rankPerCellLine=FALSE) {
+                                     rankPerCellLine=FALSE, threads=1,
+                                     chunkGiB=1, verbose=FALSE) {
     metadata  <- attr(perturbations, "metadata")
     cellLines <- length(unique(metadata$cell_id))
-    rankedPerts <- compareAgainstReference(
+    rankedPerts <- rankAgainstReference(
         input, perturbations, method=method, geneSize=geneSize,
         cellLines=cellLines, cellLineMean=cellLineMean, rankByAscending=TRUE,
-        rankPerCellLine=rankPerCellLine)
+        rankPerCellLine=rankPerCellLine, threads=threads, chunkGiB=chunkGiB,
+        verbose=verbose)
 
     # Relabel the "identifier" column name to be more descriptive
     pertType <- unique(metadata$pert_type)
@@ -575,7 +575,7 @@ rankSimilarPerturbations <- function(input, perturbations,
 #' @param perturbation Character (perturbation identifier) or a
 #'   \code{similarPerturbations} table (from which the respective perturbation
 #'   identifiers are retrieved)
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @inheritParams plot.referenceComparison
 #' @param title Character: plot title (if \code{NULL}, the default title depends
 #'   on the context; ignored when plotting multiple perturbations)
@@ -644,7 +644,7 @@ plotPerturbationChanges <- function(x, perturbation, input,
     if (!isSummaryPert) cellLinePerts <- perturbation
     names(cellLinePerts) <- cellLinePerts
     if (is.character(x)) {
-        zscores <- loadCMapZscores(x[cellLinePerts], verbose=FALSE)
+        zscores <- loadCMapZscores(x[ , cellLinePerts], verbose=FALSE)
     } else {
         zscores <- unclass(x)
     }
@@ -685,26 +685,7 @@ plotPerturbationChanges <- function(x, perturbation, input,
 #' @export
 `[.perturbationChanges` <- function(x, i, j, drop=FALSE, ...) {
     if (is.character(x)) {
-        out <- x
-        nargs <- nargs() - length(list(...)) - 1
-
-        hasI <- !missing(i)
-        hasJ <- !missing(j)
-        genes <- attr(out, "genes")
-        perts <- attr(out, "perturbations")
-        # Allow to search based on characters
-        names(genes) <- genes
-        names(perts) <- perts
-
-        if (nargs == 2) {
-            if (hasI) genes <- genes[i]
-            if (hasJ) perts <- perts[j]
-        } else if (hasI && nargs == 1) {
-            perts <- perts[i]
-        }
-        if (anyNA(perts) || anyNA(genes)) stop("subscript out of bounds")
-        attr(out, "genes") <- unname(genes)
-        attr(out, "perturbations") <- unname(perts)
+        out <- subsetData(x, i, j, "genes", "perturbations", nargs(), ...)
     } else {
         out <- NextMethod("[", drop=drop)
     }

@@ -1,3 +1,62 @@
+# cTRAP 1.10.0 (18 March, 2021)
+
+## Improvements to graphical interface functions:
+
+* New `launchDrugSetEnrichmentAnalysis()` function to analyse drug set
+enrichment and visualize respective results
+* `launchCMapDataLoader()`:
+    - Now allows to load multiple CMap perturbation types simultaneously
+    - Keep selected timepoint, dosage and cell line options when selecting
+    another perturbation type
+    - Add bubble plot of CMap perturbation types
+* `launchResultPlotter()`:
+    - Now allows to view tables below specific plots and drag-and-select those
+    plots to filter data in those same tables
+    - When plotting targeting drugs and similar perturbations, update available
+    columns and correctly use user-selected column to plot
+* `launchMetadataViewer()` now correctly parses values from `Input`
+attributes as numeric
+
+## Major changes
+
+* `prepareCMapPerturbations()`: directly set perturbation type, cell line,
+timepoint and dosage conditions as arguments
+* `rankSimilarPerturbations()` and `predictTargetingDrugs()`:
+    - Avoid redundant loading of data chunks, slightly decreasing run time
+    - Lower memory footprint when using NCI60's gene expression and drug
+    sensitivity association (now available in HDF5 files) by loading and
+    processing data in chunks
+    - Faster GSEA-based score calculation (up to 4-7 times faster)
+    - New `threads` argument allows to set number of parallel threads (not
+    supported on Windows)
+    - New `chunkGiB` argument allows to set size of data chunks when reading
+    from supported HDF5 files (decreases peak RAM usage)
+    - New `verbose` argument allows to increase details printed in the console
+* `prepareDrugSets()`: allow greater control on the creation of bins based on
+numeric columns, including the setting of maximum number of bins per column and
+minimum bin size
+* `analyseDrugSetEnrichment()` and `plotDrugSetEnrichment()`: allow to select
+columns to use when comparing compound identifiers between datasets
+
+## Bug fixes and minor changes
+
+* `filterCMapMetadata()`: allow filtering CMap metadata based on multiple
+perturbation types
+* `prepareDrugSets()`: fix issues with 3D descriptors containing missing values
+* `plot()`:
+    - Fix wrong labels when plotting `targetingDrugs` objects
+    - Avoid printing "NA" in labels identifying metadata for perturbations
+* `plotTargetingDrugsVSsimilarPerturbations()`:
+    - Fix highlighting of plot points depending whether drug activity is
+    directly proportional to drug sensitivity
+    - Include rug plot
+* When subsetting a `perturbationChanges` or an
+`expressionDrugSensitivityAssociation` object, passing only one argument
+extracts its columns as in previous versions of cTRAP (similarly to when
+subsetting a `data.frame`)
+* `analyseDrugSetEnrichment()`: for the resulting table, the name of the first
+column was renamed from `pathway` to `descriptor`
+
 # cTRAP 1.8 (23 October, 2020)
 
 ## Interactive functions for loading data and analysing results

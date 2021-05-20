@@ -1,7 +1,7 @@
 Package: cTRAP
 Title: Identification of candidate causal perturbations from differential gene 
     expression data
-Version: 1.8
+Version: 1.10.0
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
@@ -13,7 +13,7 @@ Description: Compare differential gene expression results with those from known
     to infer the molecular causes of the observed difference in gene expression 
     but also to identify small molecules that could drive or revert specific 
     transcriptomic alterations.
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -35,6 +35,7 @@ Imports: biomaRt,
     data.table,
     dplyr,
     DT,
+    fastmatch,
     fgsea,
     ggplot2,
     ggrepel,
@@ -43,6 +44,7 @@ Imports: biomaRt,
     httr,
     limma,
     methods,
+    parallel,
     pbapply,
     R.utils,
     readxl,
@@ -51,6 +53,7 @@ Imports: biomaRt,
     scales,
     shiny,
     stats,
+    tibble,
     tools,
     utils
 VignetteBuilder: knitr

@@ -10,6 +10,7 @@ reference:
       - launchCMapDataLoader
       - launchResultPlotter
       - launchMetadataViewer
+      - launchDrugSetEnrichmentAnalyser
   - title: "Prepare ENCODE data"
     contents:
       - matches("ENCODE")

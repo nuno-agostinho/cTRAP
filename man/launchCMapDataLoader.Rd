@@ -45,6 +45,7 @@ Load CMap data via a visual interface
 \seealso{
 Other visual interface functions: 
 \code{\link{launchDiffExprLoader}()},
+\code{\link{launchDrugSetEnrichmentAnalyser}()},
 \code{\link{launchMetadataViewer}()},
 \code{\link{launchResultPlotter}()}
 }

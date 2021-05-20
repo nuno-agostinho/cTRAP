@@ -13,7 +13,7 @@ loadCMapZscores(data, inheritAttrs = FALSE, verbose = TRUE)
 \item{inheritAttrs}{Boolean: convert to \code{perturbationChanges} object and
 inherit attributes from \code{data}?}
 
-\item{verbose}{Boolean: print messages?}
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 Matrix containing CMap perturbation z-scores (genes as rows,

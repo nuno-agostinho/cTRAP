@@ -1,152 +1,101 @@
-#' Assign vector elements into chunks
+# Process a function by chunks of loaded CMap z-scores -------------------------
+
+#' Assign columns into chunks
 #'
 #' @param x Vector of elements
-#' @param nElems Numeric: number of chunks
+#' @param nrows Numeric: number of rows
+#' @inheritParams processByChunks
 #'
+#' @return List of chunks with equally distributed columns
 #' @keywords internal
-#'
-#' @return List of chunks with the original vector elements divided
-chunkVector <- function(x, nElems) {
-    groups <- ceiling(length(x)/nElems)
-    split(x, factor(sort(rank(x) %% groups)))
+chunkColumns <- function(x, nrows, chunkGiB) {
+    ncolsPerChunk <- ceiling( 1024^3 / (nrows * 8) )
+    nchunks <- ceiling( length(x) / ncolsPerChunk )
+    return( split(x, factor(sort(rank(x) %% nchunks))) )
 }
 
-processChunk <- function(chunk, data, FUN, ..., progress) {
-    zscores <- loadCMapZscores(data[ , chunk], verbose=FALSE)
-    processCall(zscores, chunk, FUN, ..., progress=progress)
-}
-
-processCall <- function(data, cols, calledFUN, ..., progress) {
-    data <- unclass(data)
-    gc()
-
-    setFUNprogress <- function(col, data, ..., progress, calledFUN) {
-        res <- calledFUN(col, data, ...)
-        setpb(progress, getpb(progress) + 1)
-        return(res)
+processChunk <- function(chunk, data, FUN, ..., progress, verbose=FALSE) {
+    if (verbose) message(Sys.time(), " - starting to load data chunk")
+    if (is(data, "perturbationChanges")) {
+        loaded <- loadCMapZscores(data[ , chunk], verbose=FALSE)
+    } else if (is(data, "expressionDrugSensitivityAssociation")) {
+        loaded <- readExpressionDrugSensitivityCorHDF5(
+            data, cols=chunk, loadValues=TRUE, verbose=FALSE)
     }
-
-    # Suppress warnings to avoid "Cannot compute exact p-value with ties"
-    res <- suppressWarnings(lapply(cols, setFUNprogress, data, ...,
-                                   progress=progress, calledFUN=calledFUN))
-    # res <- plyr::compact(res) # in case of NULL elements for GSEA
+    if (verbose) message(Sys.time(), " - loaded data chunk")
+    res <- FUN(loaded, chunk, ..., progress=progress)
     return(res)
 }
 
-#' Process data column by chunks
+#' Process data by chunks
 #'
-#' Columns will be processed per chunk if argument \code{data} is a
-#' \code{perturbationChanges} object containing a file path instead of a data
-#' matrix. Otherwise, the data will be processed as a single chunk.
+#' @note All rows from file are currently loaded when processing chunks.
 #'
-#' For instance, loading a chunk of 10000 CMap pertubations requires ~1GB of RAM
-#' compared to loading the whole dataset.
-#'
-#' @param data Data matrix or \code{perturbationChanges} object
+#' @param data Character containing a HDF5 file path (allowing partial loading)
+#'   or data matrix (processed as single chunk if data matrix)
 #' @param FUN Function: function to run for each chunk
+#' @param num Numeric: numbers of methods to run per chunk
 #' @param ... Arguments passed to \code{FUN}
-#' @param chunkSize Integer: number of columns to load on-demand (a higher value
-#'   increases RAM usage, but decreases running time)
-#'
-#' @importFrom pbapply startpb getpb setpb closepb
+#' @inheritParams compareWithAllMethods
 #'
 #' @return Results of running \code{FUN}
 #' @keywords internal
-processByChunks <- function(data, FUN, ..., chunkSize=10000) {
-    pb <- startpb(max=ncol(data))
+processByChunks <- function(data, FUN, num, ..., threads=1, chunkGiB=1,
+                            verbose=FALSE) {
     loadFromFile <- is.character(data)
     if (loadFromFile && !file.exists(data)) {
-        msg <- "%s not found: has the CMap z-scores file been moved or deleted?"
-        stop(sprintf(msg, data))
+        if (is(data, "perturbationChanges")) {
+            type <- "z-scores"
+        } else if (is(data, "expressionDrugSensitivityAssociation")) {
+            type <- "gene expression and drug sensitivity association"
+        }
+        source <- attr(data, "source")
+        msg <- "%s not found: has the %s %s file been moved or deleted?"
+        stop(sprintf(msg, data, source, type))
     }
 
+    # Display progress per chunk (if multi-threaded and on-demand file loading)
+    # or per perturbation (if single-threaded)
+    pb <- NULL
+    if (threads == 1) pb <- startpb(max=ncol(data) * num)
+
     if (loadFromFile) {
-        chunks <- chunkVector(colnames(data), chunkSize)
-        res <- lapply(chunks, processChunk, data, FUN, ..., progress=pb)
-        res <- unlist(res, recursive=FALSE, use.names=FALSE)
+        chunks <- chunkColumns(colnames(data), nrow(data), chunkGiB)
+        if (threads > 1) pb <- startpb(max=length(chunks))
+        resTmp <- lapply(chunks, processChunk, data, FUN, ..., threads=threads,
+                         progress=pb, verbose=verbose)
+        names(resTmp) <- NULL
+
+        # Organise lists by the results of each method
+        unlisted        <- unlist(resTmp, recursive=FALSE)
+        len             <- sapply(unlisted, length)
+        methods         <- names(unlisted)
+        names(unlisted) <- NULL
+        groups          <- factor(rep(methods, len), unique(methods))
+        res             <- split(unlist(unlisted, recursive=FALSE), groups)
     } else {
-        res <- processCall(data, colnames(data), FUN, ..., progress=pb)
+        res <- FUN(data, colnames(data), ..., threads=threads, progress=pb)
     }
-    closepb(pb)
+    if (!is.null(pb)) closepb(pb)
     return(res)
 }
 
-#' Rank columns in a dataset
-#'
-#' @details The rank product's rank is calculated if more than one method is
-#'   ranked.
-#'
-#' @note The first column of \code{data} and \code{rankingInfo} must contain
-#'   common identifiers.
-#'
-#' @param table Data table: data; first column must be identifiers
-#' @param rankingInfo Data table: boolean values of which rows to rank based on
-#'   columns (column names to be ranked must exactly match those available in
-#'   argument \code{table}); first column must be identifiers
-#' @param sort Boolean: sort data based on rank product's rank (if multiple
-#'   methods are available) or by available ranks
-#' @inheritParams compareAgainstReference
-#'
-#' @importFrom data.table setkeyv
-#'
-#' @return Data table with the contents of \code{table} and extra columns with
-#'   respective rankings
-#' @keywords internal
-rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
-    setkeyv(table, colnames(table)[[1]])
-    colsToRank <- colnames(rankingInfo)[-1]
-    rankedCols <- NULL
-    for(col in colsToRank) {
-        toRank     <- rankingInfo[[col]]
-        rowsToRank <- rankingInfo[[1]][toRank]
-        dataToRank <- table[rowsToRank][[col]]
-        if (rankByAscending) dataToRank <- -dataToRank
-        ranked     <- rank(dataToRank, na.last="keep")
-        newCol     <- paste0(gsub("(.*)_.*$", "\\1", col), "_rank")
-        table[rowsToRank, newCol] <- ranked
-        rankedCols <- c(rankedCols, newCol)
-    }
-    if (length(rankedCols) > 1) {
-        # Calculate rank product's rank
-        ranks    <- table[rowsToRank, rankedCols, with=FALSE]
-        rankProd <- apply(ranks, 1, prod) ^ (1 / ncol(ranks))
-        table[rowsToRank, "rankProduct_rank"] <- rank(rankProd, na.last="keep")
-        sortingCol <- "rankProduct_rank"
-    } else {
-        sortingCol <- rankedCols
-    }
-    if (sort) table <- table[order(table[[sortingCol]])]
-    return(table)
+# Compare similarity of data against reference ---------------------------------
+
+#' @importFrom stats cor.test
+correlateAgainstReference <- function(k, data, diffExprGenes, method,
+                                      progress) {
+    res <- cor.test(data[ , k], diffExprGenes, method=method)
+    if (!is.null(progress)) setpb(progress, getpb(progress) + 1)
+    return(res)
 }
 
-#' Correlate against data columns
-#'
-#' @inheritParams rankSimilarPerturbations
-#' @param pAdjust Character: method to use for p-value adjustment
-#'
-#' @importFrom stats p.adjust cor.test
-#' @importFrom data.table data.table
-#'
-#' @return Data frame with correlation results per data column
-#'
-#' @keywords internal
-correlateAgainstReference <- function(diffExprGenes, reference, method,
-                                      pAdjust="BH") {
-    # Subset based on intersecting genes
-    genes <- intersect(names(diffExprGenes), rownames(reference))
-    diffExprGenes <- diffExprGenes[genes]
-    reference     <- reference[genes, ]
-
-    # Correlate per data column
-    corPerColumn <- function(k, data, diffExprGenes, method) {
-        cor.test(data[ , k], diffExprGenes, method=method)
-    }
-    cors <- processByChunks(reference, corPerColumn,
-                            diffExprGenes=diffExprGenes, method=method)
+#' @importFrom stats p.adjust
+prepareCorrelationResults <- function(cors, method, pAdjust="BH") {
     cor  <- sapply(cors, "[[", "estimate")
     pval <- sapply(cors, "[[", "p.value")
     qval <- p.adjust(pval, pAdjust)
-    names(cor) <- names(pval) <- names(qval) <- colnames(reference)
+    names(cor) <- names(pval) <- names(qval) <- names(cors)
 
     res  <- data.table(names(cor), cor, pval, qval)
     cols <- sprintf("%s_%s", method, c("coef", "pvalue", "qvalue"))
@@ -157,7 +106,7 @@ correlateAgainstReference <- function(diffExprGenes, reference, method,
 
 #' Prepare GSEA gene sets
 #'
-#' @inheritParams compareAgainstReferencePerMethod
+#' @inheritParams compareWithAllMethods
 #' @return List of gene sets
 #' @keywords internal
 prepareGSEAgenesets <- function(input, geneSize) {
@@ -197,119 +146,41 @@ prepareGSEAgenesets <- function(input, geneSize) {
     return(geneset)
 }
 
-#' Perform gene set enrichment (GSA) against data columns
-#'
-#' @inheritParams rankSimilarPerturbations
-#' @inheritParams fgsea::fgsea
-#'
-#' @importFrom fgsea fgsea
-#' @importFrom data.table data.table
-#' @importFrom dplyr bind_rows
-#'
-#' @return Data frame containing gene set enrichment analysis (GSEA) results per
-#' data column
-#' @keywords internal
-performGSEAagainstReference <- function(reference, geneset) {
-    # Calculate GSEA per data column
-    gseaPerColumn <- function(k, data, geneset) {
-        signature        <- data[ , k]
-        names(signature) <- rownames(data)
-        signature        <- sort(signature)
-        score            <- fgsea(pathways=geneset, stats=signature,
-                                  minSize=15, maxSize=500, nperm=1)
-        return(score)
-    }
-    gsa <- processByChunks(reference, gseaPerColumn, geneset)
-    gsaRes <- bind_rows(gsa)
+#' @importFrom fastmatch fmatch
+performGSEAagainstReference <- function(k, data, geneset, progress) {
+    signature        <- data[ , k]
+    names(signature) <- rownames(data)
+    gseaParam        <- 1
+    signature        <- sort(signature, decreasing=TRUE) ^ gseaParam
 
-    calcWTCS <- all(sort(unique(gsaRes$pathway)) == c("bottom", "top"))
+    filterPathways  <- function(p, stats) na.omit(fmatch(p, names(stats)))
+    genesetFiltered <- lapply(geneset, filterPathways, signature)
+    score <- sapply(genesetFiltered, calcGseaStat, stats=signature)
+    if (!is.null(progress)) setpb(progress, getpb(progress) + 1)
+    return(score)
+}
+
+prepareGSEAresults <- function(gsa) {
+    gsaRes <- do.call(rbind, gsa)
+    calcWTCS <- all(sort(unique(colnames(gsaRes))) == c("bottom", "top"))
     if (calcWTCS) {
         # Weighted connectivity score (WTCS) as per CMap paper (page e8)
-        isTop  <- gsaRes$pathway == "top"
-        top    <- gsaRes[["ES"]][isTop]
-        bottom <- gsaRes[["ES"]][!isTop]
+        isTop  <- colnames(gsaRes) == "top"
+        top    <- gsaRes[ , which(isTop)]
+        bottom <- gsaRes[ , which(!isTop)]
         wtcs   <- ifelse(sign(top) != sign(bottom), (top - bottom) / 2, 0)
         score  <- wtcs
     } else {
-        score  <- gsaRes[["ES"]]
+        score  <- gsaRes[[1]]
     }
     if (length(score) == 0) score <- NA
-    results <- data.table("identifier"=colnames(reference), "GSEA"=score)
+    results <- data.table("identifier"=rownames(gsaRes), "GSEA"=score)
     attr(results, "colsToRank") <- "GSEA"
     return(results)
 }
 
-#' Compare single method
-#'
-#' @param input \code{Named numeric vector} of differentially expressed genes
-#'   whose names are gene identifiers and respective values are a statistic that
-#'   represents significance and magnitude of differentially expressed genes
-#'   (e.g. t-statistics); or \code{character} of gene symbols composing a gene
-#'   set that is tested for enrichment in reference data (only used if
-#'   \code{method} includes \code{gsea})
-#' @param geneSize Numeric: number of top up-/down-regulated genes to use as
-#'   gene sets to test for enrichment in reference data; if a 2-length numeric
-#'   vector, the first index is the number of top up-regulated genes and the
-#'   second index is the number of down-regulated genes used to create gene
-#'   sets; only used if \code{method} includes \code{gsea} and if \code{input}
-#'   is not a gene set
-#' @param method Character: one or more methods to compare data
-#'   (\code{spearman}, \code{pearson} or \code{gsea})
-#' @param reference Data matrix or \code{perturbationChanges} object (CMap
-#'   perturbations; see \code{\link{prepareCMapPerturbations}()})
-#' @param cellLines Integer: number of unique cell lines
-#' @param cellLineMean Boolean: add a column with the mean score across cell
-#'   lines? If \code{cellLineMean = "auto"} (default), the mean score will be
-#'   added when data for more than one cell line is available.
-#' @param rankByAscending Boolean: rank values based on their ascending
-#'   (\code{TRUE}) or descending (\code{FALSE}) order?
-#' @param rankPerCellLine Boolean: rank results based on both individual cell
-#'   lines and mean scores across cell lines (\code{TRUE}) or based on mean
-#'   scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
-#'   cell line conditions are always ranked.
-#'
-#' @importFrom utils head tail
-#' @importFrom R.utils capitalize
-#'
-#' @keywords internal
-#' @return Data frame containing the results per method of comparison
-compareAgainstReferencePerMethod <- function(method, input, reference,
-                                             geneSize=150, cellLines=NULL,
-                                             cellLineMean="auto",
-                                             rankPerCellLine=FALSE) {
-    startTime <- Sys.time()
-
-    # Check immediately if there is something wrong with the geneset(s)
-    if (method == "gsea") geneset <- prepareGSEAgenesets(input, geneSize)
-
-    type <- attr(reference, "type")
-    if (is.null(type)) type <- "comparisons"
-    compareMsg <- paste(c(ncol(reference),
-                          attr(reference, "source"), type), collapse=" ")
-
-    if (method %in% c("spearman", "pearson")) {
-        methodStr <- paste0(capitalize(method), "'s correlation")
-        if (is.null(cellLines) || cellLines == 0) {
-            msg <- methodStr
-        } else {
-            msg <- sprintf("%s cell line%s; %s", cellLines,
-                           ifelse(cellLines == 1, "", "s"), methodStr)
-        }
-        message(sprintf("Correlating against %s (%s)...", compareMsg, msg))
-        geneset  <- NULL
-        rankedRef <- correlateAgainstReference(input, reference, method)
-    } else if (method == "gsea") {
-        if (is.null(cellLines) || cellLines == 0) {
-            msg <- compareMsg
-        } else {
-            cellLinesMsg <- sprintf("(%s cell line%s)...", cellLines,
-                                    ifelse(cellLines == 1, "", "s"))
-            msg <- paste(compareMsg, cellLinesMsg)
-        }
-        message(sprintf("Performing GSEA against %s...", msg))
-        geneSize  <- attr(geneset, "geneSize")
-        rankedRef <- performGSEAagainstReference(reference, geneset)
-    }
+prepareRankedResults <- function(rankedRef, cellLineMean, cellLines, reference,
+                                 rankPerCellLine, geneset) {
     colsToRank <- attr(rankedRef, "colsToRank")
 
     # Set whether to calculate the mean value across cell lines
@@ -340,13 +211,157 @@ compareAgainstReferencePerMethod <- function(method, input, reference,
     attr(rankedRef, "rankingInfo") <- rankingInfo
     attr(rankedRef, "metadata")    <- metadata
     attr(rankedRef, "geneset")     <- geneset
+    return(rankedRef)
+}
 
+#' @importFrom parallel mclapply
+comparePerMethod <- function(m, cols, reference, geneset, referenceSubset,
+                             diffExprGenes, progress, threads=1) {
+    if (any(m %in% c("spearman", "pearson"))) {
+        cmp <- suppressWarnings(mclapply(cols, correlateAgainstReference,
+                                         referenceSubset, progress=progress,
+                                         diffExprGenes=diffExprGenes, method=m,
+                                         mc.cores=threads))
+    } else if (m %in% "gsea") {
+        cmp          <- NULL
+        nulls        <- sapply(geneset, is.null) # Genesets with size of 0
+        validGeneset <- geneset[!nulls]
+        if (length(validGeneset) > 0) {
+            cmp <- mclapply(cols, performGSEAagainstReference, reference,
+                            validGeneset, progress=progress, mc.cores=threads)
+        }
+
+        if (any(nulls)) {
+            ns   <- names(geneset)[nulls]
+            gsea <- rep(NA, length(ns))
+            names(gsea) <- ns
+
+            if (!is.null(cmp)) {
+                cmp <- lapply(cmp, c, gsea)
+            } else {
+                cmp <- rep(list(gsea), length(cols))
+                names(cmp) <- cols
+            }
+        }
+    }
+    return(cmp)
+}
+
+messageComparisonStats <- function(reference, method, cellLines, geneSize) {
+    type <- attr(reference, "type")
+    if (is.null(type)) type <- "comparisons"
+    compareMsg <- paste(c(ncol(reference), attr(reference, "source"), type),
+                        collapse=" ")
+
+    if (is.null(cellLines) || cellLines == 0) {
+        msg <- compareMsg
+    } else {
+        cellLinesMsg <- sprintf("(%s cell line%s)", cellLines,
+                                ifelse(cellLines == 1, "", "s"))
+        msg <- paste(compareMsg, cellLinesMsg)
+    }
+    geneSizeMsg <- ifelse("gsea" %in% method,
+                          sprintf(" (gene size of %s)", geneSize), "")
+    msg <- sprintf("Comparing against %s using '%s'%s...", msg,
+                   paste(method, collapse=", "), geneSizeMsg)
+    message(msg)
+}
+
+compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
+                         progress, threads=1) {
+    names(cols) <- cols
+    reference   <- unclass(reference)
+    gc()
+    if (any(c("spearman", "pearson") %in% method)) {
+        referenceSubset <- reference[genes, ]
+    }
+    names(method) <- method
+    res <- lapply(method, comparePerMethod, cols, reference, geneset,
+                  referenceSubset, diffExprGenes, progress, threads=threads)
+    if (threads > 1 && !is.null(progress)) setpb(progress, getpb(progress) + 1)
+    return(res)
+}
+
+#' Compare reference using all methods
+#'
+#' @param input \code{Named numeric vector} of differentially expressed genes
+#'   whose names are gene identifiers and respective values are a statistic that
+#'   represents significance and magnitude of differentially expressed genes
+#'   (e.g. t-statistics); or \code{character} of gene symbols composing a gene
+#'   set that is tested for enrichment in reference data (only used if
+#'   \code{method} includes \code{gsea})
+#' @param geneSize Numeric: number of top up-/down-regulated genes to use as
+#'   gene sets to test for enrichment in reference data; if a 2-length numeric
+#'   vector, the first index is the number of top up-regulated genes and the
+#'   second index is the number of down-regulated genes used to create gene
+#'   sets; only used if \code{method} includes \code{gsea} and if \code{input}
+#'   is not a gene set
+#' @param method Character: comparison method (\code{spearman}, \code{pearson}
+#'   or \code{gsea}; multiple methods may be selected at once)
+#' @param reference Data matrix or \code{character} object with file path to
+#'   CMap perturbations (see \code{\link{prepareCMapPerturbations}()}) or gene
+#'   expression and drug sensitivity association (see
+#'   \code{\link{loadExpressionDrugSensitivityAssociation}()})
+#' @param cellLines Integer: number of unique cell lines
+#' @param cellLineMean Boolean: add a column with the mean score across cell
+#'   lines? If \code{cellLineMean = "auto"} (default), the mean score will be
+#'   added when data for more than one cell line is available.
+#' @param rankByAscending Boolean: rank values based on their ascending
+#'   (\code{TRUE}) or descending (\code{FALSE}) order?
+#' @param rankPerCellLine Boolean: rank results based on both individual cell
+#'   lines and mean scores across cell lines (\code{TRUE}) or based on mean
+#'   scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
+#'   cell line conditions are always ranked.
+#' @param threads Integer: number of parallel threads
+#' @param verbose Boolean: print additional details?
+#' @param chunkGiB Numeric: size (in gibibytes) of chunks to load
+#'   \code{reference} file; only if argument \code{reference} is a file path
+#'
+#' @section GSEA score:
+#'   When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+#'   calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
+#'
+#' @importFrom utils head tail
+#' @importFrom R.utils capitalize
+#' @importFrom pbapply startpb getpb setpb closepb
+#'
+#' @return List of data tables with correlation and/or GSEA score results
+#' @keywords internal
+compareWithAllMethods <- function(method, input, reference, geneSize=150,
+                                  cellLines=NULL, cellLineMean="auto",
+                                  rankPerCellLine=FALSE, threads=1, chunkGiB=1,
+                                  verbose=FALSE) {
+    startTime <- Sys.time()
+    geneset <- NULL
+    if ("gsea" %in% method) {
+        # Check if there is something wrong with the geneset(s)
+        geneset  <- prepareGSEAgenesets(input, geneSize)
+        geneSize <- attr(geneset, "geneSize")
+    }
+    genes   <- NULL
+    if (any(c("spearman", "pearson") %in% method)) {
+        # Subset based on intersecting genes
+        genes <- intersect(names(input), rownames(reference))
+        input <- input[genes]
+    }
+    messageComparisonStats(reference, method, cellLines, geneSize)
+
+    rankedRef <- processByChunks(
+        reference, compareChunk, length(method), method=method, verbose=verbose,
+        diffExprGenes=input, genes=genes, geneset=geneset, threads=threads,
+        chunkGiB=chunkGiB)
+    for (m in method) {
+        if (m == "gsea") {
+            rankedRef[[m]] <- prepareGSEAresults(rankedRef[[m]])
+        } else {
+            rankedRef[[m]] <- prepareCorrelationResults(rankedRef[[m]], m)
+        }
+    }
+    rankedRef <- lapply(rankedRef, prepareRankedResults, cellLineMean,
+                        cellLines, reference, rankPerCellLine, geneset)
     # Report run settings and time
     diffTime <- format(round(Sys.time() - startTime, 2))
-    msg      <- "Comparison against %s using '%s' %sperformed in %s\n"
-    extra    <- ifelse(method == "gsea",
-                       sprintf("(gene size of %s) ", geneSize), "")
-    message(sprintf(msg, compareMsg, method, extra, diffTime))
+    message(sprintf("Comparison performed in %s\n", diffTime))
     return(rankedRef)
 }
 
@@ -366,19 +381,78 @@ prepareGeneInput <- function(input) {
     return(input)
 }
 
-#' Compare multiple methods and rank reference accordingly
+#' Rank columns in a dataset
 #'
-#' @inheritParams compareAgainstReferencePerMethod
+#' @details The rank product's rank is calculated if more than one method is
+#'   ranked.
+#'
+#' @note The first column of \code{data} and \code{rankingInfo} must contain
+#'   common identifiers.
+#'
+#' @param table Data table: data; first column must be identifiers
+#' @param rankingInfo Data table: boolean values of which rows to rank based on
+#'   columns (column names to be ranked must exactly match those available in
+#'   argument \code{table}); first column must be identifiers
+#' @param sort Boolean: sort data based on rank product's rank (if multiple
+#'   methods are available) or by available ranks
+#' @inheritParams rankAgainstReference
+#'
+#' @importFrom data.table setkeyv
+#'
+#' @return Data table with the contents of \code{table} and extra columns with
+#'   respective rankings
+#' @keywords internal
+rankColumns <- function(table, rankingInfo, rankByAscending=TRUE, sort=FALSE) {
+    setkeyv(table, colnames(table)[[1]])
+    colsToRank <- colnames(rankingInfo)[-1]
+    rankedCols <- NULL
+    for(col in colsToRank) {
+        toRank     <- rankingInfo[[col]]
+        rowsToRank <- rankingInfo[[1]][toRank]
+        dataToRank <- table[rowsToRank][[col]]
+        if (rankByAscending) dataToRank <- -dataToRank
+        ranked     <- rank(dataToRank, na.last="keep")
+        newCol     <- paste0(gsub("(.*)_.*$", "\\1", col), "_rank")
+        table[rowsToRank, newCol] <- ranked
+        rankedCols <- c(rankedCols, newCol)
+    }
+    if (length(rankedCols) > 1) {
+        # Calculate rank product's rank
+        ranks    <- table[rowsToRank, rankedCols, with=FALSE]
+        rankProd <- apply(ranks, 1, prod) ^ (1 / ncol(ranks))
+        table[rowsToRank, "rankProduct_rank"] <- rank(rankProd, na.last="keep")
+        sortingCol <- "rankProduct_rank"
+    } else {
+        sortingCol <- rankedCols
+    }
+    if (sort) table <- table[order(table[[sortingCol]])]
+    return(table)
+}
+
+#' Compare multiple methods and rank against reference accordingly
+#' @inherit compareWithAllMethods
+#' @param chunkGiB Numeric: if second argument is a path to an HDF5 file
+#'   (\code{.h5} extension), that file is loaded and processed in chunks of a
+#'   given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+#'   details below)
+#'
+#' @section Process data by chunks:
+#'   If a file path to a valid HDF5 (\code{.h5}) file is provided instead of a
+#'   data matrix, that file can be loaded and processed in chunks of size
+#'   \code{chunkGiB}, resulting in decreased peak memory usage.
+#'
+#'   The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+#'   14000 rows (\code{10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB}).
 #'
 #' @importFrom data.table :=
-#'
+#' @return Data table with correlation and/or GSEA score results
 #' @keywords internal
-#' @return List of data frame containing the results per methods of comparison
-compareAgainstReference <- function(input, reference,
-                                    method=c("spearman", "pearson", "gsea"),
-                                    geneSize=150, cellLines=NULL,
-                                    cellLineMean="auto", rankByAscending=TRUE,
-                                    rankPerCellLine=FALSE) {
+rankAgainstReference <- function(input, reference,
+                                 method=c("spearman", "pearson", "gsea"),
+                                 geneSize=150, cellLines=NULL,
+                                 cellLineMean="auto", rankByAscending=TRUE,
+                                 rankPerCellLine=FALSE, threads=1, chunkGiB=1,
+                                 verbose=FALSE) {
     startTime <- Sys.time()
     # Check if any of supplied methods are supported
     supported <- c("spearman", "pearson", "gsea")
@@ -413,9 +487,11 @@ compareAgainstReference <- function(input, reference,
     }
 
     names(method) <- method
-    res <- lapply(method, compareAgainstReferencePerMethod, input=input,
-                  reference=reference, geneSize=geneSize, cellLines=cellLines,
-                  cellLineMean=cellLineMean, rankPerCellLine=rankPerCellLine)
+    res <- compareWithAllMethods(
+        method=method, input=input, reference=reference, geneSize=geneSize,
+        cellLines=cellLines, cellLineMean=cellLineMean,
+        rankPerCellLine=rankPerCellLine, threads=threads, chunkGiB=chunkGiB,
+        verbose=verbose)
 
     # Rank columns
     rankingInfo <- Reduce(merge, lapply(res, attr, "rankingInfo"))
@@ -443,6 +519,108 @@ compareAgainstReference <- function(input, reference,
 
     class(ranked) <- c("referenceComparison", class(ranked))
     return(ranked)
+}
+
+# Match compound identifiers between datasets ----------------------------------
+
+filterKeys <- function(keys, cols, keyList) {
+    if (is.null(keys)) keys <- keyList[keyList %in% cols]
+    if (length(keys) == 0) keys <- cols[[1]]
+    names(keys) <- keys
+    return(keys)
+}
+
+compareDatasetIds <- function(key1, key2, data1, data2) {
+    values1 <- stripStr(data1[[key1]])
+    values2 <- stripStr(data2[[key2]])
+    matches <- which(values1 %in% na.omit(values2)) # Avoid matching NAs
+    return(data1[[key1]][matches])
+}
+
+getCompoundIntersectingKeyList <- function() {
+    keyList       <- list()
+    keyList$cmap  <- c("compound_perturbation", "pert_iname", "pert_id",
+                       "smiles", "InChIKey", "pubchem_cid")
+    keyList$nci60 <- c("compound", "PubChem SID", "PubChem CID", "SMILES")
+    keyList$ctrp  <- c("compound", "name", "broad id", "SMILES")
+    keyList$gdsc  <- c("compound", "name")
+    keyList       <- unique(unlist(keyList))
+    return(keyList)
+}
+
+#' Check for intersecting compounds across specific columns on both datasets
+#'
+#' @return List containing three elements: matching compounds
+#'   \code{commonCompounds} between column \code{key 1} and \code{key 2} from
+#'   the first and second datasets, respectively
+#' @keywords internal
+findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
+    showSelectedCols <- is.null(keys1) || is.null(keys2)
+
+    # Filter keys based on dataset columns
+    keyList <- getCompoundIntersectingKeyList()
+    keys1 <- filterKeys(keys1, colnames(data1), keyList)
+    keys2 <- filterKeys(keys2, colnames(data2), keyList)
+
+    # Compare dataset key columns
+    res <- list(key1=NULL, key2=NULL, commonCompounds=NULL)
+    for (col1 in keys1) {
+        for (col2 in keys2) {
+            cmp <- compareDatasetIds(col1, col2, data1, data2)
+            if (length(cmp) >= length(res$commonCompounds)) {
+                # Save params if number of matching compounds is same or larger
+                res$key1 <- col1
+                res$key2 <- col2
+                res$commonCompounds <- cmp
+            }
+        }
+    }
+
+    if (showSelectedCols) {
+        message(sprintf(paste(
+            "Columns '%s' and '%s' were matched based on %s common values; to",
+            "manually select columns to compare, please set arguments starting",
+            "with 'keyCol'"),
+            res$key1, res$key2, length(res$commonCompounds)))
+    }
+    return(res)
+}
+
+mergeDatasets <- function(data2, data1, key2=NULL, key1=NULL,
+                          suffixes=paste0(".", 1:2), ...,
+                          removeKey2ColNAs=FALSE) {
+    keys <- findIntersectingCompounds(data1, data2, key1, key2)
+    key1 <- keys$key1
+    key2 <- keys$key2
+
+    # Convert key columns to same class if needed
+    key1val <- data1[[key1]]
+    key2val <- data2[[key2]]
+    areNotClass <- function(key1val, key2val, cmp) cmp(key1val) && !cmp(key2val)
+
+    FUN <- NULL
+    if (length(keys$commonCompounds) > 0) {
+        if (areNotClass(key1val, key2val, is.character)) {
+            FUN <- as.character
+        } else if (areNotClass(key1val, key2val, is.integer)) {
+            FUN <- as.integer
+        } else if (areNotClass(key1val, key2val, is.numeric)) {
+            FUN <- as.numeric
+        } else if (areNotClass(key1val, key2val, is.factor)) {
+            FUN <- as.factor
+        } else if (areNotClass(key1val, key2val, is.logical)) {
+            FUN <- as.logical
+        }
+    }
+    if (!is.null(FUN)) data2[[key2]] <- FUN(data2[[key2]])
+
+    # Avoid matching NAs from key2 column of data2
+    if (removeKey2ColNAs) data2 <- data2[!is.na(data2[[key2]]), ]
+
+    # Merge data based on intersecting compounds
+    df <- merge(data2, data1, by.x=key2, by.y=key1, suffixes=rev(suffixes), ...)
+    attr(df, "keys") <- keys
+    return(df)
 }
 
 # referenceComparison object ---------------------------------------------------

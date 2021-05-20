@@ -32,12 +32,13 @@ values of interest}
 score per compound will be plotted}
 
 \item{keyColTargetingDrugs}{Character: column from \code{targetingDrugs} to
-match against \code{keyColSimilarPerturbations}; if not set, it will be
-automatically determined}
+compare with column \code{keyColSimilarPerturbations} from
+\code{similarPerturbations}; automatically selected if \code{NULL}}
 
 \item{keyColSimilarPerturbations}{Character: column from
-\code{similarPerturbations} to match against \code{keyColTargetingDrugs};
-if not set, it will be automatically determined}
+\code{similarPerturbations} to compare with column
+\code{keyColTargetingDrugs} from \code{targetingDrugs}; automatically
+selected if \code{NULL}}
 }
 \value{
 \code{ggplot2} plot

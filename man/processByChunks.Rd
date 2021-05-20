@@ -2,30 +2,42 @@
 % Please edit documentation in R/compare.R
 \name{processByChunks}
 \alias{processByChunks}
-\title{Process data column by chunks}
+\title{Process data by chunks}
 \usage{
-processByChunks(data, FUN, ..., chunkSize = 10000)
+processByChunks(
+  data,
+  FUN,
+  num,
+  ...,
+  threads = 1,
+  chunkGiB = 1,
+  verbose = FALSE
+)
 }
 \arguments{
-\item{data}{Data matrix or \code{perturbationChanges} object}
+\item{data}{Character containing a HDF5 file path (allowing partial loading)
+or data matrix (processed as single chunk if data matrix)}
 
 \item{FUN}{Function: function to run for each chunk}
 
+\item{num}{Numeric: numbers of methods to run per chunk}
+
 \item{...}{Arguments passed to \code{FUN}}
 
-\item{chunkSize}{Integer: number of columns to load on-demand (a higher value
-increases RAM usage, but decreases running time)}
+\item{threads}{Integer: number of parallel threads}
+
+\item{chunkGiB}{Numeric: size (in gibibytes) of chunks to load
+\code{reference} file; only if argument \code{reference} is a file path}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
 Results of running \code{FUN}
 }
 \description{
-Columns will be processed per chunk if argument \code{data} is a
-\code{perturbationChanges} object containing a file path instead of a data
-matrix. Otherwise, the data will be processed as a single chunk.
+Process data by chunks
 }
-\details{
-For instance, loading a chunk of 10000 CMap pertubations requires ~1GB of RAM
-compared to loading the whole dataset.
+\note{
+All rows from file are currently loaded when processing chunks.
 }
 \keyword{internal}

@@ -9,7 +9,10 @@ predictTargetingDrugs(
   expressionDrugSensitivityCor,
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
-  isDrugActivityDirectlyProportionalToSensitivity = NULL
+  isDrugActivityDirectlyProportionalToSensitivity = NULL,
+  threads = 1,
+  chunkGiB = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -20,14 +23,13 @@ represents significance and magnitude of differentially expressed genes
 set that is tested for enrichment in reference data (only used if
 \code{method} includes \code{gsea})}
 
-\item{expressionDrugSensitivityCor}{Matrix: correlation matrix of gene
-expression (rows) and drug sensitivity (columns) across cell lines.
-Pre-prepared gene expression and drug sensitivity associations are
-available to download using
+\item{expressionDrugSensitivityCor}{Matrix or character: correlation matrix
+of gene expression (rows) and drug sensitivity (columns) across cell lines
+or path to file containing such data; see
 \code{\link{loadExpressionDrugSensitivityAssociation}()}.}
 
-\item{method}{Character: one or more methods to compare data
-(\code{spearman}, \code{pearson} or \code{gsea})}
+\item{method}{Character: comparison method (\code{spearman}, \code{pearson}
+or \code{gsea}; multiple methods may be selected at once)}
 
 \item{geneSize}{Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
@@ -38,27 +40,41 @@ is not a gene set}
 
 \item{isDrugActivityDirectlyProportionalToSensitivity}{Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
-See details.}
+If \code{NULL}, the argument \code{expressionDrugSensitivityCor} must have
+a non-\code{NULL} value for attribute
+\code{isDrugActivityDirectlyProportionalToSensitivity}.}
+
+\item{threads}{Integer: number of parallel threads}
+
+\item{chunkGiB}{Numeric: if second argument is a path to an HDF5 file
+(\code{.h5} extension), that file is loaded and processed in chunks of a
+given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+details below)}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
-Data table with correlation or GSEA results comparing differential
-  expression values against gene expression and drug sensitivity associations
+Data table with correlation and/or GSEA score results
 }
 \description{
 Identify compounds that may target the phenotype associated with a
 user-provided differential expression profile by comparing such against a
 correlation matrix of gene expression and drug sensitivity.
 }
-\details{
-If \code{isDrugActivityDirectlyProportionalToSensitivity = NULL}, the
-  attribute \code{isDrugMetricDirectlyProportionalToSensitivity} of
-  \code{expressionDrugSensitivityCor} is used (see
-  \code{\link{loadExpressionDrugSensitivityAssociation}()}).
+\section{Process data by chunks}{
+
+  If a file path to a valid HDF5 (\code{.h5}) file is provided instead of a
+  data matrix, that file can be loaded and processed in chunks of size
+  \code{chunkGiB}, resulting in decreased peak memory usage.
+
+  The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+  14000 rows (\code{10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB}).
 }
+
 \section{GSEA score}{
 
-Weighted connectivity scores (WTCS) are calculated when \code{method
-  = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
+  When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+  calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
 }
 
 \examples{

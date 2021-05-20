@@ -60,3 +60,8 @@ table(stripNonAlphaNumericChr(cmap_name_2) %in%
 
 drugSets <- prepareDrugSets(descriptors2D, "PubChem_CID")
 analyseDrugSetEnrichment(rankedPerts, drugSets)
+
+# 3D molecular descriptors -----------------------------------------------------
+# descriptors3D <- data.table::fread("compound_descriptors_3D.csv",
+#                                    na.strings=c("", "NA"))
+# analyseDrugSetEnrichment(rankedPerts, drugSets)

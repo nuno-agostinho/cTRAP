@@ -36,15 +36,34 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
     return(table)
 }
 
+#' Calculate evenly-distributed bins
+#'
+#' @param numbers Numeric
+#' @param maxBins Numeric: maximum number of bins for numeric columns
+#' @param k Numeric: constant; the higher the constant, the smaller the bin size
+#'   (check \code{minpts})
+#' @param minPoints Numeric: minimum number of points in a bin (if \code{NULL},
+#'   the minimum number of points is the number of non-missing values divided by
+#'   \code{maxBins} divided by \code{k})
+#' @inheritDotParams binr::bins -x -target.bins -minpts
+#'
 #' @importFrom binr bins bins.getvals
-calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
-                                           ..., ids=NULL) {
+#'
+#' @return Factor containing the respective group of each element in
+#'   \code{numbers}
+#' @keywords internal
+calculateEvenlyDistributedBins <- function(numbers, maxBins=15, k=5,
+                                           minPoints=NULL, ..., ids=NULL) {
     nas     <- is.na(numbers)
-    numbers <- round(numbers[!nas])
-    if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids))
-    if (is.null(minpts)) minpts <- round( length(numbers) / target.bins / 5 )
+    if (all(nas)) return(NULL)
 
-    bin <- bins(numbers, target.bins=target.bins, minpts=minpts, ...)
+    numbers <- round(numbers[!nas])
+    if (max(numbers) - min(numbers) == 0) return(setNames(numbers, ids[!nas]))
+    if (is.null(minPoints)) {
+        minPoints <- round( length(numbers) / maxBins / k )
+        if (minPoints == 0) return(NULL)
+    }
+    bin <- bins(numbers, target.bins=maxBins, minpts=minPoints, ...)
 
     # Replace labels of single number intervals
     names(bin$binct) <- gsub("\\[([-]?[0-9]*), \\1\\]", "\\1", names(bin$binct))
@@ -57,11 +76,16 @@ calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
 
 #' Prepare drug sets from a table with compound descriptors
 #'
+#' Create a list of drug sets for each character and numeric column. For each
+#' character column, drugs are split across that column's unique values (see
+#' argument \code{maxUniqueElems}). For each numeric column, drugs are split
+#' across evenly-distributed bins.
+#'
 #' @param table Data frame: drug descriptors
-#' @param id Integer or character: index or name of the column containing
-#'   identifiers
-#' @param maxUniqueElems Numeric: maximum number of unique elements in a
-#'   descriptor to consider when creating discrete drug sets
+#' @param id Integer or character: index or name of the identifier column
+#' @param maxUniqueElems Numeric: ignore character columns with more unique
+#'   elements than \code{maxUniqueElems}
+#' @inheritParams calculateEvenlyDistributedBins
 #'
 #' @importFrom pbapply pblapply
 #'
@@ -73,14 +97,14 @@ calculateEvenlyDistributedBins <- function(numbers, target.bins=15, minpts=NULL,
 #' @examples
 #' descriptors <- loadDrugDescriptors("NCI60")
 #' prepareDrugSets(descriptors)
-prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
+prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
+                            minPoints=NULL) {
     # Remove elements with no ID
     valid <- !is.na(table[[id]])
     table <- table[valid, ]
 
-    isCharacter <- sapply(table, class) == "character"
-
     # Prepare sets from character columns if # unique values <= maxUniqueElems
+    isCharacter <- sapply(table, is.character)
     uniqueElems <- sapply(lapply(table[ , isCharacter, with=FALSE], unique),
                           length)
     sets <- names(uniqueElems[uniqueElems <= maxUniqueElems])
@@ -91,7 +115,8 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
 
     nonCharacterTable <- table[ , !isCharacter, with=FALSE]
     res2 <- pblapply(nonCharacterTable, calculateEvenlyDistributedBins,
-                     ids=table[[id]])
+                     ids=table[[id]], maxBins=maxBins, k=k, minPoints=minPoints)
+    res2 <- Filter(length, res2)
     res2 <- lapply(res2, function(x) split(names(x), x, drop=TRUE))
 
     res <- c(res, res2)
@@ -106,40 +131,21 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15) {
     return(res)
 }
 
-#' Match identifiers between data and drug sets
+#' Prepare stats' compound information
 #'
-#' @inheritParams analyseDrugSetEnrichment
+#' @inheritParams matchStatsWithDrugSetsID
 #'
-#' @importFrom pbapply pbapply
-#' @importFrom data.table data.table
+#' @return List containing stats' compound info
 #' @keywords internal
-#'
-#' @return Statistic values from input data and corresponding identifiers as
-#'   names (if no match is found, the original identifier from argument
-#'   \code{stats} is used)
-matchStatsWithDrugSetsID <- function(sets, stats, col=NULL) {
-    statsSuffix <- ".stats"
-    setsSuffix  <- ".sets"
-
-    # Prepare stats' compound information
+prepareStatsCompoundInfo <- function(stats) {
     statsCompoundInfo <- attr(stats, "compoundInfo")
     if (is.vector(stats)) {
         statsInfo  <- data.table("id"=names(stats), "values"=stats)
-        info       <- statsInfo
         statsIDcol <- colnames(statsInfo)[[1]]
-    } else if (is(stats, "similarPerturbations")) {
-        statsIDcol <- colnames(stats)[[1]]
-        # Merge both metadata and compound information
-        metadata   <- attr(stats, "metadata")
-        pertsID    <- unique(metadata[ , c("pert_id", "pert_iname")])
-        info       <- merge(pertsID, statsCompoundInfo, by="pert_iname",
-                            all.x=TRUE)
-        allInfo    <- merge(metadata, statsCompoundInfo, by="pert_iname",
-                            all.x=TRUE)
-        statsInfo  <- merge(stats, allInfo, by.x=colnames(stats)[[1]],
-                            by.y="sig_id", all.x=TRUE)
+    } else if (is(stats, "referenceComparison")) {
+        statsInfo  <- as.table(stats, clean=FALSE)
+        statsIDcol <- colnames(statsInfo)[[1]]
     } else if (!is.null(statsCompoundInfo)) {
-        info      <- statsCompoundInfo
         if (is(stats, "data.table") && !is(statsCompoundInfo, "data.table")) {
             statsCompoundInfo <- data.table(statsCompoundInfo)
         }
@@ -150,27 +156,20 @@ matchStatsWithDrugSetsID <- function(sets, stats, col=NULL) {
                            all.x=TRUE)
     } else {
         msg <- paste(
-            "Argument 'stats' needs to be a vector or a 'similarPerturbations'",
+            "Argument 'stats' needs to be a vector or a 'referenceComparison'",
             "object or have an attribute called 'compoundInfo'")
         stop(msg)
     }
-    colnames(statsInfo) <- paste0(colnames(statsInfo), statsSuffix)
-    colnames(info)      <- paste0(colnames(info), statsSuffix)
-    statsIDcol          <- paste0(statsIDcol, statsSuffix)
+    return(list("statsInfo"=statsInfo, "statsIDcol"=statsIDcol))
+}
 
-    # Select column containing values of interest
-    if (is.vector(stats)) {
-        col <- "values"
-    } else if (is.null(col)) {
-        cols <- paste0(c("rankProduct", "spearman", "pearson", "GSEA"), "_rank")
-        col  <- cols[paste0(cols, statsSuffix) %in% colnames(statsInfo)][[1]]
-    }
-    col <- paste0(col, statsSuffix)
-    if (!col %in% colnames(statsInfo)) {
-        stop(sprintf("specified column '%s' not found", col))
-    }
-
-    # Get drug sets' compound info
+#' Get drug sets' compound info
+#'
+#' @inheritParams matchStatsWithDrugSetsID
+#'
+#' @return List containing drug sets' compound info
+#' @keywords internal
+prepareSetsCompoundInfo <- function(sets) {
     setsCompoundInfo <- attr(sets, "compoundInfo")
     setsIDcol <- "id"
     if (is.null(setsCompoundInfo)) {
@@ -178,56 +177,70 @@ matchStatsWithDrugSetsID <- function(sets, stats, col=NULL) {
     } else if (!setsIDcol %in% colnames(setsCompoundInfo)) {
         setsIDcol <- colnames(setsCompoundInfo)[[1]]
     }
-    colnames(setsCompoundInfo) <- paste0(colnames(setsCompoundInfo), setsSuffix)
-    setsIDcol <- paste0(setsIDcol, setsSuffix)
+    return(list("setsCompoundInfo"=setsCompoundInfo, "setsIDcol"=setsIDcol))
+}
 
-    # Check matches using available compound information
-    intersectWithStatsID <- function(setInfo_k, statsInfo_j) {
-        length(intersect(stripStr(setInfo_k), stripStr(statsInfo_j)))
+#' Match identifiers between data and drug sets
+#'
+#' @inheritParams analyseDrugSetEnrichment
+#' @importFrom data.table data.table
+#' @keywords internal
+#'
+#' @return Statistic values from input data and corresponding identifiers as
+#'   names (if no match is found, the original identifier from argument
+#'   \code{stats} is used)
+matchStatsWithDrugSetsID <- function(sets, stats, col="values",
+                                     keyColSets=NULL, keyColStats=NULL) {
+    res        <- prepareStatsCompoundInfo(stats)
+    statsInfo  <- res$statsInfo
+    statsIDcol <- res$statsIDcol
+
+    res              <- prepareSetsCompoundInfo(sets)
+    setsCompoundInfo <- res$setsCompoundInfo
+    setsIDcol        <- res$setsIDcol
+
+    checkIfIDwasReplacedAfterMerging <- function(statsIDcol, data) {
+        keys <- attr(data, "keys")
+        if (keys$key1 == statsIDcol) statsIDcol <- keys$key2
+        return(statsIDcol)
     }
-    intersected <- pbapply(info, 2, function(i)
-        apply(setsCompoundInfo, 2, intersectWithStatsID, i))
 
-    # Get column with most matches
-    if (is.vector(intersected)) {
-        setsCol  <- names(setsCompoundInfo)
-        statsCol <- names(which.max(intersected))
-    } else {
-        setsCol  <- names(which.max(apply(intersected, 1, max)))
-        statsCol <- names(which.max(apply(intersected, 2, max)))
-    }
-
-    # Ignore missing values in sets' compound information
-    setsCompoundInfo <- setsCompoundInfo[!is.na(setsCompoundInfo[[setsCol]]), ]
-    statsInfo[[statsCol]] <- as.character(statsInfo[[statsCol]])
-    setsCompoundInfo[[setsCol]] <- as.character(setsCompoundInfo[[setsCol]])
-
-    if (!is(statsInfo, "data.table")) {
-        statsInfo <- data.table(statsInfo)
-    }
-    if (!is(setsCompoundInfo, "data.table")) {
-        setsCompoundInfo <- data.table(setsCompoundInfo)
-    }
-    merged <- merge(statsInfo, setsCompoundInfo, by.x=statsCol, by.y=setsCol,
-                    all.x=TRUE, suffixes=c(statsSuffix, setsSuffix))
-    # If column was merged, take new column name
-    if (setsIDcol == setsCol) setsIDcol <- statsCol
-
-    # Create vector of statistical results whose names include matches
-    matchedStats <- setNames(merged[[col]], merged[[setsIDcol]])
-    names(matchedStats)[is.na(names(matchedStats))] <-
-        merged[[statsIDcol]][is.na(names(matchedStats))]
-    # Save original column used for values
-    attr(matchedStats, "valuesCol") <- gsub(paste0(statsSuffix, "$"), "", col)
-    return(matchedStats)
+    # Return statistical values with corresponding identifier (or original
+    # identifier if no match is found)
+    df  <- mergeDatasets(setsCompoundInfo, statsInfo, key1=keyColSets,
+                         key2=keyColStats, all.y=TRUE, removeKey2ColNAs=TRUE)
+    res <- setNames(df[[col]], df[[setsIDcol]])
+    statsIDcol <- checkIfIDwasReplacedAfterMerging(statsIDcol, df)
+    names(res)[is.na(names(res))] <- df[[statsIDcol]][is.na(names(res))]
+    return(res)
 }
 
 processStats <- function(stats, col) {
     isRank <- endsWith(col, "_rank")
     stats  <- sort(stats, decreasing=!isRank)
     stats  <- stats[unique(names(stats))]
-    stats  <- (if (!isRank) `+` else `-`)(stats)
+    stats  <- ifelse(!isRank, `+`, `-`)(stats)
     return(stats)
+}
+
+prepareStatsCol <- function(col, stats) {
+    if (is.vector(stats)) {
+        col <- "values"
+    } else if (is.null(col)) {
+        cols <- paste0(c("rankProduct", "spearman", "pearson", "GSEA"), "_rank")
+        col  <- cols[cols %in% colnames(stats)][[1]]
+        if (!col %in% colnames(stats)) {
+            stop("no suitable column to analyse; explicitly set argument 'col'")
+        } else {
+            msg <- sprintf(
+                paste("Ordering results by column '%s'; to manually select",
+                      "column to order by, please set argument 'col'"), col)
+            message(msg)
+        }
+    } else if (!col %in% colnames(stats)) {
+        stop(sprintf("specified column '%s' not found", col))
+    }
+    return(col)
 }
 
 #' Analyse drug set enrichment
@@ -241,8 +254,14 @@ processStats <- function(stats, col) {
 #' @param col Character: name of the column to use for statistics (only required
 #'   if class of \code{stats} is either \code{similarPerturbations} or
 #'   \code{targetingDrugs})
-#' @inheritParams fgsea::fgsea
-#' @inheritDotParams fgsea::fgsea -pathways -stats -nperm -maxSize
+#' @inheritParams fgsea::fgseaSimple
+#' @inheritDotParams fgsea::fgseaSimple -pathways -stats -nperm -maxSize
+#' @param keyColSets Character: column from \code{sets} to compare with column
+#'   \code{keyColStats} from \code{stats}; automatically selected if \code{NULL}
+#' @param keyColStats Character: column from \code{stats} to compare with column
+#'   \code{keyColSets} from \code{sets}; automatically selected if \code{NULL}
+#'
+#' @importFrom fgsea fgsea
 #'
 #' @family functions for drug set enrichment analysis
 #' @return Enrichment analysis based on GSEA
@@ -260,15 +279,20 @@ processStats <- function(stats, col) {
 #'
 #' analyseDrugSetEnrichment(drugSets, predicted)
 analyseDrugSetEnrichment <- function(sets, stats, col=NULL, nperm=10000,
-                                     maxSize=500, ...) {
+                                     maxSize=500, ..., keyColSets=NULL,
+                                     keyColStats=NULL) {
     message("Matching compounds with those available in drug sets...")
-    stats <- matchStatsWithDrugSetsID(sets=sets, stats=stats, col=col)
-    stats <- processStats(stats, attr(stats, "valuesCol"))
+    col   <- prepareStatsCol(col, stats)
+    stats <- matchStatsWithDrugSetsID(
+        sets=sets, stats=stats, col=col,
+        keyColSets=keyColSets, keyColStats=keyColStats)
+    stats <- processStats(stats, col)
 
     message("Performing enrichment analysis...")
     gseaRes <- suppressWarnings(
         fgsea(sets, stats, nperm=nperm, maxSize=maxSize, ...))
     gseaRes <- gseaRes[order(gseaRes$padj), ]
+    colnames(gseaRes)[[1]] <- "descriptor"
     return(gseaRes)
 }
 
@@ -295,9 +319,13 @@ analyseDrugSetEnrichment <- function(sets, stats, col=NULL, nperm=10000,
 #'
 #' plotDrugSetEnrichment(drugSets, predicted)
 plotDrugSetEnrichment <- function(sets, stats, col="rankProduct_rank",
-                                  selectedSets=NULL) {
+                                  selectedSets=NULL, keyColSets=NULL,
+                                  keyColStats=NULL) {
     message("Matching compounds with those available in drug sets...")
-    stats <- matchStatsWithDrugSetsID(sets=sets, stats=stats, col=col)
+    col   <- prepareStatsCol(col, stats)
+    stats <- matchStatsWithDrugSetsID(
+        sets=sets, stats=stats, col=col,
+        keyColSets=keyColSets, keyColStats=keyColStats)
     stats <- processStats(stats, col)
 
     message("Plotting enrichment analysis...")

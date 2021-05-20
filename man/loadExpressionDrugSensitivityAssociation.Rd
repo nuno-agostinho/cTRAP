@@ -4,7 +4,13 @@
 \alias{loadExpressionDrugSensitivityAssociation}
 \title{Load gene expression and drug sensitivity correlation matrix}
 \usage{
-loadExpressionDrugSensitivityAssociation(source, file = NULL)
+loadExpressionDrugSensitivityAssociation(
+  source,
+  file = NULL,
+  rows = NULL,
+  cols = NULL,
+  loadValues = FALSE
+)
 }
 \arguments{
 \item{source}{Character: source of matrix to load; see
@@ -12,6 +18,14 @@ loadExpressionDrugSensitivityAssociation(source, file = NULL)
 
 \item{file}{Character: filepath to gene expression and drug sensitivity
 association dataset (automatically downloaded if file does not exist)}
+
+\item{rows}{Character or integer: rows}
+
+\item{cols}{Character or integer: columns}
+
+\item{loadValues}{Boolean: load data values (if available)? If \code{FALSE},
+downstream functions will load and process directly from the file chunk by
+chunk, resulting in a lower memory footprint}
 }
 \value{
 Correlation matrix between gene expression (rows) and drug

@@ -1,42 +1,39 @@
 # Action verbs: launch, start, open, run
+# - launchDiffExprLoader()
+# - launchCMapDataLoader()
+# - launchMetadataViewer()
+# - launchResultPlotter()
 
-# launchDiffExprLoader() -------------------------------------------------------
 diffExpr <- launchDiffExprLoader()
 
-# launchCMapDataLoader() -------------------------------------------------------
+# Rank similar perturbations ---------------------------------------------------
 cmapKD <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Consensus signature from shRNAs targeting the same gene")
 cmapCompounds <- launchCMapDataLoader(
     cellLine="HepG2",
     perturbationType="Compound")
+cmapPerts <- launchCMapDataLoader(cellLine="HepG2")
 
-launchMetadataViewer(cmapPerturbationsKD)
+launchMetadataViewer(cmapKD, cmapCompounds, cmapPerts)
 
-# Rank similar perturbations ---------------------------------------------------
 compareKD        <- rankSimilarPerturbations(diffExpr, cmapKD)
 compareCompounds <- rankSimilarPerturbations(diffExpr, cmapCompounds)
+comparePerts     <- rankSimilarPerturbations(diffExpr, cmapPerts)
 
-launchResultPlotter(compareKD)
-launchResultPlotter(compareCompounds)
-launchResultPlotter(compareCompounds, compareKD)
-
-launchMetadataViewer(compareKD)
+launchResultPlotter(compareCompounds, compareKD, comparePerts)
 
 # Predict targeting drugs ------------------------------------------------------
 listExpressionDrugSensitivityAssociation()
 assocMatrix <- listExpressionDrugSensitivityAssociation()[[1]]
 assoc       <- loadExpressionDrugSensitivityAssociation(assocMatrix)
-predicted   <- predictTargetingDrugs(diffExprStat, assoc)
+predicted   <- predictTargetingDrugs(diffExpr, assoc)
 launchResultPlotter(predicted)
 
 # Plot targeting drugs vs similar perturbations
 launchResultPlotter(predicted, compareCompounds)
 
-# Drug set enrichment analysis -------------------------------------------------
-descriptors <- loadDrugDescriptors("NCI60", "2D")
+# Analyse drug set enrichment --------------------------------------------------
+descriptors <- loadDrugDescriptors("NCI60", "3D")
 drugSets    <- prepareDrugSets(descriptors)
-dsea        <- analyseDrugSetEnrichment(drugSets, predicted)
-
-# launchDrugSetEnrichmentAnalysis(drugSets, predicted) -------------------------
-plotDrugSetEnrichment(drugSets, predicted, selectedSets=head(dsea$pathway, 6))
+launchDrugSetEnrichmentAnalyser(drugSets, predicted)

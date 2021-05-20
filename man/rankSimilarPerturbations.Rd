@@ -3,7 +3,7 @@
 \name{rankSimilarPerturbations}
 \alias{rankSimilarPerturbations}
 \alias{compareAgainstCMap}
-\title{Rank CMap perturbations' similarity to a differential expression profile}
+\title{Rank differential expression profile against CMap perturbations by similarity}
 \usage{
 rankSimilarPerturbations(
   input,
@@ -11,7 +11,10 @@ rankSimilarPerturbations(
   method = c("spearman", "pearson", "gsea"),
   geneSize = 150,
   cellLineMean = "auto",
-  rankPerCellLine = FALSE
+  rankPerCellLine = FALSE,
+  threads = 1,
+  chunkGiB = 1,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -23,7 +26,7 @@ set that is tested for enrichment in reference data (only used if
 \code{method} includes \code{gsea})}
 
 \item{perturbations}{\code{perturbationChanges} object: CMap perturbations
-(check \code{\link{prepareCMapPerturbations}})}
+(check \code{\link{prepareCMapPerturbations}()})}
 
 \item{method}{Character: comparison method (\code{spearman}, \code{pearson}
 or \code{gsea}; multiple methods may be selected at once)}
@@ -43,18 +46,36 @@ added when data for more than one cell line is available.}
 lines and mean scores across cell lines (\code{TRUE}) or based on mean
 scores alone (\code{FALSE})? If \code{cellLineMean = FALSE}, individual
 cell line conditions are always ranked.}
+
+\item{threads}{Integer: number of parallel threads}
+
+\item{chunkGiB}{Numeric: if second argument is a path to an HDF5 file
+(\code{.h5} extension), that file is loaded and processed in chunks of a
+given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+details below)}
+
+\item{verbose}{Boolean: print additional details?}
 }
 \value{
-Data table with correlation or GSEA results comparing differential
-  expression values with those associated with CMap perturbations
+Data table with correlation and/or GSEA score results
 }
 \description{
 Compare differential expression results against CMap perturbations.
 }
+\section{Process data by chunks}{
+
+  If a file path to a valid HDF5 (\code{.h5}) file is provided instead of a
+  data matrix, that file can be loaded and processed in chunks of size
+  \code{chunkGiB}, resulting in decreased peak memory usage.
+
+  The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+  14000 rows (\code{10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB}).
+}
+
 \section{GSEA score}{
 
-Weighted connectivity scores (WTCS) are calculated when \code{method
-  = "gsea"} (\url{https://clue.io/connectopedia/cmap_algorithms}).
+  When \code{method = "gsea"}, weighted connectivity scores (WTCS) are
+  calculated (\url{https://clue.io/connectopedia/cmap_algorithms}).
 }
 
 \examples{
