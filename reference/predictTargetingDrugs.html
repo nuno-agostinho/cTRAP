@@ -84,7 +84,7 @@ correlation matrix of gene expression and drug sensitivity." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.0</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@ correlation matrix of gene expression and drug sensitivity." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -109,7 +109,7 @@ correlation matrix of gene expression and drug sensitivity." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/cTRAP/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -142,7 +142,10 @@ correlation matrix of gene expression and drug sensitivity.</p>
   <span class='va'>expressionDrugSensitivityCor</span>,
   method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"spearman"</span>, <span class='st'>"pearson"</span>, <span class='st'>"gsea"</span><span class='op'>)</span>,
   geneSize <span class='op'>=</span> <span class='fl'>150</span>,
-  isDrugActivityDirectlyProportionalToSensitivity <span class='op'>=</span> <span class='cn'>NULL</span>
+  isDrugActivityDirectlyProportionalToSensitivity <span class='op'>=</span> <span class='cn'>NULL</span>,
+  threads <span class='op'>=</span> <span class='fl'>1</span>,
+  chunkGiB <span class='op'>=</span> <span class='fl'>1</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -159,16 +162,15 @@ set that is tested for enrichment in reference data (only used if
     </tr>
     <tr>
       <th>expressionDrugSensitivityCor</th>
-      <td><p>Matrix: correlation matrix of gene
-expression (rows) and drug sensitivity (columns) across cell lines.
-Pre-prepared gene expression and drug sensitivity associations are
-available to download using
+      <td><p>Matrix or character: correlation matrix
+of gene expression (rows) and drug sensitivity (columns) across cell lines
+or path to file containing such data; see
 <code><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a>()</code>.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>Character: one or more methods to compare data
-(<code>spearman</code>, <code>pearson</code> or <code>gsea</code>)</p></td>
+      <td><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
+or <code>gsea</code>; multiple methods may be selected at once)</p></td>
     </tr>
     <tr>
       <th>geneSize</th>
@@ -183,26 +185,45 @@ is not a gene set</p></td>
       <th>isDrugActivityDirectlyProportionalToSensitivity</th>
       <td><p>Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
-See details.</p></td>
+If <code>NULL</code>, the argument <code>expressionDrugSensitivityCor</code> must have
+a non-<code>NULL</code> value for attribute
+<code>isDrugActivityDirectlyProportionalToSensitivity</code>.</p></td>
+    </tr>
+    <tr>
+      <th>threads</th>
+      <td><p>Integer: number of parallel threads</p></td>
+    </tr>
+    <tr>
+      <th>chunkGiB</th>
+      <td><p>Numeric: if second argument is a path to an HDF5 file
+(<code>.h5</code> extension), that file is loaded and processed in chunks of a
+given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+details below)</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Boolean: print additional details?</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Data table with correlation or GSEA results comparing differential
-  expression values against gene expression and drug sensitivity associations</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <p>Data table with correlation and/or GSEA score results</p>
+    <h2 class="hasAnchor" id="process-data-by-chunks"><a class="anchor" href="#process-data-by-chunks"></a>Process data by chunks</h2>
 
-    <p>If <code>isDrugActivityDirectlyProportionalToSensitivity = NULL</code>, the
-  attribute <code>isDrugMetricDirectlyProportionalToSensitivity</code> of
-  <code>expressionDrugSensitivityCor</code> is used (see
-  <code><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a>()</code>).</p>
+    
+
+<p>If a file path to a valid HDF5 (<code>.h5</code>) file is provided instead of a
+  data matrix, that file can be loaded and processed in chunks of size
+  <code>chunkGiB</code>, resulting in decreased peak memory usage.</p>
+<p>The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+  14000 rows (<code>10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB</code>).</p>
     <h2 class="hasAnchor" id="gsea-score"><a class="anchor" href="#gsea-score"></a>GSEA score</h2>
 
     
 
-<p>Weighted connectivity scores (WTCS) are calculated when <code>method
-  = "gsea"</code> (<a href='https://clue.io/connectopedia/cmap_algorithms'>https://clue.io/connectopedia/cmap_algorithms</a>).</p>
+<p>When <code>method = "gsea"</code>, weighted connectivity scores (WTCS) are
+  calculated (<a href='https://clue.io/connectopedia/cmap_algorithms'>https://clue.io/connectopedia/cmap_algorithms</a>).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions related with the prediction of targeting drugs: 
@@ -218,10 +239,10 @@ See details.</p></td>
 
 <span class='co'># Load expression and drug sensitivity association derived from GDSC data</span>
 <span class='va'>gdsc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span><span class='op'>(</span><span class='st'>"GDSC 7"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC_7.rds...</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC7.rds...</span></div><div class='input'>
 <span class='co'># Predict targeting drugs on a differential expression profile</span>
 <span class='fu'>predictTargetingDrugs</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>gdsc</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'spearman' performed in 2.4 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 266 GDSC 7 compounds (983 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'pearson' performed in 0.79 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 266 GDSC 7 compounds (983 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 266 GDSC 7 compounds using 'gsea' (gene size of 150) performed in 12.69 secs</span></div><div class='output co'>#&gt;      compound spearman_coef spearman_pvalue spearman_qvalue pearson_coef
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 3.45 secs</span></div><div class='output co'>#&gt;      compound spearman_coef spearman_pvalue spearman_qvalue pearson_coef
 #&gt;   1:     1047    0.14532331    7.908329e-55    2.103616e-52   0.13098933
 #&gt;   2:      207    0.10447948    4.950795e-29    2.633823e-27   0.09295384
 #&gt;   3:      157    0.12935630    1.020442e-43    1.357188e-41   0.11655136

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Rank CMap perturbations' similarity to a differential expression profile — rankSimilarPerturbations • cTRAP</title>
+<title>Rank differential expression profile against CMap perturbations by similarity — rankSimilarPerturbations • cTRAP</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Rank CMap perturbations' similarity to a differential expression profile — rankSimilarPerturbations" />
+<meta property="og:title" content="Rank differential expression profile against CMap perturbations by similarity — rankSimilarPerturbations" />
 <meta property="og:description" content="Compare differential expression results against CMap perturbations." />
 
 
@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.0</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -107,7 +107,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/cTRAP/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -124,7 +124,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Rank CMap perturbations' similarity to a differential expression profile</h1>
+    <h1>Rank differential expression profile against CMap perturbations by similarity</h1>
     <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/R/CMap.R'><code>R/CMap.R</code></a></small>
     <div class="hidden name"><code>rankSimilarPerturbations.Rd</code></div>
     </div>
@@ -139,7 +139,10 @@
   method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"spearman"</span>, <span class='st'>"pearson"</span>, <span class='st'>"gsea"</span><span class='op'>)</span>,
   geneSize <span class='op'>=</span> <span class='fl'>150</span>,
   cellLineMean <span class='op'>=</span> <span class='st'>"auto"</span>,
-  rankPerCellLine <span class='op'>=</span> <span class='cn'>FALSE</span>
+  rankPerCellLine <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  threads <span class='op'>=</span> <span class='fl'>1</span>,
+  chunkGiB <span class='op'>=</span> <span class='fl'>1</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -157,7 +160,7 @@ set that is tested for enrichment in reference data (only used if
     <tr>
       <th>perturbations</th>
       <td><p><code>perturbationChanges</code> object: CMap perturbations
-(check <code><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></code>)</p></td>
+(check <code><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a>()</code>)</p></td>
     </tr>
     <tr>
       <th>method</th>
@@ -186,18 +189,41 @@ lines and mean scores across cell lines (<code>TRUE</code>) or based on mean
 scores alone (<code>FALSE</code>)? If <code>cellLineMean = FALSE</code>, individual
 cell line conditions are always ranked.</p></td>
     </tr>
+    <tr>
+      <th>threads</th>
+      <td><p>Integer: number of parallel threads</p></td>
+    </tr>
+    <tr>
+      <th>chunkGiB</th>
+      <td><p>Numeric: if second argument is a path to an HDF5 file
+(<code>.h5</code> extension), that file is loaded and processed in chunks of a
+given size in gibibytes (GiB); lower values decrease peak RAM usage (see
+details below)</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Boolean: print additional details?</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Data table with correlation or GSEA results comparing differential
-  expression values with those associated with CMap perturbations</p>
+    <p>Data table with correlation and/or GSEA score results</p>
+    <h2 class="hasAnchor" id="process-data-by-chunks"><a class="anchor" href="#process-data-by-chunks"></a>Process data by chunks</h2>
+
+    
+
+<p>If a file path to a valid HDF5 (<code>.h5</code>) file is provided instead of a
+  data matrix, that file can be loaded and processed in chunks of size
+  <code>chunkGiB</code>, resulting in decreased peak memory usage.</p>
+<p>The default value of 1 GiB (1 GiB = 1024^3 bytes) allows loading chunks of ~10000 columns and
+  14000 rows (<code>10000 * 14000 * 8 bytes / 1024^3 = 1.04 GiB</code>).</p>
     <h2 class="hasAnchor" id="gsea-score"><a class="anchor" href="#gsea-score"></a>GSEA score</h2>
 
     
 
-<p>Weighted connectivity scores (WTCS) are calculated when <code>method
-  = "gsea"</code> (<a href='https://clue.io/connectopedia/cmap_algorithms'>https://clue.io/connectopedia/cmap_algorithms</a>).</p>
+<p>When <code>method = "gsea"</code>, weighted connectivity scores (WTCS) are
+  calculated (<a href='https://clue.io/connectopedia/cmap_algorithms'>https://clue.io/connectopedia/cmap_algorithms</a>).</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other functions related with the ranking of CMap perturbations: 
@@ -235,7 +261,7 @@ cell line conditions are always ranked.</p></td>
 <span class='co'># correlation are used, as well as GSEA with the top and bottom 150 genes of</span>
 <span class='co'># the differential expression profile used as reference)</span>
 <span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.57 secs</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Pearson's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'pearson' performed in 0.42 secs</span></div><div class='output co'>#&gt; <span class='message'>Performing GSEA against 22 CMap perturbations (2 cell lines)......</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'gsea' (gene size of 150) performed in 1.23 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 0.62 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
 #&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
 #&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
 #&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278
@@ -342,7 +368,7 @@ cell line conditions are always ranked.</p></td>
 #&gt;            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</div><div class='input'>
 <span class='co'># Rank similar CMap perturbations using only Spearman's correlation</span>
 <span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Correlating against 22 CMap perturbations (2 cell lines; Spearman's correlation)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison against 22 CMap perturbations using 'spearman' performed in 0.48 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 0.5 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
 #&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
 #&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
 #&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278

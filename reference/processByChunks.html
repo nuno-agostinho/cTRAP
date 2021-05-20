@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Process data column by chunks — processByChunks • cTRAP</title>
+<title>Process data by chunks — processByChunks • cTRAP</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,8 @@
 
 
 
-<meta property="og:title" content="Process data column by chunks — processByChunks" />
-<meta property="og:description" content="Columns will be processed per chunk if argument data is a
-perturbationChanges object containing a file path instead of a data
-matrix. Otherwise, the data will be processed as a single chunk." />
+<meta property="og:title" content="Process data by chunks — processByChunks" />
+<meta property="og:description" content="Process data by chunks" />
 
 
 
@@ -84,7 +82,7 @@ matrix. Otherwise, the data will be processed as a single chunk." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.0</span>
       </span>
     </div>
 
@@ -92,7 +90,7 @@ matrix. Otherwise, the data will be processed as a single chunk." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -109,7 +107,7 @@ matrix. Otherwise, the data will be processed as a single chunk." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/cTRAP/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -126,48 +124,66 @@ matrix. Otherwise, the data will be processed as a single chunk." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Process data column by chunks</h1>
+    <h1>Process data by chunks</h1>
     <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/R/compare.R'><code>R/compare.R</code></a></small>
     <div class="hidden name"><code>processByChunks.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Columns will be processed per chunk if argument <code>data</code> is a
-<code>perturbationChanges</code> object containing a file path instead of a data
-matrix. Otherwise, the data will be processed as a single chunk.</p>
+    <p>Process data by chunks</p>
     </div>
 
-    <pre class="usage"><span class='fu'>processByChunks</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>FUN</span>, <span class='va'>...</span>, chunkSize <span class='op'>=</span> <span class='fl'>10000</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>processByChunks</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  <span class='va'>FUN</span>,
+  <span class='va'>num</span>,
+  <span class='va'>...</span>,
+  threads <span class='op'>=</span> <span class='fl'>1</span>,
+  chunkGiB <span class='op'>=</span> <span class='fl'>1</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>Data matrix or <code>perturbationChanges</code> object</p></td>
+      <td><p>Character containing a HDF5 file path (allowing partial loading)
+or data matrix (processed as single chunk if data matrix)</p></td>
     </tr>
     <tr>
       <th>FUN</th>
       <td><p>Function: function to run for each chunk</p></td>
     </tr>
     <tr>
+      <th>num</th>
+      <td><p>Numeric: numbers of methods to run per chunk</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Arguments passed to <code>FUN</code></p></td>
     </tr>
     <tr>
-      <th>chunkSize</th>
-      <td><p>Integer: number of columns to load on-demand (a higher value
-increases RAM usage, but decreases running time)</p></td>
+      <th>threads</th>
+      <td><p>Integer: number of parallel threads</p></td>
+    </tr>
+    <tr>
+      <th>chunkGiB</th>
+      <td><p>Numeric: size (in gibibytes) of chunks to load
+<code>reference</code> file; only if argument <code>reference</code> is a file path</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Boolean: print additional details?</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Results of running <code>FUN</code></p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>For instance, loading a chunk of 10000 CMap pertubations requires ~1GB of RAM
-compared to loading the whole dataset.</p>
+    <p>All rows from file are currently loaded when processing chunks.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

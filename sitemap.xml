@@ -10,6 +10,9 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/GCT-class.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/HTMLfast.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/analyseDrugSetEnrichment.html</loc>
   </url>
   <url>
@@ -22,10 +25,13 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/calculateCellLineMean.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/calculateEvenlyDistributedBins.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/checkColnames.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/chunkVector.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/chunkColumns.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/closeOpenHandles.html</loc>
@@ -40,25 +46,22 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/cmapPerturbationsKD.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareAgainstReference.html</loc>
-  </url>
-  <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareAgainstReferencePerMethod.html</loc>
-  </url>
-  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareQuantile.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertENSEMBLtoGeneSymbols.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareWithAllMethods.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/correlateAgainstReference.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertENSEMBLtoGeneSymbols.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/counts.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/diffExprStat.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dimnames.expressionDrugSensitivityAssociation.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-plotBubbles.html</loc>
@@ -95,6 +98,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchDiffExprLoader.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchDrugSetEnrichmentAnalyser.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchMetadataViewer.html</loc>
@@ -142,9 +148,6 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/performGSEA.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/performGSEAagainstReference.html</loc>
-  </url>
-  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/plot.perturbationChanges.html</loc>
   </url>
   <url>
@@ -187,6 +190,15 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareGSEAgenesets.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareSetsCompoundInfo.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareStatsCompoundInfo.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareWordBreak.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/print.similarPerturbations.html</loc>
   </url>
   <url>
@@ -194,6 +206,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/processIds.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/rankAgainstReference.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/rankColumns.html</loc>
@@ -209,6 +224,12 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/stripStr.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetData.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetDim.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetToIds.html</loc>

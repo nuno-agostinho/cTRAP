@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.0</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +106,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nuno-agostinho/cTRAP/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -127,6 +127,85 @@
       <small>Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="ctrap-1100-18-march-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.10.0">
+<a href="#ctrap-1100-18-march-2021" class="anchor"></a>cTRAP 1.10.0 (18 March, 2021)</h1>
+<div id="improvements-to-graphical-interface-functions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#improvements-to-graphical-interface-functions" class="anchor"></a>Improvements to graphical interface functions:</h2>
+<ul>
+<li>New <code>launchDrugSetEnrichmentAnalysis()</code> function to analyse drug set enrichment and visualize respective results</li>
+<li>
+<code><a href="../reference/launchCMapDataLoader.html">launchCMapDataLoader()</a></code>:
+<ul>
+<li>Now allows to load multiple CMap perturbation types simultaneously</li>
+<li>Keep selected timepoint, dosage and cell line options when selecting another perturbation type</li>
+<li>Add bubble plot of CMap perturbation types</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/launchResultPlotter.html">launchResultPlotter()</a></code>:
+<ul>
+<li>Now allows to view tables below specific plots and drag-and-select those plots to filter data in those same tables</li>
+<li>When plotting targeting drugs and similar perturbations, update available columns and correctly use user-selected column to plot</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/launchMetadataViewer.html">launchMetadataViewer()</a></code> now correctly parses values from <code>Input</code> attributes as numeric</li>
+</ul>
+</div>
+<div id="major-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes" class="anchor"></a>Major changes</h2>
+<ul>
+<li>
+<code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>: directly set perturbation type, cell line, timepoint and dosage conditions as arguments</li>
+<li>
+<code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>:
+<ul>
+<li>Avoid redundant loading of data chunks, slightly decreasing run time</li>
+<li>Lower memory footprint when using NCI60’s gene expression and drug sensitivity association (now available in HDF5 files) by loading and processing data in chunks</li>
+<li>Faster GSEA-based score calculation (up to 4-7 times faster)</li>
+<li>New <code>threads</code> argument allows to set number of parallel threads (not supported on Windows)</li>
+<li>New <code>chunkGiB</code> argument allows to set size of data chunks when reading from supported HDF5 files (decreases peak RAM usage)</li>
+<li>New <code>verbose</code> argument allows to increase details printed in the console</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>: allow greater control on the creation of bins based on numeric columns, including the setting of maximum number of bins per column and minimum bin size</li>
+<li>
+<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code> and <code><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment()</a></code>: allow to select columns to use when comparing compound identifiers between datasets</li>
+</ul>
+</div>
+<div id="bug-fixes-and-minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes-and-minor-changes" class="anchor"></a>Bug fixes and minor changes</h2>
+<ul>
+<li>
+<code><a href="../reference/filterCMapMetadata.html">filterCMapMetadata()</a></code>: allow filtering CMap metadata based on multiple perturbation types</li>
+<li>
+<code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>: fix issues with 3D descriptors containing missing values</li>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>:
+<ul>
+<li>Fix wrong labels when plotting <code>targetingDrugs</code> objects</li>
+<li>Avoid printing “NA” in labels identifying metadata for perturbations</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:
+<ul>
+<li>Fix highlighting of plot points depending whether drug activity is directly proportional to drug sensitivity</li>
+<li>Include rug plot</li>
+</ul>
+</li>
+<li>When subsetting a <code>perturbationChanges</code> or an <code>expressionDrugSensitivityAssociation</code> object, passing only one argument extracts its columns as in previous versions of cTRAP (similarly to when subsetting a <code>data.frame</code>)</li>
+<li>
+<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>: for the resulting table, the name of the first column was renamed from <code>pathway</code> to <code>descriptor</code>
+</li>
+</ul>
+</div>
+</div>
     <div id="ctrap-18-23-october-2020" class="section level1">
 <h1 class="page-header" data-toc-text="1.8">
 <a href="#ctrap-18-23-october-2020" class="anchor"></a>cTRAP 1.8 (23 October, 2020)</h1>
@@ -148,9 +227,9 @@
 </li>
 </ul>
 </div>
-<div id="major-changes" class="section level2">
+<div id="major-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
 <ul>
 <li>
 <code><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata()</a></code>: metadata is automatically saved to a file in order to avoid downloading metadata every time this function is run</li>
@@ -213,9 +292,9 @@
 </ul>
 </li>
 </ul>
-<div id="bug-fixes-and-minor-changes" class="section level2">
+<div id="bug-fixes-and-minor-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-and-minor-changes" class="anchor"></a>Bug fixes and minor changes</h2>
+<a href="#bug-fixes-and-minor-changes-1" class="anchor"></a>Bug fixes and minor changes</h2>
 <ul>
 <li>
 <code><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata()</a></code> now correctly retrieves metadata following a change in the metadata content from ENCODE</li>
@@ -254,9 +333,9 @@
 </li>
 </ul>
 </div>
-<div id="major-changes-1" class="section level2">
+<div id="major-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Update the tutorial and function documentation</li>
 <li>Remove most <code>L1000</code> instances, including in function names:
@@ -342,9 +421,9 @@
 </li>
 </ul>
 </div>
-<div id="bug-fixes-and-minor-changes-1" class="section level2">
+<div id="bug-fixes-and-minor-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-and-minor-changes-1" class="anchor"></a>Bug fixes and minor changes</h2>
+<a href="#bug-fixes-and-minor-changes-2" class="anchor"></a>Bug fixes and minor changes</h2>
 <ul>
 <li>CMap metadata minor improvements:
 <ul>
