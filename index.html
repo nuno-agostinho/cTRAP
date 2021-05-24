@@ -94,15 +94,44 @@
 <div id="installing" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installing" class="anchor"></a>Installing</h2>
+<div id="bioconductor" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bioconductor" class="anchor"></a>Bioconductor</h3>
 <p><a href="http://bioconductor.org/packages/cTRAP">cTRAP is available in Bioconductor</a> and can be installed with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"cTRAP"</span><span class="op">)</span></code></pre></div>
-<p>If you prefer, you can install cTRAP from GitHub instead:</p>
+</div>
+<div id="github" class="section level3">
+<h3 class="hasAnchor">
+<a href="#github" class="anchor"></a>GitHub</h3>
+<p>cTRAP can also be installed from GitHub instead:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
 <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nuno-agostinho/cTRAP"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="docker" class="section level3">
+<h3 class="hasAnchor">
+<a href="#docker" class="anchor"></a>Docker</h3>
+<p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker">Bioconductor Docker</a> and contain cTRAP and its dependencies.</p>
+<ol>
+<li>Pull the latest Docker image:</li>
+</ol>
+<pre><code>docker pull ghcr.io/nuno-agostinho/cTRAP:latest</code></pre>
+<ol>
+<li>Start RStudio Web from the Docker image:</li>
+</ol>
+<pre><code>docker run -e PASSWORD=bioc -p 8787:8787 nuno-agostinho/cTRAP:latest</code></pre>
+<ol>
+<li>Go to RStudio Web via your web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+</li>
+<li>Login in RStudio Web with user <code>rstudio</code> and password <code>bioc</code>
+</li>
+<li>Load the package in RStudio Web using <code><a href="https://nuno-agostinho.github.io/cTRAP">library(cTRAP)</a></code>
+</li>
+</ol>
+</div>
 </div>
 </div>
   </div>
