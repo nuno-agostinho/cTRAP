@@ -41,13 +41,13 @@ The Docker images are based on [Bioconductor Docker][biocDocker] and contain cTR
 1. Pull the latest Docker image:
 
 ```
-docker pull ghcr.io/nuno-agostinho/cTRAP:latest
+docker pull ghcr.io/nuno-agostinho/ctrap:latest
 ```
 
 2. Start RStudio Web from the Docker image:
 
 ```
-docker run -e PASSWORD=bioc -p 8787:8787 nuno-agostinho/cTRAP:latest
+docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/ctrap:latest
 ```
 
 3. Go to RStudio Web via your web browser at https://localhost:8787
