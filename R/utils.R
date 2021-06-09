@@ -91,9 +91,7 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
                                         mart="ensembl") {
     .Deprecated("convertGeneIdentifiers")
     
-    if (!require("biomaRt")) {
-        stop("This function requires the 'biomaRt' package installed")
-    }
+    requireNamespace("biomaRt")
     mart      <- useDataset(dataset, useMart(mart))
     processed <- sapply(strsplit(genes, "\\."), `[`, 1)
     geneConversion <- getBM(
