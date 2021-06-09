@@ -169,7 +169,7 @@ loadENCODEsamples <- function(metadata) {
 #'
 #' @param samples List of loaded ENCODE samples
 #'
-#' @seealso \code{\link{convertENSEMBLtoGeneSymbols}()}
+#' @seealso \code{\link{convertGeneIdentifiers}()}
 #'
 #' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
@@ -234,7 +234,7 @@ prepareENCODEgeneExpression <- function(samples) {
 #'   counts <- counts[filter, ]
 #'
 #'   # Convert ENSEMBL identifier to gene symbol
-#'   counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+#'   counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
 #'
 #'   # Perform differential gene expression analysis
 #'   diffExpr <- performDifferentialExpression(counts)

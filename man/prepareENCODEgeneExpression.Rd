@@ -29,7 +29,7 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link{convertENSEMBLtoGeneSymbols}()}
+\code{\link{convertGeneIdentifiers}()}
 
 Other functions related with using ENCODE expression data: 
 \code{\link{downloadENCODEknockdownMetadata}()},

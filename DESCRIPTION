@@ -23,13 +23,15 @@ URL: https://nuno-agostinho.github.io/cTRAP,
     https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
 Suggests: 
+    biomaRt,
     testthat,
     knitr,
     covr,
     rmarkdown,
     spelling
 RoxygenNote: 7.1.1
-Imports: biomaRt,
+Imports: AnnotationDbi,
+    AnnotationHub,
     binr,
     cowplot,
     data.table,

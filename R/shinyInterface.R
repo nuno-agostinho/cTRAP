@@ -252,7 +252,7 @@
 
                 # Convert ENSEMBL identifier to gene symbol
                 message("Converting ENSEMBL identifiers to gene symbols...")
-                counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+                counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
 
                 # Perform differential gene expression analysis
                 message("Performing differential gene expression analysis...")

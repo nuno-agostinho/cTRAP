@@ -1,3 +1,9 @@
+# cTRAP 1.10.1 (7 June, 2021)
+
+* `convertGeneIdentifiers()` replaces `convertENSEMBLtoGeneSymbols()`:
+    - Use AnnotationHub to convert to gene symbols (instead of biomaRt that has
+    been unstable) and allow to 
+
 # cTRAP 1.10.0 (18 March, 2021)
 
 ## Improvements to graphical interface functions:

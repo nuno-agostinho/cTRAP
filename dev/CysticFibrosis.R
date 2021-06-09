@@ -9,8 +9,8 @@ countFiles <- list.files(folder, pattern="ReadsPerGene", full.names=TRUE)
 geneExpr <- as.data.frame(prepareGeneQuant(countFiles, output=NULL))
 colnames(geneExpr) <- gsub("_", "", colnames(geneExpr))
 
-library(org.Hs.eg.db)
-rownames(geneExpr) <- convertGeneIdentifiers(org.Hs.eg.db, geneExpr[[1]])
+rownames(geneExpr) <- psichomics::convertGeneIdentifiers("Homo sapiens",
+                                                         geneExpr[[1]])
 geneExpr <- geneExpr[ , -1]
 
 summary(sort(unlist(geneExpr["CFTR", ])))
@@ -65,8 +65,8 @@ countFiles <- list.files(folder, pattern="ReadsPerGene", full.names=TRUE)
 geneExpr <- as.data.frame(prepareGeneQuant(countFiles, output=NULL))
 colnames(geneExpr) <- gsub("_", "", colnames(geneExpr))
 
-library(org.Hs.eg.db)
-rownames(geneExpr) <- convertGeneIdentifiers(org.Hs.eg.db, geneExpr[[1]])
+rownames(geneExpr) <- psichomics::convertGeneIdentifiers("Homo sapiens",
+                                                         geneExpr[[1]])
 geneExpr <- geneExpr[ , -1]
 
 # Check if there are enough CFTR reads to continue analysis

@@ -24,6 +24,3 @@ Named character vector where names are the input ENSEMBL gene
 \description{
 Convert ENSEMBL gene identifiers to gene symbols
 }
-\examples{
-convertENSEMBLtoGeneSymbols(c("ENSG00000112742", "ENSG00000130234"))
-}

@@ -285,7 +285,7 @@ loadGDSC7geneExpression <- function(file="GDSC_7/geneExpr.txt") {
     colnames(gext2) <- c("cellLine", geneExpr[[1]])
 
     # Convert from ENSEMBL to gene symbols
-    colnames(gext2) <- convertENSEMBLtoGeneSymbols(colnames(gext2))
+    colnames(gext2) <- convertGeneIdentifiers(colnames(gext2))
     return(gext2)
 }
 
