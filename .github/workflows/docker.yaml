@@ -9,7 +9,7 @@ on:
     types: [published]
 
 env:
-  dockerhub-package: ${{ secrets.DOCKERHUB_USERNAME }}/cTRAP
+  dockerhub-package: ${{ secrets.DOCKERHUB_USERNAME }}/ctrap
 
 jobs:
   push_to_registry:
