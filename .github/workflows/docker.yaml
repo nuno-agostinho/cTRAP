@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - dev-test
   release:
     types: [published]
 
