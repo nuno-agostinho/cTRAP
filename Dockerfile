@@ -7,8 +7,8 @@ RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; 
 RUN Rscript -e "install.packages('remotes')"
 
 # Install dependencies for Docker layer caching
-RUN Rscript -e "install.packages(c('limma', 'AnnotationHub', 'ggplot2', 'fgsea', 'reshape2', 'rhdf5', 'pbapply'))"
-RUN Rscript -e "install.packages(c('shiny', 'ggplot2', 'highcharter', 'DT'))"
+RUN Rscript -e "install.packages(c('BiocManager', 'ggplot2', 'reshape2', 'pbapply', 'shiny', 'ggplot2', 'highcharter', 'DT'))"
+RUN Rscript -e "BiocManager::install(c('limma', 'AnnotationHub', 'fgsea', 'rhdf5'))"
 
 # Copy package source code
 WORKDIR cTRAP
