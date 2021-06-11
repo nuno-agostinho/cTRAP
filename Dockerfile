@@ -6,6 +6,10 @@ RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e "install.packages('remotes')"
 
+# Install dependencies for Docker layer caching
+RUN Rscript -e "install.packages(c('limma', 'AnnotationHub', 'ggplot2', 'fgsea', 'reshape2', 'rhdf5', 'pbapply'))"
+RUN Rscript -e "install.packages(c('shiny', 'ggplot2', 'highcharter', 'DT'))"
+
 # Copy package source code
 WORKDIR cTRAP
 ADD . .
