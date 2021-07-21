@@ -8,20 +8,11 @@ RUN Rscript -e "install.packages('remotes')"
 
 # Copy package source code
 WORKDIR cTRAP
-ADD data data
-ADD DESCRIPTION .
-ADD Dockerfile .
-ADD LICENSE .
-ADD man man
-ADD NAMESPACE .
-ADD NEWS.md .
-ADD R R
-ADD README.md .
-ADD tests tests
-ADD vignettes vignettes
+ADD . .
 
 # Install R package from source
 RUN Rscript -e "remotes::install_local()"
+RUN rm -rf *
 
 # # To start an R session with cTRAP installed:
 # docker run -ti [docker image] R
