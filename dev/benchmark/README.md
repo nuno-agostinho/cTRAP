@@ -27,7 +27,17 @@ using NCI60 gene expression and drug sensitivity correlation matrix
 
 ## General instructions
 
-- Run 
+- Run [runRankCMapPerturbations.sh](scripts/runRankCMapPerturbations.sh)
+to profile time using `Sys.time()` (no debugger attached)
+
+- Run [runRankCMapPerturbations_heaptrack.sh](scripts/runRankCMapPerturbations_heaptrack.sh)
+to profile memory with heaptrack memory profiler (timed with `Sys.time()`)
+
+  - Convert heaptrack output to massif version (so we can plot in R) via
+  [convertHeaptrackToMassif.sh](scripts/convertHeaptrackToMassif.sh)
+  
+  - Plot heap memory profiling with
+  [R/memoryConsumptionPlot.R](R/memoryConsumptionPlot.R)
 
 ## Ranking CMap perturbations
 
