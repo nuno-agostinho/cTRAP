@@ -303,9 +303,9 @@ compareChunk <- function(reference, cols, method, diffExprGenes, genes, geneset,
 #'   expression and drug sensitivity association (see
 #'   \code{\link{loadExpressionDrugSensitivityAssociation}()})
 #' @param cellLines Integer: number of unique cell lines
-#' @param cellLineMean Boolean: add a column with the mean score across cell
-#'   lines? If \code{cellLineMean = "auto"} (default), the mean score will be
-#'   added when data for more than one cell line is available.
+#' @param cellLineMean Boolean: add rows with the mean of \code{method} across
+#'   cell lines? If \code{cellLineMean = "auto"} (default), rows will be added
+#'   when data for more than one cell line is available.
 #' @param rankByAscending Boolean: rank values based on their ascending
 #'   (\code{TRUE}) or descending (\code{FALSE}) order?
 #' @param rankPerCellLine Boolean: rank results based on both individual cell

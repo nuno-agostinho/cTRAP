@@ -4,7 +4,7 @@
 # - launchMetadataViewer()
 # - launchResultPlotter()
 
-diffExpr <- launchDiffExprLoader()
+diffExpr <- launchDiffExprLoader(cellLine="HepG2", gene="EIF4G1")
 
 # Rank similar perturbations ---------------------------------------------------
 cmapKD <- launchCMapDataLoader(

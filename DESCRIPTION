@@ -71,3 +71,4 @@ Collate:
     'drugSetEnrichment.R'
     'plots.R'
     'shinyInterface.R'
+    'shinyInterface_session.R'

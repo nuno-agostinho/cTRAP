@@ -1,3 +1,16 @@
+# cTRAP 1.10.2 (8 September, 2021)
+
+## Web server support (optimised to run in ShinyProxy)
+
+* `cTRAP()`: new global interface with all cTRAP functions in one place
+* Token-based sessions allow to create and load sessions via a token
+* Perform long-running tasks in the background using the Celery task manager
+
+## Bug fixes and minor improvements
+
+* Improve graphical interface functions
+* Add progress bars for slower tasks
+
 # cTRAP 1.10.1 (7 June, 2021)
 
 * `convertGeneIdentifiers()` replaces `convertENSEMBLtoGeneSymbols()`:

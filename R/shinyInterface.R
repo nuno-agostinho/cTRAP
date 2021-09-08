@@ -4,7 +4,7 @@
 .panel <- function(
     title=NULL, ..., footer=NULL, collapse=TRUE,
     type=c("default", "primary", "success", "info", "warning", "danger")) {
-
+    
     type <- match.arg(type)
     if (!is.null(title)) {
         if (collapse) {
@@ -15,7 +15,7 @@
         }
         title <- div(class="panel-heading", h3(class="panel-title", title))
     }
-
+    
     body <- list(...)
     if (length(body) > 0) body <- div(class="panel-body", ...)
     if (collapse) {
@@ -39,10 +39,10 @@
 .plotBubbles <- function(data, title, colour="orange") {
     if (!is.table(data)) data <- table(data)
     df <- as.data.frame(data)
-    names(df) <- c("data", "Freq")
     if (nrow(df) == 0) {
         hc <- highchart()
     } else {
+        names(df) <- c("data", "Freq")
         tooltip <- paste0("function() {",
                           "return '<b>' + this.series.name + '</b><br/>'",
                           "+ this.y + ' perturbations'; }")
@@ -64,7 +64,7 @@
 .prepareNavPage <- function(...) {
     app <- "cTRAP"
     ui  <- navbarPage(app, ...)
-
+    
     ui[[3]][[1]][[2]]$class <- "navbar navbar-default"
     ui <- tags$div(class="container-fluid", style="padding-top: 15px;", ui)
     ui[[3]][[1]][[3]][[2]] <- ui[[3]][[1]][[3]][[2]][[3]][[1]]
@@ -75,7 +75,7 @@
 .prepareDT <- function(table, suffixes=NULL, ..., columnDefs=NULL,
                        scrollX=TRUE, pagingType="simple_numbers") {
     if (is.null(table)) return(NULL)
-
+    
     cols <- NULL
     if (nrow(table) > 0) {
         # Prepare columns whose significant digits will be rounded
@@ -85,7 +85,7 @@
         cols <- lapply(cols, function(i) endsWith(colnames(table), i))
         cols <- which(Reduce("|", cols))
         cols <- cols[!sapply(table, class)[cols] %in% c("character", "logical")]
-
+        
         # Convert to factor if there are low number of unique values
         if (!all(c("Key", "Value") %in% colnames(table))) {
             lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
@@ -96,13 +96,13 @@
             }
         }
     }
-
+    
     # # Fix specific bug with targetingDrugs columns when using NCI-60 data
     # if (all(c("PubChem SID", "PubChem CID") %in% colnames(table))) {
     #     table$`PubChem CID` <- as.numeric(table$`PubChem CID`)
     #     table$`PubChem SID` <- as.numeric(table$`PubChem SID`)
     # }
-
+    
     dt <- datatable(
         table, rownames=FALSE, ..., escape=FALSE,
         selection="single", extensions="Buttons", filter="top",
@@ -125,10 +125,10 @@
         attr(x, "geneset") <- data.frame("Element"=unname(unlist(geneset)),
                                          "Category"=category)
     }
-
+    
     tables <- sapply(attributes(x), is, "data.frame")
     tables <- attributes(x)[tables]
-
+    
     if (is(x, "perturbationChanges")) {
         data <- rbind(
             cbind("Z-scores filename", prepareWordBreak(x)),
@@ -144,10 +144,10 @@
         if (is(data, "error")) data <- data.frame("Value"=x)
         dataName <- "Data"
     }
-
+    
     tables <- c(list(data), tables)
     names(tables)[[1]] <- dataName
-
+    
     # Improve names of common tables
     name <- c("metadata"="Metadata",
               "geneInfo"="Gene information",
@@ -167,13 +167,13 @@
     return(elems)
 }
 
-# Internal interface server and UI ---------------------------------------------
+# Data input -------------------------------------------------------------------
 
 .getENCODEconditions <- function(metadata) {
     cellLines <- sort(unique(metadata$`Biosample term name`))
     genes     <- sort(unique(metadata$`Experiment target`))
     genes     <- genes[genes != ""]
-
+    
     res <- list(genes=genes, cellLines=cellLines)
     return(res)
 }
@@ -181,86 +181,94 @@
 #' @importFrom shiny NS sidebarPanel selectizeInput mainPanel tabPanel
 #' sidebarLayout
 #' @importFrom DT DTOutput
-.diffExprENCODEloaderUI <- function(id, metadata, cellLine=NULL, gene=NULL,
+.diffExprENCODEloaderUI <- function(id,
+                                    metadata=downloadENCODEknockdownMetadata(),
+                                    cellLine=NULL, gene=NULL,
                                     title="ENCODE Knockdown Data Loader") {
     ns <- NS(id)
-
     conditions <- .getENCODEconditions(metadata)
     cellLines  <- conditions$cellLines
     genes      <- conditions$genes
-
+    
+    nullStrJS <- I('function() { this.setValue(""); }')
     onInitializeCellLine <- NULL
-    if (is.null(cellLine)) {
-        onInitializeCellLine <- I('function() { this.setValue(""); }')
-    }
-
+    if (is.null(cellLine)) onInitializeCellLine <- nullStrJS
     onInitializeGene <- NULL
-    if (is.null(gene)) {
-        onInitializeGene <- I('function() { this.setValue(""); }')
-    }
-
+    if (is.null(gene)) onInitializeGene <- nullStrJS
+    
     sidebar <- sidebarPanel(
         selectizeInput(ns("cellLine"), "Cell line", cellLines, cellLine,
-                       options=list(placeholder='Please select a cell line',
+                       options=list(placeholder='Select a cell line',
                                     onInitialize=onInitializeCellLine)),
         selectizeInput(ns("gene"), "Gene", genes, gene,
-                       options=list(placeholder='Please select a gene',
+                       options=list(placeholder='Select a gene',
                                     onInitialize=onInitializeGene)),
         actionButton(ns("load"), "Load data", class="btn-primary"))
-
+    
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
 }
 
-#' @importFrom shiny moduleServer stopApp
+#' @importFrom shiny moduleServer stopApp withProgress incProgress
 #' @importFrom DT renderDT
-.diffExprENCODEloaderServer <- function(id, metadata) {
+.diffExprENCODEloaderServer <- function(
+    id, metadata=downloadENCODEknockdownMetadata()) {
     moduleServer(
         id, function(input, output, session) {
             output$table <- renderDT({
-                .prepareDT(downloadENCODEknockdownMetadata())
+                .prepareDT(metadata)
             })
             proxy <- dataTableProxy("table")
             observe({
                 cellLine <- input$cellLine
                 if (cellLine == "") cellLine <- NULL
-
+                
                 gene <- input$gene
                 if (gene == "") gene <- NULL
                 data <- downloadENCODEknockdownMetadata(cellLine, gene)
                 observe(replaceData(proxy, data, rownames=FALSE))
             })
-
+            
             observeEvent(input$load, {
-                message("Filtering data...")
-                ENCODEmetadata <- downloadENCODEknockdownMetadata(
-                    input$cellLine, input$gene)
-
-                if (nrow(ENCODEmetadata) == 0) {
-                    stopApp()
-                    stop("No samples match the selected criteria")
-                }
-                ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
-                counts <- prepareENCODEgeneExpression(ENCODEsamples)
-
-                # Remove low coverage (at least 10 counts shared by 2 samples)
-                minReads   <- 10
-                minSamples <- 2
-                filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
-                counts <- counts[filter, ]
-
-                # Convert ENSEMBL identifier to gene symbol
-                message("Converting ENSEMBL identifiers to gene symbols...")
-                counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
-
-                # Perform differential gene expression analysis
-                message("Performing differential gene expression analysis...")
-                diffExpr <- performDifferentialExpression(counts)
-
-                diffExprStat <- diffExpr$t
-                names(diffExprStat) <- diffExpr$Gene_symbol
-                stopApp(diffExprStat)
+                withProgress(message="Preparing data", {
+                    steps <- 3
+                    
+                    incProgress(1/steps, detail="Downloading")
+                    message("Downloading data...")
+                    ENCODEmetadata <- downloadENCODEknockdownMetadata(
+                        input$cellLine, input$gene)
+                    
+                    if (nrow(ENCODEmetadata) == 0) {
+                        stopApp()
+                        stop("No samples match the selected criteria")
+                    }
+                    ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+                    counts <- prepareENCODEgeneExpression(ENCODEsamples)
+                    
+                    # Remove low coverage (>= 10 counts shared by 2 samples)
+                    minReads   <- 10
+                    minSamples <- 2
+                    filter <- rowSums(
+                        counts[ , -c(1:2)] >= minReads) >= minSamples
+                    counts <- counts[filter, ]
+                    
+                    # Convert ENSEMBL identifier to gene symbol
+                    msg <- "Converting ENSEMBL identifiers to gene symbols"
+                    incProgress(1/steps, detail=msg)
+                    message(paste0(msg, "..."))
+                    counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
+                    
+                    # Perform differential gene expression analysis
+                    msg <- "Performing differential gene expression analysis"
+                    incProgress(1/steps, detail=msg)
+                    message(paste0(msg, "..."))
+                    diffExpr <- performDifferentialExpression(counts)
+                    
+                    diffExprStat <- diffExpr$t
+                    names(diffExprStat) <- diffExpr$Gene_symbol
+                    stopApp(diffExprStat)
+                })
             })
         }
     )
@@ -272,42 +280,46 @@
 }
 
 #' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel helpText
-.cmapDataLoaderUI <- function(id, metadata, zscores, geneInfo, compoundInfo,
-                              cellLine, timepoint, dosage, perturbationType,
-                              title="CMap Data Loader") {
+#' @importFrom shinycssloaders withSpinner
+.cmapDataLoaderUI <- function(id, cellLine=NULL, timepoint=NULL, dosage=NULL,
+                              perturbationType=NULL, title="CMap Data Loader",
+                              shinyproxy=TRUE) {
     ns <- NS(id)
     dataTypes <- c("Perturbation metadata"="metadata",
                    "Perturbation z-scores"="zscores",
                    "Gene information"="geneInfo",
                    "Compound information"="compoundInfo")
     selectizeCondition <- function(id, label, choices, selected, ...) {
-        selected <- .findMatch(selected, choices)
-        plugins  <- list("remove_button")
+        selected    <- .findMatch(selected, choices)
+        plugins     <- list("remove_button")
+        placeholder <- paste("Select one or more", tolower(label))
         return(selectizeInput(id, label, choices, selected, ...,
-                              options=list(plugins=plugins)))
+                              options=list(plugins=plugins,
+                                           placeholder=placeholder)))
     }
-
+    
+    colChart <- function(id) column(3, highchartOutput(id, height="200px"))
     plots <- fluidRow(
-        column(3, highchartOutput(ns("perturbationPlot"), height="200px")),
-        column(3, highchartOutput(ns("cellLinePlot"), height="200px")),
-        column(3, highchartOutput(ns("dosagePlot"), height="200px")),
-        column(3, highchartOutput(ns("timepointPlot"), height="200px")))
-    conditions <- getCMapConditions(metadata, control=TRUE)
+        colChart(ns("pertPlot")),
+        colChart(ns("cellLinePlot")),
+        colChart(ns("dosagePlot")),
+        colChart(ns("timepointPlot")))
     sidebar <- sidebarPanel(
-        selectizeCondition(ns("type"), "Perturbation type", multiple=TRUE,
-                           conditions$perturbationType, perturbationType),
+        selectizeCondition(ns("type"), "Perturbation types", multiple=TRUE,
+                           choices=perturbationType, perturbationType),
         selectizeCondition(ns("cellLine"), "Cell lines", multiple=TRUE,
-                           conditions$cellLine, cellLine),
+                           choices=cellLine, cellLine),
         selectizeCondition(ns("dosage"), "Dosages", multiple=TRUE,
-                           conditions$dosage, dosage),
+                           choices=dosage, dosage),
         selectizeCondition(ns("timepoint"), "Time points", multiple=TRUE,
-                           conditions$timepoint, timepoint),
+                           choices=timepoint, timepoint),
         checkboxGroupInput(ns("data"), "Data to load", dataTypes, dataTypes),
-        helpText("By default, data will be downloaded if not found."),
-        actionButton(ns("cancel"), "Cancel"),
+        if (!shinyproxy)
+            helpText("By default, data will be downloaded if not found."),
+        if (!shinyproxy) actionButton(ns("cancel"), "Cancel"),
         actionButton(ns("load"), "Load data", class="btn-primary"))
-    mainPanel <- mainPanel(DTOutput(ns("table")))
-
+    mainPanel <- mainPanel( withSpinner(DTOutput(ns("table")), type=6) )
+    
     ui <- tabPanel(title, sidebar, mainPanel)
     ui[[3]] <- c(list(plots), ui[[3]])
     return(ui)
@@ -316,20 +328,55 @@
 #' @importFrom shiny isolate updateSelectizeInput moduleServer stopApp
 #' observeEvent
 #' @importFrom DT dataTableProxy replaceData
-.cmapDataLoaderServer <- function(id, metadata, zscores, geneInfo, compoundInfo,
-                                  cellLine, timepoint, dosage) {
-    updateSelectizeCondition <- function(session, input, id, choices, ...) {
-        selected <- isolate(input[[id]])
-        selected <- .findMatch(selected, choices)
-        return(updateSelectizeInput(session, id, choices=choices,
-                                    selected=selected, ...))
-    }
-
+.cmapDataLoaderServer <- function(id, metadata="cmapMetadata.txt",
+                                  zscores="cmapZscores.gctx",
+                                  geneInfo="cmapGeneInfo.txt",
+                                  compoundInfo="cmapCompoundInfo.txt",
+                                  cellLine=NULL, timepoint=NULL, dosage=NULL) {
     server <- function(input, output, session) {
+        updateSelectizeCondition <- function(session, input, id, choices, ...) {
+            selected <- isolate(input[[id]])
+            selected <- .findMatch(selected, choices)
+            return(updateSelectizeInput(session, id, choices=choices,
+                                        selected=selected, ...))
+        }
+        
+        getCurrentTab    <- reactive(session$input$tab, env=parent.frame(2))
+        loadCMapMetadata <- reactive(loadCMapData(metadata, "metadata"))
+        
+        getCMapMetadata <- reactive({
+            if (is.data.frame(metadata)) return(metadata)
+            
+            tab  <- getCurrentTab()
+            load <- is.null(tab) || (!is.null(tab) && tab == "CMap Data Loader")
+            if (load) {
+                metadata <- loadCMapMetadata()
+            } else {
+                metadata <- NULL
+            }
+            return(metadata)
+        })
+        
         # Update conditions based on selected perturbation type
         observe({
-            available <- getCMapConditions(metadata,
-                                           perturbationType=input$type)
+            isolate({
+                pertType  <- input$type
+                cellLine  <- input$cellLine
+                dosage    <- input$dosage
+                timepoint <- input$timepoint
+            })
+            
+            metadata <- getCMapMetadata()
+            req(metadata)
+            available <- getCMapConditions(metadata, control=TRUE)
+            
+            # Prepare perturbation types
+            perts <- available$perturbationType
+            controls <- startsWith(perts, "Controls")
+            choices <- list("Perturbations"=perts[!controls],
+                            "Controls"=perts[controls])
+            updateSelectizeCondition(session, input, "type", choices=choices)
+            
             updateSelectizeCondition(session, input, "cellLine",
                                      choices=available$cellLine)
             updateSelectizeCondition(session, input, "dosage",
@@ -337,29 +384,32 @@
             updateSelectizeCondition(session, input, "timepoint",
                                      choices=available$timepoint)
         })
-
+        
         # Filter metadata based on selected inputs
         getFilteredMetadata <- reactive({
             filterCMapMetadata(
-                metadata, perturbationType=input$type,
+                getCMapMetadata(), perturbationType=input$type,
                 cellLine=input$cellLine,
                 dosage=input$dosage,
                 timepoint=input$timepoint)
         })
-
-        # Show plots
-        output$perturbationPlot <- renderHighchart({
-            subset <- getFilteredMetadata()
-            labels <- getCMapPerturbationTypes(control=TRUE)
-            types  <- table(subset$pert_type)
-            names(types) <- names(labels)[match(names(types), labels)]
-            .plotBubbles(types, "Perturbations", "red")
-        })
-
+        
         renderBubbleChart <- function(subset, title, colour) {
             renderHighchart({
-                data <- getFilteredMetadata()[[subset]]
-                data[is.na(data)] <- "NA"
+                filt <- getFilteredMetadata()
+                req(filt)
+                if (nrow(filt) != 0) {
+                    data <- filt[[subset]]
+                    if (subset == "pert_type") {
+                        label <- getCMapPerturbationTypes(control=TRUE)
+                        data  <- table(data)
+                        names(data) <- names(label)[match(names(data), label)]
+                    } else {
+                        data[is.na(data)] <- "NA"
+                    }
+                } else {
+                    data <- NULL
+                }
                 .plotBubbles(data, title, colour)
             })
         }
@@ -368,24 +418,26 @@
         output$dosagePlot    <- renderBubbleChart("pert_idose", "Dosages",
                                                   "green")
         output$timepointPlot <- renderBubbleChart("pert_itime", "Time points",
-                                                "purple")
-
+                                                  "purple")
+        output$pertPlot      <- renderBubbleChart("pert_type", "Perturbations",
+                                                  "red")
+        
         # Show table
         output$table <- renderDT({
             hiddenCols <- c("pert_dose", "pert_dose_unit", "pert_time",
                             "pert_time_unit")
-            hiddenCols <- match(hiddenCols, colnames(metadata))
+            hiddenCols <- match(hiddenCols, colnames(getCMapMetadata()))
             columnDefs <- list(list(visible=FALSE, targets=hiddenCols - 1))
             .prepareDT(isolate(getFilteredMetadata()), columnDefs=columnDefs,
-                               scrollX=TRUE)
-        })
+                       scrollX=TRUE)
+        }, server=TRUE)
         proxy <- dataTableProxy("table")
         observe(replaceData(proxy, getFilteredMetadata(), rownames=FALSE))
-
+        
         # Load data
         observeEvent(input$load, {
             types <- isolate(input$data)
-
+            
             returnIf <- function(bool, val) {
                 res <- NULL
                 if (bool) res <- val
@@ -396,29 +448,35 @@
             zscores      <- returnIf("zscores" %in% types, zscores)
             geneInfo     <- returnIf("geneInfo" %in% types, geneInfo)
             compoundInfo <- returnIf("compoundInfo" %in% types, compoundInfo)
-
+            
             perturbations <- prepareCMapPerturbations(
                 metadata=metadata, zscores=zscores,
                 geneInfo=geneInfo, compoundInfo=compoundInfo)
             stopApp(perturbations)
         })
-
+        
         # Cancel
         observeEvent(input$cancel, stopApp(stop("User cancel", call.=FALSE)))
     }
-
+    
     moduleServer(id, server)
 }
 
+# Result plotting and viewing --------------------------------------------------
+
 #' @importFrom shiny NS sidebarPanel mainPanel tabPanel sidebarLayout
-#' selectizeInput
-.metadataViewerUI <- function(id, x, title="Metadata Viewer") {
+#' selectizeInput fluidRow column
+.metadataViewerUI <- function(id, x, title="Metadata") {
     ns <- NS(id)
-    sidebar <- sidebarPanel(
-        selectizeInput(ns("object"), "Dataset", names(x)),
-        selectizeInput(ns("attr"), "Table", choices=NULL))
-    main    <- mainPanel(DTOutput(ns("table")))
-    ui      <- tabPanel(title, sidebarLayout(sidebar, main))
+    ui <- tabPanel(
+        title,
+        div(class="well", style="padding-bottom: 9px;",
+            fluidRow(
+                column(4, selectizeInput(ns("object"), "Dataset", names(x), 
+                                         width="100%")),
+                column(4, selectizeInput(ns("attr"), "Table", choices=NULL, 
+                                         width="100%")))),
+        DTOutput(ns("table")))
     return(ui)
 }
 
@@ -429,10 +487,17 @@
         id,
         function(input, output, session) {
             getSelectedObject <- reactive(.prepareMetadata(x[[input$object]]))
-
-            observe(updateSelectizeInput(session, "attr",
-                                         choices=names(getSelectedObject())))
-
+            
+            observe(updateSelectizeInput(session, "object", choices=names(x)))
+            
+            observe({
+                selected <- isolate(input$attr)
+                choices  <- names(getSelectedObject())
+                if (!selected %in% choices) selected <- NULL
+                updateSelectizeInput(session, "attr", selected=selected,
+                                     choices=choices)
+            })
+            
             output$table <- renderDT(
                 .prepareDT(getSelectedObject()[[input$attr]]))
         }
@@ -442,7 +507,7 @@
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
 #' tabPanel
 #' @importFrom DT DTOutput
-.dataPlotterUI <- function(id, x, title="Data Plotter") {
+.dataPlotterUI <- function(id, x, title="Plot Data") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(ns("object"), "Dataset", names(x)),
@@ -452,10 +517,16 @@
                        width="100%"),
         plotOutput(ns("plot"), brush=ns("brush")),
         DTOutput(ns("pointTable")))
-
+    
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
+}
+
+.rankSimilarityMethods <- function() {
+    c("Spearman's correlation"="spearman",
+      "Pearson's correlation"="pearson",
+      "GSEA"="gsea")
 }
 
 #' @importFrom shiny renderPlot observeEvent observe
@@ -465,40 +536,67 @@
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedObject <- reactive(x[[input$object]])
-
+            getSelectedObject <- reactive(if (!is.null(x)) x[[input$object]])
+            
+            observe({
+                if (length(x) == 0) return(NULL)
+                ref <- sapply(x, is, "referenceComparison")
+                if (!any(ref)) return(NULL)
+                choices <- names(x[ref])
+                updateSelectizeInput(session, "object", choices=choices,
+                                     server=TRUE)
+            })
+            
             # Update element and methods choices depending on selected object
             observeEvent(input$object, {
                 obj <- getSelectedObject()
+                if (is.null(obj)) return(NULL)
+                
                 updateSelectizeInput(session, "element", choices=obj[[1]],
                                      selected=list(), server=TRUE)
                 # Update methods depending on selected object
-                methods <- c("Spearman's correlation"="spearman",
-                             "Pearson's correlation"="pearson",
-                             "GSEA"="gsea")
+                methods <- .rankSimilarityMethods()
                 isPresent <- sapply(methods, function(i)
                     any(grepl(i, colnames(obj), ignore.case=TRUE)))
                 methods <- methods[isPresent]
-                updateSelectizeInput(session, "method", choices=methods)
+                
+                selected <- isolate(input$method)
+                if (!selected %in% methods) selected <- NULL
+                updateSelectizeInput(session, "method", choices=methods,
+                                     selected=selected)
             })
-
+            
             # Update selected element
             observe({
-                selected <- getSelectedObject()[[1]][input$table_rows_selected]
+                obj <- getSelectedObject()
+                if (is.null(obj) || !is(obj, "referenceComparison")) {
+                    return(NULL)
+                }
+                
+                selected <- obj[[1]][input$table_rows_selected]
                 updateSelectizeInput(session, "element", selected=selected)
             })
-
+            
             output$table <- renderDT({
-                data <- as.table(getSelectedObject(), clean=FALSE)
+                obj <- getSelectedObject()
+                if (is.null(obj) || !is(obj, "referenceComparison")) {
+                    return(NULL)
+                }
+                data <- as.table(obj, clean=FALSE)
                 .prepareDT(data)
             })
-
+            
             # Filter table based on overall plot
             proxy <- dataTableProxy("table")
             observe({
                 elem <- input$element
                 if (is.null(elem) || elem == "") {
-                    obj   <- as.table(getSelectedObject(), clean=FALSE)
+                    obj <- getSelectedObject()
+                    if (is.null(obj) || !is(obj, "referenceComparison")) {
+                        return(NULL)
+                    }
+                    
+                    obj   <- as.table(obj, clean=FALSE)
                     brush <- input$brush
                     if (!is.null(brush)) {
                         val  <- obj[[brush$mapping$y]]
@@ -508,9 +606,13 @@
                     replaceData(proxy, obj, rownames=FALSE)
                 }
             })
-
+            
             plotData <- reactive({
                 obj <- getSelectedObject()
+                if (is.null(obj) || !is(obj, "referenceComparison")) {
+                    return(NULL)
+                }
+                
                 method <- input$method
                 if (!isValid(method)) return(NULL)
                 element <- input$element
@@ -518,7 +620,7 @@
                 if (!is.null(element) && !element %in% obj[[1]]) return(NULL)
                 plot(obj, element, method=method, n=6)
             })
-
+            
             output$plot <- renderPlot(plotData())
             output$pointTable <- renderDT({
                 data <- attr(plotData(), "data")
@@ -548,7 +650,7 @@
     sidebar[[3]][[2]] <- tagList(
         plotOutput(ns("plot"), brush=ns("brush")),
         helpText("Click-and-drag points in the plot to filter the table."))
-
+    
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
@@ -559,38 +661,47 @@
 #' @importFrom ggplot2 theme_bw geom_density_2d geom_rug geom_point
 .datasetComparisonServer <- function(id, x) {
     getNumericCols <- function(x) colnames(x)[vapply(x, is.numeric, logical(1))]
-
+    
     moduleServer(
         id,
         function(input, output, session) {
             getSelectedDataset1 <- reactive(x[[input$data1]])
             getSelectedDataset2 <- reactive(x[[input$data2]])
-
+            
+            observe({
+                req(names(x))
+                choices <- names(x)[sapply(x, is, "referenceComparison")]
+                
+                updateSelectizeInput(session, "data1", choices=choices)
+                updateSelectizeInput(session, "data2", choices=choices,
+                                     selected=choices[[2]])
+            })
+            
             observe({
                 dataset1 <- getSelectedDataset1()
                 numericCols <- getNumericCols(dataset1)
                 updateSelectizeInput(session, "col1", choices=numericCols)
             })
-
+            
             observe({
                 dataset2 <- getSelectedDataset2()
                 numericCols <- getNumericCols(dataset2)
                 updateSelectizeInput(session, "col2", choices=numericCols)
             })
-
+            
             output$plot <- renderPlot({
                 isColValid <- function(col, dataset) {
                     !is.null(col) && col != "" && col %in% colnames(dataset)
                 }
-
+                
                 dataset1 <- getSelectedDataset1()
                 col1 <- input$col1
                 if (!isColValid(col1, dataset1)) return(NULL)
-
+                
                 dataset2 <- getSelectedDataset2()
                 col2 <- input$col2
                 if (!isColValid(col2, dataset2)) return(NULL)
-
+                
                 if (any(dataset1[[1]] %in% dataset2[[1]])) {
                     plot <- ggplot(data=NULL, aes(x=dataset1[[col1]],
                                                   y=dataset2[[col2]])) +
@@ -606,21 +717,21 @@
                     stop("no common identifiers between datasets")
                 }
             })
-
+            
             output$table <- renderDT({
                 isColValid <- function(col, dataset) {
                     !is.null(col) && col != "" && col %in% colnames(dataset)
                 }
-
+                
                 dataset1 <- getSelectedDataset1()
                 col1 <- input$col1
                 if (!isColValid(col1, dataset1)) return(NULL)
-
+                
                 dataset2 <- getSelectedDataset2()
                 col2 <- input$col2
                 if (!isColValid(col2, dataset2)) return(NULL)
                 common <- dataset1[[1]] %in% dataset2[[1]]
-
+                
                 if (any(common)) {
                     df <- data.frame(dataset1[[1]][common],
                                      getSelectedDataset1()[[col1]][common],
@@ -628,14 +739,14 @@
                     colnames(df) <- c("id",
                                       paste(input$data1, input$col1, sep="_"),
                                       paste(input$data2, input$col2, sep="_"))
-
+                    
                     brush <- input$brush
                     if (!is.null(brush)) {
                         df <- brushedPoints(df, brush,
                                             xvar=names(df)[[2]],
                                             yvar=names(df)[[3]])
                     }
-
+                    
                     return(.prepareDT(df))
                 } else {
                     stop("no common identifiers between datasets")
@@ -646,7 +757,7 @@
 }
 
 .targetingDrugsVSsimilarPerturbationsPlotterUI <- function(
-    id, x, elemClasses, title="Dataset Comparison") {
+    id, x, elemClasses, title="Dataset Comparison 2") {
     if (!all(c("targetingDrugs", "similarPerturbations") %in% elemClasses)) {
         return(NULL)
     }
@@ -660,7 +771,7 @@
             names(x)[elemClasses == "similarPerturbations"]),
         selectizeInput(ns("col"), "Column to plot in both axes", choices=NULL))
     sidebar[[3]][[2]] <- plotOutput(ns("plot"), brush=ns("brush"))
-
+    
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
@@ -672,9 +783,25 @@
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedDataset1 <- reactive(x[[input$data1]])
-            getSelectedDataset2 <- reactive(x[[input$data2]])
-
+            getSelectedDataset1 <- reactive({
+                item <- input$data1
+                if (length(x) > 0 && !is.null(item)) x[[item]]
+            })
+            getSelectedDataset2 <- reactive({
+                item <- input$data2
+                if (length(x) > 0 && !is.null(item)) x[[item]]
+            })
+            
+            observe({
+                elemClasses <- sapply(lapply(x, class), "[[", 1)
+                updateSelectizeInput(
+                    session, "object", server=TRUE,
+                    names(x)[elemClasses == "targetingDrugs"])
+                updateSelectizeInput(
+                    session, "object", server=TRUE,
+                    choices=names(x)[elemClasses == "similarPerturbations"])
+            })
+            
             observe({
                 data1 <- getSelectedDataset1()
                 data2 <- getSelectedDataset2()
@@ -683,30 +810,33 @@
                 # Select first ranked column
                 rankCol <- grep("rank$", cols, value=TRUE)[1]
                 if (is.na(rankCol)) rankCol <- NULL
-
+                
                 updateSelectizeInput(session, "col", choices=cols,
                                      selected=rankCol)
             })
-
+            
             observe({
                 data1 <- getSelectedDataset1()
                 data2 <- getSelectedDataset2()
+                if (is.null(data1) || is.null(data2)) return(NULL)
+                browser()
+                
                 col <- input$col
                 isColValid <- !is.null(col) && col != ""
                 if (is.null(data1) || is.null(data2) || !isColValid) {
                     return(NULL)
                 }
-
+                
                 plot <- suppressMessages(
                     plotTargetingDrugsVSsimilarPerturbations(
                         data1, data2, column=col, labelBy=NULL) + theme_bw(16))
-
+                
                 output$plot  <- renderPlot(plot)
                 output$table <- renderDT({
                     data  <- attr(plot, "data")
                     brush <- input$brush
                     if (!is.null(brush)) data <- brushedPoints(data, brush)
-
+                    
                     hiddenCols <- grep("^pearson|GSEA|spearman", colnames(data))
                     columnDefs <- list(list(visible=FALSE,
                                             targets=hiddenCols - 1))
@@ -722,7 +852,7 @@
 #' tabPanel uiOutput
 #' @importFrom DT DTOutput
 .drugSetEnrichmentAnalyserUI <- function(id, sets, x,
-                                         title="Drug Set Enrichment Analyser") {
+                                         title="Drug Set Enrichment") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(ns("object"), "Dataset", names(x)),
@@ -737,7 +867,7 @@
         selectizeInput(ns("element"), "Row ID to plot", choices=NULL,
                        width="100%"),
         plotOutput(ns("plot")))
-
+    
     mainPanel <- mainPanel(DTOutput(ns("table")))
     ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     return(ui)
@@ -750,84 +880,95 @@
         id,
         function(input, output, session) {
             getSelectedObject <- reactive(x[[input$object]])
-            getDSEAresult     <- reactive({
+            
+            observe({
+                req(names(x))
+                ref <- sapply(x, is, "referenceComparison")
+                if (!any(ref)) return(NULL)
+                choices <- names(x[ref])
+                updateSelectizeInput(session, "object", choices=choices)
+            })
+            
+            getDSEAresult <- reactive({
                 obj      <- getSelectedObject()
                 sort     <- input$sort
                 statsKey <- input$statsKey
                 setsKey  <- input$setsKey
-
+                
                 isValid <- function(e) !is.null(e) && e != ""
                 if (is.null(obj) || !isValid(sort)) return(NULL)
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-
+                
                 analyseDrugSetEnrichment(
                     sets, obj, col=sort,
                     keyColSets=setsKey, keyColStats=statsKey)
             })
-
+            
             observeEvent(input$object, {
                 obj <- getSelectedObject()
                 numericCols <- names(obj)[vapply(obj, is.numeric, logical(1))]
                 updateSelectizeInput(session, "sort", choices=numericCols)
             })
-
+            
             # Update available keys to select for datasets
             observe({
                 obj <- getSelectedObject()
                 if (is.null(obj)) return(NULL)
-
+                
+                if (!is(sets, "drugSets")) return(NULL)
+                
                 statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
                 setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
-
+                
                 probableKey <- findIntersectingCompounds(statsInfo, setsInfo)
                 statsKey    <- probableKey$key2
                 setsKey     <- probableKey$key1
-
+                
                 keyList      <- getCompoundIntersectingKeyList()
                 statsOptions <- intersect(names(statsInfo), keyList)
                 setsOptions  <- intersect(names(setsInfo), keyList)
-
+                
                 updateSelectizeInput(session, "statsKey", selected=statsKey,
                                      choices=statsOptions)
                 updateSelectizeInput(session, "setsKey", selected=setsKey,
                                      choices=setsOptions)
             })
-
+            
             # Update number of intersecting compounds based on selected keys
             observe({
                 obj <- getSelectedObject()
                 if (is.null(obj)) return(NULL)
-
+                
                 statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
                 setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
-
+                
                 statsKey <- input$statsKey
                 setsKey  <- input$setsKey
                 isValid <- function(e) !is.null(e) && e != ""
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-
+                
                 probableKey <- findIntersectingCompounds(statsInfo, setsInfo,
                                                          statsKey, setsKey)
                 num <- length(probableKey[[3]])
                 msg <- "cross-matches found using the selected keys"
                 output$msg <- renderUI(helpText(paste(num, msg)))
             })
-
+            
             observeEvent(input$analyse, {
                 dsea <- getDSEAresult()
                 updateSelectizeInput(session, "element", choices=dsea[[1]])
                 output$table <- renderDT(.prepareDT(dsea))
-
+                
                 output$plot <- renderPlot({
                     obj <- getSelectedObject()
                     if (is.null(obj)) return(NULL)
-
+                    
                     element <- input$element
                     if (element == "") element <- NULL
                     if (is.null(element) || !element %in% names(sets)) {
                         return(NULL)
                     }
-
+                    
                     isolate({
                         setsKey  <- input$setsKey
                         statsKey <- input$statsKey
@@ -841,7 +982,7 @@
                                           keyColSets=setsKey)[[1]]
                 })
             })
-
+            
             # Update selected element
             observeEvent(input$table_rows_selected, {
                 selected <- getDSEAresult()[[1]][input$table_rows_selected]
@@ -897,8 +1038,7 @@ launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
     metadata <- loadCMapData(metadata, type="metadata")
     id <- "cmapDataLoader"
     ui <- .prepareNavPage(
-        .cmapDataLoaderUI(id, metadata, zscores, geneInfo, compoundInfo,
-                          cellLine, timepoint, dosage, perturbationType))
+        .cmapDataLoaderUI(id, cellLine, timepoint, dosage, perturbationType))
     server <- function(input, output, session) {
         .cmapDataLoaderServer(id, metadata, zscores, geneInfo, compoundInfo,
                               cellLine, timepoint, dosage)
@@ -940,12 +1080,12 @@ launchResultPlotter <- function(...) {
     comparePlotId <- "comparePlotter"
     dataId        <- "dataPlotter"
     metadataId    <- "metadataViewer"
-
+    
     elemClasses       <- sapply(lapply(list(...), class), "[[", 1)
     hasSimilarPerts   <- "similarPerturbations" %in% elemClasses
     hasTargetingDrugs <- "targetingDrugs" %in% elemClasses
     showTwoKindPlot   <- hasSimilarPerts && hasTargetingDrugs
-
+    
     uiList <- tagList(
         .dataPlotterUI(dataId, elems),
         .targetingDrugsVSsimilarPerturbationsPlotterUI(
@@ -954,7 +1094,7 @@ launchResultPlotter <- function(...) {
         .metadataViewerUI(metadataId, elems))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
-
+    
     server <- function(input, output, session) {
         .dataPlotterServer(dataId, elems)
         if (showTwoKindPlot) {
@@ -982,16 +1122,16 @@ launchDrugSetEnrichmentAnalyser <- function(sets, ...) {
     dataId     <- "dataPlotter"
     metadataId <- "metadataViewer"
     dseaId     <- "drugSetAnalyser"
-
+    
     elems <- .prepareEllipsis(...)
-
+    
     uiList <- tagList(
         .drugSetEnrichmentAnalyserUI(dseaId, sets, elems),
         .dataPlotterUI(dataId, elems),
         .metadataViewerUI(metadataId, elems))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
-
+    
     server <- function(input, output, session) {
         .drugSetEnrichmentAnalyserServer(dseaId, sets, elems)
         .dataPlotterServer(dataId, elems)

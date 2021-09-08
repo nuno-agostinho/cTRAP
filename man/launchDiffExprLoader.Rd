@@ -19,6 +19,7 @@ Currently only supports loading data from ENCODE knockdown experiments
 }
 \seealso{
 Other visual interface functions: 
+\code{\link{cTRAP}()},
 \code{\link{launchCMapDataLoader}()},
 \code{\link{launchDrugSetEnrichmentAnalyser}()},
 \code{\link{launchMetadataViewer}()},

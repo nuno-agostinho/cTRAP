@@ -1,0 +1,8 @@
+**/*.rds
+**/*.gctx
+**/*.h5
+**/*.txt
+**/*.tsv
+data
+dev
+.github

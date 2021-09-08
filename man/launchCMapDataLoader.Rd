@@ -44,6 +44,7 @@ Load CMap data via a visual interface
 }
 \seealso{
 Other visual interface functions: 
+\code{\link{cTRAP}()},
 \code{\link{launchDiffExprLoader}()},
 \code{\link{launchDrugSetEnrichmentAnalyser}()},
 \code{\link{launchMetadataViewer}()},

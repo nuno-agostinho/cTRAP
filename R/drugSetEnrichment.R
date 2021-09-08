@@ -128,6 +128,7 @@ prepareDrugSets <- function(table, id=1, maxUniqueElems=15, maxBins=15, k=5,
     # Inherit input attributes
     attributes(res) <- c(attributes(res),
                          attributes(table)[c("compoundInfo", "source", "type")])
+    class(res) <- c("drugSets", class(res))
     return(res)
 }
 

@@ -38,9 +38,9 @@ second index is the number of down-regulated genes used to create gene
 sets; only used if \code{method} includes \code{gsea} and if \code{input}
 is not a gene set}
 
-\item{cellLineMean}{Boolean: add a column with the mean score across cell
-lines? If \code{cellLineMean = "auto"} (default), the mean score will be
-added when data for more than one cell line is available.}
+\item{cellLineMean}{Boolean: add rows with the mean of \code{method} across
+cell lines? If \code{cellLineMean = "auto"} (default), rows will be added
+when data for more than one cell line is available.}
 
 \item{rankPerCellLine}{Boolean: rank results based on both individual cell
 lines and mean scores across cell lines (\code{TRUE}) or based on mean
