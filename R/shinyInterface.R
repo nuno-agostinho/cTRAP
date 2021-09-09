@@ -848,6 +848,67 @@
     )
 }
 
+# Data analysis ----------------------------------------------------------------
+
+#' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
+#' tabPanel uiOutput column fluidRow numericInput checkboxInput
+#' @importFrom DT DTOutput
+.rankSimilarPerturbationsUI <- function(
+    id, geneInput, perturbations,
+    title="Rank CMap perturbations by similarity") {
+    
+    ns <- NS(id)
+    sidebar <- sidebarPanel(
+        selectizeInput(ns("object"), "Gene input dataset", names(geneInput)),
+        selectizeInput(ns("perts"), "CMap perturbations", names(perturbations)),
+        selectizeInput(ns("method"), "Method", multiple=TRUE,
+                       .rankSimilarityMethods(), .rankSimilarityMethods(),
+                       options=list(plugins=list("remove_button"))),
+        conditionalPanel(
+            "input.method.includes('gsea')",
+            fluidRow(
+                column(6, numericInput(ns("upGenes"), "Top genes", 150)),
+                column(6, numericInput(ns("downGenes"), "Bottom genes", 150))),
+            ns=ns),
+        selectizeInput(ns("cellLineMean"),
+                       "Calculate mean across cell lines",
+                       c("For ≥ 2 cell lines"="auto",
+                         "For ≥ 1 cell line"=TRUE,
+                         "Never"=FALSE)),
+        conditionalPanel(
+          "input.cellLineMean != 'FALSE'",
+          selectizeInput(ns("rankPerCellLine"), "Rank results based on",
+                         c("Mean scores only"=FALSE,
+                           "Mean + individual cell lines' scores"=TRUE)),
+          ns=ns),
+        textInput(ns("name"), "Dataset name", "cmap_date"),
+        uiOutput(ns("msg")),
+        actionButton(ns("analyse"), "Rank by similarity", class="btn-primary"))
+    
+    mainPanel <- mainPanel(DTOutput(ns("table")))
+    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
+    return(ui)
+}
+
+#' @importFrom shiny renderPlot observeEvent observe isolate renderUI
+#' @importFrom DT renderDT
+.rankSimilarPerturbationsServer <- function(id, geneInput, perturbations) {
+    moduleServer(
+        id,
+        function(input, output, session) {
+            getSelectedObject <- reactive(perturbations[[input$object]])
+            
+            observe({
+                req(names(perturbations))
+                ref <- sapply(perturbations, is, "perturbationChanges")
+                if (!any(ref)) return(NULL)
+                choices <- names(perturbations[ref])
+                updateSelectizeInput(session, "perts", choices=choices)
+            })
+        }
+    )
+}
+
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
 #' tabPanel uiOutput
 #' @importFrom DT DTOutput

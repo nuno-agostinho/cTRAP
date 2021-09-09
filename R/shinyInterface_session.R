@@ -87,6 +87,7 @@ globalUI <- function(elems, idList, expire) {
                    "CMap data",
                    .cmapDataLoaderUI(idList$cmap, shinyproxy=TRUE)),
         navbarMenu("Analyse", icon=icon("cogs"),
+                   .rankSimilarPerturbationsUI(idList$rankPerts, elems, elems),
                    .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
                    .dataPlotterUI(idList$data, elems),
@@ -131,6 +132,7 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
     idList$comparePlot <- "comparePlotter"
     idList$data        <- "dataPlotter"
     idList$metadata    <- "metadataViewer"
+    idList$rankPerts   <- "rankPerts"
     idList$drugSet     <- "drugSetAnalyser"
     ui <- globalUI(elems, idList, expire)
     
@@ -145,6 +147,7 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
             elems <- sharedData$elems
             
             # analyse
+            .rankSimilarPerturbationsServer(idList$rankPerts, elems, elems)
             .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
             
             # visualise
