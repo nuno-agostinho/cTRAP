@@ -1,5 +1,43 @@
 # Skeleton for common elements -------------------------------------------------
 
+.convertToFunction <- function(x) {
+    # Easier to deal with reactives
+    res <- function() x
+    if (is.reactive(x)) res <- x
+    return(res)
+}
+
+.filterDatasetsByClass <- function(dataset, class) {
+    selected <- sapply(dataset, is, class)
+    if (!any(selected)) return(NULL)
+    return(dataset[selected])
+}
+
+#' @importFrom shiny tags
+.alert <- function(..., type=c("danger", "success", "info", "warning"),
+                   condition=NULL, ns=NULL) {
+    type <- match.arg(type)
+    alert <- tags$div(class=paste0("alert alert-", type), role="alert", ...)
+    if (!is.null(condition)) alert <- conditionalPanel(condition, alert, ns=ns)
+    return(alert)
+}
+
+.addToList <- function(x, data, name=NULL) {
+    if (is.null(name)) name <- attr(data, "name")
+    if (is.null(name) || name == "") name <- "Dataset"
+    
+    uniqName <- make.unique(c(names(x), name))
+    name <- uniqName[[length(uniqName)]]
+    x[[name]] <- data
+    return(x)
+}
+
+.prepareDiffExprDataset <- function(data, name) {
+    attr(data, "name") <- name
+    class(data) <- c("diffExpr", class(data))
+    return(data)
+}
+
 #' @importFrom shiny div h3 tags
 .panel <- function(
     title=NULL, ..., footer=NULL, collapse=TRUE,
@@ -88,7 +126,7 @@
         
         # Convert to factor if there are low number of unique values
         if (!all(c("Key", "Value") %in% colnames(table))) {
-            lenUniqValuesPerCol <- sapply(sapply(table, unique), length)
+            lenUniqValuesPerCol <- sapply(lapply(table, unique), length)
             for (col in names(lenUniqValuesPerCol[lenUniqValuesPerCol < 50])) {
                 if (!col %in% names(table)[cols]) { # Ignore columns to round
                     table[[col]] <- as.factor(table[[col]])
@@ -115,6 +153,7 @@
 }
 
 .prepareMetadata <- function(x) {
+    if (is.null(x)) return(NULL)
     input <- attr(x, "input")
     if (!is.null(input)) {
         attr(x, "input") <- data.frame("Element"=names(input), "Value"=input)
@@ -137,11 +176,29 @@
             cbind("Gene size", length(attr(x, "genes"))),
             cbind("Perturbation number",
                   length(attr(x, "perturbations"))))
+        
+        filter <- attr(attr(x, "metadata"), "filter")
+        if (!is.null(filter)) {
+            key <- c("cellLine"="cell line",
+                     "timepoint"="time point",
+                     "dosage"="dosage",
+                     "perturbationType"="perturbation type")
+            key <- paste("Filtered by", key[names(filter)])
+            filter <- cbind(key, lapply(filter, paste, collapse=", "))
+            data <- rbind(data, filter)
+        }
+        
         colnames(data) <- c("Key", "Value")
         dataName <- "Object summary"
     } else {
         data <- tryCatch(as.table(x, clean=FALSE), error=return)
-        if (is(data, "error")) data <- data.frame("Value"=x)
+        if (is(data, "error") || !is.data.frame(data)) {
+            if (!is.null(names(x))) {
+                data <- data.frame("Element"=names(x), "Value"=x)
+            } else {
+                data <- data.frame("Value"=x)
+            }
+        }
         dataName <- "Data"
     }
     
@@ -164,6 +221,7 @@
 .prepareEllipsis <- function(...) {
     elems <- list(...)
     names(elems) <- sapply(substitute(list(...))[-1], deparse)
+    if (length(elems) == 0 && length(names(elems)) == 0) elems <- NULL
     return(elems)
 }
 
@@ -176,6 +234,81 @@
     
     res <- list(genes=genes, cellLines=cellLines)
     return(res)
+}
+
+#' @importFrom shiny textAreaInput
+.diffExprLoadUI <- function(id, title="Load differential gene expression") {
+    ns <- NS(id)
+    sidebar <- sidebarPanel(
+        textAreaInput(ns("diffExpr"), "Differential gene expression",
+                      height="200px"),
+        selectizeInput(
+            ns("sep"), "Separator",
+            c("Automatic"="auto", "Tab (\\t)"="\t", "Space"=" ", ",", ";")),
+        textInput(ns("name"), "Dataset name", "Differential expression"),
+        actionButton(ns("load"), "Load data", class="btn-primary"))
+    mainPanel <- mainPanel(
+        .alert("No differential gene expression dataset loaded/selected",
+               condition="input.dataset == ''", ns=ns),
+        selectizeInput(ns("dataset"), "Differential gene expression dataset",
+                       choices=NULL, width="100%"),
+        DTOutput(ns("table")))
+    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
+    return(ui)
+}
+
+#' @importFrom data.table fread
+#' @importFrom DT renderDT
+.diffExprLoadServer <- function(id, x) {
+    x <- .convertToFunction(x)
+    server <- function(input, output, session) {
+        loadData <- eventReactive(input$load, {
+            diffExpr <- input$diffExpr
+            req(diffExpr)
+            
+            # Remove comments
+            diffExpr <- gsub("[(^|\n)]{0,1}#.*?\n", "\n", diffExpr)
+            diffExpr <- gsub("\n+", "\n", diffExpr)
+            
+            data <- fread(text=diffExpr, sep=input$sep, data.table=FALSE,
+                          header=FALSE)
+            
+            if (ncol(data) == 1) {
+                data <- data[[1]]
+            } else if (ncol(data) == 2) {
+                data <- setNames(data[[2]], data[[1]])
+            } else {
+                showNotification(
+                    tagList(tags$b("Input requires 1 or 2 columns."),
+                            ncol(data), "columns are not supported."),
+                    type="error")
+                return(NULL)
+            }
+            data <- .prepareDiffExprDataset(data, input$name)
+            return(data)
+        })
+        
+        observe({
+            choices <- names(x())[sapply(x(), is, "diffExpr")]
+            if (is.null(choices)) choices <- list()
+            selected <- choices[length(choices)]
+            updateSelectizeInput(session, "dataset", choices=choices,
+                                 selected=selected)
+        })
+        
+        output$table <- renderDT({
+            req(input$dataset)
+            data <- x()[[input$dataset]]
+            if (!is.null(names(data))) {
+                df <- data.frame("Genes"=names(data), "Score"=data)
+            } else {
+                df <- data.frame("Genes"=data)
+            }
+            return(df)
+        }, rownames=FALSE)
+        return(loadData)
+    }
+    moduleServer(id, server)
 }
 
 #' @importFrom shiny NS sidebarPanel selectizeInput mainPanel tabPanel
@@ -196,86 +329,102 @@
     onInitializeGene <- NULL
     if (is.null(gene)) onInitializeGene <- nullStrJS
     
-    sidebar <- sidebarPanel(
-        selectizeInput(ns("cellLine"), "Cell line", cellLines, cellLine,
-                       options=list(placeholder='Select a cell line',
-                                    onInitialize=onInitializeCellLine)),
-        selectizeInput(ns("gene"), "Gene", genes, gene,
-                       options=list(placeholder='Select a gene',
-                                    onInitialize=onInitializeGene)),
-        actionButton(ns("load"), "Load data", class="btn-primary"))
-    
-    mainPanel <- mainPanel(DTOutput(ns("table")))
-    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
+    ui <- tabPanel(
+        title,
+        div(class="well", style="padding-bottom: 9px;",
+            fluidRow(
+                column(4, selectizeInput(
+                    ns("cellLine"), "Cell line", cellLines, cellLine, 
+                    width="100%",
+                    options=list(placeholder='Select a cell line',
+                                 onInitialize=onInitializeCellLine))),
+                column(4, selectizeInput(
+                    ns("gene"), "Gene", genes, gene, width="100%",
+                    options=list(placeholder='Select a gene',
+                                 onInitialize=onInitializeGene))),
+                column(4, actionButton(ns("load"), "Load data",
+                                       style="position:absolute; top:25px;",
+                                       class="btn-primary")))),
+        DTOutput(ns("table")))
     return(ui)
 }
 
 #' @importFrom shiny moduleServer stopApp withProgress incProgress
 #' @importFrom DT renderDT
 .diffExprENCODEloaderServer <- function(
-    id, metadata=downloadENCODEknockdownMetadata()) {
-    moduleServer(
-        id, function(input, output, session) {
-            output$table <- renderDT({
-                .prepareDT(metadata)
-            })
-            proxy <- dataTableProxy("table")
-            observe({
-                cellLine <- input$cellLine
-                if (cellLine == "") cellLine <- NULL
-                
-                gene <- input$gene
-                if (gene == "") gene <- NULL
-                data <- downloadENCODEknockdownMetadata(cellLine, gene)
-                observe(replaceData(proxy, data, rownames=FALSE))
-            })
+    id, metadata=downloadENCODEknockdownMetadata(), shinyproxy=FALSE) {
+    server <- function(input, output, session) {
+        output$table <- renderDT(.prepareDT(metadata))
+        proxy <- dataTableProxy("table")
+        
+        observe({
+            cellLine <- input$cellLine
+            if (cellLine == "") cellLine <- NULL
             
-            observeEvent(input$load, {
-                withProgress(message="Preparing data", {
-                    steps <- 3
-                    
-                    incProgress(1/steps, detail="Downloading")
-                    message("Downloading data...")
-                    ENCODEmetadata <- downloadENCODEknockdownMetadata(
-                        input$cellLine, input$gene)
-                    
-                    if (nrow(ENCODEmetadata) == 0) {
-                        stopApp()
-                        stop("No samples match the selected criteria")
-                    }
-                    ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
-                    counts <- prepareENCODEgeneExpression(ENCODEsamples)
-                    
-                    # Remove low coverage (>= 10 counts shared by 2 samples)
-                    minReads   <- 10
-                    minSamples <- 2
-                    filter <- rowSums(
-                        counts[ , -c(1:2)] >= minReads) >= minSamples
-                    counts <- counts[filter, ]
-                    
-                    # Convert ENSEMBL identifier to gene symbol
-                    msg <- "Converting ENSEMBL identifiers to gene symbols"
-                    incProgress(1/steps, detail=msg)
-                    message(paste0(msg, "..."))
-                    counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
-                    
-                    # Perform differential gene expression analysis
-                    msg <- "Performing differential gene expression analysis"
-                    incProgress(1/steps, detail=msg)
-                    message(paste0(msg, "..."))
-                    diffExpr <- performDifferentialExpression(counts)
-                    
-                    diffExprStat <- diffExpr$t
-                    names(diffExprStat) <- diffExpr$Gene_symbol
-                    stopApp(diffExprStat)
-                })
+            gene <- input$gene
+            if (gene == "") gene <- NULL
+            data <- downloadENCODEknockdownMetadata(cellLine, gene)
+            observe(replaceData(proxy, data, rownames=FALSE))
+        })
+        
+        loadData <- eventReactive(input$load, {
+            withProgress(message="Preparing data", {
+                steps <- 3
+                
+                incProgress(1/steps, detail="Downloading")
+                message("Downloading data...")
+                ENCODEmetadata <- downloadENCODEknockdownMetadata(
+                    input$cellLine, input$gene)
+                
+                if (nrow(ENCODEmetadata) == 0) {
+                    showMessage("No samples match the selected criteria",
+                                type="error")
+                    return(NULL)
+                }
+                ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+                counts <- prepareENCODEgeneExpression(ENCODEsamples)
+                
+                # Remove low coverage (>= 10 counts shared by 2 samples)
+                minReads   <- 10
+                minSamples <- 2
+                filter <- rowSums(
+                    counts[ , -c(1:2)] >= minReads) >= minSamples
+                counts <- counts[filter, ]
+                
+                # Convert ENSEMBL identifier to gene symbol
+                msg <- "Converting ENSEMBL identifiers to gene symbols"
+                incProgress(1/steps, detail=msg)
+                message(paste0(msg, "..."))
+                counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
+                
+                # Perform differential gene expression analysis
+                msg <- "Performing differential gene expression analysis"
+                incProgress(1/steps, detail=msg)
+                message(paste0(msg, "..."))
+                diffExpr <- performDifferentialExpression(counts)
+                
+                diffExprStat <- diffExpr$t
+                names(diffExprStat) <- diffExpr$Gene_symbol
+                
+                msg <- sprintf("%s vs control DGE in %s (ENCODE)",
+                               input$gene, input$cellLine)
+                diffExprStat <- .prepareDiffExprDataset(diffExprStat, msg)
+                
+                message(paste(msg, "data loaded"))
+                return(diffExprStat)
             })
-        }
-    )
+        })
+        
+        if (!shinyproxy) observeEvent(input$load, stopApp(loadData()))
+        return(loadData)
+    }
+    moduleServer(id, server)
 }
 
 .findMatch <- function(what, where, ignore.case=TRUE) {
     if (is.null(what)) return(NULL)
+    if (is.list(where)) where <- unlist(where)
+    what <- paste0("^", what, "$") # exact match
     unname(sapply(what, grep, where, ignore.case=ignore.case, value=TRUE))
 }
 
@@ -283,7 +432,7 @@
 #' @importFrom shinycssloaders withSpinner
 .cmapDataLoaderUI <- function(id, cellLine=NULL, timepoint=NULL, dosage=NULL,
                               perturbationType=NULL, title="CMap Data Loader",
-                              shinyproxy=TRUE) {
+                              shinyproxy=FALSE) {
     ns <- NS(id)
     dataTypes <- c("Perturbation metadata"="metadata",
                    "Perturbation z-scores"="zscores",
@@ -314,6 +463,7 @@
         selectizeCondition(ns("timepoint"), "Time points", multiple=TRUE,
                            choices=timepoint, timepoint),
         checkboxGroupInput(ns("data"), "Data to load", dataTypes, dataTypes),
+        if (shinyproxy) textInput(ns("name"), "Dataset name", value="cmapData"),
         if (!shinyproxy)
             helpText("By default, data will be downloaded if not found."),
         if (!shinyproxy) actionButton(ns("cancel"), "Cancel"),
@@ -326,13 +476,14 @@
 }
 
 #' @importFrom shiny isolate updateSelectizeInput moduleServer stopApp
-#' observeEvent
+#' observeEvent eventReactive
 #' @importFrom DT dataTableProxy replaceData
 .cmapDataLoaderServer <- function(id, metadata="cmapMetadata.txt",
                                   zscores="cmapZscores.gctx",
                                   geneInfo="cmapGeneInfo.txt",
                                   compoundInfo="cmapCompoundInfo.txt",
-                                  cellLine=NULL, timepoint=NULL, dosage=NULL) {
+                                  cellLine=NULL, timepoint=NULL, dosage=NULL,
+                                  shinyproxy=FALSE, tab=NULL) {
     server <- function(input, output, session) {
         updateSelectizeCondition <- function(session, input, id, choices, ...) {
             selected <- isolate(input[[id]])
@@ -340,20 +491,26 @@
             return(updateSelectizeInput(session, id, choices=choices,
                                         selected=selected, ...))
         }
-        
-        getCurrentTab    <- reactive(session$input$tab, env=parent.frame(2))
         loadCMapMetadata <- reactive(loadCMapData(metadata, "metadata"))
         
-        getCMapMetadata <- reactive({
-            if (is.data.frame(metadata)) return(metadata)
-            
-            tab  <- getCurrentTab()
-            load <- is.null(tab) || (!is.null(tab) && tab == "CMap Data Loader")
-            if (load) {
-                metadata <- loadCMapMetadata()
-            } else {
-                metadata <- NULL
+        happened <- reactiveVal(FALSE)
+        checkTab <- reactive({
+            load <- TRUE
+            if (!isolate(happened())) {
+                if (is.null(tab)) {
+                    load <- TRUE
+                } else {
+                    tab  <- tab()
+                    load <- !is.null(tab) && tab == "CMap Data Loader"
+                }
             }
+            happened(load)
+            if (!load) return(NULL)
+            return(load)
+        })
+        
+        getCMapMetadata <- eventReactive(checkTab(), {
+            if (!is.data.frame(metadata)) metadata <- loadCMapMetadata()
             return(metadata)
         })
         
@@ -376,7 +533,6 @@
             choices <- list("Perturbations"=perts[!controls],
                             "Controls"=perts[controls])
             updateSelectizeCondition(session, input, "type", choices=choices)
-            
             updateSelectizeCondition(session, input, "cellLine",
                                      choices=available$cellLine)
             updateSelectizeCondition(session, input, "dosage",
@@ -387,11 +543,11 @@
         
         # Filter metadata based on selected inputs
         getFilteredMetadata <- reactive({
+            metadata <- getCMapMetadata()
+            req(metadata)
             filterCMapMetadata(
-                getCMapMetadata(), perturbationType=input$type,
-                cellLine=input$cellLine,
-                dosage=input$dosage,
-                timepoint=input$timepoint)
+                metadata, perturbationType=input$type, cellLine=input$cellLine,
+                dosage=input$dosage, timepoint=input$timepoint)
         })
         
         renderBubbleChart <- function(subset, title, colour) {
@@ -435,8 +591,8 @@
         observe(replaceData(proxy, getFilteredMetadata(), rownames=FALSE))
         
         # Load data
-        observeEvent(input$load, {
-            types <- isolate(input$data)
+        loadData <- eventReactive(input$load, {
+            types <- input$data
             
             returnIf <- function(bool, val) {
                 res <- NULL
@@ -452,11 +608,33 @@
             perturbations <- prepareCMapPerturbations(
                 metadata=metadata, zscores=zscores,
                 geneInfo=geneInfo, compoundInfo=compoundInfo)
-            stopApp(perturbations)
+            attr(perturbations, "name") <- input$name
+            return(perturbations)
         })
         
-        # Cancel
+        observe({
+            txt <- "CMap"
+            
+            type <- input$type
+            kd <- "Consensus signature from shRNAs targeting the same gene"
+            oe <- "cDNA for overexpression of wild-type gene"
+            
+            if (length(input$cellLine) == 1) txt <- paste(txt, input$cellLine)
+            if (length(type) == 1) {
+                txtType <- NULL
+                if (type == "Compound") txtType <- "compounds"
+                if (type == kd) txtType <- "knockdowns"
+                if (type == oe) txtType <- "overexpressions"
+                txt <- paste(txt, txtType)
+            }
+            
+            if (txt == "cmap") txt <- "CMap data"
+            updateTextInput(session, "name", value=txt)
+        })
+        
+        if (!shinyproxy) observeEvent(input$load, stopApp(loadData()))
         observeEvent(input$cancel, stopApp(stop("User cancel", call.=FALSE)))
+        return(loadData)
     }
     
     moduleServer(id, server)
@@ -466,13 +644,13 @@
 
 #' @importFrom shiny NS sidebarPanel mainPanel tabPanel sidebarLayout
 #' selectizeInput fluidRow column
-.metadataViewerUI <- function(id, x, title="Metadata") {
+.metadataViewerUI <- function(id, title="Metadata") {
     ns <- NS(id)
     ui <- tabPanel(
         title,
         div(class="well", style="padding-bottom: 9px;",
             fluidRow(
-                column(4, selectizeInput(ns("object"), "Dataset", names(x), 
+                column(4, selectizeInput(ns("object"), "Dataset", choices=NULL, 
                                          width="100%")),
                 column(4, selectizeInput(ns("attr"), "Table", choices=NULL, 
                                          width="100%")))),
@@ -483,12 +661,13 @@
 #' @importFrom shiny moduleServer observe
 #' @importFrom DT renderDT
 .metadataViewerServer <- function(id, x) {
+    x <- .convertToFunction(x)
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedObject <- reactive(.prepareMetadata(x[[input$object]]))
+            getSelectedObject <- reactive(.prepareMetadata(x()[[input$object]]))
             
-            observe(updateSelectizeInput(session, "object", choices=names(x)))
+            observe(updateSelectizeInput(session, "object", choices=names(x())))
             
             observe({
                 selected <- isolate(input$attr)
@@ -532,17 +711,19 @@
 #' @importFrom shiny renderPlot observeEvent observe
 #' @importFrom DT renderDT formatSignif dataTableProxy replaceData
 .dataPlotterServer <- function(id, x) {
+    x <- .convertToFunction(x)
     isValid <- function(e) !is.null(e) && e != ""
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedObject <- reactive(if (!is.null(x)) x[[input$object]])
+            getSelectedObject <- reactive(x()[[input$object]])
             
             observe({
-                if (length(x) == 0) return(NULL)
-                ref <- sapply(x, is, "referenceComparison")
+                obj <- x()
+                if (length(obj) == 0) return(NULL)
+                ref <- sapply(obj, is, "referenceComparison")
                 if (!any(ref)) return(NULL)
-                choices <- names(x[ref])
+                choices <- names(obj[ref])
                 updateSelectizeInput(session, "object", choices=choices,
                                      server=TRUE)
             })
@@ -660,17 +841,21 @@
 #' @importFrom DT renderDT
 #' @importFrom ggplot2 theme_bw geom_density_2d geom_rug geom_point
 .datasetComparisonServer <- function(id, x) {
+    x <- .convertToFunction(x)
     getNumericCols <- function(x) colnames(x)[vapply(x, is.numeric, logical(1))]
     
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedDataset1 <- reactive(x[[input$data1]])
-            getSelectedDataset2 <- reactive(x[[input$data2]])
+            getSelectedDataset1 <- reactive(x()[[input$data1]])
+            getSelectedDataset2 <- reactive(x()[[input$data2]])
             
             observe({
-                req(names(x))
-                choices <- names(x)[sapply(x, is, "referenceComparison")]
+                obj <- x()
+                req(names(obj))
+                choices <- names(obj)[sapply(obj, is, "referenceComparison")]
+                req(choices)
+                if (length(choices) < 2) return(NULL)
                 
                 updateSelectizeInput(session, "data1", choices=choices)
                 updateSelectizeInput(session, "data2", choices=choices,
@@ -780,26 +965,25 @@
 #' @importFrom shiny moduleServer reactive observe renderPlot brushedPoints
 #' @importFrom DT renderDT
 .targetingDrugsVSsimilarPerturbationsPlotterServer <- function(id, x) {
+    x <- .convertToFunction(x)
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedDataset1 <- reactive({
-                item <- input$data1
-                if (length(x) > 0 && !is.null(item)) x[[item]]
-            })
-            getSelectedDataset2 <- reactive({
-                item <- input$data2
-                if (length(x) > 0 && !is.null(item)) x[[item]]
-            })
+            getDataset <- function(obj, item) {
+                if (length(obj) > 0 && !is.null(item)) obj[[item]]
+            }
+            getSelectedDataset1 <- reactive(getDataset(x(), input$data1))
+            getSelectedDataset2 <- reactive(getDataset(x(), input$data2))
             
             observe({
-                elemClasses <- sapply(lapply(x, class), "[[", 1)
+                obj <- x()
+                elemClasses <- sapply(lapply(obj, class), "[[", 1)
                 updateSelectizeInput(
                     session, "object", server=TRUE,
-                    names(x)[elemClasses == "targetingDrugs"])
+                    names(obj)[elemClasses == "targetingDrugs"])
                 updateSelectizeInput(
                     session, "object", server=TRUE,
-                    choices=names(x)[elemClasses == "similarPerturbations"])
+                    choices=names(obj)[elemClasses == "similarPerturbations"])
             })
             
             observe({
@@ -851,15 +1035,16 @@
 # Data analysis ----------------------------------------------------------------
 
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
-#' tabPanel uiOutput column fluidRow numericInput checkboxInput
+#' tabPanel uiOutput column fluidRow numericInput checkboxInput conditionalPanel
 #' @importFrom DT DTOutput
 .rankSimilarPerturbationsUI <- function(
-    id, geneInput, perturbations,
+    id, diffExpr, perturbations,
     title="Rank CMap perturbations by similarity") {
     
     ns <- NS(id)
     sidebar <- sidebarPanel(
-        selectizeInput(ns("object"), "Gene input dataset", names(geneInput)),
+        selectizeInput(ns("diffExpr"), "Differential gene expression",
+                       names(diffExpr)),
         selectizeInput(ns("perts"), "CMap perturbations", names(perturbations)),
         selectizeInput(ns("method"), "Method", multiple=TRUE,
                        .rankSimilarityMethods(), .rankSimilarityMethods(),
@@ -881,7 +1066,7 @@
                          c("Mean scores only"=FALSE,
                            "Mean + individual cell lines' scores"=TRUE)),
           ns=ns),
-        textInput(ns("name"), "Dataset name", "cmap_date"),
+        textInput(ns("name"), "Dataset name", "cmap_ranking"),
         uiOutput(ns("msg")),
         actionButton(ns("analyse"), "Rank by similarity", class="btn-primary"))
     
@@ -892,21 +1077,58 @@
 
 #' @importFrom shiny renderPlot observeEvent observe isolate renderUI
 #' @importFrom DT renderDT
-.rankSimilarPerturbationsServer <- function(id, geneInput, perturbations) {
-    moduleServer(
-        id,
-        function(input, output, session) {
-            getSelectedObject <- reactive(perturbations[[input$object]])
-            
-            observe({
-                req(names(perturbations))
-                ref <- sapply(perturbations, is, "perturbationChanges")
-                if (!any(ref)) return(NULL)
-                choices <- names(perturbations[ref])
-                updateSelectizeInput(session, "perts", choices=choices)
-            })
+.rankSimilarPerturbationsServer <- function(id, diffExpr, perturbations,
+                                            shinyproxy=FALSE) {
+    server <- function(input, output, session) {
+        getSelectedObject <- reactive(perturbations[[input$object]])
+        
+        updateDatasetChoices <- function(id, var, class=NULL) {
+            req(names(var))
+            if (!is.null(class)) {
+                ref <- sapply(var, is, class)
+            } else {
+                ref <- TRUE
+            }
+            if (!any(ref)) return(NULL)
+            choices <- names(var[ref])
+            updateSelectizeInput(session, id, choices=choices)
         }
-    )
+        
+        observe(updateDatasetChoices(
+            "diffExpr", diffExpr(), "diffExpr"))
+        observe(updateDatasetChoices(
+            "perts", perturbations(), "perturbationChanges"))
+        
+        rankData <- eventReactive(input$analyse, {
+            selectedDiffExpr <- req(input$diffExpr)
+            selectedPerts    <- req(input$perts)
+            method           <- input$method
+            upGenes          <- input$upGenes
+            downGenes        <- input$downGenes
+            cellLineMean     <- input$cellLineMean
+            rankPerCellLine  <- input$rankPerCellLine
+            dataset          <- input$name
+            
+            selectedDiffExpr <- diffExpr()[[req(selectedDiffExpr)]]
+            selectedPerts    <- perturbations()[[req(selectedPerts)]]
+            
+            ranking <- rankSimilarPerturbations(
+                selectedDiffExpr, selectedPerts, method, c(upGenes, downGenes),
+                cellLineMean, rankPerCellLine)
+            attr(ranking, "name") <- dataset
+            return(ranking)
+        })
+        
+        if (!shinyproxy) observeEvent(input$load, stopApp(rankData()))
+        
+        output$table <- renderDT({
+            data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations")
+            data.frame("Dataset"=names(data))
+        }, rownames=FALSE)
+        
+        return(rankData)
+    }
+    moduleServer(id, server)
 }
 
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
@@ -1120,7 +1342,7 @@ launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
 launchMetadataViewer <- function(...) {
     elems  <- .prepareEllipsis(...)
     id     <- "metadataViewer"
-    ui     <- .prepareNavPage(.metadataViewerUI(id, elems))
+    ui     <- .prepareNavPage(.metadataViewerUI(id))
     server <- function(input, output, session) .metadataViewerServer(id, elems)
     app    <- runApp(shinyApp(ui, server))
     return(app)
@@ -1152,7 +1374,7 @@ launchResultPlotter <- function(...) {
         .targetingDrugsVSsimilarPerturbationsPlotterUI(
             comparePlotId, elems, elemClasses),
         .datasetComparisonUI(compareId, elems),
-        .metadataViewerUI(metadataId, elems))
+        .metadataViewerUI(metadataId))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
     
@@ -1189,7 +1411,7 @@ launchDrugSetEnrichmentAnalyser <- function(sets, ...) {
     uiList <- tagList(
         .drugSetEnrichmentAnalyserUI(dseaId, sets, elems),
         .dataPlotterUI(dataId, elems),
-        .metadataViewerUI(metadataId, elems))
+        .metadataViewerUI(metadataId))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
     

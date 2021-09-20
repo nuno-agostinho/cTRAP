@@ -14,6 +14,7 @@
     return(token)
 }
 
+#' @importFrom shiny textInput
 .prepareSessionModal <- function(title=NULL, createSession=TRUE,
                                  footer=modalButton("Dismiss"), ...) {
     newSessionUI <- tagList(
@@ -28,19 +29,19 @@
                      width="100%", icon=icon("history"), class="btn-info"))
     loadDataUI <- tagList(
         fileInput("sessionFile", width="100%", multiple=TRUE, accept=".rds",
-                  "Insert RDS file of a previous session:"),
+                  "Upload RDS file of a previous session:"),
         actionButton("loadData", "Load session with files", width="100%",
                      icon=icon("history"), class="btn-info"))
-    
+    pills <- tabsetPanel(
+        type="pills",
+        tabPanel("Session token", loadTokenUI),
+        tabPanel("Session data", loadDataUI))
+    pills[[3]][[1]] <- tagAppendAttributes(pills[[3]][[1]],
+                                           class="nav-justified")
     modalDialog(
-        title=title,
+        title=title, size="s", footer=footer,
         if (createSession) newSessionUI,
-        h2("Load session", style="margin-top: 0px;"),
-        tabsetPanel(
-            type="pills",
-            tabPanel("Session token", loadTokenUI),
-            tabPanel("Session data", loadDataUI)),
-        size="s", footer=footer, ...)
+        h2("Load session", style="margin-top: 0px;"), pills, ...)
 }
 
 .modifySessionUI <- function(ui, expire) {
@@ -72,6 +73,8 @@
     return(ui)
 }
 
+#' @importFrom shiny navbarMenu icon span textOutput tags includeScript
+#' includeCSS
 globalUI <- function(elems, idList, expire) {
     elemClasses       <- sapply(lapply(elems, class), "[[", 1)
     hasSimilarPerts   <- "similarPerturbations" %in% elemClasses
@@ -81,7 +84,8 @@ globalUI <- function(elems, idList, expire) {
     uiList <- tagList(
         id="tab",
         navbarMenu("Load", icon=icon("table"),
-                   "Differential gene data expression",
+                   "Differential gene expression data",
+                   .diffExprLoadUI(idList$diffExpr),
                    .diffExprENCODEloaderUI(idList$encode),
                    "----",
                    "CMap data",
@@ -94,7 +98,7 @@ globalUI <- function(elems, idList, expire) {
                    # .targetingDrugsVSsimilarPerturbationsPlotterUI(
                    #     idList$comparePlot, elems, elemClasses),
                    .datasetComparisonUI(idList$compare, elems),
-                   .metadataViewerUI(idList$metadata, elems)),
+                   .metadataViewerUI(idList$metadata)),
         navbarMenu(span("Session",
                         span(class="badge", textOutput("token", inline=TRUE))),
                    icon=icon("compass")))
@@ -126,6 +130,7 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
     elems <- .prepareEllipsis(...)
     
     idList             <- list()
+    idList$diffExpr    <- "diffExprLoader"
     idList$encode      <- "encodeDataLoader"
     idList$cmap        <- "cmapDataLoader"
     idList$compare     <- "datasetComparison"
@@ -136,29 +141,51 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
     idList$drugSet     <- "drugSetAnalyser"
     ui <- globalUI(elems, idList, expire)
     
-    sharedData <- reactiveValues()
-    sharedData$elems <- elems
-    
     server <- function(input, output, session) {
-        .diffExprENCODEloaderServer(idList$encode)
-        .cmapDataLoaderServer(idList$cmap)
+        sharedData       <- reactiveValues()
+        sharedData$elems <- elems
+        elems <- reactive(sharedData$elems)
         
-        observe({
-            elems <- sharedData$elems
-            
-            # analyse
-            .rankSimilarPerturbationsServer(idList$rankPerts, elems, elems)
-            .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
-            
-            # visualise
-            .dataPlotterServer(idList$data, elems)
-            .targetingDrugsVSsimilarPerturbationsPlotterServer(
-                idList$comparePlot, elems)
-            .datasetComparisonServer(idList$compare, elems)
-            .metadataViewerServer(idList$metadata, elems)
-        })
+        updateSharedData <- function(x) {
+            observe({
+                obj <- x()
+                elems <- .addToList(isolate(sharedData$elems), obj)
+                sharedData$elems <- elems
+                
+                len  <- length(elems)
+                msg1 <- paste(names(elems)[len], "loaded")
+                msg2 <- sprintf("(%s datasets in total)", len)
+                message(paste("  ->", msg1, msg2))
+                showNotification(tagList(tags$b(msg1), msg2), type="message")
+            })
+        }
         
-        # When no token is found (i.e. new session), show welcome screen
+        # load data
+        diffExpr <- .diffExprLoadServer(idList$diffExpr, elems)
+        updateSharedData(diffExpr)
+        
+        encodeDiffExpr <- .diffExprENCODEloaderServer(
+            idList$encode, shinyproxy=TRUE)
+        updateSharedData(encodeDiffExpr)
+        
+        cmapData <- .cmapDataLoaderServer(
+            idList$cmap, shinyproxy=TRUE, tab=reactive(session$input$tab))
+        updateSharedData(cmapData)
+        
+        # analyse
+        ranking <- .rankSimilarPerturbationsServer(idList$rankPerts, elems,
+                                                   elems, shinyproxy=TRUE)
+        updateSharedData(ranking)
+        # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
+        
+        # visualise
+        .dataPlotterServer(idList$data, elems)
+        .targetingDrugsVSsimilarPerturbationsPlotterServer(
+            idList$comparePlot, elems)
+        .datasetComparisonServer(idList$compare, elems)
+        .metadataViewerServer(idList$metadata, elems)
+        
+        # Show welcome screen when no token is set (e.g. new cTRAP sessions)
         observe({
             if (!is.null(sharedData$token)) return(NULL)
             showModal(.prepareSessionModal("Welcome to cTRAP!", footer=NULL))
@@ -194,11 +221,12 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
             }
             req(file)
             
-            elems <- tryCatch({ readRDS(file$datapath) }, error=return)
+            data <- tryCatch(readRDS(file$datapath), error=return)
             if (is(data, "error")) {
-                showNotification("Error loading data", type="error")
+                showNotification(paste("Error loading data:", data),
+                                 type="error")
             } else {
-                sharedData$elems <- elems
+                sharedData$elems <- data
                 removeModal()
             }
         })
