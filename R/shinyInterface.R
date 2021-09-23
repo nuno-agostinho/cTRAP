@@ -22,16 +22,6 @@
     return(alert)
 }
 
-.addToList <- function(x, data, name=NULL) {
-    if (is.null(name)) name <- attr(data, "name")
-    if (is.null(name) || name == "") name <- "Dataset"
-    
-    uniqName <- make.unique(c(names(x), name))
-    name <- uniqName[[length(uniqName)]]
-    x[[name]] <- data
-    return(x)
-}
-
 .prepareDiffExprDataset <- function(data, name) {
     attr(data, "name") <- name
     class(data) <- c("diffExpr", class(data))
@@ -237,7 +227,7 @@
 }
 
 #' @importFrom shiny textAreaInput
-.diffExprLoadUI <- function(id, title="Load differential gene expression") {
+.diffExprLoadUI <- function(id, title="User data") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
         textAreaInput(ns("diffExpr"), "Differential gene expression",
@@ -270,21 +260,25 @@
             diffExpr <- gsub("[(^|\n)]{0,1}#.*?\n", "\n", diffExpr)
             diffExpr <- gsub("\n+", "\n", diffExpr)
             
-            data <- fread(text=diffExpr, sep=input$sep, data.table=FALSE,
-                          header=FALSE)
-            
-            if (ncol(data) == 1) {
-                data <- data[[1]]
-            } else if (ncol(data) == 2) {
-                data <- setNames(data[[2]], data[[1]])
-            } else {
-                showNotification(
-                    tagList(tags$b("Input requires 1 or 2 columns."),
-                            ncol(data), "columns are not supported."),
-                    type="error")
-                return(NULL)
-            }
-            data <- .prepareDiffExprDataset(data, input$name)
+            withProgress(message="Loading differential expression", value=2, {
+                data <- fread(text=diffExpr, sep=input$sep, data.table=FALSE,
+                              header=FALSE)
+                incProgress(1)
+                
+                if (ncol(data) == 1) {
+                    data <- data[[1]]
+                } else if (ncol(data) == 2) {
+                    data <- setNames(data[[2]], data[[1]])
+                } else {
+                    showNotification(
+                        tagList(tags$b("Input requires 1 or 2 columns."),
+                                ncol(data), "columns are not supported."),
+                        type="error")
+                    return(NULL)
+                }
+                data <- .prepareDiffExprDataset(data, input$name)
+                incProgress(2)
+            })
             return(data)
         })
         
@@ -317,7 +311,7 @@
 .diffExprENCODEloaderUI <- function(id,
                                     metadata=downloadENCODEknockdownMetadata(),
                                     cellLine=NULL, gene=NULL,
-                                    title="ENCODE Knockdown Data Loader") {
+                                    title="ENCODE knockdown data") {
     ns <- NS(id)
     conditions <- .getENCODEconditions(metadata)
     cellLines  <- conditions$cellLines
@@ -359,16 +353,16 @@
         
         observe({
             cellLine <- input$cellLine
-            if (cellLine == "") cellLine <- NULL
+            if (is.null(cellLine) || cellLine == "") cellLine <- NULL
             
             gene <- input$gene
-            if (gene == "") gene <- NULL
+            if (is.null(gene) || gene == "") gene <- NULL
             data <- downloadENCODEknockdownMetadata(cellLine, gene)
             observe(replaceData(proxy, data, rownames=FALSE))
         })
         
         loadData <- eventReactive(input$load, {
-            withProgress(message="Preparing data", {
+            withProgress(message="Preparing differential expression", {
                 steps <- 3
                 
                 incProgress(1/steps, detail="Downloading")
@@ -431,7 +425,7 @@
 #' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel helpText
 #' @importFrom shinycssloaders withSpinner
 .cmapDataLoaderUI <- function(id, cellLine=NULL, timepoint=NULL, dosage=NULL,
-                              perturbationType=NULL, title="CMap Data Loader",
+                              perturbationType=NULL, title="CMap perturbations",
                               shinyproxy=FALSE) {
     ns <- NS(id)
     dataTypes <- c("Perturbation metadata"="metadata",
@@ -491,7 +485,13 @@
             return(updateSelectizeInput(session, id, choices=choices,
                                         selected=selected, ...))
         }
-        loadCMapMetadata <- reactive(loadCMapData(metadata, "metadata"))
+        loadCMapMetadata <- reactive({
+            withProgress(message="Loading CMap metadata", {
+                metadata <- loadCMapData(metadata, "metadata")
+                incProgress(1)
+                return(metadata)
+            })
+        })
         
         happened <- reactiveVal(FALSE)
         checkTab <- reactive({
@@ -501,7 +501,8 @@
                     load <- TRUE
                 } else {
                     tab  <- tab()
-                    load <- !is.null(tab) && tab == "CMap Data Loader"
+                    load <- !is.null(tab) && grepl(
+                      "CMap", tab, ignore.case=TRUE)
                 }
             }
             happened(load)
@@ -605,10 +606,13 @@
             geneInfo     <- returnIf("geneInfo" %in% types, geneInfo)
             compoundInfo <- returnIf("compoundInfo" %in% types, compoundInfo)
             
-            perturbations <- prepareCMapPerturbations(
-                metadata=metadata, zscores=zscores,
-                geneInfo=geneInfo, compoundInfo=compoundInfo)
-            attr(perturbations, "name") <- input$name
+            withProgress(message="Loading CMap perturbations", {
+                perturbations <- prepareCMapPerturbations(
+                    metadata=metadata, zscores=zscores,
+                    geneInfo=geneInfo, compoundInfo=compoundInfo)
+                attr(perturbations, "name") <- input$name
+                incProgress(1)
+            })
             return(perturbations)
         })
         
@@ -672,7 +676,9 @@
             observe({
                 selected <- isolate(input$attr)
                 choices  <- names(getSelectedObject())
-                if (!selected %in% choices) selected <- NULL
+                anyChoiceSelected <- !is.null(selected) && !is.null(choices) &&
+                    selected %in% choices
+                if (!anyChoiceSelected) selected <- NULL
                 updateSelectizeInput(session, "attr", selected=selected,
                                      choices=choices)
             })
@@ -1057,8 +1063,8 @@
             ns=ns),
         selectizeInput(ns("cellLineMean"),
                        "Calculate mean across cell lines",
-                       c("For ≥ 2 cell lines"="auto",
-                         "For ≥ 1 cell line"=TRUE,
+                       c("For data with ≥ 2 cell lines"="auto",
+                         "Always"=TRUE,
                          "Never"=FALSE)),
         conditionalPanel(
           "input.cellLineMean != 'FALSE'",

@@ -11,7 +11,26 @@
     
     rand  <- sample(pool, len, replace=TRUE, prob=prob)
     token <- paste(rand, collapse="")
+    if (dir.exists(token)) token <- .createToken(len)
     return(token)
+}
+
+.addToList <- function(x, data, name=NULL) {
+    if (is.null(name)) name <- attr(data, "name")
+    if (is.null(name) || name == "") name <- "Dataset"
+    
+    uniqName <- make.unique(c(names(x), name))
+    name <- uniqName[[length(uniqName)]]
+    x[[name]] <- data
+    return(x)
+}
+
+.saveSession <- function(data, token) {
+    if (is.null(token) || is.null(data)) return(NULL)
+    if (!dir.exists(token)) dir.create(token)
+    sessionRDS <- file.path(token, "session.rds")
+    saveRDS(data, sessionRDS)
+    message("     Session saved to ", sessionRDS)
 }
 
 #' @importFrom shiny textInput
@@ -30,7 +49,7 @@
     loadDataUI <- tagList(
         fileInput("sessionFile", width="100%", multiple=TRUE, accept=".rds",
                   "Upload RDS file of a previous session:"),
-        actionButton("loadData", "Load session with files", width="100%",
+        actionButton("loadData", "Load session from RDS file", width="100%",
                      icon=icon("history"), class="btn-info"))
     pills <- tabsetPanel(
         type="pills",
@@ -73,6 +92,18 @@
     return(ui)
 }
 
+#' @importFrom shiny tagAppendChildren
+.addLoadingStatus <- function(ui) {
+    loading <- conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+                                icon("circle-notch", "fa-spin"))
+    loading$name <- "a"
+    loading <- tags$li(loading)
+    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[2]] <- 
+        ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[1]]
+    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[1]] <- loading
+    return(ui)
+}
+
 #' @importFrom shiny navbarMenu icon span textOutput tags includeScript
 #' includeCSS
 globalUI <- function(elems, idList, expire) {
@@ -88,7 +119,6 @@ globalUI <- function(elems, idList, expire) {
                    .diffExprLoadUI(idList$diffExpr),
                    .diffExprENCODEloaderUI(idList$encode),
                    "----",
-                   "CMap data",
                    .cmapDataLoaderUI(idList$cmap, shinyproxy=TRUE)),
         navbarMenu("Analyse", icon=icon("cogs"),
                    .rankSimilarPerturbationsUI(idList$rankPerts, elems, elems),
@@ -99,11 +129,12 @@ globalUI <- function(elems, idList, expire) {
                    #     idList$comparePlot, elems, elemClasses),
                    .datasetComparisonUI(idList$compare, elems),
                    .metadataViewerUI(idList$metadata)),
-        navbarMenu(span("Session",
-                        span(class="badge", textOutput("token", inline=TRUE))),
-                   icon=icon("compass")))
+        navbarMenu(span("Session", span(class="badge",
+                                        textOutput("token", inline=TRUE))),
+                   icon=icon("compass"), menuName="session"))
     ui <- do.call(.prepareNavPage, uiList)
     ui <- .modifySessionUI(ui, expire=expire)
+    ui <- .addLoadingStatus(ui)
     
     # Add JS and CSS in header
     header <- tags$head(
@@ -111,6 +142,138 @@ globalUI <- function(elems, idList, expire) {
         includeCSS(system.file("shiny", "www", "cTRAP.css", package="cTRAP")))
     ui <- tagList(header, ui)
     return(ui)
+}
+
+.sessionManagementServer <- function(input, output, session, sharedData) {
+    # Show welcome screen when no token is set (e.g. new cTRAP sessions)
+    observe({
+        if (!is.null(sharedData$token)) return(NULL)
+        showModal(.prepareSessionModal("Welcome to cTRAP!", footer=NULL))
+    })
+    
+    # Create new session
+    observeEvent(input$createSession, {
+        sharedData$token <- .createToken()
+        removeModal()
+    })
+    
+    # Update token badge
+    output$token <- renderText({
+        token <- sharedData$token
+        if (is.null(token)) token <- "?"
+        return(token)
+    })
+    
+    # Load session based on a token
+    observeEvent(input$loadToken, {
+        token <- isolate(input$token)
+        if (dir.exists(token)) {
+            sharedData$elems <- readRDS(file.path(token, "session.rds"))
+            sharedData$token <- token
+            removeModal()
+        } else {
+            msg <- tagList("Token", span(class="badge", token),
+                           "does not exist")
+            showNotification(type="error", msg)
+        }
+    })
+    
+    # Load session based on a RDS file
+    observeEvent(input$loadData, {
+        file <- input$sessionFile
+        
+        if (is.null(file)) {
+            showNotification("File input cannot be empty", type="error")
+        }
+        req(file)
+        
+        data <- tryCatch(readRDS(file$datapath), error=return)
+        if (is(data, "error")) {
+            showNotification(paste("Error loading data:", data),
+                             type="error")
+        } else {
+            sharedData$elems <- data
+            sharedData$token <- token <- .createToken()
+            removeModal()
+            .saveSession(data, token)
+        }
+    })
+    
+    observeEvent(input$loadSessionModal, {
+        modal <- .prepareSessionModal(createSession=FALSE, easyClose=TRUE)
+        showModal(modal)
+    })
+    
+    # Notify when copying token
+    observeEvent(input$copyToken, {
+        msg <- tagList("Token", span(class="badge", sharedData$token),
+                       "copied to your clipboard!")
+        showNotification(msg, duration=3, closeButton=FALSE, type="message")
+    })
+    
+    # Download objects in current session in a single RDS file
+    output$downloadSession <- downloadHandler(
+        filename=function() paste0("cTRAP-", sharedData$token, ".rds"),
+        content=function(file) saveRDS(sharedData$elems, file))
+}
+
+.newDataNotification <- function(what, total, ..., auto=FALSE) {
+    plural <- ifelse(total == 1, "", "s")
+    totalTxt <- sprintf("Total: %s dataset%s", total, plural)
+    message(sprintf("  -> %s (%s)",
+                    paste(paste(what, collapse=" + "), "loaded"),
+                    tolower(totalTxt)))
+    
+    len <- length(what)
+    auto <- ifelse(auto, "automatically ", "")
+    head <- "New %sloaded dataset:"
+    if (len != 1) head <- paste(length(what), "new %sloaded datasets:")
+    head <- sprintf(head, auto)
+    
+    what <- do.call(tags$ul, lapply(what, tags$li))
+    showNotification(tagList(tags$b(head), what, totalTxt),
+                     type="message", ...)
+}
+
+.loadDataFromRDSinDirServer <- function(input, output, session, sharedData) {
+    checkNewRDSfiles <- function(path=".") {
+        if (is.null(path)) return(NULL)
+        res <- list.files(path, ".rds", ignore.case=TRUE)
+        res <- res[res != "session.rds"]
+        if (length(res) == 0) res <- NULL
+        res <- file.path(path, res)
+        return(res)
+    }
+    
+    getNewRDSfiles <- reactivePoll(
+        5000, session,
+        checkFunc=function() checkNewRDSfiles(sharedData$token),
+        valueFunc=function() checkNewRDSfiles(sharedData$token))
+    
+    observe({
+        req(getNewRDSfiles())
+        
+        elems <- isolate(sharedData$elems)
+        token <- isolate(sharedData$token)
+        
+        added <- 0
+        for (i in getNewRDSfiles()) {
+            message("Adding data from ", i, "...")
+            obj <- try(readRDS(i), silent=TRUE)
+            if (is(obj, "try-error")) {
+                warning(obj)
+                return(NULL)
+            }
+            elems <- .addToList(elems, obj)
+            unlink(i)
+            added <- added + 1
+        }
+        if (added == 0) return(NULL)
+        sharedData$elems <- elems
+        .newDataNotification(tail(names(elems), added), length(elems),
+                             duration=NULL, auto=TRUE)
+        .saveSession(elems, token)
+    })
 }
 
 #' Complete visual interface with support for sessions
@@ -152,11 +315,8 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
                 elems <- .addToList(isolate(sharedData$elems), obj)
                 sharedData$elems <- elems
                 
-                len  <- length(elems)
-                msg1 <- paste(names(elems)[len], "loaded")
-                msg2 <- sprintf("(%s datasets in total)", len)
-                message(paste("  ->", msg1, msg2))
-                showNotification(tagList(tags$b(msg1), msg2), type="message")
+                .newDataNotification(tail(names(elems), 1), length(elems))
+                .saveSession(elems, isolate(sharedData$token))
             })
         }
         
@@ -185,68 +345,8 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
         .datasetComparisonServer(idList$compare, elems)
         .metadataViewerServer(idList$metadata, elems)
         
-        # Show welcome screen when no token is set (e.g. new cTRAP sessions)
-        observe({
-            if (!is.null(sharedData$token)) return(NULL)
-            showModal(.prepareSessionModal("Welcome to cTRAP!", footer=NULL))
-        })
-        
-        # Create new session
-        observeEvent(input$createSession, {
-            removeModal()
-            sharedData$token <- .createToken()
-        })
-        
-        # Update token display
-        output$token <- renderText({
-            token <- sharedData$token
-            if (is.null(token)) token <- "?"
-            return(token)
-        })
-        
-        # Load session based on a token
-        observeEvent(input$loadToken, {
-            removeModal()
-            sharedData$elems <- list(
-                cmapKD=cmapKD, cmapCompounds=cmapCompounds, cmapPerts=cmapPerts,
-                compareCompounds=compareCompounds, compareKD=compareKD)
-        })
-        
-        # Load session based on a RDS file
-        observeEvent(input$loadData, {
-            file <- input$sessionFile
-            
-            if (is.null(file)) {
-                showNotification("File input cannot be empty", type="error")
-            }
-            req(file)
-            
-            data <- tryCatch(readRDS(file$datapath), error=return)
-            if (is(data, "error")) {
-                showNotification(paste("Error loading data:", data),
-                                 type="error")
-            } else {
-                sharedData$elems <- data
-                removeModal()
-            }
-        })
-        
-        observeEvent(input$loadSessionModal, {
-            modal <- .prepareSessionModal(createSession=FALSE, easyClose=TRUE)
-            showModal(modal)
-        })
-        
-        # Notify when copying token
-        observeEvent(input$copyToken, {
-            msg <- tagList("Token", span(class="badge", sharedData$token),
-                           "copied to your clipboard!")
-            showNotification(msg, duration=3, closeButton=FALSE, type="message")
-        })
-        
-        # Download objects in current session in a single RDS file
-        output$downloadSession <- downloadHandler(
-            filename=function() paste0("cTRAP-", sharedData$token, ".rds"),
-            content=function(file) saveRDS(sharedData$elems, file))
+        .sessionManagementServer(input, output, session, sharedData)
+        .loadDataFromRDSinDirServer(input, output, session, sharedData)
     }
     app <- runApp(shinyApp(ui, server))
     return(app)

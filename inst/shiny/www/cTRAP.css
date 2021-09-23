@@ -1,1 +1,5 @@
 .well { box-shadow: none; }
+
+.shiny-notification ol, .shiny-notification ul {
+    padding-inline-start: 18px;
+}
