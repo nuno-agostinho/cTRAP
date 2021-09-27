@@ -28,7 +28,8 @@ Suggests:
     knitr,
     covr,
     rmarkdown,
-    spelling
+    spelling,
+    shinycssloaders
 RoxygenNote: 7.1.2
 Imports: AnnotationDbi,
     AnnotationHub,

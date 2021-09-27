@@ -1,20 +1,34 @@
+# Set size limit for user-uploaded files
 .setFileSizeLimit <- function(limitMiB) {
     options(shiny.maxRequestSize = limitMiB * 1024^2)
     message("cTRAP: file upload size limit set to ", limitMiB, " MiB")
 }
 
-.createToken <- function(len=10) {
-    pool  <- list(LETTERS, letters, 0:9)
-    size  <- sapply(pool, length)
-    prob  <- rep(1/size, size)
-    pool  <- unlist(pool)
+# Generate random string of given length
+.genRandomString <- function(len=10) {
+    pool <- list(LETTERS, letters, 0:9)
+    size <- sapply(pool, length)
+    prob <- rep(1/size, size)
+    pool <- unlist(pool)
     
-    rand  <- sample(pool, len, replace=TRUE, prob=prob)
-    token <- paste(rand, collapse="")
-    if (dir.exists(token)) token <- .createToken(len)
+    rand <- sample(pool, len, replace=TRUE, prob=prob)
+    str  <- paste(rand, collapse="")
+    return(str)
+}
+
+# Create unique token
+# Avoids creating a token that matches the name of a local folder
+.createToken <- function(len=10, path=".") {
+    repeat {
+        token <- .genRandomString(len)
+        # Token is available if no existing folder is named after the token
+        isTokenAvailable <- !dir.exists(file.path(path, token))
+        if (isTokenAvailable) break
+    }
     return(token)
 }
 
+# Add elements to a named list (ensures unique names for each element)
 .addToList <- function(x, data, name=NULL) {
     if (is.null(name)) name <- attr(data, "name")
     if (is.null(name) || name == "") name <- "Dataset"
@@ -25,6 +39,7 @@
     return(x)
 }
 
+# Save session data in token-named directory
 .saveSession <- function(data, token) {
     if (is.null(token) || is.null(data)) return(NULL)
     if (!dir.exists(token)) dir.create(token)
@@ -63,6 +78,7 @@
         h2("Load session", style="margin-top: 0px;"), pills, ...)
 }
 
+# Add context menu to session button in navigation bar
 .modifySessionUI <- function(ui, expire) {
     # Modify session
     session <- ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[2]][[3]][[1]][[4]]
@@ -92,6 +108,7 @@
     return(ui)
 }
 
+# Add loading status in navigation bar
 #' @importFrom shiny tagAppendChildren
 .addLoadingStatus <- function(ui) {
     loading <- conditionalPanel(condition="$('html').hasClass('shiny-busy')",
@@ -125,8 +142,7 @@ globalUI <- function(elems, idList, expire) {
                    .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
                    .dataPlotterUI(idList$data, elems),
-                   # .targetingDrugsVSsimilarPerturbationsPlotterUI(
-                   #     idList$comparePlot, elems, elemClasses),
+                   # .targetingDrugsVSsimilarPerturbationsPlotterUI(idList$comparePlot),
                    .datasetComparisonUI(idList$compare, elems),
                    .metadataViewerUI(idList$metadata)),
         navbarMenu(span("Session", span(class="badge",
@@ -235,7 +251,7 @@ globalUI <- function(elems, idList, expire) {
                      type="message", ...)
 }
 
-.loadDataFromRDSinDirServer <- function(input, output, session, sharedData) {
+.loadDataFromLocalRdsServer <- function(input, output, session, sharedData) {
     checkNewRDSfiles <- function(path=".") {
         if (is.null(path)) return(NULL)
         res <- list.files(path, ".rds", ignore.case=TRUE)
@@ -346,7 +362,7 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
         .metadataViewerServer(idList$metadata, elems)
         
         .sessionManagementServer(input, output, session, sharedData)
-        .loadDataFromRDSinDirServer(input, output, session, sharedData)
+        .loadDataFromLocalRdsServer(input, output, session, sharedData)
     }
     app <- runApp(shinyApp(ui, server))
     return(app)

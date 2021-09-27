@@ -3,13 +3,18 @@
 ## Web server support (optimised to run in ShinyProxy)
 
 * `cTRAP()`: new global interface with all cTRAP functions in one place
-* Token-based sessions allow to create and load sessions via a token
+* Create and load sessions via a token or a RDS file
+* RDS file containing session data are automatically saved to a new folder in
+the working directory (this folder is named based on the token)
 * Perform long-running tasks in the background using the Celery task manager
+* Automatically load any RDS files in the current folder for an active session
+(allowing to automatically load Celery-created data)
 
 ## Bug fixes and minor improvements
 
 * Improve graphical interface functions
 * Add progress bars for slower tasks
+* Add loading icon in navigation menu when Shiny is busy
 
 # cTRAP 1.10.1 (7 June, 2021)
 

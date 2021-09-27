@@ -424,6 +424,7 @@
 
 #' @importFrom shiny NS selectizeInput checkboxGroupInput sidebarPanel helpText
 #' @importFrom shinycssloaders withSpinner
+#' @importFrom htmltools tagQuery
 .cmapDataLoaderUI <- function(id, cellLine=NULL, timepoint=NULL, dosage=NULL,
                               perturbationType=NULL, title="CMap perturbations",
                               shinyproxy=FALSE) {
@@ -447,6 +448,15 @@
         colChart(ns("cellLinePlot")),
         colChart(ns("dosagePlot")),
         colChart(ns("timepointPlot")))
+    
+    dataToLoad <- checkboxGroupInput(ns("data"), "Data to load",
+                                     dataTypes, dataTypes)
+    if (shinyproxy) {
+        # Disable check boxes
+        dataToLoad <- tagQuery(dataToLoad)
+        dataToLoad <- dataToLoad$find("input")$addAttrs("disabled"=NA)$allTags()
+    }
+    
     sidebar <- sidebarPanel(
         selectizeCondition(ns("type"), "Perturbation types", multiple=TRUE,
                            choices=perturbationType, perturbationType),
@@ -456,7 +466,7 @@
                            choices=dosage, dosage),
         selectizeCondition(ns("timepoint"), "Time points", multiple=TRUE,
                            choices=timepoint, timepoint),
-        checkboxGroupInput(ns("data"), "Data to load", dataTypes, dataTypes),
+        dataToLoad,
         if (shinyproxy) textInput(ns("name"), "Dataset name", value="cmapData"),
         if (!shinyproxy)
             helpText("By default, data will be downloaded if not found."),
@@ -948,18 +958,17 @@
 }
 
 .targetingDrugsVSsimilarPerturbationsPlotterUI <- function(
-    id, x, elemClasses, title="Dataset Comparison 2") {
+    id, title="Dataset Comparison 2") {
+    
     if (!all(c("targetingDrugs", "similarPerturbations") %in% elemClasses)) {
         return(NULL)
     }
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(
-            ns("data1"), "Dataset with predicted targeting drugs",
-            names(x)[elemClasses == "targetingDrugs"]),
+            ns("data1"), "Dataset with predicted targeting drugs", NULL),
         selectizeInput(
-            ns("data2"), "Dataset with similar CMap perturbations",
-            names(x)[elemClasses == "similarPerturbations"]),
+            ns("data2"), "Dataset with similar CMap perturbations", NULL),
         selectizeInput(ns("col"), "Column to plot in both axes", choices=NULL))
     sidebar[[3]][[2]] <- plotOutput(ns("plot"), brush=ns("brush"))
     
@@ -1083,6 +1092,7 @@
 
 #' @importFrom shiny renderPlot observeEvent observe isolate renderUI
 #' @importFrom DT renderDT
+#' @importFrom data.table rbindlist
 .rankSimilarPerturbationsServer <- function(id, diffExpr, perturbations,
                                             shinyproxy=FALSE) {
     server <- function(input, output, session) {
@@ -1106,22 +1116,42 @@
             "perts", perturbations(), "perturbationChanges"))
         
         rankData <- eventReactive(input$analyse, {
-            selectedDiffExpr <- req(input$diffExpr)
-            selectedPerts    <- req(input$perts)
-            method           <- input$method
-            upGenes          <- input$upGenes
-            downGenes        <- input$downGenes
-            cellLineMean     <- input$cellLineMean
-            rankPerCellLine  <- input$rankPerCellLine
-            dataset          <- input$name
+            diffExprDataset <- req(input$diffExpr)
+            pertsDataset    <- req(input$perts)
+            method          <- input$method
+            upGenes         <- input$upGenes
+            downGenes       <- input$downGenes
+            cellLineMean    <- input$cellLineMean
+            rankPerCellLine <- input$rankPerCellLine
+            dataset         <- input$name
             
-            selectedDiffExpr <- diffExpr()[[req(selectedDiffExpr)]]
-            selectedPerts    <- perturbations()[[req(selectedPerts)]]
+            selectedDiffExpr <- diffExpr()[[req(diffExprDataset)]]
+            selectedPerts    <- perturbations()[[req(pertsDataset)]]
             
-            ranking <- rankSimilarPerturbations(
-                selectedDiffExpr, selectedPerts, method, c(upGenes, downGenes),
-                cellLineMean, rankPerCellLine)
+            withProgress(message="Ranking against CMap perturbations", {
+                ranking <- rankSimilarPerturbations(
+                    selectedDiffExpr, selectedPerts, method, c(upGenes, downGenes),
+                    cellLineMean, rankPerCellLine)
+                incProgress(1)
+            })
             attr(ranking, "name") <- dataset
+            
+            # Prepare form input
+            cellLineMean <- switch(cellLineMean,
+                                   "TRUE"="Always", "FALSE"="Never",
+                                   "auto"="For data with ≥ 2 cell lines")
+            rankPerCellLine <- ifelse(
+                rankPerCellLine,
+                "Mean + individual cell lines' scores",
+                "Mean scores only")
+            attr(ranking, "formInput") <- list(
+                "Differential expression dataset"=diffExprDataset,
+                "CMap perturbation dataset"=pertsDataset,
+                "Methods"=paste(method, collapse=", "),
+                "Top genes"=upGenes,
+                "Bottom genes"=downGenes,
+                "Calculate mean across cell lines"=cellLineMean,
+                "Rank results based on"=rankPerCellLine)
             return(ranking)
         })
         
@@ -1129,7 +1159,16 @@
         
         output$table <- renderDT({
             data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations")
-            data.frame("Dataset"=names(data))
+            req(data)
+            
+            formInput <- lapply(data, attr, "formInput")
+            ns <- unique(unlist(lapply(formInput, names)))
+            
+            # Add name this way to avoid issues with data from outside the UI
+            for (i in seq(formInput)) formInput[[i]]$Dataset <- names(data)[[i]]
+            res <- rbindlist(formInput, fill=TRUE)
+            res <- cbind("Dataset"=names(data), "Progress"="Loaded", res)
+            return(res)
         }, rownames=FALSE)
         
         return(rankData)
@@ -1377,8 +1416,7 @@ launchResultPlotter <- function(...) {
     
     uiList <- tagList(
         .dataPlotterUI(dataId, elems),
-        .targetingDrugsVSsimilarPerturbationsPlotterUI(
-            comparePlotId, elems, elemClasses),
+        .targetingDrugsVSsimilarPerturbationsPlotterUI(comparePlotId),
         .datasetComparisonUI(compareId, elems),
         .metadataViewerUI(metadataId))
     uiList <- Filter(length, uiList)
