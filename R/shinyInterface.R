@@ -86,17 +86,27 @@
 #' Prepare Shiny page template
 #'
 #' @importFrom shiny navbarPage tabPanel sidebarLayout tags
+#' @importFrom highcharter %>%
 #'
 #' @return HTML elements
 #' @keywords internal
 .prepareNavPage <- function(...) {
     app <- "cTRAP"
-    ui  <- navbarPage(app, ...)
-    
-    ui[[3]][[1]][[2]]$class <- "navbar navbar-default"
-    ui <- tags$div(class="container-fluid", style="padding-top: 15px;", ui)
-    ui[[3]][[1]][[3]][[2]] <- ui[[3]][[1]][[3]][[2]][[3]][[1]]
+    ui  <- navbarPage(app, ...) %>%
+      .replaceStrInList("navbar-static-top", "") %>%
+      .replaceStrInList("container-fluid", "") %>%
+      tags$div(class="container-fluid", style="padding-top: 15px;")
     return(ui)
+}
+
+# Replace a string with another in a list
+.replaceStrInList <- function(tag, old, new) {
+    FUN <- function(x) {
+        res <- x
+        if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
+        return(res)
+    }
+    rapply(tag, FUN, how="replace", classes="character")
 }
 
 #' @importFrom DT datatable formatSignif

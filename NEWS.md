@@ -1,4 +1,4 @@
-# cTRAP 1.10.2 (8 September, 2021)
+# cTRAP 1.10.2 (1 October, 2021)
 
 ## Web server support (optimised to run in ShinyProxy)
 
@@ -12,6 +12,7 @@ the working directory (this folder is named based on the token)
 
 ## Bug fixes and minor improvements
 
+* Fix issues with shiny 1.7.0 (avoid malformed, custom UI elements)
 * Improve graphical interface functions
 * Add progress bars for slower tasks
 * Add loading icon in navigation menu when Shiny is busy

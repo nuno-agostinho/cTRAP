@@ -70,40 +70,59 @@
         type="pills",
         tabPanel("Session token", loadTokenUI),
         tabPanel("Session data", loadDataUI))
-    pills[[3]][[1]] <- tagAppendAttributes(pills[[3]][[1]],
-                                           class="nav-justified")
+    pills <- tagAppendAttributes(pills, class="nav-justified",
+                                 .cssSelector=".nav")
     modalDialog(
         title=title, size="s", footer=footer,
         if (createSession) newSessionUI,
         h2("Load session", style="margin-top: 0px;"), pills, ...)
 }
 
+#' Find an item in list of lists and return its coordinates
+#' @keywords internal
+.traceInList <- function(ll, item) {
+    if (is.list(ll)) {
+        for (elem in seq(ll)) {
+            res <- .traceInList(ll[[elem]], item)
+            if (!is.null(res)) return(c(elem, res))
+        }
+    } else if (is.character(ll)) {
+        if (any(grepl(item, ll, fixed=TRUE))) return(numeric(0))
+    }
+}
+
 # Add context menu to session button in navigation bar
+#' @importFrom purrr pluck pluck<-
+#' @importFrom rlang !!!
 .modifySessionUI <- function(ui, expire) {
     # Modify session
-    session <- ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[2]][[3]][[1]][[4]]
-    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[2]][[3]][[1]][[4]] <- NULL
+    pos     <- .traceInList(ui, "session")
+    pos     <- head(pos, -4)
+    session <- pluck(ui, !!!pos)
+    pluck(ui, !!!pos) <- NULL
     
     # Add session buttons
-    copyTokenButton <- actionLink(
-        "copyToken", onclick="copyToken()", tagList(
-            "Copy session token to clipboard",
-            if (!is.null(expire)) {
-                helpText(style="margin: 0px; padding: 3px 0px;",
-                         paste("Sessions expire in", expire, "days"))  
-            }))
-    session[[3]][[2]][[3]] <- tagList(
+    expireTxt <- NULL
+    if (!is.null(expireTxt)) {
+        helpText(style="margin: 0px; padding: 3px 0px;",
+                 paste("Sessions expire in", expire, "days"))
+    }
+    
+    copyTokenButton <- actionLink("copyToken", onclick="copyToken()", tagList(
+        "Copy session token to clipboard", expireTxt))
+    pluck(session, 3, 2, 3) <- tagList(
         tags$li(role="presentation", copyTokenButton),
         tags$li(role="presentation", class="divider"),
         tags$li(role="presentation",
                 downloadLink("downloadSession", "Download session data")),
         tags$li(role="presentation",
                 actionLink("loadSessionModal", "Load another session")))
-    session[[3]][[2]] <- tagAppendAttributes(session[[3]][[2]],
-                                             class="pull-right")
+    pluck(session, 3, 2) <- tagAppendAttributes(
+        pluck(session, 3, 2), class="pull-right")
     
     # Place session in the right side of the navigation bar
-    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]] <- tags$ul(
+    pos <- head(pos, -3)
+    pluck(ui, !!!pos)[[3]] <- tags$ul(
         class="nav navbar-nav pull-right", session)
     return(ui)
 }
@@ -115,9 +134,10 @@
                                 icon("circle-notch", "fa-spin"))
     loading$name <- "a"
     loading <- tags$li(loading)
-    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[2]] <- 
-        ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[1]]
-    ui[[3]][[1]][[3]][[1]][[3]][[1]][[3]][[3]][[3]][[1]] <- loading
+    
+    pos <- .traceInList(ui, "session")
+    pluck(ui, !!!head(pos, -5)) <- tagList(
+        loading, pluck(ui, !!!head(pos, -5), 1))
     return(ui)
 }
 
@@ -293,7 +313,7 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' Complete visual interface with support for sessions
-#'
+#' 
 #' @param ... Objects
 #' @param expire Character: days until a session expires (message purposes only)
 #' @param fileSizeLimitMB Numeric: file size limit in MiB
