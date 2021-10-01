@@ -6,7 +6,8 @@
 * Create and load sessions via a token or a RDS file
 * RDS file containing session data are automatically saved to a new folder in
 the working directory (this folder is named based on the token)
-* Perform long-running tasks in the background using the Celery task manager
+* Perform long-running tasks in the background using the Celery task manager via
+Flower's REST API
 * Automatically load any RDS files in the current folder for an active session
 (allowing to automatically load Celery-created data)
 

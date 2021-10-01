@@ -356,7 +356,7 @@
 #' @importFrom shiny moduleServer stopApp withProgress incProgress
 #' @importFrom DT renderDT
 .diffExprENCODEloaderServer <- function(
-    id, metadata=downloadENCODEknockdownMetadata(), shinyproxy=FALSE) {
+    id, metadata=downloadENCODEknockdownMetadata(), globalUI=FALSE) {
     server <- function(input, output, session) {
         output$table <- renderDT(.prepareDT(metadata))
         proxy <- dataTableProxy("table")
@@ -419,7 +419,7 @@
             })
         })
         
-        if (!shinyproxy) observeEvent(input$load, stopApp(loadData()))
+        if (!globalUI) observeEvent(input$load, stopApp(loadData()))
         return(loadData)
     }
     moduleServer(id, server)
@@ -437,7 +437,7 @@
 #' @importFrom htmltools tagQuery
 .cmapDataLoaderUI <- function(id, cellLine=NULL, timepoint=NULL, dosage=NULL,
                               perturbationType=NULL, title="CMap perturbations",
-                              shinyproxy=FALSE) {
+                              globalUI=FALSE) {
     ns <- NS(id)
     dataTypes <- c("Perturbation metadata"="metadata",
                    "Perturbation z-scores"="zscores",
@@ -461,7 +461,7 @@
     
     dataToLoad <- checkboxGroupInput(ns("data"), "Data to load",
                                      dataTypes, dataTypes)
-    if (shinyproxy) {
+    if (globalUI) {
         # Disable check boxes
         dataToLoad <- tagQuery(dataToLoad)
         dataToLoad <- dataToLoad$find("input")$addAttrs("disabled"=NA)$allTags()
@@ -477,10 +477,10 @@
         selectizeCondition(ns("timepoint"), "Time points", multiple=TRUE,
                            choices=timepoint, timepoint),
         dataToLoad,
-        if (shinyproxy) textInput(ns("name"), "Dataset name", value="cmapData"),
-        if (!shinyproxy)
+        if (globalUI) textInput(ns("name"), "Dataset name", value="cmapData"),
+        if (!globalUI)
             helpText("By default, data will be downloaded if not found."),
-        if (!shinyproxy) actionButton(ns("cancel"), "Cancel"),
+        if (!globalUI) actionButton(ns("cancel"), "Cancel"),
         actionButton(ns("load"), "Load data", class="btn-primary"))
     mainPanel <- mainPanel( withSpinner(DTOutput(ns("table")), type=6) )
     
@@ -497,7 +497,7 @@
                                   geneInfo="cmapGeneInfo.txt",
                                   compoundInfo="cmapCompoundInfo.txt",
                                   cellLine=NULL, timepoint=NULL, dosage=NULL,
-                                  shinyproxy=FALSE, tab=NULL) {
+                                  globalUI=FALSE, tab=NULL) {
     server <- function(input, output, session) {
         updateSelectizeCondition <- function(session, input, id, choices, ...) {
             selected <- isolate(input[[id]])
@@ -521,8 +521,7 @@
                     load <- TRUE
                 } else {
                     tab  <- tab()
-                    load <- !is.null(tab) && grepl(
-                      "CMap", tab, ignore.case=TRUE)
+                    load <- !is.null(tab) && tab == "CMap perturbations"
                 }
             }
             happened(load)
@@ -656,7 +655,7 @@
             updateTextInput(session, "name", value=txt)
         })
         
-        if (!shinyproxy) observeEvent(input$load, stopApp(loadData()))
+        if (!globalUI) observeEvent(input$load, stopApp(loadData()))
         observeEvent(input$cancel, stopApp(stop("User cancel", call.=FALSE)))
         return(loadData)
     }
@@ -1104,7 +1103,8 @@
 #' @importFrom DT renderDT
 #' @importFrom data.table rbindlist
 .rankSimilarPerturbationsServer <- function(id, diffExpr, perturbations,
-                                            shinyproxy=FALSE) {
+                                            globalUI=FALSE, flower=FALSE,
+                                            token=NULL) {
     server <- function(input, output, session) {
         getSelectedObject <- reactive(perturbations[[input$object]])
         
@@ -1137,13 +1137,39 @@
             
             selectedDiffExpr <- diffExpr()[[req(diffExprDataset)]]
             selectedPerts    <- perturbations()[[req(pertsDataset)]]
-            
-            withProgress(message="Ranking against CMap perturbations", {
-                ranking <- rankSimilarPerturbations(
-                    selectedDiffExpr, selectedPerts, method, c(upGenes, downGenes),
-                    cellLineMean, rankPerCellLine)
-                incProgress(1)
-            })
+            if (!flower) {
+                withProgress(message="Ranking against CMap perturbations", {
+                    ranking <- rankSimilarPerturbations(
+                        selectedDiffExpr, selectedPerts, method,
+                        c(upGenes, downGenes), cellLineMean, rankPerCellLine)
+                    incProgress(1)
+                })
+            } else {
+                # Save input as Rda file
+                input <- list("selectedDiffExpr", "selectedPerts", "method",
+                              "upGenes", "downGenes", "cellLineMean",
+                              "rankPerCellLine")
+                # Prepare filenames for input and output
+                rand       <- .genRandomString()
+                token      <- isolate(token())
+                inputFile  <- file.path(token, sprintf("input_%s.Rda",  rand))
+                outputFile <- file.path(token, sprintf("output_%s.rds", rand))
+                
+                save(list=input, file=inputFile)
+                
+                # Rank perturbations via Celery/Flower and save as RDS file
+                cmd <- list(
+                    "load('%s')",
+                    "ranking <- cTRAP::rankSimilarPerturbations(
+                        selectedDiffExpr, selectedPerts, method,
+                        c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
+                    "saveRDS(ranking, '%s')")
+                cmd <- sprintf(gsub("\n *", "", paste(cmd, collapse="; ")),
+                               inputFile, outputFile)
+                taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
+                ranking <- "expected"
+                attr(ranking, "task") <- taskAsync
+            }
             attr(ranking, "name") <- dataset
             
             # Prepare form input
@@ -1165,7 +1191,7 @@
             return(ranking)
         })
         
-        if (!shinyproxy) observeEvent(input$load, stopApp(rankData()))
+        if (!globalUI) observeEvent(input$load, stopApp(rankData()))
         
         output$table <- renderDT({
             data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations")

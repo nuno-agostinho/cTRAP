@@ -149,14 +149,17 @@ globalUI <- function(elems, idList, expire) {
     hasTargetingDrugs <- "targetingDrugs" %in% elemClasses
     showTwoKindPlot   <- hasSimilarPerts && hasTargetingDrugs
     
-    uiList <- tagList(
+    ui <- .prepareNavPage(
         id="tab",
+        # a non-dropdown tab needs to be selected (bug)
+        # https://github.com/rstudio/shiny/issues/3519
+        selected="Help",
         navbarMenu("Load", icon=icon("table"),
                    "Differential gene expression data",
                    .diffExprLoadUI(idList$diffExpr),
                    .diffExprENCODEloaderUI(idList$encode),
                    "----",
-                   .cmapDataLoaderUI(idList$cmap, shinyproxy=TRUE)),
+                   .cmapDataLoaderUI(idList$cmap, globalUI=TRUE)),
         navbarMenu("Analyse", icon=icon("cogs"),
                    .rankSimilarPerturbationsUI(idList$rankPerts, elems, elems),
                    .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
@@ -165,10 +168,10 @@ globalUI <- function(elems, idList, expire) {
                    # .targetingDrugsVSsimilarPerturbationsPlotterUI(idList$comparePlot),
                    .datasetComparisonUI(idList$compare, elems),
                    .metadataViewerUI(idList$metadata)),
+        tabPanel("Help", icon=icon("question-circle"), "Hello!"),
         navbarMenu(span("Session", span(class="badge",
                                         textOutput("token", inline=TRUE))),
                    icon=icon("compass"), menuName="session"))
-    ui <- do.call(.prepareNavPage, uiList)
     ui <- .modifySessionUI(ui, expire=expire)
     ui <- .addLoadingStatus(ui)
     
@@ -274,7 +277,7 @@ globalUI <- function(elems, idList, expire) {
 .loadDataFromLocalRdsServer <- function(input, output, session, sharedData) {
     checkNewRDSfiles <- function(path=".") {
         if (is.null(path)) return(NULL)
-        res <- list.files(path, ".rds", ignore.case=TRUE)
+        res <- list.files(path, "\\.rds$", ignore.case=TRUE)
         res <- res[res != "session.rds"]
         if (length(res) == 0) res <- NULL
         res <- file.path(path, res)
@@ -314,9 +317,13 @@ globalUI <- function(elems, idList, expire) {
 
 #' Complete visual interface with support for sessions
 #' 
+#' Optimised to run in ShinyProxy with Celery/Flower backend with argument
+#' \code{shinyproxy = TRUE}.
+#'
 #' @param ... Objects
 #' @param expire Character: days until a session expires (message purposes only)
 #' @param fileSizeLimitMB Numeric: file size limit in MiB
+#' @inheritParams shiny::runApp
 #'
 #' @importFrom shiny tagList showModal modalButton modalDialog removeModal
 #' reactiveValues tagAppendAttributes showNotification
@@ -324,9 +331,20 @@ globalUI <- function(elems, idList, expire) {
 #' @return Launches result viewer and plotter (returns \code{NULL})
 #' @family visual interface functions
 #' @export
-cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
+cTRAP <- function(..., expire=14, fileSizeLimitMiB=50, flowerURL=NULL,
+                  port=getOption("shiny.port"),
+                  host=getOption("shiny.host", "127.0.0.1")) {
     .setFileSizeLimit(fileSizeLimitMiB)
     elems <- .prepareEllipsis(...)
+    
+    # if in ShinyProxy, use Celery/Flower backend via floweRy
+    if (!is.null(flowerURL)) {
+        if (!require(floweRy)) remotes::install_github("nuno-agostinho/floweRy")
+        options(flowerURL=flowerURL)
+        flower <- TRUE
+    } else {
+        flower <- FALSE
+    }
     
     idList             <- list()
     idList$diffExpr    <- "diffExprLoader"
@@ -361,16 +379,17 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50) {
         updateSharedData(diffExpr)
         
         encodeDiffExpr <- .diffExprENCODEloaderServer(
-            idList$encode, shinyproxy=TRUE)
+            idList$encode, globalUI=TRUE)
         updateSharedData(encodeDiffExpr)
         
         cmapData <- .cmapDataLoaderServer(
-            idList$cmap, shinyproxy=TRUE, tab=reactive(session$input$tab))
+            idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab))
         updateSharedData(cmapData)
         
         # analyse
-        ranking <- .rankSimilarPerturbationsServer(idList$rankPerts, elems,
-                                                   elems, shinyproxy=TRUE)
+        ranking <- .rankSimilarPerturbationsServer(
+            idList$rankPerts, elems, elems, globalUI=TRUE, flower=flower,
+            token=reactive(sharedData$token))
         updateSharedData(ranking)
         # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
         
