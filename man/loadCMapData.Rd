@@ -37,7 +37,7 @@ cmapMetadata <- loadCMapData("cmapMetadata.txt", "metadata")
 
 # Load CMap gene info
 loadCMapData("cmapGeneInfo.txt", "geneInfo")
-\donttest{
+\dontrun{
 # Load CMap zscores based on filtered metadata
 cmapMetadataKnockdown <- filterCMapMetadata(
   cmapMetadata, cellLine="HepG2",
