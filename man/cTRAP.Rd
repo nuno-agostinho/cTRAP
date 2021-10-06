@@ -7,6 +7,7 @@
 \usage{
 cTRAP(
   ...,
+  commonPath = "data",
   expire = 14,
   fileSizeLimitMiB = 50,
   flowerURL = NULL,
@@ -17,7 +18,14 @@ cTRAP(
 \arguments{
 \item{...}{Objects}
 
+\item{commonPath}{Character: path where to store data common to all sessions}
+
 \item{expire}{Character: days until a session expires (message purposes only)}
+
+\item{fileSizeLimitMiB}{Numeric: file size limit in MiB}
+
+\item{flowerURL}{Character: Flower REST API's URL (\code{NULL} to avoid using
+Celery/Flower backend)}
 
 \item{port}{The TCP port that the application should listen on. If the
 \code{port} is not specified, and the \code{shiny.port} option is set (with
@@ -30,8 +38,6 @@ ports will be tried.}
 \item{host}{The IPv4 address that the application should listen on. Defaults
 to the \code{shiny.host} option, if set, or \code{"127.0.0.1"} if not. See
 Details.}
-
-\item{fileSizeLimitMB}{Numeric: file size limit in MiB}
 }
 \value{
 Launches result viewer and plotter (returns \code{NULL})

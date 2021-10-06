@@ -84,6 +84,8 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 #' @param dataset Character: \code{biomaRt} dataset name
 #' @param mart Character: \code{biomaRt} database name
 #'
+#' @importFrom biomaRt getBM useDataset useMart
+#'
 #' @return Named character vector where names are the input ENSEMBL gene
 #'   identifiers and the values are the matching gene symbols
 #' @export

@@ -48,11 +48,11 @@
     message("     Session saved to ", sessionRDS)
 }
 
-#' @importFrom shiny textInput
+#' @importFrom shiny textInput tags tabsetPanel fileInput
 .prepareSessionModal <- function(title=NULL, createSession=TRUE,
                                  footer=modalButton("Dismiss"), ...) {
     newSessionUI <- tagList(
-        h2("New session", style="margin-top: 0px;"),
+        tags$h2("New session", style="margin-top: 0px;"),
         actionButton("createSession", "Create new session",
                      width="100%", icon=icon("plus"), class="btn-info"),
         tags$hr())
@@ -75,7 +75,7 @@
     modalDialog(
         title=title, size="s", footer=footer,
         if (createSession) newSessionUI,
-        h2("Load session", style="margin-top: 0px;"), pills, ...)
+        tags$h2("Load session", style="margin-top: 0px;"), pills, ...)
 }
 
 #' Find an item in list of lists and return its coordinates
@@ -94,6 +94,7 @@
 # Add context menu to session button in navigation bar
 #' @importFrom purrr pluck pluck<-
 #' @importFrom rlang !!!
+#' @importFrom shiny actionLink downloadLink
 .modifySessionUI <- function(ui, expire) {
     # Modify session
     pos     <- .traceInList(ui, "session")
@@ -103,9 +104,9 @@
     
     # Add session buttons
     expireTxt <- NULL
-    if (!is.null(expireTxt)) {
-        helpText(style="margin: 0px; padding: 3px 0px;",
-                 paste("Sessions expire in", expire, "days"))
+    if (!is.null(expire)) {
+        expireTxt <- helpText(style="margin: 0px; padding: 3px 0px;",
+                              paste("Sessions expire in", expire, "days"))
     }
     
     copyTokenButton <- actionLink("copyToken", onclick="copyToken()", tagList(
@@ -183,6 +184,7 @@ globalUI <- function(elems, idList, expire) {
     return(ui)
 }
 
+#' @importFrom shiny downloadHandler renderText req
 .sessionManagementServer <- function(input, output, session, sharedData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
     observe({
@@ -274,6 +276,7 @@ globalUI <- function(elems, idList, expire) {
                      type="message", ...)
 }
 
+#' @importFrom shiny reactivePoll
 .loadDataFromLocalRdsServer <- function(input, output, session, sharedData) {
     checkNewRDSfiles <- function(path=".") {
         if (is.null(path)) return(NULL)
@@ -321,8 +324,11 @@ globalUI <- function(elems, idList, expire) {
 #' \code{shinyproxy = TRUE}.
 #'
 #' @param ... Objects
+#' @param commonPath Character: path where to store data common to all sessions
 #' @param expire Character: days until a session expires (message purposes only)
-#' @param fileSizeLimitMB Numeric: file size limit in MiB
+#' @param fileSizeLimitMiB Numeric: file size limit in MiB
+#' @param flowerURL Character: Flower REST API's URL (\code{NULL} to avoid using
+#' Celery/Flower backend)
 #' @inheritParams shiny::runApp
 #'
 #' @importFrom shiny tagList showModal modalButton modalDialog removeModal
@@ -331,8 +337,8 @@ globalUI <- function(elems, idList, expire) {
 #' @return Launches result viewer and plotter (returns \code{NULL})
 #' @family visual interface functions
 #' @export
-cTRAP <- function(..., expire=14, fileSizeLimitMiB=50, flowerURL=NULL,
-                  port=getOption("shiny.port"),
+cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
+                  flowerURL=NULL, port=getOption("shiny.port"),
                   host=getOption("shiny.host", "127.0.0.1")) {
     .setFileSizeLimit(fileSizeLimitMiB)
     elems <- .prepareEllipsis(...)
@@ -358,51 +364,61 @@ cTRAP <- function(..., expire=14, fileSizeLimitMiB=50, flowerURL=NULL,
     idList$drugSet     <- "drugSetAnalyser"
     ui <- globalUI(elems, idList, expire)
     
+    # Get common data from specific folder
+    data <- function(x, path=commonPath) file.path(path, x)
+    
     server <- function(input, output, session) {
         sharedData       <- reactiveValues()
         sharedData$elems <- elems
         elems <- reactive(sharedData$elems)
-        
+
         updateSharedData <- function(x) {
             observe({
                 obj <- x()
                 elems <- .addToList(isolate(sharedData$elems), obj)
                 sharedData$elems <- elems
-                
+
                 .newDataNotification(tail(names(elems), 1), length(elems))
                 .saveSession(elems, isolate(sharedData$token))
             })
         }
-        
+
         # load data
         diffExpr <- .diffExprLoadServer(idList$diffExpr, elems)
         updateSharedData(diffExpr)
-        
+
         encodeDiffExpr <- .diffExprENCODEloaderServer(
-            idList$encode, globalUI=TRUE)
+            idList$encode, globalUI=TRUE, path=reactive(sharedData$token),
+            metadata=downloadENCODEknockdownMetadata(
+                file=data("ENCODEmetadata.rds")))
         updateSharedData(encodeDiffExpr)
-        
+
         cmapData <- .cmapDataLoaderServer(
-            idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab))
+            idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab),
+            metadata=data("cmapMetadata.txt"),
+            zscores=data("cmapZscores.gctx"),
+            geneInfo=data("cmapGeneInfo.txt"),
+            compoundInfo=data("cmapCompoundInfo.txt"))
         updateSharedData(cmapData)
-        
+
         # analyse
         ranking <- .rankSimilarPerturbationsServer(
             idList$rankPerts, elems, elems, globalUI=TRUE, flower=flower,
             token=reactive(sharedData$token))
         updateSharedData(ranking)
+
         # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
-        
+
         # visualise
         .dataPlotterServer(idList$data, elems)
         .targetingDrugsVSsimilarPerturbationsPlotterServer(
             idList$comparePlot, elems)
         .datasetComparisonServer(idList$compare, elems)
         .metadataViewerServer(idList$metadata, elems)
-        
+
         .sessionManagementServer(input, output, session, sharedData)
         .loadDataFromLocalRdsServer(input, output, session, sharedData)
     }
-    app <- runApp(shinyApp(ui, server))
+    app <- runApp(shinyApp(ui, server), port=port, host=host)
     return(app)
 }

@@ -2,18 +2,19 @@
 
 ## Web server support (optimised to run in ShinyProxy)
 
-* `cTRAP()`: new global interface with all cTRAP functions in one place
-* Create and load sessions via a token or a RDS file
-* RDS file containing session data are automatically saved to a new folder in
-the working directory (this folder is named based on the token)
-* Perform long-running tasks in the background using the Celery task manager via
-Flower's REST API
-* Automatically load any RDS files in the current folder for an active session
-(allowing to automatically load Celery-created data)
+* `cTRAP()`: new global interface with all cTRAP functionality in one place
+    - Create and load sessions via a token or a RDS file
+    - RDS file containing session data are automatically saved to a new folder
+    in the working directory (this folder is named based on the token)
+    - Perform long-running tasks in the background using the Celery task manager
+    via Flower's REST API
+    - Automatically load any RDS files in the current folder for an active
+    session (thus allowing to automatically load Celery-generated data)
 
 ## Bug fixes and minor improvements
 
-* Fix issues with shiny 1.7.0 (avoid malformed, custom UI elements)
+* `loadENCODEsamples()`: new argument to select folder where to download data
+* Fix crash when using shiny 1.7.0 (avoid malformed, custom UI elements)
 * Improve graphical interface functions
 * Add progress bars for slower tasks
 * Add loading icon in navigation menu when Shiny is busy

@@ -1,5 +1,6 @@
 # Skeleton for common elements -------------------------------------------------
 
+#' @importFrom shiny is.reactive
 .convertToFunction <- function(x) {
     # Easier to deal with reactives
     res <- function() x
@@ -83,6 +84,16 @@
     return(hc)
 }
 
+# Replace a string with another in a list
+.replaceStrInList <- function(tag, old, new) {
+  FUN <- function(x) {
+    res <- x
+    if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
+    return(res)
+  }
+  rapply(tag, FUN, how="replace", classes="character")
+}
+
 #' Prepare Shiny page template
 #'
 #' @importFrom shiny navbarPage tabPanel sidebarLayout tags
@@ -97,16 +108,6 @@
       .replaceStrInList("container-fluid", "") %>%
       tags$div(class="container-fluid", style="padding-top: 15px;")
     return(ui)
-}
-
-# Replace a string with another in a list
-.replaceStrInList <- function(tag, old, new) {
-    FUN <- function(x) {
-        res <- x
-        if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
-        return(res)
-    }
-    rapply(tag, FUN, how="replace", classes="character")
 }
 
 #' @importFrom DT datatable formatSignif
@@ -318,34 +319,22 @@
 #' @importFrom shiny NS sidebarPanel selectizeInput mainPanel tabPanel
 #' sidebarLayout
 #' @importFrom DT DTOutput
-.diffExprENCODEloaderUI <- function(id,
-                                    metadata=downloadENCODEknockdownMetadata(),
-                                    cellLine=NULL, gene=NULL,
-                                    title="ENCODE knockdown data") {
+.diffExprENCODEloaderUI <- function(id, title="ENCODE knockdown data") {
     ns <- NS(id)
-    conditions <- .getENCODEconditions(metadata)
-    cellLines  <- conditions$cellLines
-    genes      <- conditions$genes
     
     nullStrJS <- I('function() { this.setValue(""); }')
-    onInitializeCellLine <- NULL
-    if (is.null(cellLine)) onInitializeCellLine <- nullStrJS
-    onInitializeGene <- NULL
-    if (is.null(gene)) onInitializeGene <- nullStrJS
-    
     ui <- tabPanel(
         title,
         div(class="well", style="padding-bottom: 9px;",
             fluidRow(
                 column(4, selectizeInput(
-                    ns("cellLine"), "Cell line", cellLines, cellLine, 
-                    width="100%",
+                    ns("cellLine"), "Cell line", choices=NULL, width="100%",
                     options=list(placeholder='Select a cell line',
-                                 onInitialize=onInitializeCellLine))),
+                                 onInitialize=nullStrJS))),
                 column(4, selectizeInput(
-                    ns("gene"), "Gene", genes, gene, width="100%",
+                    ns("gene"), "Gene", choices=NULL, width="100%",
                     options=list(placeholder='Select a gene',
-                                 onInitialize=onInitializeGene))),
+                                 onInitialize=nullStrJS))),
                 column(4, actionButton(ns("load"), "Load data",
                                        style="position:absolute; top:25px;",
                                        class="btn-primary")))),
@@ -355,11 +344,20 @@
 
 #' @importFrom shiny moduleServer stopApp withProgress incProgress
 #' @importFrom DT renderDT
-.diffExprENCODEloaderServer <- function(
-    id, metadata=downloadENCODEknockdownMetadata(), globalUI=FALSE) {
+.diffExprENCODEloaderServer <- function(id, metadata, cellLine=NULL, gene=NULL,
+                                        path=".", globalUI=FALSE) {
     server <- function(input, output, session) {
         output$table <- renderDT(.prepareDT(metadata))
         proxy <- dataTableProxy("table")
+        
+        observe({
+            conditions <- .getENCODEconditions(metadata)
+            updateSelectizeInput(
+                session, "gene", choices=conditions$genes, selected=gene)
+            updateSelectizeInput(
+                session, "cellLine", choices=conditions$cellLines,
+                selected=cellLine)
+        })
         
         observe({
             cellLine <- input$cellLine
@@ -367,7 +365,7 @@
             
             gene <- input$gene
             if (is.null(gene) || gene == "") gene <- NULL
-            data <- downloadENCODEknockdownMetadata(cellLine, gene)
+            data <- filterENCONDEmetadata(metadata, cellLine, gene)
             observe(replaceData(proxy, data, rownames=FALSE))
         })
         
@@ -375,17 +373,19 @@
             withProgress(message="Preparing differential expression", {
                 steps <- 3
                 
-                incProgress(1/steps, detail="Downloading")
+                incProgress(1/steps, detail="Downloading ENCODE data")
                 message("Downloading data...")
-                ENCODEmetadata <- downloadENCODEknockdownMetadata(
-                    input$cellLine, input$gene)
+                ENCODEmetadata <- filterENCONDEmetadata(
+                    metadata, input$cellLine, input$gene)
                 
                 if (nrow(ENCODEmetadata) == 0) {
-                    showMessage("No samples match the selected criteria",
-                                type="error")
+                    showNotification("No samples match the selected criteria",
+                                     type="error")
                     return(NULL)
                 }
-                ENCODEsamples <- loadENCODEsamples(ENCODEmetadata)[[1]]
+                if (is.function(path)) path <- path()
+                ENCODEsamples <- loadENCODEsamples(ENCODEmetadata, path=path)
+                ENCODEsamples <- ENCODEsamples[[1]]
                 counts <- prepareENCODEgeneExpression(ENCODEsamples)
                 
                 # Remove low coverage (>= 10 counts shared by 2 samples)
@@ -490,7 +490,7 @@
 }
 
 #' @importFrom shiny isolate updateSelectizeInput moduleServer stopApp
-#' observeEvent eventReactive
+#' observeEvent eventReactive updateTextInput reactiveVal
 #' @importFrom DT dataTableProxy replaceData
 .cmapDataLoaderServer <- function(id, metadata="cmapMetadata.txt",
                                   zscores="cmapZscores.gctx",
@@ -968,10 +968,7 @@
 
 .targetingDrugsVSsimilarPerturbationsPlotterUI <- function(
     id, title="Dataset Comparison 2") {
-    
-    if (!all(c("targetingDrugs", "similarPerturbations") %in% elemClasses)) {
-        return(NULL)
-    }
+
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(
@@ -1081,7 +1078,7 @@
             ns=ns),
         selectizeInput(ns("cellLineMean"),
                        "Calculate mean across cell lines",
-                       c("For data with ≥ 2 cell lines"="auto",
+                       c("For data with \u2265 2 cell lines"="auto",
                          "Always"=TRUE,
                          "Never"=FALSE)),
         conditionalPanel(
@@ -1145,10 +1142,10 @@
                     incProgress(1)
                 })
             } else {
-                # Save input as Rda file
-                input <- list("selectedDiffExpr", "selectedPerts", "method",
-                              "upGenes", "downGenes", "cellLineMean",
-                              "rankPerCellLine")
+                # List of input variables to save in Rda file
+                input <- c("selectedDiffExpr", "selectedPerts", "method",
+                           "upGenes", "downGenes", "cellLineMean",
+                           "rankPerCellLine", "dataset")
                 # Prepare filenames for input and output
                 rand       <- .genRandomString()
                 token      <- isolate(token())
@@ -1159,14 +1156,16 @@
                 
                 # Rank perturbations via Celery/Flower and save as RDS file
                 cmd <- list(
-                    "load('%s')",
+                    sprintf("load('%s')", inputFile),
                     "ranking <- cTRAP::rankSimilarPerturbations(
                         selectedDiffExpr, selectedPerts, method,
                         c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
-                    "saveRDS(ranking, '%s')")
-                cmd <- sprintf(gsub("\n *", "", paste(cmd, collapse="; ")),
-                               inputFile, outputFile)
+                    sprintf("attr(ranking, 'name') <- dataset"),
+                    sprintf("saveRDS(ranking, '%s')", outputFile),
+                    sprintf("unlink(%s)", inputFile))
+                cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
                 taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
+                
                 ranking <- "expected"
                 attr(ranking, "task") <- taskAsync
             }
@@ -1175,7 +1174,7 @@
             # Prepare form input
             cellLineMean <- switch(cellLineMean,
                                    "TRUE"="Always", "FALSE"="Never",
-                                   "auto"="For data with ≥ 2 cell lines")
+                                   "auto"="For data with \u2265 2 cell lines")
             rankPerCellLine <- ifelse(
                 rankPerCellLine,
                 "Mean + individual cell lines' scores",
@@ -1363,17 +1362,18 @@
 #' Currently only supports loading data from ENCODE knockdown experiments
 #'
 #' @inheritParams downloadENCODEknockdownMetadata
+#' @inheritParams loadENCODEsamples
 #'
 #' @return Differential expression data
 #' @family visual interface functions
 #' @export
-launchDiffExprLoader <- function(cellLine=NULL, gene=NULL) {
-    metadata <- downloadENCODEknockdownMetadata()
+launchDiffExprLoader <- function(cellLine=NULL, gene=NULL,
+                                 file="ENCODEmetadata.rds", path=".") {
+    metadata <- downloadENCODEknockdownMetadata(file=file)
     id       <- "diffExpr"
-    ui       <- .prepareNavPage(
-        .diffExprENCODEloaderUI(id, metadata, cellLine, gene))
+    ui       <- .prepareNavPage(.diffExprENCODEloaderUI(id))
     server   <- function(input, output, session) {
-        .diffExprENCODEloaderServer(id, metadata)
+        .diffExprENCODEloaderServer(id, metadata, cellLine, gene, path=path)
     }
     app    <- runApp(shinyApp(ui, server))
     return(app)

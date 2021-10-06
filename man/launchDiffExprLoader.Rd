@@ -4,12 +4,22 @@
 \alias{launchDiffExprLoader}
 \title{Load differential expression data via a visual interface}
 \usage{
-launchDiffExprLoader(cellLine = NULL, gene = NULL)
+launchDiffExprLoader(
+  cellLine = NULL,
+  gene = NULL,
+  file = "ENCODEmetadata.rds",
+  path = "."
+)
 }
 \arguments{
 \item{cellLine}{Character: cell line}
 
 \item{gene}{Character: target gene}
+
+\item{file}{Character: RDS filepath with metadata (if file doesn't exist, it
+will be created)}
+
+\item{path}{Character: path where to download files}
 }
 \value{
 Differential expression data
