@@ -185,22 +185,22 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' @importFrom shiny downloadHandler renderText req
-.sessionManagementServer <- function(input, output, session, sharedData) {
+.sessionManagementServer <- function(input, output, session, appData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
     observe({
-        if (!is.null(sharedData$token)) return(NULL)
+        if (!is.null(appData$token)) return(NULL)
         showModal(.prepareSessionModal("Welcome to cTRAP!", footer=NULL))
     })
     
     # Create new session
     observeEvent(input$createSession, {
-        sharedData$token <- .createToken()
+        appData$token <- .createToken()
         removeModal()
     })
     
     # Update token badge
     output$token <- renderText({
-        token <- sharedData$token
+        token <- appData$token
         if (is.null(token)) token <- "?"
         return(token)
     })
@@ -209,8 +209,8 @@ globalUI <- function(elems, idList, expire) {
     observeEvent(input$loadToken, {
         token <- isolate(input$token)
         if (dir.exists(token)) {
-            sharedData$elems <- readRDS(file.path(token, "session.rds"))
-            sharedData$token <- token
+            appData$elems <- readRDS(file.path(token, "session.rds"))
+            appData$token <- token
             removeModal()
         } else {
             msg <- tagList("Token", span(class="badge", token),
@@ -233,8 +233,8 @@ globalUI <- function(elems, idList, expire) {
             showNotification(paste("Error loading data:", data),
                              type="error")
         } else {
-            sharedData$elems <- data
-            sharedData$token <- token <- .createToken()
+            appData$elems <- data
+            appData$token <- token <- .createToken()
             removeModal()
             .saveSession(data, token)
         }
@@ -247,37 +247,38 @@ globalUI <- function(elems, idList, expire) {
     
     # Notify when copying token
     observeEvent(input$copyToken, {
-        msg <- tagList("Token", span(class="badge", sharedData$token),
+        msg <- tagList("Token", span(class="badge", appData$token),
                        "copied to your clipboard!")
         showNotification(msg, duration=3, closeButton=FALSE, type="message")
     })
     
     # Download objects in current session in a single RDS file
     output$downloadSession <- downloadHandler(
-        filename=function() paste0("cTRAP-", sharedData$token, ".rds"),
-        content=function(file) saveRDS(sharedData$elems, file))
+        filename=function() paste0("cTRAP-", appData$token, ".rds"),
+        content=function(file) saveRDS(appData$elems, file))
 }
 
-.newDataNotification <- function(what, total, ..., auto=FALSE) {
+.newDataNotification <- function(names, total, ..., auto=FALSE) {
     plural <- ifelse(total == 1, "", "s")
     totalTxt <- sprintf("Total: %s dataset%s", total, plural)
     message(sprintf("  -> %s (%s)",
-                    paste(paste(what, collapse=" + "), "loaded"),
+                    paste(paste(names, collapse=" + "), "loaded"),
                     tolower(totalTxt)))
     
-    len <- length(what)
+    len <- length(names)
     auto <- ifelse(auto, "automatically ", "")
     head <- "New %sloaded dataset:"
-    if (len != 1) head <- paste(length(what), "new %sloaded datasets:")
+    if (len != 1) head <- paste(length(names), "new %sloaded datasets:")
     head <- sprintf(head, auto)
     
-    what <- do.call(tags$ul, lapply(what, tags$li))
-    showNotification(tagList(tags$b(head), what, totalTxt),
+    names <- do.call(tags$ul, lapply(names, tags$li))
+    showNotification(tagList(tags$b(head), names, totalTxt),
                      type="message", ...)
 }
 
+# Continually check in the background to load new RDS files
 #' @importFrom shiny reactivePoll
-.loadDataFromLocalRdsServer <- function(input, output, session, sharedData) {
+.loadDataFromLocalRdsServer <- function(input, output, session, appData) {
     checkNewRDSfiles <- function(path=".") {
         if (is.null(path)) return(NULL)
         res <- list.files(path, "\\.rds$", ignore.case=TRUE)
@@ -289,14 +290,14 @@ globalUI <- function(elems, idList, expire) {
     
     getNewRDSfiles <- reactivePoll(
         5000, session,
-        checkFunc=function() checkNewRDSfiles(sharedData$token),
-        valueFunc=function() checkNewRDSfiles(sharedData$token))
+        checkFunc=function() checkNewRDSfiles(appData$token),
+        valueFunc=function() checkNewRDSfiles(appData$token))
     
     observe({
         req(getNewRDSfiles())
         
-        elems <- isolate(sharedData$elems)
-        token <- isolate(sharedData$token)
+        elems <- isolate(appData$elems)
+        token <- isolate(appData$token)
         
         added <- 0
         for (i in getNewRDSfiles()) {
@@ -306,15 +307,27 @@ globalUI <- function(elems, idList, expire) {
                 warning(obj)
                 return(NULL)
             }
-            elems <- .addToList(elems, obj)
+                elems <- .addToList(elems, obj)
             unlink(i)
             added <- added + 1
         }
         if (added == 0) return(NULL)
-        sharedData$elems <- elems
         .newDataNotification(tail(names(elems), added), length(elems),
                              duration=NULL, auto=TRUE)
+        appData$elems <- elems
         .saveSession(elems, token)
+    })
+}
+
+# Update data shared across the app
+updateAppData <- function(x) {
+    observe({
+        obj <- x()
+        elems <- .addToList(isolate(appData$elems), obj)
+        appData$elems <- elems
+        
+        .newDataNotification(tail(names(elems), 1), length(elems))
+        .saveSession(elems, isolate(appData$token))
     })
 }
 
@@ -368,30 +381,19 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     data <- function(x, path=commonPath) file.path(path, x)
     
     server <- function(input, output, session) {
-        sharedData       <- reactiveValues()
-        sharedData$elems <- elems
-        elems <- reactive(sharedData$elems)
-
-        updateSharedData <- function(x) {
-            observe({
-                obj <- x()
-                elems <- .addToList(isolate(sharedData$elems), obj)
-                sharedData$elems <- elems
-
-                .newDataNotification(tail(names(elems), 1), length(elems))
-                .saveSession(elems, isolate(sharedData$token))
-            })
-        }
+        appData       <- reactiveValues()
+        appData$elems <- elems
+        elems <- reactive(appData$elems)
 
         # load data
         diffExpr <- .diffExprLoadServer(idList$diffExpr, elems)
-        updateSharedData(diffExpr)
+        updateAppData(diffExpr)
 
         encodeDiffExpr <- .diffExprENCODEloaderServer(
-            idList$encode, globalUI=TRUE, path=reactive(sharedData$token),
+            idList$encode, globalUI=TRUE, path=reactive(appData$token),
             metadata=downloadENCODEknockdownMetadata(
                 file=data("ENCODEmetadata.rds")))
-        updateSharedData(encodeDiffExpr)
+        updateAppData(encodeDiffExpr)
 
         cmapData <- .cmapDataLoaderServer(
             idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab),
@@ -399,13 +401,13 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
             zscores=data("cmapZscores.gctx"),
             geneInfo=data("cmapGeneInfo.txt"),
             compoundInfo=data("cmapCompoundInfo.txt"))
-        updateSharedData(cmapData)
+        updateAppData(cmapData)
 
         # analyse
         ranking <- .rankSimilarPerturbationsServer(
             idList$rankPerts, elems, elems, globalUI=TRUE, flower=flower,
-            token=reactive(sharedData$token))
-        updateSharedData(ranking)
+            token=reactive(appData$token))
+        updateAppData(ranking)
 
         # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
 
@@ -416,8 +418,8 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         .datasetComparisonServer(idList$compare, elems)
         .metadataViewerServer(idList$metadata, elems)
 
-        .sessionManagementServer(input, output, session, sharedData)
-        .loadDataFromLocalRdsServer(input, output, session, sharedData)
+        .sessionManagementServer(input, output, session, appData)
+        .loadDataFromLocalRdsServer(input, output, session, appData)
     }
     app <- runApp(shinyApp(ui, server), port=port, host=host)
     return(app)
