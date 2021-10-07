@@ -3,13 +3,12 @@
 ## Web server support (optimised to run in ShinyProxy)
 
 * `cTRAP()`: new global interface with all cTRAP functionality in one place
-    - Create and load sessions via a token or a RDS file
-    - RDS file containing session data are automatically saved to a new folder
-    in the working directory (this folder is named based on the token)
-    - Perform long-running tasks in the background using the Celery task manager
-    via Flower's REST API
-    - Automatically load any RDS files in the current folder for an active
-    session (thus allowing to automatically load Celery-generated data)
+    - Sessions can be created and loaded via a token or a RDS file
+    - Session data is automatically saved in a RDS file to a folder in the
+    working directory named based on the current session token
+    - Long-running tasks can be performed in the background using the Celery
+    task manager via Flower's REST API and their output is automatically loaded
+    in the corresponding session
 
 ## Bug fixes and minor improvements
 

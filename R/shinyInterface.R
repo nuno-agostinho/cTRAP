@@ -1210,7 +1210,12 @@
             # Add name this way to avoid issues with data from outside the UI
             for (i in seq(formInput)) formInput[[i]]$Dataset <- names(data)[[i]]
             res <- rbindlist(formInput, fill=TRUE)
-            res <- cbind("Dataset"=names(data), "Progress"="Loaded", res)
+            
+            # Return task state if available
+            state <- sapply(data, function(i)
+              if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
+            
+            res <- cbind("Dataset"=names(data), "Progress"=state, res)
             return(res)
         }, rownames=FALSE)
         

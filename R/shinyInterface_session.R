@@ -278,56 +278,76 @@ globalUI <- function(elems, idList, expire) {
     showNotification(tagList(tags$b(head), names, totalTxt), type=type, ...)
 }
 
-# Continually check in the background to load new RDS files
+# Continually check if the output files from Celery tasks are ready to be loaded
 #' @importFrom shiny reactivePoll
-.loadDataFromLocalRdsServer <- function(input, output, session, appData) {
-    checkNewRDSfiles <- function(path=".") {
-        if (is.null(path)) return(NULL)
-        res <- list.files(path, "\\.rds$", ignore.case=TRUE)
-        res <- res[res != "session.rds"]
-        if (length(res) == 0) res <- NULL
-        res <- file.path(path, res)
-        return(res)
+.loadCeleryOutputServer <- function(input, output, session, appData) {
+    getExpectedAppDataTasks <- function(elems) {
+        if (is.null(elems)) return(NULL)
+        expected <- .filterDatasetsByClass(elems, "expected")
+        req(expected)
+        expectedTasks <- sapply(expected, "[[", "outputFile")
+        if (length(expectedTasks) == 0) return(NULL)
+        return(expectedTasks)
     }
     
-    getNewRDSfiles <- reactivePoll(
+    checkExpectedCeleryTasks <- function(elems) {
+        expectedAppTasks <- req(getExpectedAppDataTasks(elems))
+        tasks <- floweRy::taskList()
+        tasks <- tasks[tasks$uuid %in% expectedAppTasks]
+        return(req(tasks))
+    }
+    
+    getExpectedCeleryTasks <- reactivePoll(
         5000, session,
-        checkFunc=function() checkNewRDSfiles(appData$token),
-        valueFunc=function() checkNewRDSfiles(appData$token))
+        checkFunc=function() checkExpectedCeleryTasks(appData$elems),
+        valueFunc=function() checkExpectedCeleryTasks(appData$elems))
     
     observe({
-        req(getNewRDSfiles())
+        elems    <- isolate(appData$elems)
+        token    <- isolate(appData$token)
         
-        elems <- isolate(appData$elems)
-        token <- isolate(appData$token)
+        tasks    <- req(getExpectedCeleryTasks())
+        appTasks <- getExpectedAppDataTasks(elems)
         
         added <- character(0)
-        for (i in getNewRDSfiles()) {
-            message("Adding data from ", i, "...")
-            obj <- try(readRDS(i), silent=TRUE)
-            if (is(obj, "try-error")) {
-                warning(obj)
-                return(NULL)
-            }
-            
-            # Check if file was expected and replace it accordingly
-            expected  <- .filterDatasetsByClass(elems, "expected")
-            fileMatch <- match(i, sapply(expected, "[[", "outputFile"))
-            if (!is.na(fileMatch)) {
-                id <- names(expected)[[fileMatch]]
+        updatedState <- FALSE
+        for (id in names(appTasks)) {
+            outputFile <- appTasks[[id]]$outputFile
+            if (file.exists(outputFile)) {
+                # Read output file
+                message("Adding data from ", outputFile, "...")
+                obj <- try(readRDS(outputFile), silent=TRUE)
+                if (is(obj, "try-error")) {
+                    warning(obj)
+                    return(NULL)
+                }
+                
+                # Replace data accordingly
                 message(sprintf("Replacing expected dataset '%s'...", id))
                 attr(obj, "formInput") <- attr(elems[[id]], "formInput")
                 elems[[id]] <- obj
                 added <- c(added, id)
+                
+                # Remove output file
+                unlink(outputFile)
             } else {
-                elems <- .addToList(elems, obj)
-                added <- c(added, tail(names(elems), 1))
+                # Update state of tasks if needed
+                taskID   <- elems[[id]][["task-id"]]
+                newState <- tolower(tasks[tasks$uuid == taskID, "state"])
+                oldState <- tolower(elems[[id]]$state)
+                if (newState != oldState) {
+                    elems[[id]]$state <- capitalize(newState)
+                    updatedState <- TRUE
+                }
             }
-            unlink(i)
         }
-        if (length(added) == 0) return(NULL)
+        newDatasets <- length(added) > 0
+        if (!newDatasets && !updatedState) {
+            return(NULL)
+        } else if (newDatasets) {
+            .newDataNotification(added, length(elems), duration=NULL, auto=TRUE)
+        }
         appData$elems <- elems
-        .newDataNotification(added, length(elems), duration=NULL, auto=TRUE)
         .saveSession(elems, token)
     })
 }
@@ -440,7 +460,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         .metadataViewerServer(idList$metadata, elems)
 
         .sessionManagementServer(input, output, session, appData)
-        .loadDataFromLocalRdsServer(input, output, session, appData)
+        if (flower) .loadCeleryOutputServer(input, output, session, appData)
     }
     app <- runApp(shinyApp(ui, server), port=port, host=host)
     return(app)
