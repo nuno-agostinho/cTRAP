@@ -8,10 +8,15 @@
     return(res)
 }
 
-.filterDatasetsByClass <- function(dataset, class) {
-    selected <- sapply(dataset, is, class)
+.filterDatasetsByClass <- function(data, class, expected=FALSE) {
+    selected <- sapply(data, is, class)
+    if (expected) {
+        # Return values that are expected to turn into the given class
+        expected <- sapply(data, is, paste0("expected", capitalize(class)))
+        selected <- selected | expected
+    }
     if (!any(selected)) return(NULL)
-    return(dataset[selected])
+    return(data[selected])
 }
 
 #' @importFrom shiny tags
@@ -1160,14 +1165,16 @@
                     "ranking <- cTRAP::rankSimilarPerturbations(
                         selectedDiffExpr, selectedPerts, method,
                         c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
-                    sprintf("attr(ranking, 'name') <- dataset"),
+                    sprintf("attr(ranking, 'name') <- '%s'", dataset),
                     sprintf("saveRDS(ranking, '%s')", outputFile),
-                    sprintf("unlink(%s)", inputFile))
+                    sprintf("unlink('%s')", inputFile))
                 cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
                 taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
                 
-                ranking <- "expected"
-                attr(ranking, "task") <- taskAsync
+                ranking <- taskAsync
+                ranking[["outputFile"]] <- outputFile
+                class(ranking) <- c("expectedSimilarPerturbations", "expected",
+                                    class(ranking))
             }
             attr(ranking, "name") <- dataset
             
@@ -1193,7 +1200,8 @@
         if (!globalUI) observeEvent(input$load, stopApp(rankData()))
         
         output$table <- renderDT({
-            data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations")
+            data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations",
+                                           expected=TRUE)
             req(data)
             
             formInput <- lapply(data, attr, "formInput")

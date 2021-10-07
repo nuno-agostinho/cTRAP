@@ -166,7 +166,8 @@ globalUI <- function(elems, idList, expire) {
                    .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
                    .dataPlotterUI(idList$data, elems),
-                   # .targetingDrugsVSsimilarPerturbationsPlotterUI(idList$comparePlot),
+                   # .targetingDrugsVSsimilarPerturbationsPlotterUI(
+                   #     idList$comparePlot),
                    .datasetComparisonUI(idList$compare, elems),
                    .metadataViewerUI(idList$metadata)),
         tabPanel("Help", icon=icon("question-circle"), "Hello!"),
@@ -259,7 +260,8 @@ globalUI <- function(elems, idList, expire) {
         content=function(file) saveRDS(appData$elems, file))
 }
 
-.newDataNotification <- function(names, total, ..., auto=FALSE) {
+.newDataNotification <- function(names, total, ..., type="message",
+                                 auto=FALSE) {
     plural <- ifelse(total == 1, "", "s")
     totalTxt <- sprintf("Total: %s dataset%s", total, plural)
     message(sprintf("  -> %s (%s)",
@@ -273,8 +275,7 @@ globalUI <- function(elems, idList, expire) {
     head <- sprintf(head, auto)
     
     names <- do.call(tags$ul, lapply(names, tags$li))
-    showNotification(tagList(tags$b(head), names, totalTxt),
-                     type="message", ...)
+    showNotification(tagList(tags$b(head), names, totalTxt), type=type, ...)
 }
 
 # Continually check in the background to load new RDS files
@@ -300,7 +301,7 @@ globalUI <- function(elems, idList, expire) {
         elems <- isolate(appData$elems)
         token <- isolate(appData$token)
         
-        added <- 0
+        added <- character(0)
         for (i in getNewRDSfiles()) {
             message("Adding data from ", i, "...")
             obj <- try(readRDS(i), silent=TRUE)
@@ -308,26 +309,45 @@ globalUI <- function(elems, idList, expire) {
                 warning(obj)
                 return(NULL)
             }
+            
+            # Check if file was expected and replace it accordingly
+            expected  <- .filterDatasetsByClass(elems, "expected")
+            fileMatch <- match(i, sapply(expected, "[[", "outputFile"))
+            if (!is.na(fileMatch)) {
+                id <- names(expected)[[fileMatch]]
+                message(sprintf("Replacing expected dataset '%s'...", id))
+                attr(obj, "formInput") <- attr(elems[[id]], "formInput")
+                elems[[id]] <- obj
+                added <- c(added, id)
+            } else {
                 elems <- .addToList(elems, obj)
+                added <- c(added, tail(names(elems), 1))
+            }
             unlink(i)
-            added <- added + 1
         }
-        if (added == 0) return(NULL)
-        .newDataNotification(tail(names(elems), added), length(elems),
-                             duration=NULL, auto=TRUE)
+        if (length(added) == 0) return(NULL)
         appData$elems <- elems
+        .newDataNotification(added, length(elems), duration=NULL, auto=TRUE)
         .saveSession(elems, token)
     })
 }
 
 # Update data shared across the app
-updateAppData <- function(x) {
+updateAppData <- function(appData, x) {
     observe({
         obj <- x()
         elems <- .addToList(isolate(appData$elems), obj)
         appData$elems <- elems
         
-        .newDataNotification(tail(names(elems), 1), length(elems))
+        dataset <- tail(names(elems), 1)
+        if (is(obj, "expected")) {
+            showNotification(
+                sprintf("'%s' is being calculated and will be loaded when",
+                        "ready", dataset),
+                type="warning")
+        } else {
+            .newDataNotification(dataset, length(elems), type="default")
+        }
         .saveSession(elems, isolate(appData$token))
     })
 }
@@ -385,16 +405,16 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         appData       <- reactiveValues()
         appData$elems <- elems
         elems <- reactive(appData$elems)
-
+        
         # load data
         diffExpr <- .diffExprLoadServer(idList$diffExpr, elems)
-        updateAppData(diffExpr)
+        updateAppData(appData, diffExpr)
 
         encodeDiffExpr <- .diffExprENCODEloaderServer(
             idList$encode, globalUI=TRUE, path=reactive(appData$token),
             metadata=downloadENCODEknockdownMetadata(
                 file=data("ENCODEmetadata.rds")))
-        updateAppData(encodeDiffExpr)
+        updateAppData(appData, encodeDiffExpr)
 
         cmapData <- .cmapDataLoaderServer(
             idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab),
@@ -402,13 +422,13 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
             zscores=data("cmapZscores.gctx"),
             geneInfo=data("cmapGeneInfo.txt"),
             compoundInfo=data("cmapCompoundInfo.txt"))
-        updateAppData(cmapData)
+        updateAppData(appData, cmapData)
 
         # analyse
         ranking <- .rankSimilarPerturbationsServer(
             idList$rankPerts, elems, elems, globalUI=TRUE, flower=flower,
             token=reactive(appData$token))
-        updateAppData(ranking)
+        updateAppData(appData, ranking)
 
         # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
 
