@@ -194,6 +194,7 @@ globalUI <- function(elems, idList, expire) {
     
     # Create new session
     observeEvent(input$createSession, {
+        appData$elems <- NULL
         appData$token <- .createToken()
         removeModal()
     })
@@ -241,7 +242,7 @@ globalUI <- function(elems, idList, expire) {
     })
     
     observeEvent(input$loadSessionModal, {
-        modal <- .prepareSessionModal(createSession=FALSE, easyClose=TRUE)
+        modal <- .prepareSessionModal(createSession=TRUE, easyClose=TRUE)
         showModal(modal)
     })
     
