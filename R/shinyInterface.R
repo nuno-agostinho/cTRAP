@@ -1060,6 +1060,62 @@
 
 # Data analysis ----------------------------------------------------------------
 
+getStateHTML <- function(state) {
+    if (state %in% c("Failure", "Revoked")) {
+        colour <- "red"
+        icon   <- icon("times-circle")
+        state  <- "Error"
+    } else if (state %in% c("Pending", "Retry")) {
+        colour <- "grey"
+        icon   <- icon("pause-circle")
+        state  <- "Pending"
+    } else if (state %in% c("Received", "Started")) {
+        colour <- "orange"
+        icon   <- icon("circle-notch", "fa-spin")
+        state  <- "Running"
+    } else if (state %in% c("Success", "Loaded")) {
+        colour <- "green"
+        icon   <- icon("check-circle")
+        state  <- "Loaded"
+    } else {
+        return(state)
+    }
+    colour <- sprintf("color: %s;", colour)
+    html   <- as.character(tags$span(style=colour, icon, state))
+    return(html)
+}
+
+# Run rank similar perturbations in Celery
+celery_rankSimilarPerturbations <- function(..., token) {
+    # Prepare filenames for input and output
+    rand       <- .genRandomString()
+    inputFile  <- file.path(token, sprintf("input_%s.Rda",  rand))
+    outputFile <- file.path(token, sprintf("output_%s.rds", rand))
+    
+    # Save variables in Rda file
+    save(..., file=inputFile)
+    
+    # Rank perturbations via Celery/Flower and save as RDS file
+    cmd <- list(
+        sprintf("load('%s')", inputFile),
+        "ranking <- cTRAP::rankSimilarPerturbations(
+            selectedDiffExpr, selectedPerts, method,
+            c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
+        "attr(ranking, 'name') <- dataset",
+        sprintf("saveRDS(ranking, '%s')", outputFile),
+        sprintf("unlink('%s')", inputFile))
+    cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
+    taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
+    
+    # Prepare object
+    ranking <- taskAsync
+    ranking$state <- capitalize(ranking$state)
+    ranking[["outputFile"]] <- outputFile
+    class(ranking) <- c("expectedSimilarPerturbations", "expected",
+                        class(ranking))
+    return(ranking)
+}
+
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
 #' tabPanel uiOutput column fluidRow numericInput checkboxInput conditionalPanel
 #' @importFrom DT DTOutput
@@ -1147,34 +1203,10 @@
                     incProgress(1)
                 })
             } else {
-                # List of input variables to save in Rda file
-                input <- c("selectedDiffExpr", "selectedPerts", "method",
-                           "upGenes", "downGenes", "cellLineMean",
-                           "rankPerCellLine", "dataset")
-                # Prepare filenames for input and output
-                rand       <- .genRandomString()
-                token      <- isolate(token())
-                inputFile  <- file.path(token, sprintf("input_%s.Rda",  rand))
-                outputFile <- file.path(token, sprintf("output_%s.rds", rand))
-                
-                save(list=input, file=inputFile)
-                
-                # Rank perturbations via Celery/Flower and save as RDS file
-                cmd <- list(
-                    sprintf("load('%s')", inputFile),
-                    "ranking <- cTRAP::rankSimilarPerturbations(
-                        selectedDiffExpr, selectedPerts, method,
-                        c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
-                    sprintf("attr(ranking, 'name') <- '%s'", dataset),
-                    sprintf("saveRDS(ranking, '%s')", outputFile),
-                    sprintf("unlink('%s')", inputFile))
-                cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
-                taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
-                
-                ranking <- taskAsync
-                ranking[["outputFile"]] <- outputFile
-                class(ranking) <- c("expectedSimilarPerturbations", "expected",
-                                    class(ranking))
+                ranking <- celery_rankSimilarPerturbations(
+                    selectedDiffExpr, selectedPerts, method, upGenes, downGenes,
+                    cellLineMean, rankPerCellLine, dataset,
+                    token=isolate(token()))
             }
             attr(ranking, "name") <- dataset
             
@@ -1200,7 +1232,8 @@
         if (!globalUI) observeEvent(input$load, stopApp(rankData()))
         
         output$table <- renderDT({
-            data <- .filterDatasetsByClass(diffExpr(), "similarPerturbations",
+            elems <- req(diffExpr())
+            data <- .filterDatasetsByClass(elems, "similarPerturbations",
                                            expected=TRUE)
             req(data)
             
@@ -1214,10 +1247,13 @@
             # Return task state if available
             state <- sapply(data, function(i)
               if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
+            state <- sapply(state, getStateHTML)
             
             res <- cbind("Dataset"=names(data), "Progress"=state, res)
+            # Reverse order (so newest datasets are on top)
+            res <- res[rev(seq(nrow(res))), unique(colnames(res)), with=FALSE]
             return(res)
-        }, rownames=FALSE)
+        }, rownames=FALSE, escape=FALSE)
         
         return(rankData)
     }

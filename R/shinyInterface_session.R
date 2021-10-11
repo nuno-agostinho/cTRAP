@@ -282,19 +282,21 @@ globalUI <- function(elems, idList, expire) {
 #' @importFrom shiny reactivePoll
 .loadCeleryOutputServer <- function(input, output, session, appData) {
     getExpectedAppDataTasks <- function(elems) {
-        if (is.null(elems)) return(NULL)
-        expected <- .filterDatasetsByClass(elems, "expected")
-        req(expected)
-        expectedTasks <- sapply(expected, "[[", "outputFile")
-        if (length(expectedTasks) == 0) return(NULL)
-        return(expectedTasks)
+        if (is.null(elems) || length(elems) == 0) return(NULL)
+        return(.filterDatasetsByClass(elems, "expected"))
     }
     
     checkExpectedCeleryTasks <- function(elems) {
-        expectedAppTasks <- req(getExpectedAppDataTasks(elems))
+        expectedAppTasks <- getExpectedAppDataTasks(elems)
+        if (is.null(expectedAppTasks)) return(NULL)
+         
+        expectedTaskID <- sapply(expectedAppTasks, "[[", "task-id")
+        if (length(expectedTaskID) == 0) return(NULL)
+        
         tasks <- floweRy::taskList()
-        tasks <- tasks[tasks$uuid %in% expectedAppTasks]
-        return(req(tasks))
+        tasks <- tasks[tasks$uuid %in% expectedTaskID, ]
+        if (is.null(tasks)) return(NULL)
+        return(tasks)
     }
     
     getExpectedCeleryTasks <- reactivePoll(
@@ -303,19 +305,19 @@ globalUI <- function(elems, idList, expire) {
         valueFunc=function() checkExpectedCeleryTasks(appData$elems))
     
     observe({
+        tasks    <- req(getExpectedCeleryTasks())
+        
         elems    <- isolate(appData$elems)
         token    <- isolate(appData$token)
         
-        tasks    <- req(getExpectedCeleryTasks())
-        appTasks <- getExpectedAppDataTasks(elems)
-        
         added <- character(0)
         updatedState <- FALSE
-        for (id in names(appTasks)) {
-            outputFile <- appTasks[[id]]$outputFile
+        for (id in names( getExpectedAppDataTasks(elems) )) {
+            outputFile <- elems[[id]]$outputFile
             if (file.exists(outputFile)) {
                 # Read output file
-                message("Adding data from ", outputFile, "...")
+                message(sprintf("Updating '%s' with data from %s...",
+                                id, outputFile))
                 obj <- try(readRDS(outputFile), silent=TRUE)
                 if (is(obj, "try-error")) {
                     warning(obj)
@@ -323,7 +325,6 @@ globalUI <- function(elems, idList, expire) {
                 }
                 
                 # Replace data accordingly
-                message(sprintf("Replacing expected dataset '%s'...", id))
                 attr(obj, "formInput") <- attr(elems[[id]], "formInput")
                 elems[[id]] <- obj
                 added <- c(added, id)
@@ -331,11 +332,17 @@ globalUI <- function(elems, idList, expire) {
                 # Remove output file
                 unlink(outputFile)
             } else {
+                # Skip if task state is not found
+                if (!"state" %in% colnames(tasks)) next
+                
                 # Update state of tasks if needed
                 taskID   <- elems[[id]][["task-id"]]
                 newState <- tolower(tasks[tasks$uuid == taskID, "state"])
                 oldState <- tolower(elems[[id]]$state)
+                
                 if (newState != oldState) {
+                    message(sprintf("Updating %s from '%s' to '%s'...",
+                                    id, oldState, newState))
                     elems[[id]]$state <- capitalize(newState)
                     updatedState <- TRUE
                 }
@@ -345,7 +352,7 @@ globalUI <- function(elems, idList, expire) {
         if (!newDatasets && !updatedState) {
             return(NULL)
         } else if (newDatasets) {
-            .newDataNotification(added, length(elems), duration=NULL, auto=TRUE)
+            .newDataNotification(added, length(elems), duration=30, auto=TRUE)
         }
         appData$elems <- elems
         .saveSession(elems, token)
@@ -358,17 +365,20 @@ updateAppData <- function(appData, x) {
         obj <- x()
         elems <- .addToList(isolate(appData$elems), obj)
         appData$elems <- elems
+        token <- isolate(appData$token)
         
         dataset <- tail(names(elems), 1)
         if (is(obj, "expected")) {
-            showNotification(
-                sprintf("'%s' is being calculated and will be loaded when",
-                        "ready", dataset),
-                type="warning")
+            msg <- tagList(
+                sprintf("'%s' is being calculated", dataset),
+                tags$br(), tags$br(), tags$b("You may close the browser"),
+                "and use the session token", span(class="badge", token),
+                "to load your data later")
+            showNotification(msg, type="warning", duration=10)
         } else {
             .newDataNotification(dataset, length(elems), type="default")
         }
-        .saveSession(elems, isolate(appData$token))
+        .saveSession(elems, token)
     })
 }
 
