@@ -162,7 +162,8 @@ globalUI <- function(elems, idList, expire) {
                    "----",
                    .cmapDataLoaderUI(idList$cmap, globalUI=TRUE)),
         navbarMenu("Analyse", icon=icon("cogs"),
-                   .rankSimilarPerturbationsUI(idList$rankPerts, elems, elems),
+                   .rankSimilarPerturbationsUI(idList$rankPerts),
+                   .predictTargetingDrugsUI(idList$predictDrugs),
                    .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
                    .dataPlotterUI(idList$data, elems),
@@ -416,16 +417,17 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         flower <- FALSE
     }
     
-    idList             <- list()
-    idList$diffExpr    <- "diffExprLoader"
-    idList$encode      <- "encodeDataLoader"
-    idList$cmap        <- "cmapDataLoader"
-    idList$compare     <- "datasetComparison"
-    idList$comparePlot <- "comparePlotter"
-    idList$data        <- "dataPlotter"
-    idList$metadata    <- "metadataViewer"
-    idList$rankPerts   <- "rankPerts"
-    idList$drugSet     <- "drugSetAnalyser"
+    idList              <- list()
+    idList$diffExpr     <- "diffExprLoader"
+    idList$encode       <- "encodeDataLoader"
+    idList$cmap         <- "cmapDataLoader"
+    idList$compare      <- "datasetComparison"
+    idList$comparePlot  <- "comparePlotter"
+    idList$data         <- "dataPlotter"
+    idList$metadata     <- "metadataViewer"
+    idList$rankPerts    <- "rankPerts"
+    idList$predictDrugs <- "predictDrugs"
+    idList$drugSet      <- "drugSetAnalyser"
     ui <- globalUI(elems, idList, expire)
     
     # Get common data from specific folder
@@ -456,9 +458,14 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
 
         # analyse
         ranking <- .rankSimilarPerturbationsServer(
-            idList$rankPerts, elems, elems, globalUI=TRUE, flower=flower,
+            idList$rankPerts, elems, globalUI=TRUE, flower=flower,
             token=reactive(appData$token))
         updateAppData(appData, ranking)
+        
+        predicted <- .predictTargetingDrugsServer(
+            idList$predictDrugs, elems, globalUI=TRUE, flower=flower,
+            path=commonPath, token=reactive(appData$token))
+        updateAppData(appData, predicted)
 
         # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
 

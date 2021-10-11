@@ -158,6 +158,28 @@
     return(dt)
 }
 
+.prepareReferenceComparisonDT <- function(data, class) {
+    data <- .filterDatasetsByClass(req(data), class, expected=TRUE)
+    req(data)
+    
+    formInput <- lapply(data, attr, "formInput")
+    ns <- unique(unlist(lapply(formInput, names)))
+    
+    # Add name to avoid issues with data from outside the shiny UI
+    for (i in seq(formInput)) formInput[[i]]$Dataset <- names(data)[[i]]
+    res <- rbindlist(formInput, fill=TRUE)
+    
+    # Return task state if available
+    state <- sapply(data, function(i)
+        if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
+    state <- sapply(state, getStateHTML)
+    
+    res <- cbind("Dataset"=names(data), "Progress"=state, res)
+    # Reverse order (so newest datasets are on top)
+    res <- res[rev(seq(nrow(res))), unique(colnames(res)), with=FALSE]
+    return(res)
+}
+
 .prepareMetadata <- function(x) {
     if (is.null(x)) return(NULL)
     input <- attr(x, "input")
@@ -334,11 +356,11 @@
             fluidRow(
                 column(4, selectizeInput(
                     ns("cellLine"), "Cell line", choices=NULL, width="100%",
-                    options=list(placeholder='Select a cell line',
+                       options=list(placeholder='Select a cell line',
                                  onInitialize=nullStrJS))),
                 column(4, selectizeInput(
                     ns("gene"), "Gene", choices=NULL, width="100%",
-                    options=list(placeholder='Select a gene',
+                       options=list(placeholder='Select a gene',
                                  onInitialize=nullStrJS))),
                 column(4, actionButton(ns("load"), "Load data",
                                        style="position:absolute; top:25px;",
@@ -732,7 +754,7 @@
     return(ui)
 }
 
-.rankSimilarityMethods <- function() {
+.comparisonMethods <- function() {
     c("Spearman's correlation"="spearman",
       "Pearson's correlation"="pearson",
       "GSEA"="gsea")
@@ -766,7 +788,7 @@
                 updateSelectizeInput(session, "element", choices=obj[[1]],
                                      selected=list(), server=TRUE)
                 # Update methods depending on selected object
-                methods <- .rankSimilarityMethods()
+                methods <- .comparisonMethods()
                 isPresent <- sapply(methods, function(i)
                     any(grepl(i, colnames(obj), ignore.case=TRUE)))
                 methods <- methods[isPresent]
@@ -1086,7 +1108,7 @@ getStateHTML <- function(state) {
 }
 
 # Run rank similar perturbations in Celery
-celery_rankSimilarPerturbations <- function(..., token) {
+celery_rankAgainstRef <- function(..., mode, token) {
     # Prepare filenames for input and output
     rand       <- .genRandomString()
     inputFile  <- file.path(token, sprintf("input_%s.Rda",  rand))
@@ -1095,15 +1117,21 @@ celery_rankSimilarPerturbations <- function(..., token) {
     # Save variables in Rda file
     save(..., file=inputFile)
     
-    # Rank perturbations via Celery/Flower and save as RDS file
-    cmd <- list(
-        sprintf("load('%s')", inputFile),
-        "ranking <- cTRAP::rankSimilarPerturbations(
-            selectedDiffExpr, selectedPerts, method,
-            c(upGenes, downGenes), cellLineMean, rankPerCellLine)",
-        "attr(ranking, 'name') <- dataset",
-        sprintf("saveRDS(ranking, '%s')", outputFile),
-        sprintf("unlink('%s')", inputFile))
+    # Rank comparisons via Celery/Flower and save as RDS file
+    if (mode == "rankSimilarPerturbations") {
+        cmd <- "cTRAP::rankSimilarPerturbations(
+                    selectedDiffExpr, selectedPerts, method,
+                    c(upGenes, downGenes), cellLineMean, rankPerCellLine)"
+    } else if (mode == "predictTargetingDrugs") {
+        cmd <- "cTRAP::predictTargetingDrugs(
+                    selectedDiffExpr, selectedCorMatrix, method,
+                    c(upGenes, downGenes))"
+    }
+    cmd <- list(sprintf("load('%s')", inputFile),
+                paste("ranking <-", cmd),
+                "attr(ranking, 'name') <- dataset",
+                sprintf("saveRDS(ranking, '%s')", outputFile),
+                sprintf("unlink('%s')", inputFile))
     cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
     taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
     
@@ -1120,16 +1148,15 @@ celery_rankSimilarPerturbations <- function(..., token) {
 #' tabPanel uiOutput column fluidRow numericInput checkboxInput conditionalPanel
 #' @importFrom DT DTOutput
 .rankSimilarPerturbationsUI <- function(
-    id, diffExpr, perturbations,
-    title="Rank CMap perturbations by similarity") {
+    id, title="Rank CMap perturbations by similarity") {
     
     ns <- NS(id)
     sidebar <- sidebarPanel(
         selectizeInput(ns("diffExpr"), "Differential gene expression",
-                       names(diffExpr)),
-        selectizeInput(ns("perts"), "CMap perturbations", names(perturbations)),
+                       choices=NULL),
+        selectizeInput(ns("perts"), "CMap perturbations", choices=NULL),
         selectizeInput(ns("method"), "Method", multiple=TRUE,
-                       .rankSimilarityMethods(), .rankSimilarityMethods(),
+                       .comparisonMethods(), .comparisonMethods(),
                        options=list(plugins=list("remove_button"))),
         conditionalPanel(
             "input.method.includes('gsea')",
@@ -1148,7 +1175,7 @@ celery_rankSimilarPerturbations <- function(..., token) {
                          c("Mean scores only"=FALSE,
                            "Mean + individual cell lines' scores"=TRUE)),
           ns=ns),
-        textInput(ns("name"), "Dataset name", "cmap_ranking"),
+        textInput(ns("name"), "Dataset name", "Ranked CMap perturbations"),
         uiOutput(ns("msg")),
         actionButton(ns("analyse"), "Rank by similarity", class="btn-primary"))
     
@@ -1160,28 +1187,16 @@ celery_rankSimilarPerturbations <- function(..., token) {
 #' @importFrom shiny renderPlot observeEvent observe isolate renderUI
 #' @importFrom DT renderDT
 #' @importFrom data.table rbindlist
-.rankSimilarPerturbationsServer <- function(id, diffExpr, perturbations,
-                                            globalUI=FALSE, flower=FALSE,
-                                            token=NULL) {
+.rankSimilarPerturbationsServer <- function(id, x, globalUI=FALSE,
+                                            flower=FALSE, token=NULL) {
     server <- function(input, output, session) {
-        getSelectedObject <- reactive(perturbations[[input$object]])
-        
-        updateDatasetChoices <- function(id, var, class=NULL) {
-            req(names(var))
-            if (!is.null(class)) {
-                ref <- sapply(var, is, class)
-            } else {
-                ref <- TRUE
-            }
-            if (!any(ref)) return(NULL)
-            choices <- names(var[ref])
-            updateSelectizeInput(session, id, choices=choices)
-        }
-        
-        observe(updateDatasetChoices(
-            "diffExpr", diffExpr(), "diffExpr"))
-        observe(updateDatasetChoices(
-            "perts", perturbations(), "perturbationChanges"))
+        observe({
+            diffExpr <- .filterDatasetsByClass(x(), "diffExpr")
+            updateSelectizeInput(session, "diffExpr", choices=names(diffExpr))
+            
+            perts <- .filterDatasetsByClass(x(), "perturbationChanges")
+            updateSelectizeInput(session, "perts", choices=names(perts))
+        })
         
         rankData <- eventReactive(input$analyse, {
             diffExprDataset <- req(input$diffExpr)
@@ -1193,8 +1208,8 @@ celery_rankSimilarPerturbations <- function(..., token) {
             rankPerCellLine <- input$rankPerCellLine
             dataset         <- input$name
             
-            selectedDiffExpr <- diffExpr()[[req(diffExprDataset)]]
-            selectedPerts    <- perturbations()[[req(pertsDataset)]]
+            selectedDiffExpr <- x()[[req(diffExprDataset)]]
+            selectedPerts    <- x()[[req(pertsDataset)]]
             if (!flower) {
                 withProgress(message="Ranking against CMap perturbations", {
                     ranking <- rankSimilarPerturbations(
@@ -1203,10 +1218,10 @@ celery_rankSimilarPerturbations <- function(..., token) {
                     incProgress(1)
                 })
             } else {
-                ranking <- celery_rankSimilarPerturbations(
+                ranking <- celery_rankAgainstRef(
                     selectedDiffExpr, selectedPerts, method, upGenes, downGenes,
                     cellLineMean, rankPerCellLine, dataset,
-                    token=isolate(token()))
+                    token=isolate(token()), mode="rankSimilarPerturbations")
             }
             attr(ranking, "name") <- dataset
             
@@ -1232,27 +1247,105 @@ celery_rankSimilarPerturbations <- function(..., token) {
         if (!globalUI) observeEvent(input$load, stopApp(rankData()))
         
         output$table <- renderDT({
-            elems <- req(diffExpr())
-            data <- .filterDatasetsByClass(elems, "similarPerturbations",
-                                           expected=TRUE)
-            req(data)
+            .prepareReferenceComparisonDT(x(), "similarPerturbations")
+        }, rownames=FALSE, escape=FALSE)
+        
+        return(rankData)
+    }
+    moduleServer(id, server)
+}
+
+#' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
+#' tabPanel uiOutput column fluidRow numericInput checkboxInput conditionalPanel
+#' @importFrom DT DTOutput
+.predictTargetingDrugsUI <- function(id, title="Predict targeting drugs") {
+    ns <- NS(id)
+    sidebar <- sidebarPanel(
+        selectizeInput(ns("diffExpr"), choices=NULL,
+                       "Differential gene expression"),
+        selectizeInput(ns("corMatrix"),
+                       "Gene expression and drug sensitivity association",
+                       choices=listExpressionDrugSensitivityAssociation()),
+        selectizeInput(ns("method"), "Method", multiple=TRUE,
+                       .comparisonMethods(), .comparisonMethods(),
+                       options=list(plugins=list("remove_button"))),
+        conditionalPanel(
+            "input.method.includes('gsea')",
+            fluidRow(
+                column(6, numericInput(ns("upGenes"), "Top genes", 150)),
+                column(6, numericInput(ns("downGenes"), "Bottom genes", 150))),
+            ns=ns),
+        textInput(ns("name"), "Dataset name", "Targeting drugs"),
+        uiOutput(ns("msg")),
+        actionButton(ns("analyse"), "Predict targeting drugs",
+                     class="btn-primary"))
+    
+    mainPanel <- mainPanel(DTOutput(ns("table")))
+    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
+    return(ui)
+}
+
+#' @importFrom shiny renderPlot observeEvent observe isolate renderUI
+#' @importFrom DT renderDT
+#' @importFrom data.table rbindlist
+.predictTargetingDrugsServer <- function(id, x, path=".", globalUI=FALSE,
+                                         flower=FALSE, token=NULL) {
+    server <- function(input, output, session) {
+        observe({
+            diffExpr <- .filterDatasetsByClass(x(), "diffExpr")
+            updateSelectizeInput(session, "diffExpr", choices=names(diffExpr))
+        })
+        
+        observe({
+            dataset <- "Targeting drugs"
             
-            formInput <- lapply(data, attr, "formInput")
-            ns <- unique(unlist(lapply(formInput, names)))
+            corMatrix <- input$corMatrix
+            if (!is.null(corMatrix) || corMatrix != "") {
+                dataset <- paste(corMatrix, tolower(dataset))
+            }
+            updateTextInput(session, "name", value=dataset)
+        })
+        
+        rankData <- eventReactive(input$analyse, {
+            diffExprDataset <- req(input$diffExpr)
+            corMatrix       <- req(input$corMatrix)
+            method          <- input$method
+            upGenes         <- input$upGenes
+            downGenes       <- input$downGenes
+            dataset         <- input$name
             
-            # Add name this way to avoid issues with data from outside the UI
-            for (i in seq(formInput)) formInput[[i]]$Dataset <- names(data)[[i]]
-            res <- rbindlist(formInput, fill=TRUE)
+            selectedDiffExpr  <- x()[[diffExprDataset]]
+            selectedCorMatrix <- loadExpressionDrugSensitivityAssociation(
+                corMatrix, path=path)
+            if (!flower) {
+                withProgress(message="Predict targeting drugs", {
+                    ranking <- predictTargetingDrugs(
+                        selectedDiffExpr, selectedCorMatrix, method,
+                        c(upGenes, downGenes))
+                    incProgress(1)
+                })
+            } else {
+                ranking <- celery_rankAgainstRef(
+                    selectedDiffExpr, selectedCorMatrix, method,
+                    upGenes, downGenes, dataset, token=isolate(token()),
+                    mode="predictTargetingDrugs")
+            }
+            attr(ranking, "name") <- dataset
             
-            # Return task state if available
-            state <- sapply(data, function(i)
-              if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
-            state <- sapply(state, getStateHTML)
-            
-            res <- cbind("Dataset"=names(data), "Progress"=state, res)
-            # Reverse order (so newest datasets are on top)
-            res <- res[rev(seq(nrow(res))), unique(colnames(res)), with=FALSE]
-            return(res)
+            # Prepare form input
+            attr(ranking, "formInput") <- list(
+                "Differential expression dataset"=diffExprDataset,
+                "Gene expression and drug sensitivity association"=corMatrix,
+                "Methods"=paste(method, collapse=", "),
+                "Top genes"=upGenes,
+                "Bottom genes"=downGenes)
+            return(ranking)
+        })
+        
+        if (!globalUI) observeEvent(input$load, stopApp(rankData()))
+        
+        output$table <- renderDT({
+            .prepareReferenceComparisonDT(x(), "targetingDrugs")
         }, rownames=FALSE, escape=FALSE)
         
         return(rankData)

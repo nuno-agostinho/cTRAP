@@ -587,6 +587,8 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #'   \code{\link{listExpressionDrugSensitivityAssociation}}
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
+#' @param path Character: folder where to find files (optional; \code{file} may
+#'   contain the full filepath if preferred)
 #' @param rows Character or integer: rows
 #' @param cols Character or integer: columns
 #' @param loadValues Boolean: load data values (if available)? If \code{FALSE},
@@ -603,14 +605,15 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #' @examples
 #' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
 #' loadExpressionDrugSensitivityAssociation(gdsc)
-loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
-                                                     rows=NULL, cols=NULL,
-                                                     loadValues=FALSE) {
+loadExpressionDrugSensitivityAssociation <- function(
+    source, file=NULL, path=NULL, rows=NULL, cols=NULL, loadValues=FALSE) {
+    
     available <- listExpressionDrugSensitivityAssociation(url=TRUE)
     source    <- match.arg(source, names(available))
     link      <- available[source]
 
     if (is.null(file)) file <- gsub("\\?.*", "", basename(link))
+    if (!is.null(path)) file <- file.path(path, file)
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
     if (file_ext(file) == "rds") {
