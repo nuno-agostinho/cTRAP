@@ -350,22 +350,16 @@
     ns <- NS(id)
     
     nullStrJS <- I('function() { this.setValue(""); }')
-    ui <- tabPanel(
-        title,
-        div(class="well", style="padding-bottom: 9px;",
-            fluidRow(
-                column(4, selectizeInput(
-                    ns("cellLine"), "Cell line", choices=NULL, width="100%",
+    sidebar <- sidebarPanel(
+        selectizeInput(ns("cellLine"), "Cell line", choices=NULL, width="100%",
                        options=list(placeholder='Select a cell line',
-                                 onInitialize=nullStrJS))),
-                column(4, selectizeInput(
-                    ns("gene"), "Gene", choices=NULL, width="100%",
+                                    onInitialize=nullStrJS)),
+        selectizeInput(ns("gene"), "Gene", choices=NULL, width="100%",
                        options=list(placeholder='Select a gene',
-                                 onInitialize=nullStrJS))),
-                column(4, actionButton(ns("load"), "Load data",
-                                       style="position:absolute; top:25px;",
-                                       class="btn-primary")))),
-        DTOutput(ns("table")))
+                                    onInitialize=nullStrJS)),
+        actionButton(ns("load"), "Load data", class="btn-primary"))
+    main <- mainPanel(DTOutput(ns("table")))
+    ui <- tabPanel(title, sidebar, main)
     return(ui)
 }
 
@@ -374,7 +368,26 @@
 .diffExprENCODEloaderServer <- function(id, metadata, cellLine=NULL, gene=NULL,
                                         path=".", globalUI=FALSE) {
     server <- function(input, output, session) {
-        output$table <- renderDT(.prepareDT(metadata))
+        output$table <- renderDT({
+            hiddenCols <- c(
+                "File format", "File type", "File format type", "Donors",
+                "Biosample treatments", "Biosample treatments amount",
+                "Biosample treatments duration",
+                "Biosample genetic modifications targets",
+                "Biosample genetic modifications gene targets",
+                "Biosample genetic modifications site coordinates",
+                "Biosample genetic modifications zygosity",
+                "Library lysis method", "Library crosslinking method",
+                "Project", "RBNS protein concentration",
+                "Read length", "Mapped read length", "Run type",
+                "Paired end", "Paired with", "Index of", "md5sum", "dbxrefs",
+                "File download URL", "File analysis status",
+                "Platform", "Controlled by", "s3_uri",
+                "Audit ERROR", "Audit WARNING")
+            hiddenCols <- match(hiddenCols, colnames(metadata))
+            columnDefs <- list(list(visible=FALSE, targets=hiddenCols - 1))
+            .prepareDT(metadata, columnDefs=columnDefs)
+        })
         proxy <- dataTableProxy("table")
         
         observe({
