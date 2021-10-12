@@ -1231,6 +1231,22 @@ celery_rankAgainstRef <- function(..., mode, token) {
             rankPerCellLine <- input$rankPerCellLine
             dataset         <- input$name
             
+            if (cellLineMean == "TRUE") {
+                cellLineMean <- TRUE
+                cellLineMeanTxt <- "Always"
+            } else if (cellLineMean == "FALSE") {
+                cellLineMean <- FALSE
+                cellLineMeanTxt <- "Never"
+            } else if (cellLineMean == "auto") {
+                cellLineMeanTxt <- "For data with \u2265 2 cell lines" 
+            }
+            
+            if (rankPerCellLine == "TRUE") {
+                rankPerCellLine <- TRUE
+            } else if (rankPerCellLine == "FALSE") {
+                rankPerCellLine <- FALSE
+            }
+            
             selectedDiffExpr <- x()[[req(diffExprDataset)]]
             selectedPerts    <- x()[[req(pertsDataset)]]
             if (!flower) {
@@ -1248,10 +1264,6 @@ celery_rankAgainstRef <- function(..., mode, token) {
             }
             attr(ranking, "name") <- dataset
             
-            # Prepare form input
-            cellLineMean <- switch(cellLineMean,
-                                   "TRUE"="Always", "FALSE"="Never",
-                                   "auto"="For data with \u2265 2 cell lines")
             rankPerCellLine <- ifelse(
                 rankPerCellLine,
                 "Mean + individual cell lines' scores",
@@ -1262,7 +1274,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 "Methods"=paste(method, collapse=", "),
                 "Top genes"=upGenes,
                 "Bottom genes"=downGenes,
-                "Calculate mean across cell lines"=cellLineMean,
+                "Calculate mean across cell lines"=cellLineMeanTxt,
                 "Rank results based on"=rankPerCellLine)
             return(ranking)
         })
