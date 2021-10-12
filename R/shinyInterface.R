@@ -1105,15 +1105,16 @@
 # Data analysis ----------------------------------------------------------------
 
 getStateHTML <- function(state) {
+    state <- capitalize(tolower(state))
     if (state %in% c("Failure", "Revoked")) {
         colour <- "red"
         icon   <- icon("times-circle")
         state  <- "Error"
-    } else if (state %in% c("Pending", "Retry")) {
+    } else if (state %in% c("Received", "Pending", "Retry")) {
         colour <- "grey"
         icon   <- icon("pause-circle")
-        state  <- "Pending"
-    } else if (state %in% c("Received", "Started")) {
+        state  <- "Waiting"
+    } else if (state %in% c("Started")) {
         colour <- "orange"
         icon   <- icon("circle-notch", "fa-spin")
         state  <- "Running"
