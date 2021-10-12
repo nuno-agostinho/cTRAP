@@ -1141,11 +1141,11 @@ celery_rankAgainstRef <- function(..., mode, token) {
     save(..., file=inputFile, envir=parent.frame())
     
     # Rank comparisons via Celery/Flower and save as RDS file
-    if (mode == "rankSimilarPerturbations") {
+    if (mode == "similarPerturbations") {
         cmd <- "cTRAP::rankSimilarPerturbations(
                     selectedDiffExpr, selectedPerts, method,
                     c(upGenes, downGenes), cellLineMean, rankPerCellLine)"
-    } else if (mode == "predictTargetingDrugs") {
+    } else if (mode == "targetingDrugs") {
         cmd <- "cTRAP::predictTargetingDrugs(
                     selectedDiffExpr, selectedCorMatrix, method,
                     c(upGenes, downGenes))"
@@ -1162,7 +1162,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
     ranking <- taskAsync
     ranking$state <- capitalize(ranking$state)
     ranking[["outputFile"]] <- outputFile
-    class(ranking) <- c("expectedSimilarPerturbations", "expected",
+    class(ranking) <- c(paste0("expected", capitalize(mode)), "expected",
                         class(ranking))
     return(ranking)
 }
@@ -1244,7 +1244,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 ranking <- celery_rankAgainstRef(
                     selectedDiffExpr, selectedPerts, method, upGenes, downGenes,
                     cellLineMean, rankPerCellLine, dataset,
-                    token=isolate(token()), mode="rankSimilarPerturbations")
+                    token=isolate(token()), mode="similarPerturbations")
             }
             attr(ranking, "name") <- dataset
             
@@ -1351,7 +1351,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 ranking <- celery_rankAgainstRef(
                     selectedDiffExpr, selectedCorMatrix, method,
                     upGenes, downGenes, dataset, token=isolate(token()),
-                    mode="predictTargetingDrugs")
+                    mode="targetingDrugs")
             }
             attr(ranking, "name") <- dataset
             
