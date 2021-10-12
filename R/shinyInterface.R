@@ -172,9 +172,18 @@
     # Return task state if available
     state <- sapply(data, function(i)
         if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
-    state <- sapply(state, getStateHTML)
+    isLoaded  <- state == "Loaded"
+    stateHTML <- sapply(state, getStateHTML)
     
-    res <- cbind("Dataset"=names(data), "Progress"=state, res)
+    # Create link to data results
+    dataset   <- names(data)
+    js        <- paste("$(\"a[data-value*='Plot']\").click(); ",
+                       "$('#dataPlotter-object')[0].selectize.setValue('%s');")
+    js        <- sprintf(js, dataset)
+    datasetJS <- as.character(tags$a(href="#", onclick=js, dataset))
+    dataset   <- ifelse(isLoaded, datasetJS, dataset)
+    
+    res <- cbind("Dataset"=dataset, "Progress"=stateHTML, res)
     # Reverse order (so newest datasets are on top)
     res <- res[rev(seq(nrow(res))), unique(colnames(res)), with=FALSE]
     return(res)
