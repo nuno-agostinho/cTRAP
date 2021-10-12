@@ -1137,7 +1137,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
     outputFile <- file.path(token, sprintf("output_%s.rds", rand))
     
     # Save variables in Rda file
-    save(..., file=inputFile)
+    save(..., file=inputFile, envir=parent.frame())
     
     # Rank comparisons via Celery/Flower and save as RDS file
     if (mode == "rankSimilarPerturbations") {
