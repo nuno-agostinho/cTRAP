@@ -40,12 +40,13 @@
 }
 
 # Save session data in token-named directory
+#' @importFrom qs qsave
 .saveSession <- function(data, token) {
     if (is.null(token) || is.null(data)) return(NULL)
     if (!dir.exists(token)) dir.create(token)
-    sessionRDS <- file.path(token, "session.rds")
-    saveRDS(data, sessionRDS)
-    message("     Session saved to ", sessionRDS)
+    sessionQS <- file.path(token, "session.qs")
+    qsave(data, sessionQS)
+    message("     Session saved to ", sessionQS)
 }
 
 #' @importFrom shiny textInput tags tabsetPanel fileInput
@@ -187,6 +188,7 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' @importFrom shiny downloadHandler renderText req
+#' @importFrom qs qread
 .sessionManagementServer <- function(input, output, session, appData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
     observe({
@@ -316,7 +318,7 @@ globalUI <- function(elems, idList, expire) {
         for (id in names( getExpectedAppDataTasks(elems) )) {
             outputFile <- elems[[id]]$outputFile
             if (file.exists(outputFile)) {
-                # Read output file
+                # Read output RDS file
                 message(sprintf("Updating '%s' with data from %s...",
                                 id, outputFile))
                 obj <- try(readRDS(outputFile), silent=TRUE)

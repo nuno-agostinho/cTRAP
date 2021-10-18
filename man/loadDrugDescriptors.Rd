@@ -7,17 +7,21 @@
 loadDrugDescriptors(
   source = c("NCI60", "CMap"),
   type = c("2D", "3D"),
-  file = NULL
+  file = NULL,
+  path = NULL
 )
 }
 \arguments{
-\item{source}{Character: molecular descriptors for compounds in \code{NCI60}
-or \code{CMap}}
+\item{source}{Character: source of compounds used to calculate molecular
+descriptors (\code{NCI60} or \code{CMap})}
 
 \item{type}{Character: load \code{2D} or \code{3D} molecular descriptors}
 
 \item{file}{Character: filepath to drug descriptors (automatically downloaded
 if file does not exist)}
+
+\item{path}{Character: folder where to find files (optional; \code{file} may
+contain the full filepath if preferred)}
 }
 \value{
 Data table with drug descriptors

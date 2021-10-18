@@ -1,3 +1,10 @@
+# cTRAP 1.12.0 (18 October, 2021)
+
+* Use the faster and efficient file format from R package `qs` instead of `RDS`:
+    - `cTRAP()`: faster saving/loading of session data
+    - Faster download and loading of pre-processed remote files (compound
+    molecular descriptors and gene expression and drug sensitivity associations)
+
 # cTRAP 1.10.2 (1 October, 2021)
 
 ## Web server support (optimised to run in ShinyProxy)

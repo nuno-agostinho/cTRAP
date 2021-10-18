@@ -1,10 +1,22 @@
+#' @importFrom qs qread
+loadRemotePreProcessedData <- function(default, file=NULL, path=NULL) {
+    link <- file.path("https://compbio.imm.medicina.ulisboa.pt/public/cTRAP",
+                      default)
+    if (is.null(file)) file <- default
+    if (!is.null(path)) file <- file.path(path, file)
+    file  <- downloadIfNotFound(link, file)
+    table <- qread(file)
+    return(table)
+}
+
 #' Load table with drug descriptors
 #'
-#' @param source Character: molecular descriptors for compounds in \code{NCI60}
-#'   or \code{CMap}
+#' @param source Character: source of compounds used to calculate molecular
+#'   descriptors (\code{NCI60} or \code{CMap})
 #' @param type Character: load \code{2D} or \code{3D} molecular descriptors
 #' @param file Character: filepath to drug descriptors (automatically downloaded
 #'   if file does not exist)
+#' @inheritParams loadExpressionDrugSensitivityAssociation
 #'
 #' @family functions for drug set enrichment analysis
 #' @return Data table with drug descriptors
@@ -13,27 +25,24 @@
 #' @examples
 #' loadDrugDescriptors()
 loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
-                                file=NULL) {
-    source <- match.arg(source)
-    type   <- match.arg(type)
-    if (source == "NCI60" && type == "2D") {
-        link <- "599ok2w9ahysdga/compound_descriptors_NCI60_2D.rds"
-    } else if (source == "NCI60" && type == "3D") {
-        link <- "c2hbmk8qi3tyrh4/compound_descriptors_NCI60_3D.rds"
-    } else if (source == "CMap" && type == "2D") {
-        link <- "u1ath10e753x6en/compound_descriptors_CMap_2D.rds"
-    } else if (source == "CMap" && type == "3D") {
-        link <- "tpu3sq53mpy5fvt/compound_descriptors_CMap_3D.rds"
-    } else {
-        stop("selected 'source' and 'type' are not supported")
-    }
+                                file=NULL, path=NULL) {
+    source  <- match.arg(source)
+    type    <- match.arg(type)
+    default <- "compound_descriptors_%s_%s.qs"
+    default <- sprintf(default, source, type)
+    
+    loadRemotePreProcessedData(default, file, path)
+}
 
-    link  <- sprintf("https://www.dropbox.com/s/%s?raw=1", link)
-    if (is.null(file))
-        file  <- sprintf("molecular_descriptors_%s_%s.rds", source, type)
-    file  <- downloadIfNotFound(link, file)
-    table <- readRDS(file)
-    return(table)
+# Load drug set prepared from compound descriptors
+loadDrugSet <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
+                        file=NULL, path=NULL) {
+    source  <- match.arg(source)
+    type    <- match.arg(type)
+    default <- "drug_set_%s_%s.qs"
+    default <- sprintf(default, source, type)
+    
+    loadRemotePreProcessedData(default, file, path)
 }
 
 #' Calculate evenly-distributed bins
