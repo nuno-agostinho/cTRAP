@@ -967,10 +967,16 @@
                         geom_rug(alpha=0.1) +
                         geom_abline(slope=1, intercept=0, colour="orange") +
                         geom_point(size=0.1, alpha=0.3) +
-                        geom_density_2d(alpha=0.3) +
                         xlab(paste(input$data1, input$col1, sep="_")) +
                         ylab(paste(input$data2, input$col2, sep="_")) +
                         theme_bw()
+                    
+                    # Avoid showing density instead of calculating an error
+                    qd1 <- quantile(dataset1[[col1]], c(0.25, 0.75))
+                    qd2 <- quantile(dataset2[[col2]], c(0.25, 0.75))
+                    if (diff(qd1) != 0 && diff(qd2) != 0) {
+                        plot <- plot + geom_density_2d(alpha=0.3)
+                    }
                     return(plot)
                 } else {
                     stop("no common identifiers between datasets")
@@ -1073,7 +1079,6 @@
                 data1 <- getSelectedDataset1()
                 data2 <- getSelectedDataset2()
                 if (is.null(data1) || is.null(data2)) return(NULL)
-                browser()
                 
                 col <- input$col
                 isColValid <- !is.null(col) && col != ""
