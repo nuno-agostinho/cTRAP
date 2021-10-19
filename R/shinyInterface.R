@@ -718,6 +718,7 @@
                 attr(perturbations, "name") <- input$name
                 incProgress(1)
             })
+            session$sendCustomMessage("brieflyShowElem", session$ns("loaded"))
             return(perturbations)
         })
         
