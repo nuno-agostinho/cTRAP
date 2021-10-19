@@ -214,7 +214,14 @@ globalUI <- function(elems, idList, expire) {
     observeEvent(input$loadToken, {
         token <- isolate(input$token)
         if (dir.exists(token)) {
-            appData$elems <- readRDS(file.path(token, "session.rds"))
+            file <- file.path(token, "session")
+            rds  <- paste0(file, ".rds")
+            qs   <- paste0(file, ".qs")
+            if (file.exists(qs)) {
+                .setAppData(appData, qread(qs))
+            } else if (file.exists(rds)) {
+                .setAppData(appData, readRDS(rds))
+            }
             appData$token <- token
             removeModal()
         } else {
