@@ -15,6 +15,8 @@ drive or revert specific transcriptomic alterations.
 
 ## Installing
 
+### Bioconductor
+
 [cTRAP is available in Bioconductor][bioconductor] and can be installed with:
 
 ``` r
@@ -23,12 +25,34 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("cTRAP")
 ```
 
-If you prefer, you can install cTRAP from GitHub instead:
+### GitHub
+
+cTRAP can also be installed from GitHub instead:
 
 ``` r
 install.packages("remotes")
 remotes::install_github("nuno-agostinho/cTRAP")
 ```
+
+### Docker
+
+The Docker images are based on [Bioconductor Docker][biocDocker] and contain cTRAP and its dependencies.
+
+1. Pull the latest Docker image:
+
+```
+docker pull ghcr.io/nuno-agostinho/ctrap:latest
+```
+
+2. Start RStudio Web from the Docker image:
+
+```
+docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/ctrap:latest
+```
+
+3. Go to RStudio Web via your web browser at https://localhost:8787
+4. Login in RStudio Web with user `rstudio` and password `bioc`
+5. Load the package in RStudio Web using `library(cTRAP)`
 
 [clue.io]: https://clue.io/
 [subramanian2017]: https://doi.org/10.1016/j.cell.2017.10.049
@@ -37,3 +61,4 @@ remotes::install_github("nuno-agostinho/cTRAP")
 [ghActions]: https://github.com/nuno-agostinho/cTRAP/actions
 [ghActionsIcon]: https://github.com/nuno-agostinho/cTRAP/workflows/R-CMD-check-bioc/badge.svg
 [bioconductor]: http://bioconductor.org/packages/cTRAP
+[biocDocker]: https://github.com/Bioconductor/bioconductor_docker
