@@ -32,7 +32,6 @@ RoxygenNote: 7.1.2
 Imports: AnnotationDbi,
     AnnotationHub,
     binr,
-    biomaRt,
     cowplot,
     data.table,
     dplyr,
