@@ -270,10 +270,13 @@ globalUI <- function(elems, idList, expire) {
         content=function(file) saveRDS(appData$elems, file))
 }
 
-.newDataNotification <- function(names, total, ..., type="message",
-                                 auto=FALSE) {
+.newDataNotification <- function(names, total, expected=NULL, ...,
+                                 type="message", auto=FALSE) {
     plural <- ifelse(total == 1, "", "s")
     totalTxt <- sprintf("Total: %s dataset%s", total, plural)
+    if (!is.null(expected) && expected > 0) {
+        totalTxt <- paste(totalTxt, sprintf("(%s running)", expected))
+    }
     message(sprintf("  -> %s (%s)",
                     paste(paste(names, collapse=" + "), "loaded"),
                     tolower(totalTxt)))
@@ -293,7 +296,8 @@ globalUI <- function(elems, idList, expire) {
 .loadCeleryOutputServer <- function(input, output, session, appData) {
     getExpectedAppDataTasks <- function(elems) {
         if (is.null(elems) || length(elems) == 0) return(NULL)
-        return(.filterDatasetsByClass(elems, "expected"))
+        expected <- .filterDatasetsByClass(elems, "expected")
+        return(expected)
     }
     
     checkExpectedCeleryTasks <- function(elems) {
@@ -367,7 +371,9 @@ globalUI <- function(elems, idList, expire) {
         if (!newDatasets && !updatedState) {
             return(NULL)
         } else if (newDatasets) {
-            .newDataNotification(added, length(elems), duration=30, auto=TRUE)
+            expected <- length(.filterDatasetsByClass(elems, "expected"))
+            .newDataNotification(added, length(elems) - expected, duration=30,
+                                 auto=TRUE)
         }
         appData$elems <- elems
         .saveSession(elems, token)
@@ -391,7 +397,9 @@ updateAppData <- function(appData, x) {
                 "to load your data later")
             showNotification(msg, type="warning", duration=10)
         } else {
-            .newDataNotification(dataset, length(elems), type="default")
+            expected <- length(.filterDatasetsByClass(elems, "expected"))
+            .newDataNotification(dataset, length(elems) - expected,
+                                 type="default")
         }
         .saveSession(elems, token)
     })

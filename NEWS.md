@@ -4,8 +4,11 @@
     - `cTRAP()`: faster saving/loading of session data
     - Faster download and loading of pre-processed remote files (compound
     molecular descriptors and gene expression and drug sensitivity associations)
-* Fix crash when plotting dataset comparison using values with too many zeroes
-for density estimation
+* Bug fixes to visual interface:
+    - Fix crash when plotting dataset comparison using values with too many
+    zeroes for density estimation
+    - Total number of datasets now excludes expected datasets that are not yet
+    loaded
 
 # cTRAP 1.10.2 (1 October, 2021)
 
