@@ -36,4 +36,6 @@ launchResultPlotter(predicted, compareCompounds)
 # Analyse drug set enrichment --------------------------------------------------
 descriptors <- loadDrugDescriptors("NCI60", "3D")
 drugSets    <- prepareDrugSets(descriptors)
+
+launchDrugSetEnrichmentAnalyser(drugSets, compareCompounds)
 launchDrugSetEnrichmentAnalyser(drugSets, predicted)

@@ -109,7 +109,7 @@
     expireTxt <- NULL
     if (!is.null(expire)) {
         expireTxt <- helpText(style="margin: 0px; padding: 3px 0px;",
-                              paste("Sessions expire in", expire, "days"))
+                              paste("Session expires in", expire, "days"))
     }
     
     copyTokenButton <- actionLink("copyToken", onclick="copyToken()", tagList(
@@ -157,7 +157,7 @@ globalUI <- function(elems, idList, expire) {
         id="tab",
         # a non-dropdown tab needs to be selected (bug)
         # https://github.com/rstudio/shiny/issues/3519
-        selected="Help",
+        .metadataViewerUI(idList$metadata, icon=icon("layer-group")),
         navbarMenu("Load", icon=icon("table"),
                    "Differential gene expression data",
                    .diffExprLoadUI(idList$diffExpr),
@@ -166,15 +166,13 @@ globalUI <- function(elems, idList, expire) {
                    .cmapDataLoaderUI(idList$cmap, globalUI=TRUE)),
         navbarMenu("Analyse", icon=icon("cogs"),
                    .rankSimilarPerturbationsUI(idList$rankPerts),
-                   .predictTargetingDrugsUI(idList$predictDrugs),
-                   .drugSetEnrichmentAnalyserUI(idList$drugSet, elems, elems)),
+                   .predictTargetingDrugsUI(idList$predictDrugs)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
-                   .dataPlotterUI(idList$data, elems),
-                   # .targetingDrugsVSsimilarPerturbationsPlotterUI(
-                   #     idList$comparePlot),
-                   .datasetComparisonUI(idList$compare, elems),
-                   .metadataViewerUI(idList$metadata)),
-        tabPanel("Help", icon=icon("question-circle"), "Hello!"),
+                   .dataPlotterUI(idList$data),
+                   .datasetComparisonUI(idList$compare),
+                   .targetingDrugsVSsimilarPerturbationsPlotterUI(
+                       idList$comparePlot),
+                   .drugSetEnrichmentAnalyserUI(idList$drugSet)),
         navbarMenu(span("Session", span(class="badge",
                                         textOutput("token", inline=TRUE))),
                    icon=icon("compass"), menuName="session"))
@@ -497,7 +495,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
             path=commonPath, token=reactive(appData$token))
         updateAppData(appData, predicted)
 
-        # .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, elems)
+        .drugSetEnrichmentAnalyserServer(idList$drugSet, elems, path=commonPath)
 
         # visualise
         .dataPlotterServer(idList$data, elems)

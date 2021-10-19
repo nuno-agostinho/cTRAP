@@ -92,12 +92,12 @@
 
 # Replace a string with another in a list
 .replaceStrInList <- function(tag, old, new) {
-  FUN <- function(x) {
-    res <- x
-    if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
-    return(res)
-  }
-  rapply(tag, FUN, how="replace", classes="character")
+    FUN <- function(x) {
+        res <- x
+        if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
+        return(res)
+    }
+    rapply(tag, FUN, how="replace", classes="character")
 }
 
 #' Prepare Shiny page template
@@ -110,9 +110,9 @@
 .prepareNavPage <- function(...) {
     app <- "cTRAP"
     ui  <- navbarPage(app, ...) %>%
-      .replaceStrInList("navbar-static-top", "") %>%
-      .replaceStrInList("container-fluid", "") %>%
-      tags$div(class="container-fluid", style="padding-top: 15px;")
+        .replaceStrInList("navbar-static-top", "") %>%
+        .replaceStrInList("container-fluid", "") %>%
+        tags$div(class="container-fluid", style="padding-top: 15px;")
     return(ui)
 }
 
@@ -317,9 +317,14 @@
 #' @importFrom shiny textAreaInput
 .diffExprLoadUI <- function(id, title="User data") {
     ns <- NS(id)
+    
+    diffExpr <- tags$span(
+        "data-toggle"="tooltip", "data-placement"="right",
+        title="Gene symbols and respective differential expression values (e.g. t-statistics)",
+        "Differential gene expression", icon("question-circle"))
+    
     sidebar <- sidebarPanel(
-        textAreaInput(ns("diffExpr"), "Differential gene expression",
-                      height="200px"),
+        textAreaInput(ns("diffExpr"), diffExpr, height="300px"),
         selectizeInput(
             ns("sep"), "Separator",
             c("Automatic"="auto", "Tab (\\t)"="\t", "Space"=" ", ",", ";")),
@@ -403,7 +408,7 @@
                                     onInitialize=nullStrJS)),
         actionButton(ns("load"), "Load data", class="btn-primary"))
     main <- mainPanel(DTOutput(ns("table")))
-    ui <- tabPanel(title, sidebar, main)
+    ui <- tabPanel(title, sidebarLayout(sidebar, main))
     return(ui)
 }
 
@@ -798,10 +803,10 @@
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
 #' tabPanel
 #' @importFrom DT DTOutput
-.dataPlotterUI <- function(id, x, title="Plot Data") {
+.dataPlotterUI <- function(id, title="Plot Data") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
-        selectizeInput(ns("object"), "Dataset", names(x)),
+        selectizeInput(ns("object"), "Dataset", choices=NULL),
         selectizeInput(ns("method"), "Method", choices=NULL))
     sidebar[[3]][[2]] <- tagList(
         selectizeInput(ns("element"), "Row ID to plot", choices=NULL,
@@ -927,13 +932,13 @@
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
 #' tabPanel hr
 #' @importFrom DT DTOutput
-.datasetComparisonUI <- function(id, x, title="Dataset Comparison") {
+.datasetComparisonUI <- function(id, title="Dataset Comparison") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
-        selectizeInput(ns("data1"), "Dataset 1", names(x)),
+        selectizeInput(ns("data1"), "Dataset 1", choices=NULL),
         selectizeInput(ns("col1"), "Column to plot in X axis", choices=NULL),
         hr(),
-        selectizeInput(ns("data2"), "Dataset 2", names(x), selected=2),
+        selectizeInput(ns("data2"), "Dataset 2", choices=NULL),
         selectizeInput(ns("col2"), "Column to plot in Y axis", choices=NULL))
     sidebar[[3]][[2]] <- tagList(
         plotOutput(ns("plot"), brush=ns("brush")),
@@ -1050,14 +1055,12 @@
 }
 
 .targetingDrugsVSsimilarPerturbationsPlotterUI <- function(
-    id, title="Dataset Comparison 2") {
-
+    id, title="Targeting Drugs vs Similar Perturbations") {
+    
     ns <- NS(id)
     sidebar <- sidebarPanel(
-        selectizeInput(
-            ns("data1"), "Dataset with predicted targeting drugs", NULL),
-        selectizeInput(
-            ns("data2"), "Dataset with similar CMap perturbations", NULL),
+        selectizeInput(ns("data1"), "Predicted targeting drugs", NULL),
+        selectizeInput(ns("data2"), "Similar CMap perturbations", NULL),
         selectizeInput(ns("col"), "Column to plot in both axes", choices=NULL))
     sidebar[[3]][[2]] <- plotOutput(ns("plot"), brush=ns("brush"))
     
@@ -1168,10 +1171,10 @@ convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
     }
     
     if (!label) {
-      colour <- sprintf("color: %s;", colour)
-      class  <- NULL
+        colour <- sprintf("color: %s;", colour)
+        class  <- NULL
     } else {
-      colour <- NULL
+        colour <- NULL
     }
     html   <- tags$span(style=colour, icon, state, ..., class=class)
     if (toStr) html <- as.character(html)
@@ -1241,11 +1244,11 @@ celery_rankAgainstRef <- function(..., mode, token) {
                          "Always"=TRUE,
                          "Never"=FALSE)),
         conditionalPanel(
-          "input.cellLineMean != 'FALSE'",
-          selectizeInput(ns("rankPerCellLine"), "Rank results based on",
-                         c("Mean scores only"=FALSE,
-                           "Mean + individual cell lines' scores"=TRUE)),
-          ns=ns),
+            "input.cellLineMean != 'FALSE'",
+            selectizeInput(ns("rankPerCellLine"), "Rank results based on",
+                           c("Mean scores only"=FALSE,
+                             "Mean + individual cell lines' scores"=TRUE)),
+            ns=ns),
         textInput(ns("name"), "Dataset name", "Ranked CMap perturbations"),
         uiOutput(ns("msg")),
         actionButton(ns("analyse"), "Rank by similarity", class="btn-primary"))
@@ -1328,7 +1331,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
         
         output$table <- renderDT({
             .prepareReferenceComparisonDT(x(), "similarPerturbations")
-        }, rownames=FALSE, escape=FALSE)
+        }, rownames=FALSE, escape=FALSE, selection="none")
         
         return(rankData)
     }
@@ -1423,7 +1426,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
         
         output$table <- renderDT({
             .prepareReferenceComparisonDT(x(), "targetingDrugs")
-        }, rownames=FALSE, escape=FALSE)
+        }, rownames=FALSE, escape=FALSE, selection="none")
         
         return(rankData)
     }
@@ -1431,20 +1434,20 @@ celery_rankAgainstRef <- function(..., mode, token) {
 }
 
 #' @importFrom shiny NS sidebarPanel plotOutput selectizeInput mainPanel
-#' tabPanel uiOutput
+#' tabPanel helpText textOutput
+#' @importFrom shinycssloaders withSpinner
 #' @importFrom DT DTOutput
-.drugSetEnrichmentAnalyserUI <- function(id, sets, x,
-                                         title="Drug Set Enrichment") {
+.drugSetEnrichmentAnalyserUI <- function(id, title="Drug Set Enrichment") {
     ns <- NS(id)
     sidebar <- sidebarPanel(
-        selectizeInput(ns("object"), "Dataset", names(x)),
-        selectizeInput(ns("sort"), "Sorting metric", choices=NULL), hr(),
-        selectizeInput(ns("statsKey"), "Dataset column to match compounds",
-                       choices=NULL),
-        selectizeInput(ns("setsKey"), "Drug set column to match compounds",
-                       choices=NULL),
-        uiOutput(ns("msg")),
-        actionButton(ns("analyse"), "Analyse", class="btn-primary"))
+        selectizeInput(ns("object"), "Dataset", choices=NULL),
+        selectizeInput(ns("sort"), "Ranked by", choices=NULL), hr(),
+        selectizeInput(ns("drugSet"), "Drug set", choices=NULL,
+                       options=list(placeholder="Select a drug set")), hr(),
+        tags$h4("Match compounds"),
+        helpText("Select key columns to match compounds between datasets"),
+        withSpinner(uiOutput(ns("matchCompounds")), type=8,
+                    proxy.height="150px", hide.ui=TRUE))
     sidebar[[3]][[2]] <- tagList(
         selectizeInput(ns("element"), "Row ID to plot", choices=NULL,
                        width="100%"),
@@ -1455,13 +1458,40 @@ celery_rankAgainstRef <- function(..., mode, token) {
     return(ui)
 }
 
-#' @importFrom shiny renderPlot observeEvent observe isolate renderUI
+#' @importFrom shiny renderPlot observeEvent observe isolate renderText
 #' @importFrom DT renderDT
-.drugSetEnrichmentAnalyserServer <- function(id, sets, x) {
+.drugSetEnrichmentAnalyserServer <- function(id, x, path=NULL) {
+    x <- .convertToFunction(x)
     moduleServer(
         id,
         function(input, output, session) {
-            getSelectedObject <- reactive(x[[input$object]])
+            getExtraDrugSets <- function() {
+                extraDrugSets <- c("NCI60 2D", "NCI60 3D", "CMap 2D", "CMap 3D")
+                extraDrugSets <- setNames(
+                    extraDrugSets,
+                    paste(extraDrugSets, "molecular descriptors"))
+                return(extraDrugSets)
+            }
+            
+            getSelectedObject <- reactive(x()[[input$object]])
+            getSelectedSet <- reactive({
+                sets <- .filterDatasetsByClass(x(), "drugSets")
+                drugSet <- input$drugSet
+                if (drugSet %in% names(sets)) {
+                    res <- sets[[req(input$drugSet)]]
+                } else if (drugSet %in% getExtraDrugSets()) {
+                    drugSet <- strsplit(drugSet, " ")[[1]]
+                    withProgress(message="Loading drug descriptors", {
+                        res <- loadDrugSet(drugSet[[1]], drugSet[[2]],
+                                           path=path)
+                        incProgress(1)
+                        return(res)
+                    })
+                } else {
+                    res <- NULL
+                }
+                return(res)
+            })
             
             # Update available datasets
             observe({
@@ -1469,8 +1499,29 @@ celery_rankAgainstRef <- function(..., mode, token) {
                                       "referenceComparison")
             })
             
+            # Update available drug sets
+            observe({
+                drugSets <- .filterDatasetsByClass(x(), "drugSets")
+                drugSets <- names(drugSets)
+                
+                # Show all available drug sets from cTRAP
+                if (is.null(drugSets)) {
+                    choices <- list(
+                        "Other available drug sets"=getExtraDrugSets())
+                    selected <- list()
+                } else {
+                    choices <- list(
+                        "Loaded drug sets"=list(drugSets),
+                        "Other available drug sets"=getExtraDrugSets())
+                    selected <- drugSets[[1]]
+                }
+                updateSelectizeInput(session, "drugSet", choices=choices,
+                                     selected=selected)
+            })
+            
             getDSEAresult <- reactive({
-                obj      <- getSelectedObject()
+                obj      <- req(getSelectedObject())
+                sets     <- req(getSelectedSet())
                 sort     <- input$sort
                 statsKey <- input$statsKey
                 setsKey  <- input$setsKey
@@ -1479,9 +1530,13 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 if (is.null(obj) || !isValid(sort)) return(NULL)
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
                 
-                analyseDrugSetEnrichment(
+                withProgress(message="Analysing drug set enrichment", {
+                    res <- analyseDrugSetEnrichment(
                         sets, obj, col=sort,
                         keyColSets=setsKey, keyColStats=statsKey)
+                    incProgress(1)
+                    return(res)
+                })
             })
             
             observeEvent(input$object, {
@@ -1491,57 +1546,72 @@ celery_rankAgainstRef <- function(..., mode, token) {
             })
             
             # Update available keys to select for datasets
-            observe({
-                obj <- getSelectedObject()
-                if (is.null(obj)) return(NULL)
-                
-                if (!is(sets, "drugSets")) return(NULL)
+            getCompoundMatchKeys <- function(statsKey=NULL, setsKey=NULL) {
+                obj <- req(getSelectedObject())
+                sets <- req(getSelectedSet())
                 
                 statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
                 setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
                 
-                probableKey <- findIntersectingCompounds(statsInfo, setsInfo)
-                statsKey    <- probableKey$key2
-                setsKey     <- probableKey$key1
+                probableKey <- findIntersectingCompounds(
+                    statsInfo, setsInfo, keys1=statsKey, keys2=setsKey)
+                setsKey     <- probableKey$key2
+                statsKey    <- probableKey$key1
                 
                 keyList      <- getCompoundIntersectingKeyList()
                 statsOptions <- intersect(names(statsInfo), keyList)
                 setsOptions  <- intersect(names(setsInfo), keyList)
+                return(list(probableKey=probableKey,
+                            setsKey=setsKey, statsKey=statsKey,
+                            setsOptions=setsOptions, statsOptions=statsOptions))
+            }
             
-                updateSelectizeInput(session, "statsKey", selected=statsKey,
-                                     choices=statsOptions)
-                updateSelectizeInput(session, "setsKey", selected=setsKey,
-                                     choices=setsOptions)
+            # Update interface for selecting columns for compound matching
+            output$matchCompounds <- renderUI({
+                ns <- session$ns
+                ui <- tagList(
+                    fluidRow(
+                        column(6, selectizeInput(ns("statsKey"), choices=NULL,
+                                                 "Dataset key")),
+                        column(6, selectizeInput(ns("setsKey"), choices=NULL,
+                                                 "Drug set key"))),
+                    tags$span(class="help-block", style="margin-top: -10px;",
+                              textOutput(ns("msg"))),
+                    actionButton(ns("analyse"), "Visualise",
+                                 class="btn-primary"))
+                
+                res <- suppressMessages( getCompoundMatchKeys() )
+                updateSelectizeInput(session, "statsKey", selected=res$statsKey,
+                                     choices=res$statsOptions)
+                updateSelectizeInput(session, "setsKey", selected=res$setsKey,
+                                     choices=res$setsOptions)
+                return(ui)
             })
             
             # Update number of intersecting compounds based on selected keys
             observe({
-                obj <- getSelectedObject()
-                if (is.null(obj)) return(NULL)
+                res <- getCompoundMatchKeys(req(input$statsKey),
+                                            req(input$setsKey))
                 
-                statsInfo <- prepareStatsCompoundInfo(obj)$statsInfo
-                setsInfo  <- prepareSetsCompoundInfo(sets)$setsCompoundInfo
-                
-                statsKey <- input$statsKey
-                setsKey  <- input$setsKey
-                isValid <- function(e) !is.null(e) && e != ""
-                if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-                
-                probableKey <- findIntersectingCompounds(statsInfo, setsInfo,
-                                                         statsKey, setsKey)
-                num <- length(probableKey[[3]])
-                msg <- "cross-matches found using the selected keys"
-                output$msg <- renderUI(helpText(paste(num, msg)))
+                num <- length(res$probableKey[[3]])
+                msg <- "cross-matches with selected columns"
+                output$msg <- renderText(paste(num, msg))
             })
             
             observeEvent(input$analyse, {
                 dsea <- getDSEAresult()
                 updateSelectizeInput(session, "element", choices=dsea[[1]])
-                output$table <- renderDT(.prepareDT(dsea))
+                output$table <- renderDT({
+                    hiddenCols <- "leadingEdge"
+                    hiddenCols <- match(hiddenCols, colnames(dsea))
+                    columnDefs <- list(list(visible=FALSE,
+                                            targets=hiddenCols - 1))
+                    .prepareDT(dsea, columnDefs=columnDefs)
+                })
                 
                 output$plot <- renderPlot({
-                    obj <- getSelectedObject()
-                    if (is.null(obj)) return(NULL)
+                    obj  <- req(getSelectedObject())
+                    sets <- req(getSelectedSet())
                     
                     element <- input$element
                     if (element == "") element <- NULL
@@ -1556,10 +1626,11 @@ celery_rankAgainstRef <- function(..., mode, token) {
                     })
                     isValid <- function(e) !is.null(e) && e != ""
                     if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-                      plotDrugSetEnrichment(sets, obj, col=sort,
-                                            selectedSets=element,
-                                            keyColStats=statsKey,
-                                          keyColSets=setsKey)[[1]]
+                    suppressMessages(
+                        plotDrugSetEnrichment(sets, obj, col=sort,
+                                              selectedSets=element,
+                                              keyColStats=statsKey,
+                                              keyColSets=setsKey)[[1]])
                 })
             })
             
@@ -1668,9 +1739,9 @@ launchResultPlotter <- function(...) {
     showTwoKindPlot   <- hasSimilarPerts && hasTargetingDrugs
     
     uiList <- tagList(
-        .dataPlotterUI(dataId, elems),
+        .dataPlotterUI(dataId),
         .targetingDrugsVSsimilarPerturbationsPlotterUI(comparePlotId),
-        .datasetComparisonUI(compareId, elems),
+        .datasetComparisonUI(compareId),
         .metadataViewerUI(metadataId))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
@@ -1706,14 +1777,15 @@ launchDrugSetEnrichmentAnalyser <- function(sets, ...) {
     elems <- .prepareEllipsis(...)
     
     uiList <- tagList(
-        .drugSetEnrichmentAnalyserUI(dseaId, sets, elems),
-        .dataPlotterUI(dataId, elems),
+        .drugSetEnrichmentAnalyserUI(dseaId),
+        .dataPlotterUI(dataId),
         .metadataViewerUI(metadataId))
     uiList <- Filter(length, uiList)
     ui     <- do.call(.prepareNavPage, uiList)
     
     server <- function(input, output, session) {
-        .drugSetEnrichmentAnalyserServer(dseaId, sets, elems)
+        .drugSetEnrichmentAnalyserServer(dseaId,
+                                         c(elems, list("Custom drug set"=sets)))
         .dataPlotterServer(dataId, elems)
         .metadataViewerServer(metadataId, elems)
     }

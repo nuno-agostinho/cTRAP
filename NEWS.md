@@ -5,10 +5,20 @@
     - Faster download and loading of pre-processed remote files (compound
     molecular descriptors and gene expression and drug sensitivity associations)
 * Visual interface:
+    - Show redesigned "Data" section as first page
     - Show tags when selecting datasets to more easily identify data
+    - Multiple other visual improvements
+* Drug set enrichment analysis interface:
+    - Show all drug sets available to (down)load
+    - Show loading indicator when loading different drug sets
+    - Hide "leading edge" column of the results by default
     
-## Bug fixes
+## Bug fixes and minor improvements
 
+* `analyseDrugSetEnrichment()`:
+    - Cross-match more compounds between datasets by discarding non-alphanumeric
+    characters and ignoring case
+    - Fix incorrect columns used for each dataset when merging datasets
 * Visual interface:
     - Fix crash when plotting dataset comparison using values with too many
     zeroes for density estimation
