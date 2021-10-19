@@ -4,11 +4,17 @@
     - `cTRAP()`: faster saving/loading of session data
     - Faster download and loading of pre-processed remote files (compound
     molecular descriptors and gene expression and drug sensitivity associations)
-* Bug fixes to visual interface:
+* Visual interface:
+    - Show tags when selecting datasets to more easily identify data
+    
+## Bug fixes
+
+* Visual interface:
     - Fix crash when plotting dataset comparison using values with too many
     zeroes for density estimation
     - Total number of datasets now excludes expected datasets that are not yet
     loaded
+    - Fix interface error shown when going to certain pages with no data loaded
 
 # cTRAP 1.10.2 (1 October, 2021)
 
