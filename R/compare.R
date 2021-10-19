@@ -530,9 +530,9 @@ filterKeys <- function(keys, cols, keyList) {
     return(keys)
 }
 
-compareDatasetIds <- function(key1, key2, data1, data2) {
-    values1 <- stripStr(data1[[key1]])
-    values2 <- stripStr(data2[[key2]])
+compareDatasetIds <- function(data1, data2, key1, key2) {
+    values1 <- stripStr(tolower(data1[[key1]]))
+    values2 <- stripStr(tolower(data2[[key2]]))
     matches <- which(values1 %in% na.omit(values2)) # Avoid matching NAs
     return(data1[[key1]][matches])
 }
@@ -566,7 +566,7 @@ findIntersectingCompounds <- function(data1, data2, keys1=NULL, keys2=NULL) {
     res <- list(key1=NULL, key2=NULL, commonCompounds=NULL)
     for (col1 in keys1) {
         for (col2 in keys2) {
-            cmp <- compareDatasetIds(col1, col2, data1, data2)
+            cmp <- compareDatasetIds(data1, data2, col1, col2)
             if (length(cmp) >= length(res$commonCompounds)) {
                 # Save params if number of matching compounds is same or larger
                 res$key1 <- col1
@@ -618,7 +618,14 @@ mergeDatasets <- function(data2, data1, key2=NULL, key1=NULL,
     if (removeKey2ColNAs) data2 <- data2[!is.na(data2[[key2]]), ]
 
     # Merge data based on intersecting compounds
-    df <- merge(data2, data1, by.x=key2, by.y=key1, suffixes=rev(suffixes), ...)
+    data1[["matched_terms"]] <- stripStr(tolower(data1[[key1]]))
+    data2[["matched_terms"]] <- stripStr(tolower(data2[[key2]]))
+    df <- merge(data2, data1, by="matched_terms", suffixes=rev(suffixes), ...)
+    
+    id <- key1
+    if (!key1 %in% colnames(df)) id <- paste0(key1, suffixes[[2]])
+    df[["matched_terms"]] <- df[[id]]
+    
     attr(df, "keys") <- keys
     return(df)
 }

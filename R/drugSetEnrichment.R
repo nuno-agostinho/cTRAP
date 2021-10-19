@@ -217,9 +217,14 @@ matchStatsWithDrugSetsID <- function(sets, stats, col="values",
 
     # Return statistical values with corresponding identifier (or original
     # identifier if no match is found)
-    df  <- mergeDatasets(setsCompoundInfo, statsInfo, key1=keyColSets,
-                         key2=keyColStats, all.y=TRUE, removeKey2ColNAs=TRUE)
+    df  <- mergeDatasets(data1=statsInfo, key1=keyColStats,
+                         data2=setsCompoundInfo, key2=keyColSets,
+                         all.y=TRUE, removeKey2ColNAs=TRUE)
+
+    if (!setsIDcol %in% colnames(df))  setsIDcol <- paste0(setsIDcol, ".1")
     res <- setNames(df[[col]], df[[setsIDcol]])
+    
+    if (!statsIDcol %in% colnames(df)) statsIDcol <- paste0(statsIDcol, ".2")
     statsIDcol <- checkIfIDwasReplacedAfterMerging(statsIDcol, df)
     names(res)[is.na(names(res))] <- df[[statsIDcol]][is.na(names(res))]
     return(res)

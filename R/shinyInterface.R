@@ -754,17 +754,17 @@
 
 #' @importFrom shiny NS sidebarPanel mainPanel tabPanel sidebarLayout
 #' selectizeInput fluidRow column
-.metadataViewerUI <- function(id, title="Metadata") {
+.metadataViewerUI <- function(id, title="Data", icon=NULL) {
     ns <- NS(id)
-    ui <- tabPanel(
-        title,
-        div(class="well", style="padding-bottom: 9px;",
-            fluidRow(
-                column(4, selectizeInput(ns("object"), "Dataset", choices=NULL, 
-                                         width="100%")),
-                column(4, selectizeInput(ns("attr"), "Table", choices=NULL, 
-                                         width="100%")))),
-      DTOutput(ns("table")))
+    sidebar <- sidebarPanel(
+        selectizeInput(ns("object"), "Dataset", choices=NULL, width="100%"),
+        # DTOutput(ns("selection")),
+        selectizeInput(ns("attr"), "Table", choices=NULL, width="100%"))
+    main <- mainPanel(
+        .alert("No dataset loaded/selected",
+               condition="input.object == ''", ns=ns),
+        DTOutput(ns("table")))
+    ui <- tabPanel(title, icon=icon, sidebarLayout(sidebar, main))
     return(ui)
 }
 
