@@ -7,6 +7,7 @@
 loadExpressionDrugSensitivityAssociation(
   source,
   file = NULL,
+  path = NULL,
   rows = NULL,
   cols = NULL,
   loadValues = FALSE
@@ -18,6 +19,9 @@ loadExpressionDrugSensitivityAssociation(
 
 \item{file}{Character: filepath to gene expression and drug sensitivity
 association dataset (automatically downloaded if file does not exist)}
+
+\item{path}{Character: folder where to find files (optional; \code{file} may
+contain the full filepath if preferred)}
 
 \item{rows}{Character or integer: rows}
 

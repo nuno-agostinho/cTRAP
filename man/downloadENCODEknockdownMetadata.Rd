@@ -15,8 +15,8 @@ downloadENCODEknockdownMetadata(
 
 \item{gene}{Character: target gene}
 
-\item{file}{Character: RDS file with metadata (if file doesn't exist, it will
-be created)}
+\item{file}{Character: RDS filepath with metadata (if file doesn't exist, it
+will be created)}
 }
 \value{
 Data frame containing ENCODE knockdown experiment metadata

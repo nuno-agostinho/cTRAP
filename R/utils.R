@@ -84,15 +84,16 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 #' @param dataset Character: \code{biomaRt} dataset name
 #' @param mart Character: \code{biomaRt} database name
 #'
-#' @importFrom biomaRt useDataset useMart getBM
+#' @importFrom biomaRt getBM useDataset useMart
 #'
 #' @return Named character vector where names are the input ENSEMBL gene
 #'   identifiers and the values are the matching gene symbols
 #' @export
-#' @examples
-#' convertENSEMBLtoGeneSymbols(c("ENSG00000112742", "ENSG00000130234"))
 convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
                                         mart="ensembl") {
+    .Deprecated("convertGeneIdentifiers")
+    
+    requireNamespace("biomaRt")
     mart      <- useDataset(dataset, useMart(mart))
     processed <- sapply(strsplit(genes, "\\."), `[`, 1)
     geneConversion <- getBM(
@@ -102,6 +103,99 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
         match(processed, geneConversion$ensembl_gene_id)]
     converted <- setNames(ifelse(converted != "", converted, genes), genes)
     return(converted)
+}
+
+#' Convert gene identifiers
+#'
+#' @param annotation \code{OrgDb} with genome wide annotation for an organism or
+#'   \code{character} with species name to query \code{OrgDb}, e.g.
+#'   \code{"Homo sapiens"}
+#' @param genes Character: genes to be converted
+#' @param key Character: type of identifier used, e.g. \code{ENSEMBL}; read
+#' \code{?AnnotationDbi::columns}
+#' @param target Character: type of identifier to convert to; read
+#' \code{?AnnotationDbi::columns}
+#' @param ignoreDuplicatedTargets Boolean: if \code{TRUE}, identifiers that
+#' share targets with other identifiers will not be converted
+#'
+#' @importFrom AnnotationDbi select
+#' @importFrom data.table data.table
+#' @importFrom AnnotationHub AnnotationHub query
+#'
+#' @family functions for gene expression pre-processing
+#' @return Character vector of the respective targets of gene identifiers. The
+#' previous identifiers remain other identifiers have the same target (in case
+#' \code{ignoreDuplicatedTargets = TRUE}) or if no target was found.
+#' @export
+#'
+#' @examples
+#' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
+#'            "ENSG00000051180")
+#' convertGeneIdentifiers(genes)
+#' convertGeneIdentifiers(genes, key="ENSEMBL", target="UNIPROT")
+#' 
+#' # Explicit species name to automatically look for its OrgDb database
+#' sp <- "Homo sapiens"
+#' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
+#'            "ENSG00000051180")
+#' convertGeneIdentifiers(genes, sp)
+#'
+#' # Alternatively, set the annotation database directly
+#' ah <- AnnotationHub::AnnotationHub()
+#' sp <- AnnotationHub::query(ah, c("OrgDb", "Homo sapiens"))[[1]]
+#' columns(sp) # these attributes can be used to change the attributes
+#'
+#' convertGeneIdentifiers(genes, sp)
+convertGeneIdentifiers <- function(genes, annotation="Homo sapiens",
+                                   key="ENSEMBL", target="SYMBOL",
+                                   ignoreDuplicatedTargets=TRUE) {
+    if (is.character(annotation)) {
+        ah <- AnnotationHub()
+        annotation <- query(ah, c("OrgDb", annotation))[[1]]
+        if (length(annotation) == 0) {
+            stop(sprintf("No query found for species '%s'", annotation))
+        }
+    } else if (!is(annotation, "OrgDb")) {
+        stop("Annotation needs to be a 'character' or 'OrgDb' object")
+    }
+
+    if (key == "ENSEMBL") {
+        # Remove ENSEMBL identifiers
+        genesClean <- gsub("\\..*", "", genes)
+        # Keep version for gene identifier containing the string "PAR_Y"
+        par_y <- grep("PAR", genes)
+        genesClean[par_y] <- genes[par_y]
+    } else {
+        genesClean <- genes
+    }
+
+    match <- tryCatch(
+        suppressMessages(select(annotation, genesClean, target, key)),
+        error=return)
+
+    if (is(match, "error")) return(setNames(genes, genes))
+    match <- data.table(match, key=key)
+
+    # Ignore missing values
+    match <- match[!is.na(match[[target]]), ]
+
+    # Collapse genes with more than one matching target
+    colnames(match)[2] <- "target"
+    collapsed <- match[
+        , list(target=paste(unique(target), collapse="/")), by=key]
+
+    if (ignoreDuplicatedTargets) {
+        # Ignore genes sharing the same target
+        geneTargets <- collapsed[["target"]]
+        collapsed   <- collapsed[
+            !geneTargets %in% unique(geneTargets[duplicated(geneTargets)]), ]
+    }
+
+    # Replace identifiers by their matching targets (if possible)
+    converted <- collapsed[["target"]][match(genesClean, collapsed[[key]])]
+    genes[!is.na(converted)] <- converted[!is.na(converted)]
+    names(genes) <- genesClean
+    return(genes)
 }
 
 #' Subset rows or columns based on a given index

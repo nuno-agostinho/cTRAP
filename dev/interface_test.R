@@ -4,7 +4,7 @@
 # - launchMetadataViewer()
 # - launchResultPlotter()
 
-diffExpr <- launchDiffExprLoader()
+diffExpr <- launchDiffExprLoader(cellLine="HepG2", gene="EIF4G1")
 
 # Rank similar perturbations ---------------------------------------------------
 cmapKD <- launchCMapDataLoader(
@@ -36,4 +36,6 @@ launchResultPlotter(predicted, compareCompounds)
 # Analyse drug set enrichment --------------------------------------------------
 descriptors <- loadDrugDescriptors("NCI60", "3D")
 drugSets    <- prepareDrugSets(descriptors)
+
+launchDrugSetEnrichmentAnalyser(drugSets, compareCompounds)
 launchDrugSetEnrichmentAnalyser(drugSets, predicted)
