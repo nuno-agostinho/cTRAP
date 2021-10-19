@@ -3,3 +3,27 @@
 .shiny-notification ol, .shiny-notification ul {
     padding-inline-start: 18px;
 }
+
+.tooltip-inner {
+    min-width: 250px;
+}
+
+.show-loaded {
+    opacity: 1;
+}
+
+.hide-loaded {
+    opacity: 0;
+    transition: opacity .5s;
+}
+
+.fadeInOut-loaded {
+    opacity: 1;
+    animation: fade 3s linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fade {
+  0%,100% { opacity: 0 }
+  10%,90% { opacity: 1 }
+}

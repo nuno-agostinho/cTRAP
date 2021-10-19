@@ -33,8 +33,10 @@
     if (is.null(name)) name <- attr(data, "name")
     if (is.null(name) || name == "") name <- "Dataset"
     
+    # Unique names for each data element
     uniqName <- make.unique(c(names(x), name))
     name <- uniqName[[length(uniqName)]]
+    
     x[[name]] <- data
     return(x)
 }
@@ -187,6 +189,12 @@ globalUI <- function(elems, idList, expire) {
     return(ui)
 }
 
+# Set app data and add tags
+.setAppData <- function(appData, elems) {
+    appData$elems <- .addDatasetTags(elems)
+    return(appData)
+}
+
 #' @importFrom shiny downloadHandler renderText req
 #' @importFrom qs qread
 .sessionManagementServer <- function(input, output, session, appData) {
@@ -198,7 +206,7 @@ globalUI <- function(elems, idList, expire) {
     
     # Create new session
     observeEvent(input$createSession, {
-        appData$elems <- NULL
+        .setAppData(appData, NULL)
         appData$token <- .createToken()
         removeModal()
     })
@@ -245,7 +253,7 @@ globalUI <- function(elems, idList, expire) {
             showNotification(paste("Error loading data:", data),
                              type="error")
         } else {
-            appData$elems <- data
+            .setAppData(appData, data)
             appData$token <- token <- .createToken()
             removeModal()
             .saveSession(data, token)
@@ -375,7 +383,7 @@ globalUI <- function(elems, idList, expire) {
             .newDataNotification(added, length(elems) - expected, duration=30,
                                  auto=TRUE)
         }
-        appData$elems <- elems
+        .setAppData(elems)
         .saveSession(elems, token)
     })
 }
@@ -385,7 +393,7 @@ updateAppData <- function(appData, x) {
     observe({
         obj <- x()
         elems <- .addToList(isolate(appData$elems), obj)
-        appData$elems <- elems
+        .setAppData(appData, elems)
         token <- isolate(appData$token)
         
         dataset <- tail(names(elems), 1)
@@ -457,7 +465,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     
     server <- function(input, output, session) {
         appData       <- reactiveValues()
-        appData$elems <- elems
+        .setAppData(appData, elems)
         elems <- reactive(appData$elems)
         
         # load data

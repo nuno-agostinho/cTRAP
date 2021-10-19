@@ -170,17 +170,16 @@
     res <- rbindlist(formInput, fill=TRUE)
     
     # Return task state if available
-    state <- sapply(data, function(i)
-        if ("state" %in% names(i)) capitalize(i[["state"]]) else "Loaded")
+    state     <- sapply(data, getTaskState)
     isLoaded  <- state == "Loaded"
-    stateHTML <- sapply(state, getStateHTML)
+    stateHTML <- sapply(state, convertTaskState2HTML)
     
     # Create link to data results
     dataset   <- names(data)
     js        <- paste("$(\"a[data-value*='Plot']\").click(); ",
                        "$('#dataPlotter-object')[0].selectize.setValue('%s');")
-    js        <- sprintf(js, dataset)
-    datasetJS <- as.character(tags$a(href="#", onclick=js, dataset))
+    datasetJS <- as.character(tags$a(href="#", onclick=js, "%s"))
+    datasetJS <- sprintf(datasetJS, dataset, dataset)
     dataset   <- ifelse(isLoaded, datasetJS, dataset)
     
     res <- cbind("Dataset"=dataset, "Progress"=stateHTML, res)
@@ -262,6 +261,47 @@
     return(elems)
 }
 
+# Add tags to datasets in "display" attribute
+.addDatasetTags <- function(elems) {
+    # Only edit data with no "display" attribute
+    noDisplay <- sapply(lapply(elems, attr, "display"), is.null)
+    if (!any(noDisplay)) return(elems)
+    
+    getDatasetTags <- function(name, data) {
+        dataset <- data[[name]]
+        if (is.null(dataset)) return(dataset)
+        class  <- class(dataset)[[1]]
+        source <- attr(dataset, "source")
+        tags   <- paste0("#", c(class, source), collapse=" ")
+        
+        html   <- convertTaskState2HTML(getTaskState(dataset), label=TRUE)
+        attr(dataset, "display") <- paste(name, tags, html)
+        return(dataset)
+    }
+    dataset          <- names(elems[noDisplay])
+    elems[noDisplay] <- lapply(dataset, getDatasetTags, elems[noDisplay])
+    return(elems)
+}
+
+# Update dataset choices (optionally, filter datasets by class)
+.updateDatasetChoices <- function(session, id, data, class=NULL) {
+    if (!is.null(class)) data <- .filterDatasetsByClass(data, class)
+    if (is.null(data) || length(data) == 0) {
+        choices <- list()
+    } else {
+        data    <- .addDatasetTags(data)
+        choices <- setNames(names(data), sapply(data, attr, "display"))
+    }
+    render  <- I('{ option: renderSelectizeTags, item: renderSelectizeTags }')
+    
+    # Keep previous selection if possible
+    selected <- isolate(session$input[[id]])
+    if (is.null(selected) || !selected %in% choices) selected <- NULL
+    
+    updateSelectizeInput(session, id, choices=choices, selected=selected,
+                         options=list(render=render))
+}
+
 # Data input -------------------------------------------------------------------
 
 .getENCODEconditions <- function(metadata) {
@@ -329,13 +369,7 @@
             return(data)
         })
         
-        observe({
-            choices <- names(x())[sapply(x(), is, "diffExpr")]
-            if (is.null(choices)) choices <- list()
-            selected <- choices[length(choices)]
-            updateSelectizeInput(session, "dataset", choices=choices,
-                                 selected=selected)
-        })
+        observe(.updateDatasetChoices(session, "dataset", x(), "diffExpr"))
         
         output$table <- renderDT({
             req(input$dataset)
@@ -530,10 +564,12 @@
         if (!globalUI)
             helpText("By default, data will be downloaded if not found."),
         if (!globalUI) actionButton(ns("cancel"), "Cancel"),
-        actionButton(ns("load"), "Load data", class="btn-primary"))
+        actionButton(ns("load"), "Load data", class="btn-primary"),
+        convertTaskState2HTML("Loaded", toStr=FALSE, id=ns("loaded"),
+                              style="margin-left: 10px; opacity: 0;"))
     mainPanel <- mainPanel( withSpinner(DTOutput(ns("table")), type=6) )
     
-    ui <- tabPanel(title, sidebar, mainPanel)
+    ui <- tabPanel(title, sidebarLayout(sidebar, mainPanel))
     ui[[3]] <- c(list(plots), ui[[3]])
     return(ui)
 }
@@ -726,7 +762,7 @@
                                          width="100%")),
                 column(4, selectizeInput(ns("attr"), "Table", choices=NULL, 
                                          width="100%")))),
-        DTOutput(ns("table")))
+      DTOutput(ns("table")))
     return(ui)
 }
 
@@ -739,7 +775,7 @@
         function(input, output, session) {
             getSelectedObject <- reactive(.prepareMetadata(x()[[input$object]]))
             
-            observe(updateSelectizeInput(session, "object", choices=names(x())))
+            observe( .updateDatasetChoices(session, "object", x()) )
             
             observe({
                 selected <- isolate(input$attr)
@@ -793,13 +829,8 @@
             getSelectedObject <- reactive(x()[[input$object]])
             
             observe({
-                obj <- x()
-                if (length(obj) == 0) return(NULL)
-                ref <- sapply(obj, is, "referenceComparison")
-                if (!any(ref)) return(NULL)
-                choices <- names(obj[ref])
-                updateSelectizeInput(session, "object", choices=choices,
-                                     server=TRUE)
+                .updateDatasetChoices(session, "object", x(),
+                                      "referenceComparison")
             })
             
             # Update element and methods choices depending on selected object
@@ -925,15 +956,10 @@
             getSelectedDataset2 <- reactive(x()[[input$data2]])
             
             observe({
-                obj <- x()
-                req(names(obj))
-                choices <- names(obj)[sapply(obj, is, "referenceComparison")]
-                req(choices)
-                if (length(choices) < 2) return(NULL)
-                
-                updateSelectizeInput(session, "data1", choices=choices)
-                updateSelectizeInput(session, "data2", choices=choices,
-                                     selected=choices[[2]])
+                .updateDatasetChoices(session, "data1", x(),
+                                      "referenceComparison")
+                .updateDatasetChoices(session, "data2", x(),
+                                      "referenceComparison")
             })
             
             observe({
@@ -1052,14 +1078,9 @@
             getSelectedDataset2 <- reactive(getDataset(x(), input$data2))
             
             observe({
-                obj <- x()
-                elemClasses <- sapply(lapply(obj, class), "[[", 1)
-                updateSelectizeInput(
-                    session, "object", server=TRUE,
-                    names(obj)[elemClasses == "targetingDrugs"])
-                updateSelectizeInput(
-                    session, "object", server=TRUE,
-                    choices=names(obj)[elemClasses == "similarPerturbations"])
+                .updateDatasetChoices(session, "data1", x(), "targetingDrugs")
+                .updateDatasetChoices(session, "data2", x(),
+                                      "similarPerturbations")
             })
             
             observe({
@@ -1109,29 +1130,49 @@
 
 # Data analysis ----------------------------------------------------------------
 
-getStateHTML <- function(state) {
+getTaskState <- function(dataset) {
+    if ("state" %in% names(dataset)) {
+        state <- capitalize(dataset[["state"]])
+    } else {
+        state <- "Loaded"
+    }
+    return(state)
+}
+
+convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
     state <- capitalize(tolower(state))
     if (state %in% c("Failure", "Revoked")) {
         colour <- "red"
         icon   <- icon("times-circle")
         state  <- "Error"
+        class  <- "label label-danger"
     } else if (state %in% c("Received", "Pending", "Retry")) {
         colour <- "grey"
         icon   <- icon("pause-circle")
         state  <- "Waiting"
+        class  <- "label label-default"
     } else if (state %in% c("Started")) {
         colour <- "orange"
         icon   <- icon("circle-notch", "fa-spin")
         state  <- "Running"
+        class  <- "label label-warning"
     } else if (state %in% c("Success", "Loaded")) {
         colour <- "green"
         icon   <- icon("check-circle")
         state  <- "Loaded"
+        class  <- "label label-success"
     } else {
         return(state)
     }
-    colour <- sprintf("color: %s;", colour)
-    html   <- as.character(tags$span(style=colour, icon, state))
+    
+    if (!label) {
+      colour <- sprintf("color: %s;", colour)
+      class  <- NULL
+    } else {
+      colour <- NULL
+    }
+    html   <- tags$span(style=colour, icon, state, ..., class=class)
+    if (toStr) html <- as.character(html)
     return(html)
 }
 
@@ -1219,11 +1260,8 @@ celery_rankAgainstRef <- function(..., mode, token) {
                                             flower=FALSE, token=NULL) {
     server <- function(input, output, session) {
         observe({
-            diffExpr <- .filterDatasetsByClass(x(), "diffExpr")
-            updateSelectizeInput(session, "diffExpr", choices=names(diffExpr))
-            
-            perts <- .filterDatasetsByClass(x(), "perturbationChanges")
-            updateSelectizeInput(session, "perts", choices=names(perts))
+            .updateDatasetChoices(session, "diffExpr", x(), "diffExpr")
+            .updateDatasetChoices(session, "perts", x(), "perturbationChanges")
         })
         
         rankData <- eventReactive(input$analyse, {
@@ -1331,10 +1369,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
 .predictTargetingDrugsServer <- function(id, x, path=".", globalUI=FALSE,
                                          flower=FALSE, token=NULL) {
     server <- function(input, output, session) {
-        observe({
-            diffExpr <- .filterDatasetsByClass(x(), "diffExpr")
-            updateSelectizeInput(session, "diffExpr", choices=names(diffExpr))
-        })
+        observe( .updateDatasetChoices(session, "diffExpr", x(), "diffExpr") )
         
         observe({
             dataset <- "Targeting drugs"
@@ -1426,12 +1461,10 @@ celery_rankAgainstRef <- function(..., mode, token) {
         function(input, output, session) {
             getSelectedObject <- reactive(x[[input$object]])
             
+            # Update available datasets
             observe({
-                req(names(x))
-                ref <- sapply(x, is, "referenceComparison")
-                if (!any(ref)) return(NULL)
-                choices <- names(x[ref])
-                updateSelectizeInput(session, "object", choices=choices)
+                .updateDatasetChoices(session, "object", x(),
+                                      "referenceComparison")
             })
             
             getDSEAresult <- reactive({
@@ -1445,8 +1478,8 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
                 
                 analyseDrugSetEnrichment(
-                    sets, obj, col=sort,
-                    keyColSets=setsKey, keyColStats=statsKey)
+                        sets, obj, col=sort,
+                        keyColSets=setsKey, keyColStats=statsKey)
             })
             
             observeEvent(input$object, {
@@ -1472,7 +1505,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 keyList      <- getCompoundIntersectingKeyList()
                 statsOptions <- intersect(names(statsInfo), keyList)
                 setsOptions  <- intersect(names(setsInfo), keyList)
-                
+            
                 updateSelectizeInput(session, "statsKey", selected=statsKey,
                                      choices=statsOptions)
                 updateSelectizeInput(session, "setsKey", selected=setsKey,
@@ -1521,9 +1554,9 @@ celery_rankAgainstRef <- function(..., mode, token) {
                     })
                     isValid <- function(e) !is.null(e) && e != ""
                     if (!isValid(statsKey) || !isValid(setsKey)) return(NULL)
-                    plotDrugSetEnrichment(sets, obj, col=sort,
-                                          selectedSets=element,
-                                          keyColStats=statsKey,
+                      plotDrugSetEnrichment(sets, obj, col=sort,
+                                            selectedSets=element,
+                                            keyColStats=statsKey,
                                           keyColSets=setsKey)[[1]]
                 })
             })

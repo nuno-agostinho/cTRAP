@@ -1,3 +1,16 @@
+// Enable tooltips
+$(function () { $('[data-toggle="tooltip"]').tooltip() })
+
+Shiny.addCustomMessageHandler("brieflyShowElem", showAndHideElem );
+
+function showAndHideElem(id) {
+    var ended = 'webkitAnimationEnd oanimationend msAnimationEnd animationend';
+    $("#" + id).addClass("fadeInOut-loaded");
+    $("#" + id).one(ended, function(event) {
+        $("#" + id).removeClass("fadeInOut-loaded")
+    });
+}
+
 /**
  * Clear text selection
  */
@@ -33,4 +46,21 @@ function copyToken() {
         console.warn("Could not select text in node: Unsupported browser.");
     }
     return(node)
+}
+
+/**
+ * Redirect to plot of a specific element
+ */
+function plotResult(elem) {
+    $("a[data-value*='Plot']").click();
+    $('#dataPlotter-object')[0].selectize.setValue(elem);
+}
+
+/**
+ * Render selectize.js tags
+ */
+function renderSelectizeTags(item, escape) {
+    var label = "<span class=\'label label-default\'>$1</span>",
+        display = item.label.replace(/#([\w\._]+)/g, label);
+    return "<div>" + display + "</div>";
 }
