@@ -13,6 +13,7 @@
     if (expected) {
         # Return values that are expected to turn into the given class
         expected <- sapply(data, is, paste0("expected", capitalize(class)))
+        if (is.list(expected) && length(expected) == 0) return(NULL)
         selected <- selected | expected
     }
     if (!any(selected)) return(NULL)
