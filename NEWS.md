@@ -1,32 +1,4 @@
-# cTRAP 1.12.0 (18 October, 2021)
-
-* Use the faster and efficient file format from R package `qs` instead of `RDS`:
-    - `cTRAP()`: faster saving/loading of session data
-    - Faster download and loading of pre-processed remote files (compound
-    molecular descriptors and gene expression and drug sensitivity associations)
-* Visual interface:
-    - Show redesigned "Data" section as first page
-    - Show tags when selecting datasets to more easily identify data
-    - Multiple other visual improvements
-* Drug set enrichment analysis interface:
-    - Show all drug sets available to (down)load
-    - Show loading indicator when loading different drug sets
-    - Hide "leading edge" column of the results by default
-    
-## Bug fixes and minor improvements
-
-* `analyseDrugSetEnrichment()`:
-    - Cross-match more compounds between datasets by discarding non-alphanumeric
-    characters and ignoring case
-    - Fix incorrect columns used for each dataset when merging datasets
-* Visual interface:
-    - Fix crash when plotting dataset comparison using values with too many
-    zeroes for density estimation
-    - Total number of datasets now excludes expected datasets that are not yet
-    loaded
-    - Fix interface error shown when going to certain pages with no data loaded
-
-# cTRAP 1.10.2 (1 October, 2021)
+# cTRAP 1.12.0 (27 October, 2021)
 
 ## Web server support (optimised to run in ShinyProxy)
 
@@ -37,20 +9,31 @@
     - Long-running tasks can be performed in the background using the Celery
     task manager via Flower's REST API and their output is automatically loaded
     in the corresponding session
+    - Loading icon in navigation menu when Shiny is busy
+* Use the faster and efficient file format from R package `qs` instead of `RDS`:
+    - Faster download and loading of pre-processed remote files (compound
+    molecular descriptors and gene expression and drug sensitivity associations)
 
 ## Bug fixes and minor improvements
 
-* `loadENCODEsamples()`: new argument to select folder where to download data
-* Fix crash when using shiny 1.7.0 (avoid malformed, custom UI elements)
-* Improve graphical interface functions
-* Add progress bars for slower tasks
-* Add loading icon in navigation menu when Shiny is busy
-
-# cTRAP 1.10.1 (7 June, 2021)
-
 * `convertGeneIdentifiers()` replaces `convertENSEMBLtoGeneSymbols()`:
     - Use AnnotationHub to convert to gene symbols (instead of biomaRt that has
-    been unstable) and allow to 
+    been unstable)
+* `loadENCODEsamples()`:
+    - New argument to select folder where to download data
+* `analyseDrugSetEnrichment()`:
+    - Cross-match more compounds between datasets by discarding non-alphanumeric
+    characters and ignoring case
+    - Fix incorrect columns used for each dataset when merging datasets
+* Visual interface:
+    - Fix crash when plotting dataset comparison using values with too many
+    zeroes for density estimation
+    - Add progress bars for slower tasks
+    - Fix crash when using shiny 1.7.0 (avoid malformed, custom UI elements)
+* Drug set enrichment analysis interface:
+    - Show all drug sets available to (down)load
+    - Show loading indicator when loading different drug sets
+    - Hide "leading edge" column of the results by default
 
 # cTRAP 1.10.0 (18 March, 2021)
 
