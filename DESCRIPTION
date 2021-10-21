@@ -27,7 +27,10 @@ Suggests:
     knitr,
     covr,
     rmarkdown,
-    spelling
+    spelling,
+    biomaRt,
+    remotes,
+    floweRy
 RoxygenNote: 7.1.2
 Imports: AnnotationDbi,
     AnnotationHub,
