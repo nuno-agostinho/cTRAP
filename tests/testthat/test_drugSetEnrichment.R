@@ -151,7 +151,7 @@ test_that("Match a named numeric vector to drug set identifiers", {
         customDrugStat)[is.na(names(customDrugStat2))]
 
     matched <- matchStatsWithDrugSetsID(drugSets, customDrugStat2)
-    expect_identical(sort(matched), sort(customDrugStat))
+    expect_equivalent(sort(matched), sort(customDrugStat))
 })
 
 test_that("Match a custom list of drug sets to drug set identifiers", {
