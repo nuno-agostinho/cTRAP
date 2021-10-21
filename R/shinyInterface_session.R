@@ -381,7 +381,7 @@ globalUI <- function(elems, idList, expire) {
             .newDataNotification(added, length(elems) - expected, duration=30,
                                  auto=TRUE)
         }
-        .setAppData(elems)
+        .setAppData(appData, elems)
         .saveSession(elems, token)
     })
 }
