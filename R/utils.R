@@ -84,19 +84,15 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 #' @param dataset Character: \code{biomaRt} dataset name
 #' @param mart Character: \code{biomaRt} database name
 #'
-#' @importFrom biomaRt useDataset useMart getBM
-#'
 #' @return Named character vector where names are the input ENSEMBL gene
 #'   identifiers and the values are the matching gene symbols
 #' @export
 convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
                                         mart="ensembl") {
     .Deprecated("convertGeneIdentifiers")
-    
-    requireNamespace("biomaRt")
-    mart      <- useDataset(dataset, useMart(mart))
+    mart      <- biomaRt::useDataset(dataset, biomaRt::useMart(mart))
     processed <- sapply(strsplit(genes, "\\."), `[`, 1)
-    geneConversion <- getBM(
+    geneConversion <- biomaRt::getBM(
         filters="ensembl_gene_id", values=processed, mart=mart,
         attributes=c("ensembl_gene_id", "hgnc_symbol"))
     converted <- geneConversion$hgnc_symbol[
