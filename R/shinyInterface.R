@@ -1145,29 +1145,34 @@ getTaskState <- function(dataset) {
 }
 
 convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
-    state <- capitalize(tolower(state))
-    if (state %in% c("Failure", "Revoked")) {
+    state <- tolower(state)
+    if (state %in% c("failure", "revoked")) {
         colour <- "red"
         icon   <- icon("times-circle")
         state  <- "Error"
-        class  <- "label label-danger"
-    } else if (state %in% c("Received", "Pending", "Retry")) {
+        class  <- "danger"
+    } else if (state %in% c("not found")) {
+        colour <- "red"
+        icon   <- icon("question-circle")
+        state  <- "Not Found"
+        class  <- "danger"
+    } else if (state %in% c("received", "pending", "retry")) {
         colour <- "grey"
         icon   <- icon("pause-circle")
         state  <- "Waiting"
-        class  <- "label label-default"
-    } else if (state %in% c("Started")) {
+        class  <- "default"
+    } else if (state %in% c("started")) {
         colour <- "orange"
         icon   <- icon("circle-notch", "fa-spin")
         state  <- "Running"
-        class  <- "label label-warning"
-    } else if (state %in% c("Success", "Loaded")) {
+        class  <- "warning"
+    } else if (state %in% c("success", "loaded")) {
         colour <- "green"
         icon   <- icon("check-circle")
         state  <- "Loaded"
-        class  <- "label label-success"
+        class  <- "success"
     } else {
-        return(state)
+        return(capitalize(state))
     }
     
     if (!label) {
@@ -1175,6 +1180,7 @@ convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
         class  <- NULL
     } else {
         colour <- NULL
+        class  <- paste0(c("label label-"), class)
     }
     html   <- tags$span(style=colour, icon, state, ..., class=class)
     if (toStr) html <- as.character(html)

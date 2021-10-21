@@ -359,10 +359,12 @@ globalUI <- function(elems, idList, expire) {
                 taskID   <- elems[[id]][["task-id"]]
                 matched  <- tasks$uuid == taskID
                 if (!any(matched)) {
-                    message("Task from cTRAP not found in Celery tasks...")
-                    next # Skip if task ID not found
+                    message("cTRAP task not found in Celery/Flower history...")
+                    newState <- "Not found"
+                } else {
+                    newState <- tasks[matched, "state"]
                 }
-                newState <- tolower(tasks[matched, "state"])
+                newState <- tolower(newState)
                 oldState <- tolower(elems[[id]]$state)
                 
                 if (newState != oldState) {
