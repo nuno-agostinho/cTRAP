@@ -228,7 +228,7 @@
         colnames(data) <- c("Key", "Value")
         dataName <- "Object summary"
     } else {
-        data <- tryCatch(as.table(x, clean=FALSE), error=return)
+        data <- tryCatch(as.table(x, clean=FALSE), error=function(e) e)
         if (is(data, "error") || !is.data.frame(data)) {
             if (!is.null(names(x))) {
                 data <- data.frame("Element"=names(x), "Value"=x)

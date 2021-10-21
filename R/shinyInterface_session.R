@@ -246,7 +246,7 @@ globalUI <- function(elems, idList, expire) {
         }
         req(file)
         
-        data <- tryCatch(readRDS(file$datapath), error=return)
+        data <- tryCatch(readRDS(file$datapath), error=function(e) e)
         if (is(data, "error")) {
             showNotification(paste("Error loading data:", data),
                              type="error")
@@ -438,7 +438,9 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     
     # if in ShinyProxy, use Celery/Flower backend via floweRy
     if (!is.null(flowerURL)) {
-        if (!require(floweRy)) remotes::install_github("nuno-agostinho/floweRy")
+        if (!requireNamespace("floweRy")) {
+            remotes::install_github("nuno-agostinho/floweRy")
+        }
         options(flowerURL=flowerURL)
         flower <- TRUE
     } else {
@@ -459,7 +461,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     ui <- globalUI(elems, idList, expire)
     
     # Get common data from specific folder
-    data <- function(x, path=commonPath) file.path(path, x)
+    loadCommonData <- function(x, path=commonPath) file.path(path, x)
     
     server <- function(input, output, session) {
         appData       <- reactiveValues()
@@ -473,15 +475,15 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         encodeDiffExpr <- .diffExprENCODEloaderServer(
             idList$encode, globalUI=TRUE, path=reactive(appData$token),
             metadata=downloadENCODEknockdownMetadata(
-                file=data("ENCODEmetadata.rds")))
+                file=loadCommonData("ENCODEmetadata.rds")))
         updateAppData(appData, encodeDiffExpr)
 
         cmapData <- .cmapDataLoaderServer(
             idList$cmap, globalUI=TRUE, tab=reactive(session$input$tab),
-            metadata=data("cmapMetadata.txt"),
-            zscores=data("cmapZscores.gctx"),
-            geneInfo=data("cmapGeneInfo.txt"),
-            compoundInfo=data("cmapCompoundInfo.txt"))
+            metadata=loadCommonData("cmapMetadata.txt"),
+            zscores=loadCommonData("cmapZscores.gctx"),
+            geneInfo=loadCommonData("cmapGeneInfo.txt"),
+            compoundInfo=loadCommonData("cmapCompoundInfo.txt"))
         updateAppData(appData, cmapData)
 
         # analyse

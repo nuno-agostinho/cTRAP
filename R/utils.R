@@ -84,6 +84,8 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 #' @param dataset Character: \code{biomaRt} dataset name
 #' @param mart Character: \code{biomaRt} database name
 #'
+#' @importFrom biomaRt useDataset useMart getBM
+#'
 #' @return Named character vector where names are the input ENSEMBL gene
 #'   identifiers and the values are the matching gene symbols
 #' @export
@@ -169,7 +171,7 @@ convertGeneIdentifiers <- function(genes, annotation="Homo sapiens",
 
     match <- tryCatch(
         suppressMessages(select(annotation, genesClean, target, key)),
-        error=return)
+        error=function(e) e)
 
     if (is(match, "error")) return(setNames(genes, genes))
     match <- data.table(match, key=key)
