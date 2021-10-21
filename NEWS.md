@@ -35,6 +35,10 @@
     - Show loading indicator when loading different drug sets
     - Hide "leading edge" column of the results by default
 
+# cTRAP 1.10.1 (4 October, 2021)
+
+* Fix crash when opening CMap's visual interface functions with shiny 1.7.0
+
 # cTRAP 1.10.0 (18 March, 2021)
 
 ## Improvements to graphical interface functions:
