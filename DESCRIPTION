@@ -75,6 +75,7 @@ Collate:
     'compare.R'
     'drugSensitivity.R'
     'drugSetEnrichment.R'
+    'floweRy.R'
     'plots.R'
     'shinyInterface.R'
     'shinyInterface_session.R'
