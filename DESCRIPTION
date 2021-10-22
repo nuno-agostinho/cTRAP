@@ -29,9 +29,7 @@ Suggests:
     rmarkdown,
     spelling,
     biomaRt,
-    remotes,
-    floweRy
-Remotes: github::nuno-agostinho/floweRy
+    remotes
 RoxygenNote: 7.1.2
 Imports: AnnotationDbi,
     AnnotationHub,

@@ -313,7 +313,7 @@ globalUI <- function(elems, idList, expire) {
         expectedTaskID <- sapply(expectedAppTasks, "[[", "task-id")
         if (length(expectedTaskID) == 0) return(NULL)
         
-        tasks <- floweRy::taskList()
+        tasks <- taskList()
         tasks <- tasks[tasks$uuid %in% expectedTaskID, ]
         if (is.null(tasks)) return(NULL)
         return(tasks)
@@ -440,10 +440,10 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     
     # if in ShinyProxy, use Celery/Flower backend via floweRy
     if (!is.null(flowerURL)) {
-        if (!requireNamespace("floweRy")) {
-            remotes::install_github("nuno-agostinho/floweRy")
-        }
-        options(flowerURL=flowerURL)
+        # if (!requireNamespace("floweRy")) {
+        #     remotes::install_github("nuno-agostinho/floweRy")
+        # }
+        options(floweRy.url=flowerURL)
         flower <- TRUE
     } else {
         flower <- FALSE

@@ -1213,7 +1213,7 @@ celery_rankAgainstRef <- function(..., mode, token) {
                 sprintf("saveRDS(ranking, '%s')", outputFile),
                 sprintf("unlink('%s')", inputFile))
     cmd <- gsub("\n *", "", paste(cmd, collapse="; "))
-    taskAsync <- floweRy::taskAsyncApply("tasks.R", cmd)
+    taskAsync <- taskAsyncApply("tasks.R", cmd)
     
     # Prepare object
     ranking <- taskAsync
