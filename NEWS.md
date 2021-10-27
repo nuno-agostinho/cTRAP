@@ -1,4 +1,4 @@
-# cTRAP 1.20.0 (27 October, 2021)
+# cTRAP 1.12.0 (27 October, 2021)
 
 ## Web server support (optimised to run in ShinyProxy)
 
