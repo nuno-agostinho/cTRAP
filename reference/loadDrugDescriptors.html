@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -136,7 +136,8 @@
     <pre class="usage"><span class='fu'>loadDrugDescriptors</span><span class='op'>(</span>
   source <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"NCI60"</span>, <span class='st'>"CMap"</span><span class='op'>)</span>,
   type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"2D"</span>, <span class='st'>"3D"</span><span class='op'>)</span>,
-  file <span class='op'>=</span> <span class='cn'>NULL</span>
+  file <span class='op'>=</span> <span class='cn'>NULL</span>,
+  path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -144,8 +145,8 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>source</th>
-      <td><p>Character: molecular descriptors for compounds in <code>NCI60</code>
-or <code>CMap</code></p></td>
+      <td><p>Character: source of compounds used to calculate molecular
+descriptors (<code>NCI60</code> or <code>CMap</code>)</p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -155,6 +156,11 @@ or <code>CMap</code></p></td>
       <th>file</th>
       <td><p>Character: filepath to drug descriptors (automatically downloaded
 if file does not exist)</p></td>
+    </tr>
+    <tr>
+      <th>path</th>
+      <td><p>Character: folder where to find files (optional; <code>file</code> may
+contain the full filepath if preferred)</p></td>
     </tr>
     </table>
 

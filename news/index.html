@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -127,6 +127,69 @@
       <small>Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="ctrap-1120-27-october-2021" class="section level1">
+<h1 class="page-header" data-toc-text="1.12.0">
+<a href="#ctrap-1120-27-october-2021" class="anchor"></a>cTRAP 1.12.0 (27 October, 2021)</h1>
+<div id="web-server-support-optimised-to-run-in-shinyproxy" class="section level2">
+<h2 class="hasAnchor">
+<a href="#web-server-support-optimised-to-run-in-shinyproxy" class="anchor"></a>Web server support (optimised to run in ShinyProxy)</h2>
+<ul>
+<li>
+<code><a href="../reference/cTRAP.html">cTRAP()</a></code>: new global interface with all cTRAP functionality in one place
+<ul>
+<li>Sessions can be created and loaded via a token or a RDS file</li>
+<li>Session data is automatically saved in a RDS file to a folder in the working directory named based on the current session token</li>
+<li>Long-running tasks can be performed in the background using the Celery task manager via Flower’s REST API and their output is automatically loaded in the corresponding session</li>
+<li>Loading icon in navigation menu when Shiny is busy</li>
+</ul>
+</li>
+<li>Use the faster and efficient file format from R package <code>qs</code> instead of <code>RDS</code>:
+<ul>
+<li>Faster download and loading of pre-processed remote files (compound molecular descriptors and gene expression and drug sensitivity associations)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="bug-fixes-and-minor-improvements" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes-and-minor-improvements" class="anchor"></a>Bug fixes and minor improvements</h2>
+<ul>
+<li>
+<code><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers()</a></code> replaces <code><a href="../reference/convertENSEMBLtoGeneSymbols.html">convertENSEMBLtoGeneSymbols()</a></code>:
+<ul>
+<li>Use AnnotationHub to convert to gene symbols (instead of biomaRt that has been unstable)</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>:
+<ul>
+<li>New argument to select folder where to download data</li>
+</ul>
+</li>
+<li>
+<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>:
+<ul>
+<li>Cross-match more compounds between datasets by discarding non-alphanumeric characters and ignoring case</li>
+<li>Fix incorrect columns used for each dataset when merging datasets</li>
+</ul>
+</li>
+<li>Visual interface:
+<ul>
+<li>Fix crash when plotting dataset comparison using values with too many zeroes for density estimation</li>
+<li>Add progress bars for slower tasks</li>
+<li>Fix crash when using shiny 1.7.0 (avoid malformed, custom UI elements)</li>
+</ul>
+</li>
+<li>Drug set enrichment analysis interface:
+<ul>
+<li>Show all drug sets available to (down)load</li>
+<li>Show loading indicator when loading different drug sets</li>
+<li>Hide “leading edge” column of the results by default</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
     <div id="ctrap-1101-4-october-2021" class="section level1">
 <h1 class="page-header" data-toc-text="1.10.1">
 <a href="#ctrap-1101-4-october-2021" class="anchor"></a>cTRAP 1.10.1 (4 October, 2021)</h1>

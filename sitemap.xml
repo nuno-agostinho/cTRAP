@@ -55,6 +55,9 @@
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertENSEMBLtoGeneSymbols.html</loc>
   </url>
   <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertGeneIdentifiers.html</loc>
+  </url>
+  <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/counts.html</loc>
   </url>
   <url>
@@ -68,6 +71,9 @@
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-prepareNavPage.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-traceInList.html</loc>
   </url>
   <url>
     <loc>https://nuno-agostinho.github.io/cTRAP//reference/downloadENCODEknockdownMetadata.html</loc>

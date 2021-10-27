@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -133,7 +133,12 @@
     <p>Currently only supports loading data from ENCODE knockdown experiments</p>
     </div>
 
-    <pre class="usage"><span class='fu'>launchDiffExprLoader</span><span class='op'>(</span>cellLine <span class='op'>=</span> <span class='cn'>NULL</span>, gene <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>launchDiffExprLoader</span><span class='op'>(</span>
+  cellLine <span class='op'>=</span> <span class='cn'>NULL</span>,
+  gene <span class='op'>=</span> <span class='cn'>NULL</span>,
+  file <span class='op'>=</span> <span class='st'>"ENCODEmetadata.rds"</span>,
+  path <span class='op'>=</span> <span class='st'>"."</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,6 +151,15 @@
       <th>gene</th>
       <td><p>Character: target gene</p></td>
     </tr>
+    <tr>
+      <th>file</th>
+      <td><p>Character: RDS filepath with metadata (if file doesn't exist, it
+will be created)</p></td>
+    </tr>
+    <tr>
+      <th>path</th>
+      <td><p>Character: path where to download files</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -154,6 +168,7 @@
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other visual interface functions: 
+<code><a href='cTRAP.html'>cTRAP</a>()</code>,
 <code><a href='launchCMapDataLoader.html'>launchCMapDataLoader</a>()</code>,
 <code><a href='launchDrugSetEnrichmentAnalyser.html'>launchDrugSetEnrichmentAnalyser</a>()</code>,
 <code><a href='launchMetadataViewer.html'>launchMetadataViewer</a>()</code>,

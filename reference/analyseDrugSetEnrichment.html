@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -211,39 +211,39 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>descriptors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadDrugDescriptors.html'>loadDrugDescriptors</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>molecular_descriptors_NCI60_2D.rds not found: downloading data...</span></div><div class='input'><span class='va'>drugSets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span><span class='op'>(</span><span class='va'>descriptors</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>compound_descriptors_NCI60_2D.qs not found: downloading data...</span></div><div class='input'><span class='va'>drugSets</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareDrugSets.html'>prepareDrugSets</a></span><span class='op'>(</span><span class='va'>descriptors</span><span class='op'>)</span>
 
 <span class='co'># Analyse drug set enrichment in ranked targeting drugs for a differential</span>
 <span class='co'># expression profile</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
 <span class='va'>gdsc</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='loadExpressionDrugSensitivityAssociation.html'>loadExpressionDrugSensitivityAssociation</a></span><span class='op'>(</span><span class='st'>"GDSC"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>expressionDrugSensitivityCorGDSC7.rds not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC7.rds...</span></div><div class='input'><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>gdsc</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 3.56 secs</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>expressionDrugSensitivityCorGDSC7.qs not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Loading data from expressionDrugSensitivityCorGDSC7.qs...</span></div><div class='input'><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predictTargetingDrugs.html'>predictTargetingDrugs</a></span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>gdsc</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 9.68 secs</span></div><div class='input'>
 <span class='fu'>analyseDrugSetEnrichment</span><span class='op'>(</span><span class='va'>drugSets</span>, <span class='va'>predicted</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Ordering results by column 'rankProduct_rank'; to manually select column to order by, please set argument 'col'</span></div><div class='output co'>#&gt; <span class='message'>Columns 'name' and 'name' were matched based on 52 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></div><div class='output co'>#&gt; <span class='message'>Performing enrichment analysis...</span></div><div class='output co'>#&gt;                       descriptor         pval       padj         ES        NES
-#&gt;   1:              Small Rings: 4 0.0001043623 0.02963891 -0.7423058 -2.0197115
-#&gt;   2:                sp3-Atoms: 5 0.0004757940 0.06756275 -0.9039180 -1.9353310
-#&gt;   3: Total Molweight: [440, 469] 0.0015232292 0.08651942  0.7681159  2.0527086
-#&gt;   4:           H-Donors: [6, 40] 0.0015105740 0.08651942  0.8884892  1.9617057
-#&gt;   5:          Aromatic Atoms: 16 0.0015232292 0.08651942  0.7681159  2.0527086
-#&gt;  ---                                                                          
-#&gt; 280:                 H-Donors: 1 0.9552397115 0.96888599 -0.2272251 -0.5967703
-#&gt; 281: Total Molweight: [294, 312] 0.9841704124 0.98764805 -0.5088968 -0.6791230
-#&gt; 282:           Stereo Centers: 3 0.9841704124 0.98764805 -0.5088968 -0.6791230
-#&gt; 283:              Small Rings: 3 0.9822584012 0.98764805 -0.1975991 -0.5376399
-#&gt; 284:           Rings Closures: 3 0.9956051024 0.99560510 -0.1762806 -0.4527586
-#&gt;      nMoreExtreme size                                   leadingEdge
-#&gt;   1:            0   13   737754,752782,757441,1011,732517,759877,...
-#&gt;   2:            3    5                          174939,737754,752782
-#&gt;   3:            1    6        759856,715055,758247,756645,741078,740
-#&gt;   4:            2    4                   125066,758612,759155,123127
-#&gt;   5:            1    6        759856,715055,750691,765694,718781,740
-#&gt;  ---                                                                
-#&gt; 280:         9005   11            656576,758487,764040,753686,747856
-#&gt; 281:         5035    1                                        613327
-#&gt; 282:         5035    1                                        613327
-#&gt; 283:         9411   13 706995,683864,339555,226080,758664,606698,...
-#&gt; 284:         9287   10                                        706995</div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Matching compounds with those available in drug sets...</span></div><div class='output co'>#&gt; <span class='message'>Ordering results by column 'rankProduct_rank'; to manually select column to order by, please set argument 'col'</span></div><div class='output co'>#&gt; <span class='message'>Columns 'name' and 'name' were matched based on 56 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></div><div class='output co'>#&gt; <span class='message'>Performing enrichment analysis...</span></div><div class='output co'>#&gt;                          descriptor         pval       padj         ES
+#&gt;   1:              Non-C/H Atoms: 11 0.0003260515 0.03086621 -0.7500000
+#&gt;   2:                 Small Rings: 4 0.0003088326 0.03086621 -0.6915988
+#&gt;   3:                   sp3-Atoms: 5 0.0001186521 0.03086621 -0.9037610
+#&gt;   4:              H-Donors: [6, 40] 0.0024378352 0.13846904  0.8880866
+#&gt;   5: Polar Surface Area: [123, 141] 0.0022177632 0.13846904 -0.6509521
+#&gt;  ---                                                                  
+#&gt; 280:               Non-C/H Atoms: 7 0.9286700414 0.93525635 -0.2876703
+#&gt; 281:       Electronegative Atoms: 7 0.9286700414 0.93525635 -0.2876703
+#&gt; 282:                 Small Rings: 3 0.9277195893 0.93525635 -0.2350154
+#&gt; 283:    Total Molweight: [294, 312] 0.9807118711 0.98071187 -0.5107143
+#&gt; 284:              Stereo Centers: 3 0.9807118711 0.98071187 -0.5107143
+#&gt;             NES nMoreExtreme size                                   leadingEdge
+#&gt;   1: -1.8826139            2    9 299933,330507,727989,745750,732517,759877,...
+#&gt;   2: -1.9394290            2   15   737754,752782,757441,1011,732517,759877,...
+#&gt;   3: -1.9382045            0    5                          174939,737754,752782
+#&gt;   4:  1.9393394            4    4                   125066,758612,759155,123127
+#&gt;   5: -1.7364593           20   12  174939,737754,752782,287459,63878,732517,...
+#&gt;  ---                                                                           
+#&gt; 280: -0.6501376         8071    6                                        706995
+#&gt; 281: -0.6501376         8071    6                                        706995
+#&gt; 282: -0.6497893         8945   14 299933,706995,683864,339555,606698,226080,...
+#&gt; 283: -0.6853264         4931    1                                        613327
+#&gt; 284: -0.6853264         4931    1                                        613327</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

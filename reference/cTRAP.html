@@ -42,7 +42,9 @@
 <meta property="og:title" content="cTRAP package — cTRAP" />
 <meta property="og:description" content="Compare differential gene expression results with those from big datasets
 (e.g. CMap), allowing to infer which types of perturbations may explain the
-observed difference in gene expression." />
+observed difference in gene expression.
+Optimised to run in ShinyProxy with Celery/Flower backend with argument
+shinyproxy = TRUE." />
 
 
 
@@ -84,7 +86,7 @@ observed difference in gene expression." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -127,7 +129,7 @@ observed difference in gene expression." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>cTRAP package</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/R/cTRAP-package.r'><code>R/cTRAP-package.r</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/R/cTRAP-package.r'><code>R/cTRAP-package.r</code></a>, <a href='https://github.com/nuno-agostinho/cTRAP/blob/master/R/shinyInterface_session.R'><code>R/shinyInterface_session.R</code></a></small>
     <div class="hidden name"><code>cTRAP.Rd</code></div>
     </div>
 
@@ -135,10 +137,65 @@ observed difference in gene expression." />
     <p>Compare differential gene expression results with those from big datasets
 (e.g. CMap), allowing to infer which types of perturbations may explain the
 observed difference in gene expression.</p>
+<p>Optimised to run in ShinyProxy with Celery/Flower backend with argument
+<code>shinyproxy = TRUE</code>.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>cTRAP</span><span class='op'>(</span>
+  <span class='va'>...</span>,
+  commonPath <span class='op'>=</span> <span class='st'>"data"</span>,
+  expire <span class='op'>=</span> <span class='fl'>14</span>,
+  fileSizeLimitMiB <span class='op'>=</span> <span class='fl'>50</span>,
+  flowerURL <span class='op'>=</span> <span class='cn'>NULL</span>,
+  port <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"shiny.port"</span><span class='op'>)</span>,
+  host <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"shiny.host"</span>, <span class='st'>"127.0.0.1"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>...</th>
+      <td><p>Objects</p></td>
+    </tr>
+    <tr>
+      <th>commonPath</th>
+      <td><p>Character: path where to store data common to all sessions</p></td>
+    </tr>
+    <tr>
+      <th>expire</th>
+      <td><p>Character: days until a session expires (message purposes only)</p></td>
+    </tr>
+    <tr>
+      <th>fileSizeLimitMiB</th>
+      <td><p>Numeric: file size limit in MiB</p></td>
+    </tr>
+    <tr>
+      <th>flowerURL</th>
+      <td><p>Character: Flower REST API's URL (<code>NULL</code> to avoid using
+Celery/Flower backend)</p></td>
+    </tr>
+    <tr>
+      <th>port</th>
+      <td><p>The TCP port that the application should listen on. If the
+<code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
+<code><a href='https://rdrr.io/r/base/options.html'>options(shiny.port = XX)</a></code>), then that port will be used. Otherwise,
+use a random port between 3000:8000, excluding ports that are blocked
+by Google Chrome for being considered unsafe: 3659, 4045, 5060,
+5061, 6000, 6566, 6665:6669 and 6697. Up to twenty random
+ports will be tried.</p></td>
+    </tr>
+    <tr>
+      <th>host</th>
+      <td><p>The IPv4 address that the application should listen on. Defaults
+to the <code>shiny.host</code> option, if set, or <code>"127.0.0.1"</code> if not. See
+Details.</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Launches result viewer and plotter (returns <code>NULL</code>)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><strong>Input:</strong> To use this package, a named vector of differentially
@@ -168,6 +225,14 @@ against selected perturbation conditions by:</p><ul>
 <code><a href='getCMapPerturbationTypes.html'>getCMapPerturbationTypes()</a></code></p>
 <p><strong>Output:</strong> The output includes a data frame of ranked perturbations
 based on the associated statistical values and respective p-values.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other visual interface functions: 
+<code><a href='launchCMapDataLoader.html'>launchCMapDataLoader</a>()</code>,
+<code><a href='launchDiffExprLoader.html'>launchDiffExprLoader</a>()</code>,
+<code><a href='launchDrugSetEnrichmentAnalyser.html'>launchDrugSetEnrichmentAnalyser</a>()</code>,
+<code><a href='launchMetadataViewer.html'>launchMetadataViewer</a>()</code>,
+<code><a href='launchResultPlotter.html'>launchResultPlotter</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

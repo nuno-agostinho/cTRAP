@@ -53,7 +53,7 @@ filter &amp;lt;- rowSums(counts[ , -c(1, 2)] &amp;gt;= minReads) &amp;gt;= minSa
 counts &amp;lt;- counts[filter, ]
 
 # Convert ENSEMBL identifier to gene symbol
-counts$gene_id &amp;lt;- convertENSEMBLtoGeneSymbols(counts$gene_id)
+counts$gene_id &amp;lt;- convertGeneIdentifiers(counts$gene_id)
 
 " />
 
@@ -97,7 +97,7 @@ counts$gene_id &amp;lt;- convertENSEMBLtoGeneSymbols(counts$gene_id)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
       </span>
     </div>
 
@@ -158,7 +158,7 @@ counts$gene_id &amp;lt;- convertENSEMBLtoGeneSymbols(counts$gene_id)
 <span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='va'>counts</span><span class='op'>[</span><span class='va'>filter</span>, <span class='op'>]</span>
 
 <span class='co'># Convert ENSEMBL identifier to gene symbol</span>
-<span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span> <span class='op'>&lt;-</span> <span class='fu'><a href='convertENSEMBLtoGeneSymbols.html'>convertENSEMBLtoGeneSymbols</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span><span class='op'>)</span>
+<span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span> <span class='op'>&lt;-</span> <span class='fu'><a href='convertGeneIdentifiers.html'>convertGeneIdentifiers</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span><span class='op'>)</span>
 </pre>
 
     </div>
