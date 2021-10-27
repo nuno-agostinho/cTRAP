@@ -14,7 +14,7 @@ reference:
   - title: "Prepare ENCODE data"
     contents:
       - matches("ENCODE")
-      - convertENSEMBLtoGeneSymbols
+      - convertGeneIdentifiers
       - performDifferentialExpression
   - title: "Download and manipulate CMap perturbation data"
     contents:

@@ -19,7 +19,7 @@ filter <- rowSums(counts[ , -c(1, 2)] >= minReads) >= minSamples
 counts <- counts[filter, ]
 
 # Convert ENSEMBL identifier to gene symbol
-counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
 }
 }
 \keyword{internal}

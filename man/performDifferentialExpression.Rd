@@ -35,7 +35,7 @@ if (interactive()) {
   counts <- counts[filter, ]
 
   # Convert ENSEMBL identifier to gene symbol
-  counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+  counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
 
   # Perform differential gene expression analysis
   diffExpr <- performDifferentialExpression(counts)

@@ -285,7 +285,7 @@ loadGDSC7geneExpression <- function(file="GDSC_7/geneExpr.txt") {
     colnames(gext2) <- c("cellLine", geneExpr[[1]])
 
     # Convert from ENSEMBL to gene symbols
-    colnames(gext2) <- convertENSEMBLtoGeneSymbols(colnames(gext2))
+    colnames(gext2) <- convertGeneIdentifiers(colnames(gext2))
     return(gext2)
 }
 
@@ -445,11 +445,11 @@ writeExpressionDrugSensitivityCorHDF5 <- function(
 #' @examples
 #' listExpressionDrugSensitivityAssociation()
 listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
-    options <- c(
-        "GDSC 7"="5q0dazbtnpojw2m/expressionDrugSensitivityCorGDSC7.rds",
-        "CTRP 2.1"="zj53pxwiwdwo133/expressionDrugSensitivityCorCTRP2.1.rds",
-        "NCI60"="20ko9lyyyoilfz6/expressionDrugSensitivityCorNCI60.h5")
-    link <- sprintf("https://www.dropbox.com/s/%s?raw=1", options)
+    options <- c("GDSC 7"="expressionDrugSensitivityCorGDSC7.qs",
+                 "CTRP 2.1"="expressionDrugSensitivityCorCTRP2.1.qs",
+                 "NCI60"="expressionDrugSensitivityCorNCI60.h5")
+    link <- file.path("https://compbio.imm.medicina.ulisboa.pt/public/cTRAP",
+                      options)
     names(link) <- names(options)
 
     res <- link
@@ -587,6 +587,8 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #'   \code{\link{listExpressionDrugSensitivityAssociation}}
 #' @param file Character: filepath to gene expression and drug sensitivity
 #'   association dataset (automatically downloaded if file does not exist)
+#' @param path Character: folder where to find files (optional; \code{file} may
+#'   contain the full filepath if preferred)
 #' @param rows Character or integer: rows
 #' @param cols Character or integer: columns
 #' @param loadValues Boolean: load data values (if available)? If \code{FALSE},
@@ -599,31 +601,38 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #' @export
 #'
 #' @importFrom tools file_ext
+#' @importFrom qs qread
 #'
 #' @examples
 #' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
 #' loadExpressionDrugSensitivityAssociation(gdsc)
-loadExpressionDrugSensitivityAssociation <- function(source, file=NULL,
-                                                     rows=NULL, cols=NULL,
-                                                     loadValues=FALSE) {
+loadExpressionDrugSensitivityAssociation <- function(
+    source, file=NULL, path=NULL, rows=NULL, cols=NULL, loadValues=FALSE) {
+    
     available <- listExpressionDrugSensitivityAssociation(url=TRUE)
     source    <- match.arg(source, names(available))
     link      <- available[source]
 
     if (is.null(file)) file <- gsub("\\?.*", "", basename(link))
+    if (!is.null(path)) file <- file.path(path, file)
     downloadIfNotFound(link, file)
     message(sprintf("Loading data from %s...", file))
-    if (file_ext(file) == "rds") {
+    if (file_ext(file) == "h5") {
+        cor <- readExpressionDrugSensitivityCorHDF5(file, rows=rows, cols=cols,
+                                                    loadValues=loadValues)
+    } else {
         if (is.null(cols)) cols <- TRUE
         if (is.null(rows)) rows <- TRUE
-        res <- readRDS(file)
+        
+        if (file_ext(file) == "rds") {
+            res <- readRDS(file)
+        } else if (file_ext(file) == "qs") {
+            res <- qread(file)
+        } 
         cor <- res[rows, cols, drop=FALSE]
         attrs <- attributes(res)
         attrs <- attrs[!names(attrs) %in% names(attributes(cor))]
         attributes(cor) <- c(attributes(cor), attrs)
-    } else {
-        cor <- readExpressionDrugSensitivityCorHDF5(file, rows=rows, cols=cols,
-                                                    loadValues=loadValues)
     }
     attr(cor, "filename") <- normalizePath(file)
     class(cor) <- c("expressionDrugSensitivityAssociation", class(cor))

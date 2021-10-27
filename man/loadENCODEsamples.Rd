@@ -4,10 +4,12 @@
 \alias{loadENCODEsamples}
 \title{Load ENCODE samples}
 \usage{
-loadENCODEsamples(metadata)
+loadENCODEsamples(metadata, path = ".")
 }
 \arguments{
 \item{metadata}{Character: ENCODE metadata}
+
+\item{path}{Character: path where to download files}
 }
 \value{
 List of loaded ENCODE samples

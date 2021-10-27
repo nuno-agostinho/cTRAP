@@ -20,6 +20,7 @@ View and plot results via a visual interface
 }
 \seealso{
 Other visual interface functions: 
+\code{\link{cTRAP}()},
 \code{\link{launchCMapDataLoader}()},
 \code{\link{launchDiffExprLoader}()},
 \code{\link{launchMetadataViewer}()},

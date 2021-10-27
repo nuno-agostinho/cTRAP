@@ -12,12 +12,19 @@ getENCODEcontrols <- function(control, table) {
     return(exp)
 }
 
+filterENCONDEmetadata <- function(table, cellLine=NULL, gene=NULL) {
+    if (!is.null(gene)) table <- table[table$`Experiment target` == gene, ]
+    if (!is.null(cellLine)) table <- table[
+        tolower(table$`Biosample term name`) == tolower(cellLine), ]
+    return(table)
+}
+
 #' Download metadata for ENCODE knockdown experiments
 #'
 #' @param cellLine Character: cell line
 #' @param gene Character: target gene
-#' @param file Character: RDS file with metadata (if file doesn't exist, it will
-#' be created)
+#' @param file Character: RDS filepath with metadata (if file doesn't exist, it
+#' will be created)
 #'
 #' @importFrom httr content GET
 #' @importFrom data.table fread
@@ -86,11 +93,7 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL,
     } else {
         table <- readRDS(file)
     }
-
-    if (!is.null(gene)) table <- table[table$`Experiment target` == gene, ]
-    if (!is.null(cellLine)) table <- table[
-        tolower(table$`Biosample term name`) == tolower(cellLine), ]
-
+    table <- filterENCONDEmetadata(table, cellLine, gene)
     return(table)
 }
 
@@ -99,11 +102,12 @@ downloadENCODEknockdownMetadata <- function(cellLine=NULL, gene=NULL,
 #' @param metadata Data frame: ENCODE metadata
 #' @param replicate Number: replicate
 #' @param control Boolean: load control experiment?
+#' @inheritParams loadENCODEsamples
 #'
 #' @importFrom data.table fread
 #' @return Data table with ENCODE sample data
 #' @keywords internal
-loadENCODEsample <- function (metadata, replicate, control=FALSE) {
+loadENCODEsample <- function (metadata, replicate, control=FALSE, path=".") {
     metadata <- metadata[metadata$`Biological replicate(s)` == replicate, ]
 
     if (control) {
@@ -114,7 +118,7 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
     }
     sample <- paste0(sample)
 
-    outfile <- paste0(sample, ".tsv")
+    outfile <- file.path(path, paste0(sample, ".tsv"))
     link <- sprintf("https://www.encodeproject.org/files/%s/@@download/%s.tsv",
                     sample, sample)
     downloadIfNotFound(link, outfile)
@@ -127,6 +131,7 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #' working directory.
 #'
 #' @param metadata Character: ENCODE metadata
+#' @param path Character: path where to download files
 #'
 #' @importFrom pbapply pblapply
 #'
@@ -144,13 +149,14 @@ loadENCODEsample <- function (metadata, replicate, control=FALSE) {
 #'   # Load samples based on filtered ENCODE metadata
 #'   loadENCODEsamples(ENCODEmetadata)
 #' }
-loadENCODEsamples <- function(metadata) {
-    loadENCODEsamplePerGene <- function(metadata) {
+loadENCODEsamples <- function(metadata, path=".") {
+    loadENCODEsamplePerGene <- function(metadata, path) {
         gene <- list()
         reps <- as.numeric(metadata$`Biological replicate(s)`)
         for (rep in reps) {
-            sample  <- loadENCODEsample(metadata, replicate=rep)
-            control <- loadENCODEsample(metadata, replicate=rep, control=TRUE)
+            sample  <- loadENCODEsample(metadata, replicate=rep, path=path)
+            control <- loadENCODEsample(metadata, replicate=rep, path=path,
+                                        control=TRUE)
             gene <- c(gene, rep=list(sample), control=list(control))
         }
         names(gene) <- paste0(names(gene), rep(reps, each=max(reps)))
@@ -161,7 +167,7 @@ loadENCODEsamples <- function(metadata) {
                                                metadata$`Biosample term name`,
                                                metadata$`Experiment target`,
                                                metadata$`Experiment accession`))
-    res <- pblapply(metadataPerGene, loadENCODEsamplePerGene)
+    res <- pblapply(metadataPerGene, loadENCODEsamplePerGene, path=path)
     return(res)
 }
 
@@ -169,7 +175,7 @@ loadENCODEsamples <- function(metadata) {
 #'
 #' @param samples List of loaded ENCODE samples
 #'
-#' @seealso \code{\link{convertENSEMBLtoGeneSymbols}()}
+#' @seealso \code{\link{convertGeneIdentifiers}()}
 #'
 #' @family functions related with using ENCODE expression data
 #' @return Data frame containing gene read counts
@@ -234,7 +240,7 @@ prepareENCODEgeneExpression <- function(samples) {
 #'   counts <- counts[filter, ]
 #'
 #'   # Convert ENSEMBL identifier to gene symbol
-#'   counts$gene_id <- convertENSEMBLtoGeneSymbols(counts$gene_id)
+#'   counts$gene_id <- convertGeneIdentifiers(counts$gene_id)
 #'
 #'   # Perform differential gene expression analysis
 #'   diffExpr <- performDifferentialExpression(counts)

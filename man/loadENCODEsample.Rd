@@ -4,7 +4,7 @@
 \alias{loadENCODEsample}
 \title{Load ENCODE sample}
 \usage{
-loadENCODEsample(metadata, replicate, control = FALSE)
+loadENCODEsample(metadata, replicate, control = FALSE, path = ".")
 }
 \arguments{
 \item{metadata}{Data frame: ENCODE metadata}
@@ -12,6 +12,8 @@ loadENCODEsample(metadata, replicate, control = FALSE)
 \item{replicate}{Number: replicate}
 
 \item{control}{Boolean: load control experiment?}
+
+\item{path}{Character: path where to download files}
 }
 \value{
 Data table with ENCODE sample data
