@@ -187,108 +187,112 @@ perturbation types are loaded)</p></td>
 <code><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>cmapMetadata.txt not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Extracting cmapMetadata.txt.gz...</span></div><div class='output co'>#&gt; <span class='message'>Loading CMap metadata from cmapMetadata.txt...</span></div><div class='input'><span class='fu'>filterCMapMetadata</span><span class='op'>(</span><span class='va'>cmapMetadata</span>, cellLine<span class='op'>=</span><span class='st'>"HEPG2"</span>, timepoint<span class='op'>=</span><span class='st'>"2 h"</span>,
-                   dosage<span class='op'>=</span><span class='st'>"25 ng/mL"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                         sig_id pert_id pert_iname pert_type cell_id pert_dose
-#&gt;  1:    CYT001_HEPG2_2H:CSH1:25    CSH1       CSH1   trt_lig   HEPG2        25
-#&gt;  2:    CYT001_HEPG2_2H:CTF1:25    CTF1       CTF1   trt_lig   HEPG2        25
-#&gt;  3:   CYT001_HEPG2_2H:CXCL6:25   CXCL6      CXCL6   trt_lig   HEPG2        25
-#&gt;  4:   CYT001_HEPG2_2H:EFNA4:25   EFNA4      EFNA4   trt_lig   HEPG2        25
-#&gt;  5:   CYT001_HEPG2_2H:EFNA5:25   EFNA5      EFNA5   trt_lig   HEPG2        25
-#&gt;  6:   CYT001_HEPG2_2H:EPHA3:25   EPHA3      EPHA3   trt_lig   HEPG2        25
-#&gt;  7:    CYT001_HEPG2_2H:FGF1:25    FGF1       FGF1   trt_lig   HEPG2        25
-#&gt;  8:    CYT001_HEPG2_2H:FGF2:25    FGF2       FGF2   trt_lig   HEPG2        25
-#&gt;  9:    CYT001_HEPG2_2H:FGF6:25    FGF6       FGF6   trt_lig   HEPG2        25
-#&gt; 10:    CYT001_HEPG2_2H:FGF9:25    FGF9       FGF9   trt_lig   HEPG2        25
-#&gt; 11:  CYT001_HEPG2_2H:FLT3LG:25  FLT3LG     FLT3LG   trt_lig   HEPG2        25
-#&gt; 12:    CYT001_HEPG2_2H:GDNF:25    GDNF       GDNF   trt_lig   HEPG2        25
-#&gt; 13:     CYT001_HEPG2_2H:GIP:25     GIP        GIP   trt_lig   HEPG2        25
-#&gt; 14:   CYT001_HEPG2_2H:HBEGF:25   HBEGF      HBEGF   trt_lig   HEPG2        25
-#&gt; 15:    CYT001_HEPG2_2H:IL13:25    IL13       IL13   trt_lig   HEPG2        25
-#&gt; 16:    CYT001_HEPG2_2H:IL15:25    IL15       IL15   trt_lig   HEPG2        25
-#&gt; 17:    CYT001_HEPG2_2H:IL21:25    IL21       IL21   trt_lig   HEPG2        25
-#&gt; 18:    CYT001_HEPG2_2H:IL22:25    IL22       IL22   trt_lig   HEPG2        25
-#&gt; 19:    CYT001_HEPG2_2H:IL24:25    IL24       IL24   trt_lig   HEPG2        25
-#&gt; 20:   CYT001_HEPG2_2H:IL28A:25   IL28A      IL28A   trt_lig   HEPG2        25
-#&gt; 21:    CYT001_HEPG2_2H:IL29:25    IL29       IL29   trt_lig   HEPG2        25
-#&gt; 22:    CYT001_HEPG2_2H:IL31:25    IL31       IL31   trt_lig   HEPG2        25
-#&gt; 23:     CYT001_HEPG2_2H:IL4:25     IL4        IL4   trt_lig   HEPG2        25
-#&gt; 24:     CYT001_HEPG2_2H:IL6:25     IL6        IL6   trt_lig   HEPG2        25
-#&gt; 25:     CYT001_HEPG2_2H:IL7:25     IL7        IL7   trt_lig   HEPG2        25
-#&gt; 26:     CYT001_HEPG2_2H:IL9:25     IL9        IL9   trt_lig   HEPG2        25
-#&gt; 27:    CYT001_HEPG2_2H:NTF3:25    NTF3       NTF3   trt_lig   HEPG2        25
-#&gt; 28:     CYT001_HEPG2_2H:TNF:25     TNF        TNF   trt_lig   HEPG2        25
-#&gt; 29: CYT001_HEPG2_2H:TNFSF11:25 TNFSF11    TNFSF11   trt_lig   HEPG2        25
-#&gt; 30: CYT001_HEPG2_2H:TNFSF12:25 TNFSF12    TNFSF12   trt_lig   HEPG2        25
-#&gt; 31: CYT001_HEPG2_2H:TNFSF13:25 TNFSF13    TNFSF13   trt_lig   HEPG2        25
-#&gt;                         sig_id pert_id pert_iname pert_type cell_id pert_dose
-#&gt;     pert_dose_unit pert_idose pert_time pert_time_unit pert_itime
-#&gt;  1:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  2:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  3:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  4:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  5:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  6:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  7:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  8:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;  9:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 10:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 11:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 12:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 13:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 14:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 15:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 16:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 17:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 18:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 19:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 20:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 21:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 22:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 23:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 24:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 25:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 26:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 27:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 28:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 29:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 30:          ng/mL   25 ng/mL         2              h        2 h
-#&gt; 31:          ng/mL   25 ng/mL         2              h        2 h
-#&gt;     pert_dose_unit pert_idose pert_time pert_time_unit pert_itime
-#&gt;                                                                                                  distil_id
-#&gt;  1: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:I06|CYT001_HEPG2_2H_X2_B12:I06|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:I06
-#&gt;  2: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:I08|CYT001_HEPG2_2H_X2_B12:I08|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:I08
-#&gt;  3: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K02|CYT001_HEPG2_2H_X2_B12:K02|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K02
-#&gt;  4: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F02|CYT001_HEPG2_2H_X2_B12:F02|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F02
-#&gt;  5: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F04|CYT001_HEPG2_2H_X2_B12:F04|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F04
-#&gt;  6: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K10|CYT001_HEPG2_2H_X2_B12:K10|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K10
-#&gt;  7: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K18|CYT001_HEPG2_2H_X2_B12:K18|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K18
-#&gt;  8: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F12|CYT001_HEPG2_2H_X2_B12:F12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F12
-#&gt;  9: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M08|CYT001_HEPG2_2H_X2_B12:M08|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M08
-#&gt; 10: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M12|CYT001_HEPG2_2H_X2_B12:M12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M12
-#&gt; 11: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M14|CYT001_HEPG2_2H_X2_B12:M14|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M14
-#&gt; 12:                            CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:O12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:O12
-#&gt; 13: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H12|CYT001_HEPG2_2H_X2_B12:H12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H12
-#&gt; 14: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H18|CYT001_HEPG2_2H_X2_B12:H18|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H18
-#&gt; 15: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:B19|CYT001_HEPG2_2H_X2_B12:B19|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:B19
-#&gt; 16: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:B21|CYT001_HEPG2_2H_X2_B12:B21|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:B21
-#&gt; 17: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H11|CYT001_HEPG2_2H_X2_B12:H11|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H11
-#&gt; 18: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D15|CYT001_HEPG2_2H_X2_B12:D15|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D15
-#&gt; 19: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D17|CYT001_HEPG2_2H_X2_B12:D17|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D17
-#&gt; 20: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D19|CYT001_HEPG2_2H_X2_B12:D19|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D19
-#&gt; 21: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D21|CYT001_HEPG2_2H_X2_B12:D21|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D21
-#&gt; 22: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D23|CYT001_HEPG2_2H_X2_B12:D23|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D23
-#&gt; 23: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F03|CYT001_HEPG2_2H_X2_B12:F03|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F03
-#&gt; 24: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F07|CYT001_HEPG2_2H_X2_B12:F07|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F07
-#&gt; 25: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F09|CYT001_HEPG2_2H_X2_B12:F09|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F09
-#&gt; 26: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F13|CYT001_HEPG2_2H_X2_B12:F13|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F13
-#&gt; 27: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H17|CYT001_HEPG2_2H_X2_B12:H17|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H17
-#&gt; 28: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:L09|CYT001_HEPG2_2H_X2_B12:L09|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:L09
-#&gt; 29: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:L23|CYT001_HEPG2_2H_X2_B12:L23|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:L23
-#&gt; 30:                            CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:N03|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:N03
-#&gt; 31: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:N05|CYT001_HEPG2_2H_X2_B12:N05|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:N05
-#&gt;                                                                                                  distil_id</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> cmapMetadata.txt not found: downloading data...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracting cmapMetadata.txt.gz...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading CMap metadata from cmapMetadata.txt...</span>
+<span class='r-in'><span class='fu'>filterCMapMetadata</span><span class='op'>(</span><span class='va'>cmapMetadata</span>, cellLine<span class='op'>=</span><span class='st'>"HEPG2"</span>, timepoint<span class='op'>=</span><span class='st'>"2 h"</span>,</span>
+<span class='r-in'>                   dosage<span class='op'>=</span><span class='st'>"25 ng/mL"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                         sig_id pert_id pert_iname pert_type cell_id pert_dose</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:    CYT001_HEPG2_2H:CSH1:25    CSH1       CSH1   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:    CYT001_HEPG2_2H:CTF1:25    CTF1       CTF1   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:   CYT001_HEPG2_2H:CXCL6:25   CXCL6      CXCL6   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:   CYT001_HEPG2_2H:EFNA4:25   EFNA4      EFNA4   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:   CYT001_HEPG2_2H:EFNA5:25   EFNA5      EFNA5   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:   CYT001_HEPG2_2H:EPHA3:25   EPHA3      EPHA3   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:    CYT001_HEPG2_2H:FGF1:25    FGF1       FGF1   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:    CYT001_HEPG2_2H:FGF2:25    FGF2       FGF2   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:    CYT001_HEPG2_2H:FGF6:25    FGF6       FGF6   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:    CYT001_HEPG2_2H:FGF9:25    FGF9       FGF9   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:  CYT001_HEPG2_2H:FLT3LG:25  FLT3LG     FLT3LG   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:    CYT001_HEPG2_2H:GDNF:25    GDNF       GDNF   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:     CYT001_HEPG2_2H:GIP:25     GIP        GIP   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:   CYT001_HEPG2_2H:HBEGF:25   HBEGF      HBEGF   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:    CYT001_HEPG2_2H:IL13:25    IL13       IL13   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:    CYT001_HEPG2_2H:IL15:25    IL15       IL15   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:    CYT001_HEPG2_2H:IL21:25    IL21       IL21   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:    CYT001_HEPG2_2H:IL22:25    IL22       IL22   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:    CYT001_HEPG2_2H:IL24:25    IL24       IL24   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:   CYT001_HEPG2_2H:IL28A:25   IL28A      IL28A   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:    CYT001_HEPG2_2H:IL29:25    IL29       IL29   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22:    CYT001_HEPG2_2H:IL31:25    IL31       IL31   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:     CYT001_HEPG2_2H:IL4:25     IL4        IL4   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:     CYT001_HEPG2_2H:IL6:25     IL6        IL6   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:     CYT001_HEPG2_2H:IL7:25     IL7        IL7   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:     CYT001_HEPG2_2H:IL9:25     IL9        IL9   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:    CYT001_HEPG2_2H:NTF3:25    NTF3       NTF3   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:     CYT001_HEPG2_2H:TNF:25     TNF        TNF   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29: CYT001_HEPG2_2H:TNFSF11:25 TNFSF11    TNFSF11   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30: CYT001_HEPG2_2H:TNFSF12:25 TNFSF12    TNFSF12   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31: CYT001_HEPG2_2H:TNFSF13:25 TNFSF13    TNFSF13   trt_lig   HEPG2        25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                         sig_id pert_id pert_iname pert_type cell_id pert_dose</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:          ng/mL   25 ng/mL         2              h        2 h</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                                                  distil_id</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:I06|CYT001_HEPG2_2H_X2_B12:I06|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:I06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:I08|CYT001_HEPG2_2H_X2_B12:I08|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:I08</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K02|CYT001_HEPG2_2H_X2_B12:K02|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F02|CYT001_HEPG2_2H_X2_B12:F02|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F04|CYT001_HEPG2_2H_X2_B12:F04|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K10|CYT001_HEPG2_2H_X2_B12:K10|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:K18|CYT001_HEPG2_2H_X2_B12:K18|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:K18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F12|CYT001_HEPG2_2H_X2_B12:F12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M08|CYT001_HEPG2_2H_X2_B12:M08|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M08</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M12|CYT001_HEPG2_2H_X2_B12:M12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:M14|CYT001_HEPG2_2H_X2_B12:M14|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:M14</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:                            CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:O12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:O12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H12|CYT001_HEPG2_2H_X2_B12:H12|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H18|CYT001_HEPG2_2H_X2_B12:H18|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:B19|CYT001_HEPG2_2H_X2_B12:B19|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:B19</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:B21|CYT001_HEPG2_2H_X2_B12:B21|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:B21</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H11|CYT001_HEPG2_2H_X2_B12:H11|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D15|CYT001_HEPG2_2H_X2_B12:D15|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D17|CYT001_HEPG2_2H_X2_B12:D17|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D19|CYT001_HEPG2_2H_X2_B12:D19|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D19</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D21|CYT001_HEPG2_2H_X2_B12:D21|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D21</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:D23|CYT001_HEPG2_2H_X2_B12:D23|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:D23</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F03|CYT001_HEPG2_2H_X2_B12:F03|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F07|CYT001_HEPG2_2H_X2_B12:F07|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F07</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F09|CYT001_HEPG2_2H_X2_B12:F09|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F09</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:F13|CYT001_HEPG2_2H_X2_B12:F13|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:F13</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:H17|CYT001_HEPG2_2H_X2_B12:H17|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:H17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:L09|CYT001_HEPG2_2H_X2_B12:L09|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:L09</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:L23|CYT001_HEPG2_2H_X2_B12:L23|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:L23</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:                            CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:N03|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:N03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31: CYT001_HEPG2_2H_X1_B7_DUO52HI53LO:N05|CYT001_HEPG2_2H_X2_B12:N05|CYT001_HEPG2_2H_X3_B7_DUO52HI53LO:N05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                                                  distil_id</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

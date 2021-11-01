@@ -184,54 +184,59 @@ about drugs and perturbations. The files will be named <code>file</code> with
 <code><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Load CMap metadata (data is automatically downloaded if not available)</span>
-<span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Loading CMap metadata from cmapMetadata.txt...</span></div><div class='input'>
-<span class='co'># Load CMap gene info</span>
-<span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapGeneInfo.txt"</span>, <span class='st'>"geneInfo"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>cmapGeneInfo.txt not found: downloading data...</span></div><div class='output co'>#&gt; <span class='message'>Extracting cmapGeneInfo.txt.gz...</span></div><div class='output co'>#&gt; <span class='message'>Loading CMap gene information from cmapGeneInfo.txt...</span></div><div class='output co'>#&gt;        pr_gene_id pr_gene_symbol
-#&gt;     1:        780           DDR1
-#&gt;     2:       7849           PAX8
-#&gt;     3:       2978         GUCA1A
-#&gt;     4:       2049          EPHB3
-#&gt;     5:       2101          ESRRA
-#&gt;    ---                          
-#&gt; 12324:       4034          LRCH4
-#&gt; 12325:     399664          MEX3D
-#&gt; 12326:      54869         EPS8L1
-#&gt; 12327:      90379         DCAF15
-#&gt; 12328:         60           ACTB
-#&gt;                                                              pr_gene_title
-#&gt;     1:                         discoidin domain receptor tyrosine kinase 1
-#&gt;     2:                                                        paired box 8
-#&gt;     3:                                      guanylate cyclase activator 1A
-#&gt;     4:                                                     EPH receptor B3
-#&gt;     5:                                     estrogen related receptor alpha
-#&gt;    ---                                                                    
-#&gt; 12324: leucine-rich repeats and calponin homology (CH) domain containing 4
-#&gt; 12325:                                   mex-3 RNA binding family member D
-#&gt; 12326:                                                         EPS8 like 1
-#&gt; 12327:                                  DDB1 and CUL4 associated factor 15
-#&gt; 12328:                                                         actin, beta
-#&gt;        pr_is_lm pr_is_bing
-#&gt;     1:        1          1
-#&gt;     2:        1          1
-#&gt;     3:        0          0
-#&gt;     4:        0          1
-#&gt;     5:        0          1
-#&gt;    ---                    
-#&gt; 12324:        0          1
-#&gt; 12325:        0          1
-#&gt; 12326:        0          1
-#&gt; 12327:        0          1
-#&gt; 12328:        0          1</div><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Load CMap zscores based on filtered metadata</span>
-<span class='va'>cmapMetadataKnockdown</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span>
-  <span class='va'>cmapMetadata</span>, cellLine<span class='op'>=</span><span class='st'>"HepG2"</span>,
-  perturbationType<span class='op'>=</span><span class='st'>"Consensus signature from shRNAs targeting the same gene"</span><span class='op'>)</span>
-<span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapZscores.gctx.gz"</span>, <span class='st'>"zscores"</span>, <span class='va'>cmapMetadataKnockdown</span><span class='op'>$</span><span class='va'>sig_id</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Load CMap metadata (data is automatically downloaded if not available)</span></span>
+<span class='r-in'><span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading CMap metadata from cmapMetadata.txt...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Load CMap gene info</span></span>
+<span class='r-in'><span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapGeneInfo.txt"</span>, <span class='st'>"geneInfo"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> cmapGeneInfo.txt not found: downloading data...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracting cmapGeneInfo.txt.gz...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Loading CMap gene information from cmapGeneInfo.txt...</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        pr_gene_id pr_gene_symbol</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:        780           DDR1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:       7849           PAX8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:       2978         GUCA1A</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:       2049          EPHB3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:       2101          ESRRA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                          </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12324:       4034          LRCH4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12325:     399664          MEX3D</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12326:      54869         EPS8L1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12327:      90379         DCAF15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12328:         60           ACTB</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                              pr_gene_title</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:                         discoidin domain receptor tyrosine kinase 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:                                                        paired box 8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:                                      guanylate cyclase activator 1A</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:                                                     EPH receptor B3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:                                     estrogen related receptor alpha</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12324: leucine-rich repeats and calponin homology (CH) domain containing 4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12325:                                   mex-3 RNA binding family member D</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12326:                                                         EPS8 like 1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12327:                                  DDB1 and CUL4 associated factor 15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12328:                                                         actin, beta</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        pr_is_lm pr_is_bing</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:        1          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:        1          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:        0          0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12324:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12325:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12326:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12327:        0          1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12328:        0          1</span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'># Load CMap zscores based on filtered metadata</span></span>
+<span class='r-in'><span class='va'>cmapMetadataKnockdown</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span></span>
+<span class='r-in'>  <span class='va'>cmapMetadata</span>, cellLine<span class='op'>=</span><span class='st'>"HepG2"</span>,</span>
+<span class='r-in'>  perturbationType<span class='op'>=</span><span class='st'>"Consensus signature from shRNAs targeting the same gene"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>loadCMapData</span><span class='op'>(</span><span class='st'>"cmapZscores.gctx.gz"</span>, <span class='st'>"zscores"</span>, <span class='va'>cmapMetadataKnockdown</span><span class='op'>$</span><span class='va'>sig_id</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

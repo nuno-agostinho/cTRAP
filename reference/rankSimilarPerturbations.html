@@ -241,203 +241,211 @@ details below)</p></td>
 <code><a href='print.similarPerturbations.html'>print.similarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Example of a differential expression profile</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span>
-
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Download and load CMap perturbations to compare with</span>
-<span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"HUH7"</span><span class='op'>)</span>
-<span class='va'>cmapMetadataCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span>
-    <span class='st'>"cmapMetadata.txt"</span>, cellLine<span class='op'>=</span><span class='va'>cellLine</span>, timepoint<span class='op'>=</span><span class='st'>"24 h"</span>,
-    dosage<span class='op'>=</span><span class='st'>"5 \u00B5M"</span>, perturbationType<span class='op'>=</span><span class='st'>"Compound"</span><span class='op'>)</span>
-
-<span class='va'>cmapPerturbationsCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span><span class='op'>(</span>
-    <span class='va'>cmapMetadataCompounds</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,
-    <span class='st'>"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='op'>}</span>
-<span class='va'>perturbations</span> <span class='op'>&lt;-</span> <span class='va'>cmapPerturbationsCompounds</span>
-
-<span class='co'># Rank similar CMap perturbations (by default, Spearman's and Pearson's</span>
-<span class='co'># correlation are used, as well as GSEA with the top and bottom 150 genes of</span>
-<span class='co'># the differential expression profile used as reference)</span>
-<span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 0.78 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
-#&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
-#&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
-#&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278
-#&gt;  4:        CVD001_24H:BRD-K84389640-001-01-5:4.225  -0.013429614
-#&gt;  5:       CVD001_24H:BRD-K96188950-001-04-5:4.3967  -0.020549215
-#&gt;  6:        CVD001_24H:BRD-K77508012-001-01-9:6.025  -0.063221230
-#&gt;  7:       CVD001_24H:BRD-K62810658-001-05-6:4.6768  -0.067773347
-#&gt;  8:         CVD001_24H:BRD-K31030218-001-01-1:4.25  -0.077835425
-#&gt;  9:       CVD001_24H:BRD-K60476892-001-02-1:4.1072  -0.057954380
-#&gt; 10:          CVD001_24H:BRD-K94818765-001-01-0:4.8  -0.074453675
-#&gt; 11:         CVD001_24H:BRD-A65142661-034-01-8:5.35  -0.115903134
-#&gt; 12:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666
-#&gt; 13:   CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35  -0.164686339
-#&gt; 14:   CVD001_HEPG2_24H:BRD-K31030218-001-01-1:4.25  -0.125531451
-#&gt; 15:    CVD001_HEPG2_24H:BRD-K41172353-001-01-4:4.7   0.005161915
-#&gt; 16: CVD001_HEPG2_24H:BRD-K60476892-001-02-1:4.1072  -0.077832390
-#&gt; 17: CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768  -0.050201852
-#&gt; 18:  CVD001_HEPG2_24H:BRD-K77508012-001-01-9:6.025  -0.094208866
-#&gt; 19:  CVD001_HEPG2_24H:BRD-K84389640-001-01-5:4.225  -0.078331814
-#&gt; 20: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810
-#&gt; 21:    CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8  -0.113418048
-#&gt; 22: CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967  -0.037174082
-#&gt; 23:     CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1   0.223169991
-#&gt; 24:    CVD001_HUH7_24H:BRD-A65142661-034-01-8:5.35  -0.067119930
-#&gt; 25:    CVD001_HUH7_24H:BRD-K31030218-001-01-1:4.25  -0.030139400
-#&gt; 26:     CVD001_HUH7_24H:BRD-K41172353-001-01-4:4.7  -0.020042471
-#&gt; 27:  CVD001_HUH7_24H:BRD-K60476892-001-02-1:4.1072  -0.038076371
-#&gt; 28:  CVD001_HUH7_24H:BRD-K62810658-001-05-6:4.6768  -0.085344842
-#&gt; 29:   CVD001_HUH7_24H:BRD-K77508012-001-01-9:6.025  -0.032233593
-#&gt; 30:   CVD001_HUH7_24H:BRD-K84389640-001-01-5:4.225   0.051472586
-#&gt; 31:  CVD001_HUH7_24H:BRD-K84595254-001-03-0:4.9444   0.101699658
-#&gt; 32:     CVD001_HUH7_24H:BRD-K94818765-001-01-0:4.8  -0.035489302
-#&gt; 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349
-#&gt;                              compound_perturbation spearman_coef
-#&gt;     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue
-#&gt;  1:              NA              NA  0.226788992             NA             NA
-#&gt;  2:              NA              NA  0.078584431             NA             NA
-#&gt;  3:              NA              NA -0.012120187             NA             NA
-#&gt;  4:              NA              NA -0.016435243             NA             NA
-#&gt;  5:              NA              NA -0.025128574             NA             NA
-#&gt;  6:              NA              NA -0.052288195             NA             NA
-#&gt;  7:              NA              NA -0.059565207             NA             NA
-#&gt;  8:              NA              NA -0.079194543             NA             NA
-#&gt;  9:              NA              NA -0.054194930             NA             NA
-#&gt; 10:              NA              NA -0.070396828             NA             NA
-#&gt; 11:              NA              NA -0.104553349             NA             NA
-#&gt; 12:   1.361508e-101   2.995318e-100  0.226406681  1.442316e-102  1.586548e-101
-#&gt; 13:    1.741438e-54    1.277054e-53 -0.147970604   3.242185e-44   2.377602e-43
-#&gt; 14:    3.293334e-32    1.811334e-31 -0.120540610   8.215231e-30   4.518377e-29
-#&gt; 15:    6.284641e-01    6.583910e-01 -0.012675137   2.347404e-01   2.582144e-01
-#&gt; 16:    2.727173e-13    5.454346e-13 -0.062540590   4.400100e-09   8.800200e-09
-#&gt; 17:    2.489663e-06    3.912327e-06 -0.025518430   1.673267e-02   2.045104e-02
-#&gt; 18:    8.674931e-19    2.726407e-18 -0.082830711   7.364690e-15   2.025290e-14
-#&gt; 19:    1.919930e-13    4.223846e-13 -0.082640252   8.485519e-15   2.074238e-14
-#&gt; 20:    1.294659e-15    3.164722e-15  0.068343991   1.415829e-10   3.114825e-10
-#&gt; 21:    1.461350e-26    6.429942e-26 -0.110539100   2.640853e-25   1.161975e-24
-#&gt; 22:    4.903648e-04    6.742517e-04 -0.045806246   1.737439e-05   2.548244e-05
-#&gt; 23:    1.229995e-99    1.352995e-98  0.227171304  2.883308e-103  6.343277e-102
-#&gt; 24:    2.994988e-10    5.490811e-10 -0.061136095   9.672983e-09   1.773380e-08
-#&gt; 25:    4.713922e-03    5.458226e-03 -0.037848476   3.863289e-04   5.312023e-04
-#&gt; 26:    6.024403e-02    6.626843e-02 -0.011565237   2.782846e-01   2.915363e-01
-#&gt; 27:    3.561138e-04    5.223003e-04 -0.045849271   1.706068e-05   2.548244e-05
-#&gt; 28:    1.101426e-15    3.028921e-15 -0.093611984   1.434812e-18   5.260979e-18
-#&gt; 29:    2.507656e-03    3.064913e-03 -0.021745678   4.147826e-02   4.802746e-02
-#&gt; 30:    1.376852e-06    2.330056e-06  0.049769766   3.035636e-06   5.137229e-06
-#&gt; 31:    1.197236e-21    4.389864e-21  0.088824872   7.237642e-17   2.274688e-16
-#&gt; 32:    8.751127e-04    1.132499e-03 -0.030254556   4.557359e-03   5.897759e-03
-#&gt; 33:    7.129654e-01    7.129654e-01 -0.004450902   6.765050e-01   6.765050e-01
-#&gt;     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue
-#&gt;            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank
-#&gt;  1:  0.49159830             1            1         1                1
-#&gt;  2:  0.10895716             2            2         2                2
-#&gt;  3:  0.00000000             3            3         4                3
-#&gt;  4:  0.00000000             4            4         4                4
-#&gt;  5: -0.14106687             5            5         9                5
-#&gt;  6: -0.12213138             7            6         7                6
-#&gt;  7: -0.03895537             8            8         6                7
-#&gt;  8:  0.00000000            10           10         4                8
-#&gt;  9: -0.14171766             6            7        10                9
-#&gt; 10: -0.13105820             9            9         8               10
-#&gt; 11: -0.16906703            11           11        11               11
-#&gt; 12:  0.49328365            NA           NA        NA               NA
-#&gt; 13: -0.33813405            NA           NA        NA               NA
-#&gt; 14:  0.00000000            NA           NA        NA               NA
-#&gt; 15:  0.00000000            NA           NA        NA               NA
-#&gt; 16:  0.00000000            NA           NA        NA               NA
-#&gt; 17:  0.23045793            NA           NA        NA               NA
-#&gt; 18: -0.24426276            NA           NA        NA               NA
-#&gt; 19:  0.00000000            NA           NA        NA               NA
-#&gt; 20:  0.21791433            NA           NA        NA               NA
-#&gt; 21: -0.26211640            NA           NA        NA               NA
-#&gt; 22: -0.28213373            NA           NA        NA               NA
-#&gt; 23:  0.48991295            NA           NA        NA               NA
-#&gt; 24:  0.00000000            NA           NA        NA               NA
-#&gt; 25:  0.00000000            NA           NA        NA               NA
-#&gt; 26:  0.00000000            NA           NA        NA               NA
-#&gt; 27: -0.28343532            NA           NA        NA               NA
-#&gt; 28: -0.30836866            NA           NA        NA               NA
-#&gt; 29:  0.00000000            NA           NA        NA               NA
-#&gt; 30:  0.00000000            NA           NA        NA               NA
-#&gt; 31:  0.00000000            NA           NA        NA               NA
-#&gt; 32:  0.00000000            NA           NA        NA               NA
-#&gt; 33:  0.00000000            NA           NA        NA               NA
-#&gt;            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</div><div class='input'>
-<span class='co'># Rank similar CMap perturbations using only Spearman's correlation</span>
-<span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span></div><div class='output co'>#&gt; <span class='message'>Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span></div><div class='output co'>#&gt; <span class='message'>Comparison performed in 0.57 secs</span></div><div class='output co'>#&gt;                              compound_perturbation spearman_coef
-#&gt;  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829
-#&gt;  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734
-#&gt;  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278
-#&gt;  4:        CVD001_24H:BRD-K84389640-001-01-5:4.225  -0.013429614
-#&gt;  5:       CVD001_24H:BRD-K96188950-001-04-5:4.3967  -0.020549215
-#&gt;  6:       CVD001_24H:BRD-K60476892-001-02-1:4.1072  -0.057954380
-#&gt;  7:        CVD001_24H:BRD-K77508012-001-01-9:6.025  -0.063221230
-#&gt;  8:       CVD001_24H:BRD-K62810658-001-05-6:4.6768  -0.067773347
-#&gt;  9:          CVD001_24H:BRD-K94818765-001-01-0:4.8  -0.074453675
-#&gt; 10:         CVD001_24H:BRD-K31030218-001-01-1:4.25  -0.077835425
-#&gt; 11:         CVD001_24H:BRD-A65142661-034-01-8:5.35  -0.115903134
-#&gt; 12:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666
-#&gt; 13:   CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35  -0.164686339
-#&gt; 14:   CVD001_HEPG2_24H:BRD-K31030218-001-01-1:4.25  -0.125531451
-#&gt; 15:    CVD001_HEPG2_24H:BRD-K41172353-001-01-4:4.7   0.005161915
-#&gt; 16: CVD001_HEPG2_24H:BRD-K60476892-001-02-1:4.1072  -0.077832390
-#&gt; 17: CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768  -0.050201852
-#&gt; 18:  CVD001_HEPG2_24H:BRD-K77508012-001-01-9:6.025  -0.094208866
-#&gt; 19:  CVD001_HEPG2_24H:BRD-K84389640-001-01-5:4.225  -0.078331814
-#&gt; 20: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810
-#&gt; 21:    CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8  -0.113418048
-#&gt; 22: CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967  -0.037174082
-#&gt; 23:     CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1   0.223169991
-#&gt; 24:    CVD001_HUH7_24H:BRD-A65142661-034-01-8:5.35  -0.067119930
-#&gt; 25:    CVD001_HUH7_24H:BRD-K31030218-001-01-1:4.25  -0.030139400
-#&gt; 26:     CVD001_HUH7_24H:BRD-K41172353-001-01-4:4.7  -0.020042471
-#&gt; 27:  CVD001_HUH7_24H:BRD-K60476892-001-02-1:4.1072  -0.038076371
-#&gt; 28:  CVD001_HUH7_24H:BRD-K62810658-001-05-6:4.6768  -0.085344842
-#&gt; 29:   CVD001_HUH7_24H:BRD-K77508012-001-01-9:6.025  -0.032233593
-#&gt; 30:   CVD001_HUH7_24H:BRD-K84389640-001-01-5:4.225   0.051472586
-#&gt; 31:  CVD001_HUH7_24H:BRD-K84595254-001-03-0:4.9444   0.101699658
-#&gt; 32:     CVD001_HUH7_24H:BRD-K94818765-001-01-0:4.8  -0.035489302
-#&gt; 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349
-#&gt;                              compound_perturbation spearman_coef
-#&gt;     spearman_pvalue spearman_qvalue spearman_rank
-#&gt;  1:              NA              NA             1
-#&gt;  2:              NA              NA             2
-#&gt;  3:              NA              NA             3
-#&gt;  4:              NA              NA             4
-#&gt;  5:              NA              NA             5
-#&gt;  6:              NA              NA             6
-#&gt;  7:              NA              NA             7
-#&gt;  8:              NA              NA             8
-#&gt;  9:              NA              NA             9
-#&gt; 10:              NA              NA            10
-#&gt; 11:              NA              NA            11
-#&gt; 12:   1.361508e-101   2.995318e-100            NA
-#&gt; 13:    1.741438e-54    1.277054e-53            NA
-#&gt; 14:    3.293334e-32    1.811334e-31            NA
-#&gt; 15:    6.284641e-01    6.583910e-01            NA
-#&gt; 16:    2.727173e-13    5.454346e-13            NA
-#&gt; 17:    2.489663e-06    3.912327e-06            NA
-#&gt; 18:    8.674931e-19    2.726407e-18            NA
-#&gt; 19:    1.919930e-13    4.223846e-13            NA
-#&gt; 20:    1.294659e-15    3.164722e-15            NA
-#&gt; 21:    1.461350e-26    6.429942e-26            NA
-#&gt; 22:    4.903648e-04    6.742517e-04            NA
-#&gt; 23:    1.229995e-99    1.352995e-98            NA
-#&gt; 24:    2.994988e-10    5.490811e-10            NA
-#&gt; 25:    4.713922e-03    5.458226e-03            NA
-#&gt; 26:    6.024403e-02    6.626843e-02            NA
-#&gt; 27:    3.561138e-04    5.223003e-04            NA
-#&gt; 28:    1.101426e-15    3.028921e-15            NA
-#&gt; 29:    2.507656e-03    3.064913e-03            NA
-#&gt; 30:    1.376852e-06    2.330056e-06            NA
-#&gt; 31:    1.197236e-21    4.389864e-21            NA
-#&gt; 32:    8.751127e-04    1.132499e-03            NA
-#&gt; 33:    7.129654e-01    7.129654e-01            NA
-#&gt;     spearman_pvalue spearman_qvalue spearman_rank</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Example of a differential expression profile</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"diffExprStat"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'># Download and load CMap perturbations to compare with</span></span>
+<span class='r-in'><span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"HUH7"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>cmapMetadataCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='filterCMapMetadata.html'>filterCMapMetadata</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='st'>"cmapMetadata.txt"</span>, cellLine<span class='op'>=</span><span class='va'>cellLine</span>, timepoint<span class='op'>=</span><span class='st'>"24 h"</span>,</span>
+<span class='r-in'>    dosage<span class='op'>=</span><span class='st'>"5 \u00B5M"</span>, perturbationType<span class='op'>=</span><span class='st'>"Compound"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>cmapPerturbationsCompounds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareCMapPerturbations.html'>prepareCMapPerturbations</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='va'>cmapMetadataCompounds</span>, <span class='st'>"cmapZscores.gctx"</span>, <span class='st'>"cmapGeneInfo.txt"</span>,</span>
+<span class='r-in'>    <span class='st'>"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='va'>perturbations</span> <span class='op'>&lt;-</span> <span class='va'>cmapPerturbationsCompounds</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Rank similar CMap perturbations (by default, Spearman's and Pearson's</span></span>
+<span class='r-in'><span class='co'># correlation are used, as well as GSEA with the top and bottom 150 genes of</span></span>
+<span class='r-in'><span class='co'># the differential expression profile used as reference)</span></span>
+<span class='r-in'><span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Comparison performed in 0.84 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:        CVD001_24H:BRD-K84389640-001-01-5:4.225  -0.013429614</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:       CVD001_24H:BRD-K96188950-001-04-5:4.3967  -0.020549215</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:        CVD001_24H:BRD-K77508012-001-01-9:6.025  -0.063221230</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:       CVD001_24H:BRD-K62810658-001-05-6:4.6768  -0.067773347</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:         CVD001_24H:BRD-K31030218-001-01-1:4.25  -0.077835425</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:       CVD001_24H:BRD-K60476892-001-02-1:4.1072  -0.057954380</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:          CVD001_24H:BRD-K94818765-001-01-0:4.8  -0.074453675</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:         CVD001_24H:BRD-A65142661-034-01-8:5.35  -0.115903134</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:   CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35  -0.164686339</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:   CVD001_HEPG2_24H:BRD-K31030218-001-01-1:4.25  -0.125531451</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:    CVD001_HEPG2_24H:BRD-K41172353-001-01-4:4.7   0.005161915</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16: CVD001_HEPG2_24H:BRD-K60476892-001-02-1:4.1072  -0.077832390</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17: CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768  -0.050201852</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:  CVD001_HEPG2_24H:BRD-K77508012-001-01-9:6.025  -0.094208866</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:  CVD001_HEPG2_24H:BRD-K84389640-001-01-5:4.225  -0.078331814</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:    CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8  -0.113418048</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22: CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967  -0.037174082</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:     CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1   0.223169991</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:    CVD001_HUH7_24H:BRD-A65142661-034-01-8:5.35  -0.067119930</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:    CVD001_HUH7_24H:BRD-K31030218-001-01-1:4.25  -0.030139400</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:     CVD001_HUH7_24H:BRD-K41172353-001-01-4:4.7  -0.020042471</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:  CVD001_HUH7_24H:BRD-K60476892-001-02-1:4.1072  -0.038076371</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:  CVD001_HUH7_24H:BRD-K62810658-001-05-6:4.6768  -0.085344842</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:   CVD001_HUH7_24H:BRD-K77508012-001-01-9:6.025  -0.032233593</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:   CVD001_HUH7_24H:BRD-K84389640-001-01-5:4.225   0.051472586</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:  CVD001_HUH7_24H:BRD-K84595254-001-03-0:4.9444   0.101699658</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32:     CVD001_HUH7_24H:BRD-K94818765-001-01-0:4.8  -0.035489302</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:              NA              NA  0.226788992             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:              NA              NA  0.078584431             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:              NA              NA -0.012120187             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:              NA              NA -0.016435243             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:              NA              NA -0.025128574             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:              NA              NA -0.052288195             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:              NA              NA -0.059565207             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:              NA              NA -0.079194543             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:              NA              NA -0.054194930             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:              NA              NA -0.070396828             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:              NA              NA -0.104553349             NA             NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:   1.361508e-101   2.995318e-100  0.226406681  1.442316e-102  1.586548e-101</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:    1.741438e-54    1.277054e-53 -0.147970604   3.242185e-44   2.377602e-43</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:    3.293334e-32    1.811334e-31 -0.120540610   8.215231e-30   4.518377e-29</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:    6.284641e-01    6.583910e-01 -0.012675137   2.347404e-01   2.582144e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:    2.727173e-13    5.454346e-13 -0.062540590   4.400100e-09   8.800200e-09</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:    2.489663e-06    3.912327e-06 -0.025518430   1.673267e-02   2.045104e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:    8.674931e-19    2.726407e-18 -0.082830711   7.364690e-15   2.025290e-14</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:    1.919930e-13    4.223846e-13 -0.082640252   8.485519e-15   2.074238e-14</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:    1.294659e-15    3.164722e-15  0.068343991   1.415829e-10   3.114825e-10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:    1.461350e-26    6.429942e-26 -0.110539100   2.640853e-25   1.161975e-24</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22:    4.903648e-04    6.742517e-04 -0.045806246   1.737439e-05   2.548244e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:    1.229995e-99    1.352995e-98  0.227171304  2.883308e-103  6.343277e-102</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:    2.994988e-10    5.490811e-10 -0.061136095   9.672983e-09   1.773380e-08</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:    4.713922e-03    5.458226e-03 -0.037848476   3.863289e-04   5.312023e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:    6.024403e-02    6.626843e-02 -0.011565237   2.782846e-01   2.915363e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:    3.561138e-04    5.223003e-04 -0.045849271   1.706068e-05   2.548244e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:    1.101426e-15    3.028921e-15 -0.093611984   1.434812e-18   5.260979e-18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:    2.507656e-03    3.064913e-03 -0.021745678   4.147826e-02   4.802746e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:    1.376852e-06    2.330056e-06  0.049769766   3.035636e-06   5.137229e-06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:    1.197236e-21    4.389864e-21  0.088824872   7.237642e-17   2.274688e-16</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32:    8.751127e-04    1.132499e-03 -0.030254556   4.557359e-03   5.897759e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33:    7.129654e-01    7.129654e-01 -0.004450902   6.765050e-01   6.765050e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:  0.49159830             1            1         1                1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:  0.10895716             2            2         2                2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:  0.00000000             3            3         4                3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:  0.00000000             4            4         4                4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5: -0.14106687             5            5         9                5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6: -0.12213138             7            6         7                6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7: -0.03895537             8            8         6                7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:  0.00000000            10           10         4                8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9: -0.14171766             6            7        10                9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10: -0.13105820             9            9         8               10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11: -0.16906703            11           11        11               11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:  0.49328365            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13: -0.33813405            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:  0.23045793            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18: -0.24426276            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:  0.21791433            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21: -0.26211640            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22: -0.28213373            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:  0.48991295            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27: -0.28343532            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28: -0.30836866            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33:  0.00000000            NA           NA        NA               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Rank similar CMap perturbations using only Spearman's correlation</span></span>
+<span class='r-in'><span class='fu'>rankSimilarPerturbations</span><span class='op'>(</span><span class='va'>diffExprStat</span>, <span class='va'>perturbations</span>, method<span class='op'>=</span><span class='st'>"spearman"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Comparison performed in 0.54 secs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:        CVD001_24H:BRD-K84389640-001-01-5:4.225  -0.013429614</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:       CVD001_24H:BRD-K96188950-001-04-5:4.3967  -0.020549215</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:       CVD001_24H:BRD-K60476892-001-02-1:4.1072  -0.057954380</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:        CVD001_24H:BRD-K77508012-001-01-9:6.025  -0.063221230</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:       CVD001_24H:BRD-K62810658-001-05-6:4.6768  -0.067773347</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:          CVD001_24H:BRD-K94818765-001-01-0:4.8  -0.074453675</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:         CVD001_24H:BRD-K31030218-001-01-1:4.25  -0.077835425</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:         CVD001_24H:BRD-A65142661-034-01-8:5.35  -0.115903134</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:   CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35  -0.164686339</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:   CVD001_HEPG2_24H:BRD-K31030218-001-01-1:4.25  -0.125531451</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:    CVD001_HEPG2_24H:BRD-K41172353-001-01-4:4.7   0.005161915</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16: CVD001_HEPG2_24H:BRD-K60476892-001-02-1:4.1072  -0.077832390</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17: CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768  -0.050201852</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:  CVD001_HEPG2_24H:BRD-K77508012-001-01-9:6.025  -0.094208866</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:  CVD001_HEPG2_24H:BRD-K84389640-001-01-5:4.225  -0.078331814</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:    CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8  -0.113418048</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22: CVD001_HEPG2_24H:BRD-K96188950-001-04-5:4.3967  -0.037174082</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:     CVD001_HUH7_24H:BRD-A14014306-001-01-1:4.1   0.223169991</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:    CVD001_HUH7_24H:BRD-A65142661-034-01-8:5.35  -0.067119930</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:    CVD001_HUH7_24H:BRD-K31030218-001-01-1:4.25  -0.030139400</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:     CVD001_HUH7_24H:BRD-K41172353-001-01-4:4.7  -0.020042471</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:  CVD001_HUH7_24H:BRD-K60476892-001-02-1:4.1072  -0.038076371</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:  CVD001_HUH7_24H:BRD-K62810658-001-05-6:4.6768  -0.085344842</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:   CVD001_HUH7_24H:BRD-K77508012-001-01-9:6.025  -0.032233593</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:   CVD001_HUH7_24H:BRD-K84389640-001-01-5:4.225   0.051472586</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:  CVD001_HUH7_24H:BRD-K84595254-001-03-0:4.9444   0.101699658</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32:     CVD001_HUH7_24H:BRD-K94818765-001-01-0:4.8  -0.035489302</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     spearman_pvalue spearman_qvalue spearman_rank</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  1:              NA              NA             1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  2:              NA              NA             2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  3:              NA              NA             3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  4:              NA              NA             4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  5:              NA              NA             5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  6:              NA              NA             6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7:              NA              NA             7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  8:              NA              NA             8</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  9:              NA              NA             9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10:              NA              NA            10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11:              NA              NA            11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12:   1.361508e-101   2.995318e-100            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13:    1.741438e-54    1.277054e-53            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14:    3.293334e-32    1.811334e-31            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15:    6.284641e-01    6.583910e-01            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16:    2.727173e-13    5.454346e-13            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17:    2.489663e-06    3.912327e-06            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18:    8.674931e-19    2.726407e-18            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19:    1.919930e-13    4.223846e-13            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20:    1.294659e-15    3.164722e-15            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21:    1.461350e-26    6.429942e-26            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22:    4.903648e-04    6.742517e-04            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23:    1.229995e-99    1.352995e-98            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24:    2.994988e-10    5.490811e-10            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25:    4.713922e-03    5.458226e-03            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26:    6.024403e-02    6.626843e-02            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27:    3.561138e-04    5.223003e-04            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28:    1.101426e-15    3.028921e-15            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29:    2.507656e-03    3.064913e-03            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30:    1.376852e-06    2.330056e-06            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31:    1.197236e-21    4.389864e-21            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32:    8.751127e-04    1.132499e-03            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33:    7.129654e-01    7.129654e-01            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     spearman_pvalue spearman_qvalue spearman_rank</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

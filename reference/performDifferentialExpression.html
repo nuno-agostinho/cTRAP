@@ -156,30 +156,30 @@ knockdown and control</p>
 <code><a href='prepareENCODEgeneExpression.html'>prepareENCODEgeneExpression</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='co'># Download ENCODE metadata for a specific cell line and gene</span>
-  <span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span>
-  <span class='va'>gene</span> <span class='op'>&lt;-</span> <span class='st'>"EIF4G1"</span>
-  <span class='va'>ENCODEmetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span><span class='op'>(</span><span class='va'>cellLine</span>, <span class='va'>gene</span><span class='op'>)</span>
-
-  <span class='co'># Download samples based on filtered ENCODE metadata</span>
-  <span class='va'>ENCODEsamples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadENCODEsamples.html'>loadENCODEsamples</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
-
-  <span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareENCODEgeneExpression.html'>prepareENCODEgeneExpression</a></span><span class='op'>(</span><span class='va'>ENCODEsamples</span><span class='op'>)</span>
-
-  <span class='co'># Remove low coverage (at least 10 counts shared across two samples)</span>
-  <span class='va'>minReads</span>   <span class='op'>&lt;-</span> <span class='fl'>10</span>
-  <span class='va'>minSamples</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
-  <span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>[</span> , <span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>&gt;=</span> <span class='va'>minReads</span><span class='op'>)</span> <span class='op'>&gt;=</span> <span class='va'>minSamples</span>
-  <span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='va'>counts</span><span class='op'>[</span><span class='va'>filter</span>, <span class='op'>]</span>
-
-  <span class='co'># Convert ENSEMBL identifier to gene symbol</span>
-  <span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span> <span class='op'>&lt;-</span> <span class='fu'><a href='convertGeneIdentifiers.html'>convertGeneIdentifiers</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span><span class='op'>)</span>
-
-  <span class='co'># Perform differential gene expression analysis</span>
-  <span class='va'>diffExpr</span> <span class='op'>&lt;-</span> <span class='fu'>performDifferentialExpression</span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='co'># Download ENCODE metadata for a specific cell line and gene</span></span>
+<span class='r-in'>  <span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span></span>
+<span class='r-in'>  <span class='va'>gene</span> <span class='op'>&lt;-</span> <span class='st'>"EIF4G1"</span></span>
+<span class='r-in'>  <span class='va'>ENCODEmetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span><span class='op'>(</span><span class='va'>cellLine</span>, <span class='va'>gene</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># Download samples based on filtered ENCODE metadata</span></span>
+<span class='r-in'>  <span class='va'>ENCODEsamples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadENCODEsamples.html'>loadENCODEsamples</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='fu'><a href='prepareENCODEgeneExpression.html'>prepareENCODEgeneExpression</a></span><span class='op'>(</span><span class='va'>ENCODEsamples</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># Remove low coverage (at least 10 counts shared across two samples)</span></span>
+<span class='r-in'>  <span class='va'>minReads</span>   <span class='op'>&lt;-</span> <span class='fl'>10</span></span>
+<span class='r-in'>  <span class='va'>minSamples</span> <span class='op'>&lt;-</span> <span class='fl'>2</span></span>
+<span class='r-in'>  <span class='va'>filter</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>[</span> , <span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>&gt;=</span> <span class='va'>minReads</span><span class='op'>)</span> <span class='op'>&gt;=</span> <span class='va'>minSamples</span></span>
+<span class='r-in'>  <span class='va'>counts</span> <span class='op'>&lt;-</span> <span class='va'>counts</span><span class='op'>[</span><span class='va'>filter</span>, <span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># Convert ENSEMBL identifier to gene symbol</span></span>
+<span class='r-in'>  <span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span> <span class='op'>&lt;-</span> <span class='fu'><a href='convertGeneIdentifiers.html'>convertGeneIdentifiers</a></span><span class='op'>(</span><span class='va'>counts</span><span class='op'>$</span><span class='va'>gene_id</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># Perform differential gene expression analysis</span></span>
+<span class='r-in'>  <span class='va'>diffExpr</span> <span class='op'>&lt;-</span> <span class='fu'>performDifferentialExpression</span><span class='op'>(</span><span class='va'>counts</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -156,18 +156,18 @@
 <code><a href='performDifferentialExpression.html'>performDifferentialExpression</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='co'># Load ENCODE metadata for a specific cell line and gene</span>
-  <span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span>
-  <span class='va'>gene</span> <span class='op'>&lt;-</span> <span class='st'>"EIF4G1"</span>
-  <span class='va'>ENCODEmetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span><span class='op'>(</span><span class='va'>cellLine</span>, <span class='va'>gene</span><span class='op'>)</span>
-
-  <span class='co'># Load samples based on filtered ENCODE metadata</span>
-  <span class='va'>ENCODEsamples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadENCODEsamples.html'>loadENCODEsamples</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>
-
-  <span class='fu'>prepareENCODEgeneExpression</span><span class='op'>(</span><span class='va'>ENCODEsamples</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='co'># Load ENCODE metadata for a specific cell line and gene</span></span>
+<span class='r-in'>  <span class='va'>cellLine</span> <span class='op'>&lt;-</span> <span class='st'>"HepG2"</span></span>
+<span class='r-in'>  <span class='va'>gene</span> <span class='op'>&lt;-</span> <span class='st'>"EIF4G1"</span></span>
+<span class='r-in'>  <span class='va'>ENCODEmetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='downloadENCODEknockdownMetadata.html'>downloadENCODEknockdownMetadata</a></span><span class='op'>(</span><span class='va'>cellLine</span>, <span class='va'>gene</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># Load samples based on filtered ENCODE metadata</span></span>
+<span class='r-in'>  <span class='va'>ENCODEsamples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadENCODEsamples.html'>loadENCODEsamples</a></span><span class='op'>(</span><span class='va'>ENCODEmetadata</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='fu'>prepareENCODEgeneExpression</span><span class='op'>(</span><span class='va'>ENCODEsamples</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

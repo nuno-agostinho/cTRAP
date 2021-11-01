@@ -192,29 +192,30 @@ perturbation types are loaded)</p></td>
 <code><a href='rankSimilarPerturbations.html'>rankSimilarPerturbations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span>
-<span class='op'>}</span>
-<span class='fu'>getCMapConditions</span><span class='op'>(</span><span class='va'>cmapMetadata</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $perturbationType
-#&gt; [1] "Peptides and other biological agents (e.g. cytokine)"
-#&gt; 
-#&gt; $cellLine
-#&gt; [1] "HEPG2"
-#&gt; 
-#&gt; $dosage
-#&gt;  [1] "0 ng/mL"      "0.01 ng/mL"   "0.03 ng/mL"   "0.1 ng/mL"    "0.15 ng/mL"  
-#&gt;  [6] "0.2 ng/mL"    "0.3 ng/mL"    "0.5 ng/mL"    "1 ng/mL"      "1.65 ng/mL"  
-#&gt; [11] "2 ng/mL"      "5 ng/mL"      "10 ng/mL"     "15 ng/mL"     "16 ng/mL"    
-#&gt; [16] "20 ng/mL"     "25 ng/mL"     "30 ng/mL"     "40 ng/mL"     "50 ng/mL"    
-#&gt; [21] "80 ng/mL"     "100 ng/mL"    "150 ng/mL"    "200 ng/mL"    "250 ng/mL"   
-#&gt; [26] "400 ng/mL"    "500 ng/mL"    "800 ng/mL"    "1000 ng/mL"   "2000 ng/mL"  
-#&gt; [31] "2500 ng/mL"   "3000 ng/mL"   "5000 ng/mL"   "8300 ng/mL"   "10000 ng/mL" 
-#&gt; [36] "50000 ng/mL"  "100000 ng/mL" "200000 ng/mL"
-#&gt; 
-#&gt; $timepoint
-#&gt; [1] "2 h"
-#&gt; </div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='va'>cmapMetadata</span> <span class='op'>&lt;-</span> <span class='fu'><a href='loadCMapData.html'>loadCMapData</a></span><span class='op'>(</span><span class='st'>"cmapMetadata.txt"</span>, <span class='st'>"metadata"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='fu'>getCMapConditions</span><span class='op'>(</span><span class='va'>cmapMetadata</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $perturbationType</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "Peptides and other biological agents (e.g. cytokine)"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $cellLine</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "HEPG2"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dosage</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1] "0 ng/mL"      "0.01 ng/mL"   "0.03 ng/mL"   "0.1 ng/mL"    "0.15 ng/mL"  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [6] "0.2 ng/mL"    "0.3 ng/mL"    "0.5 ng/mL"    "1 ng/mL"      "1.65 ng/mL"  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [11] "2 ng/mL"      "5 ng/mL"      "10 ng/mL"     "15 ng/mL"     "16 ng/mL"    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [16] "20 ng/mL"     "25 ng/mL"     "30 ng/mL"     "40 ng/mL"     "50 ng/mL"    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [21] "80 ng/mL"     "100 ng/mL"    "150 ng/mL"    "200 ng/mL"    "250 ng/mL"   </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [26] "400 ng/mL"    "500 ng/mL"    "800 ng/mL"    "1000 ng/mL"   "2000 ng/mL"  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [31] "2500 ng/mL"   "3000 ng/mL"   "5000 ng/mL"   "8300 ng/mL"   "10000 ng/mL" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [36] "50000 ng/mL"  "100000 ng/mL" "200000 ng/mL"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $timepoint</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "2 h"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

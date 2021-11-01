@@ -175,115 +175,116 @@ contain the full filepath if preferred)</p></td>
 <code><a href='prepareDrugSets.html'>prepareDrugSets</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>loadDrugDescriptors</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;        compound FDA_status Mechanism_of_action Total Molweight
-#&gt;     1:        1       &lt;NA&gt;                &lt;NA&gt;         122.123
-#&gt;     2:       17       &lt;NA&gt;                &lt;NA&gt;         319.531
-#&gt;     3:       89       &lt;NA&gt;                &lt;NA&gt;         212.699
-#&gt;     4:      185       &lt;NA&gt;                &lt;NA&gt;         281.351
-#&gt;     5:      295       &lt;NA&gt;                &lt;NA&gt;         164.203
-#&gt;    ---                                                        
-#&gt; 21734:   780184       &lt;NA&gt;                &lt;NA&gt;         485.555
-#&gt; 21735:   780185       &lt;NA&gt;                &lt;NA&gt;         520.000
-#&gt; 21736:   780186       &lt;NA&gt;                &lt;NA&gt;         545.607
-#&gt; 21737:   780198       &lt;NA&gt;                &lt;NA&gt;         474.507
-#&gt; 21738:   783538       &lt;NA&gt;                &lt;NA&gt;         654.663
-#&gt;        Monoisotopic Mass  cLogP  cLogS H-Acceptors H-Donors Total Surface Area
-#&gt;     1:          122.0368 0.5246 -1.122           2        0              98.97
-#&gt;     2:          319.2875 7.3033 -5.409           2        2             293.03
-#&gt;     3:          177.1154 1.2787 -1.693           2        0             153.35
-#&gt;     4:          281.1627 0.9427 -2.688           5        2             213.38
-#&gt;     5:          164.0837 2.0516 -2.134           2        1             138.64
-#&gt;    ---                                                                        
-#&gt; 21734:          485.1508 3.8839 -5.205           8        2             366.97
-#&gt; 21735:          519.1119 4.4217 -5.911           8        1             386.04
-#&gt; 21736:          545.1720 3.6757 -5.211          10        1             415.14
-#&gt; 21737:          474.1679 4.3868 -6.633           7        0             369.08
-#&gt; 21738:          654.2312 2.2501 -4.057          13        4             460.31
-#&gt;        Polar Surface Area Druglikeness Mutagenic Tumorigenic
-#&gt;     1:              34.14     -0.69205      high        none
-#&gt;     2:              46.25    -19.80400       low         low
-#&gt;     3:              20.31      3.55190      none        none
-#&gt;     4:              83.47      4.15230      none        none
-#&gt;     5:              37.30     -6.26530      none        none
-#&gt;    ---                                                      
-#&gt; 21734:             111.70     -0.58316      none        none
-#&gt; 21735:             100.70      1.25170      none        none
-#&gt; 21736:             119.16      5.34740      none        none
-#&gt; 21737:              72.45     -2.40640      high        none
-#&gt; 21738:             171.83     -4.11790      none        none
-#&gt;        Reproductive Effective Irritant Nasty Functions Shape Index
-#&gt;     1:                   none     none            &lt;NA&gt;     0.66667
-#&gt;     2:                   none     none            &lt;NA&gt;     0.82609
-#&gt;     3:                   none     none            &lt;NA&gt;     0.69231
-#&gt;     4:                   high     high            &lt;NA&gt;     0.50000
-#&gt;     5:                   none     none            &lt;NA&gt;     0.75000
-#&gt;    ---                                                            
-#&gt; 21734:                   high     none            &lt;NA&gt;     0.50000
-#&gt; 21735:                   high     none            &lt;NA&gt;     0.48571
-#&gt; 21736:                   high     none            &lt;NA&gt;     0.50000
-#&gt; 21737:                   high     none            &lt;NA&gt;     0.51429
-#&gt; 21738:                   high     none            &lt;NA&gt;     0.38298
-#&gt;        Molecular Flexibility Molecular Complexity Fragments Non-H Atoms
-#&gt;     1:               0.24673              0.72259         1           9
-#&gt;     2:               0.48864              0.60279         1          23
-#&gt;     3:               0.55528              0.52258         2          13
-#&gt;     4:               0.49493              0.70898         1          20
-#&gt;     5:               0.57069              0.43984         1          12
-#&gt;    ---                                                                 
-#&gt; 21734:               0.48741              0.86255         1          34
-#&gt; 21735:               0.48769              0.87147         1          35
-#&gt; 21736:               0.50651              0.88979         1          38
-#&gt; 21737:               0.46227              0.86525         1          35
-#&gt; 21738:               0.29662              1.08780         1          47
-#&gt;        Non-C/H Atoms Metal-Atoms Electronegative Atoms Stereo Centers
-#&gt;     1:             2           0                     2              0
-#&gt;     2:             2           0                     2              0
-#&gt;     3:             2           0                     2              0
-#&gt;     4:             5           0                     5              4
-#&gt;     5:             2           0                     2              0
-#&gt;    ---                                                               
-#&gt; 21734:             9           0                     9              0
-#&gt; 21735:            10           0                    10              0
-#&gt; 21736:            11           0                    11              0
-#&gt; 21737:             7           0                     7              0
-#&gt; 21738:            13           0                    13              9
-#&gt;        Rotatable Bonds Rings Closures Small Rings Aromatic Rings Aromatic Atoms
-#&gt;     1:               0              1           1              0              0
-#&gt;     2:              14              1           1              1              6
-#&gt;     3:               4              1           1              1              6
-#&gt;     4:               3              2           2              0              0
-#&gt;     5:               4              1           1              1              6
-#&gt;    ---                                                                         
-#&gt; 21734:               8              3           3              3             18
-#&gt; 21735:               9              3           3              3             18
-#&gt; 21736:              11              3           3              3             18
-#&gt; 21737:               9              4           4              3             18
-#&gt; 21738:              11              6           6              3             18
-#&gt;        sp3-Atoms Symmetric atoms Amides Amines Alkyl-Amines Aromatic Amines
-#&gt;     1:         1               0      0      0            0               0
-#&gt;     2:        16               0      0      1            0               1
-#&gt;     3:         5               3      0      1            1               0
-#&gt;     4:        13               3      1      0            0               0
-#&gt;     5:         4               2      0      0            0               0
-#&gt;    ---                                                                     
-#&gt; 21734:        11               7      1      0            0               0
-#&gt; 21735:        11               5      1      0            0               0
-#&gt; 21736:        15               5      1      0            0               0
-#&gt; 21737:        11               4      0      0            0               0
-#&gt; 21738:        27               4      0      0            0               0
-#&gt;        Aromatic Nitrogens Basic Nitrogens Acidic Oxygens Stereo Configuration
-#&gt;     1:                  0               0              0                 &lt;NA&gt;
-#&gt;     2:                  0               0              0                 &lt;NA&gt;
-#&gt;     3:                  0               1              0                 &lt;NA&gt;
-#&gt;     4:                  0               0              0      this enantiomer
-#&gt;     5:                  0               0              1                 &lt;NA&gt;
-#&gt;    ---                                                                       
-#&gt; 21734:                  0               0              0                 &lt;NA&gt;
-#&gt; 21735:                  0               0              0                 &lt;NA&gt;
-#&gt; 21736:                  0               0              0                 &lt;NA&gt;
-#&gt; 21737:                  0               0              0                 &lt;NA&gt;
-#&gt; 21738:                  0               0              0      this enantiomer</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>loadDrugDescriptors</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        compound FDA_status Mechanism_of_action Total Molweight</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:        1       &lt;NA&gt;                &lt;NA&gt;         122.123</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:       17       &lt;NA&gt;                &lt;NA&gt;         319.531</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:       89       &lt;NA&gt;                &lt;NA&gt;         212.699</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:      185       &lt;NA&gt;                &lt;NA&gt;         281.351</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:      295       &lt;NA&gt;                &lt;NA&gt;         164.203</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:   780184       &lt;NA&gt;                &lt;NA&gt;         485.555</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:   780185       &lt;NA&gt;                &lt;NA&gt;         520.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:   780186       &lt;NA&gt;                &lt;NA&gt;         545.607</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:   780198       &lt;NA&gt;                &lt;NA&gt;         474.507</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:   783538       &lt;NA&gt;                &lt;NA&gt;         654.663</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Monoisotopic Mass  cLogP  cLogS H-Acceptors H-Donors Total Surface Area</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:          122.0368 0.5246 -1.122           2        0              98.97</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:          319.2875 7.3033 -5.409           2        2             293.03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:          177.1154 1.2787 -1.693           2        0             153.35</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:          281.1627 0.9427 -2.688           5        2             213.38</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:          164.0837 2.0516 -2.134           2        1             138.64</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:          485.1508 3.8839 -5.205           8        2             366.97</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:          519.1119 4.4217 -5.911           8        1             386.04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:          545.1720 3.6757 -5.211          10        1             415.14</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:          474.1679 4.3868 -6.633           7        0             369.08</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:          654.2312 2.2501 -4.057          13        4             460.31</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Polar Surface Area Druglikeness Mutagenic Tumorigenic</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:              34.14     -0.69205      high        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:              46.25    -19.80400       low         low</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:              20.31      3.55190      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:              83.47      4.15230      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:              37.30     -6.26530      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                      </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:             111.70     -0.58316      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:             100.70      1.25170      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:             119.16      5.34740      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:              72.45     -2.40640      high        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:             171.83     -4.11790      none        none</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Reproductive Effective Irritant Nasty Functions Shape Index</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:                   none     none            &lt;NA&gt;     0.66667</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:                   none     none            &lt;NA&gt;     0.82609</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:                   none     none            &lt;NA&gt;     0.69231</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:                   high     high            &lt;NA&gt;     0.50000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:                   none     none            &lt;NA&gt;     0.75000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                            </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:                   high     none            &lt;NA&gt;     0.50000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:                   high     none            &lt;NA&gt;     0.48571</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:                   high     none            &lt;NA&gt;     0.50000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:                   high     none            &lt;NA&gt;     0.51429</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:                   high     none            &lt;NA&gt;     0.38298</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Molecular Flexibility Molecular Complexity Fragments Non-H Atoms</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:               0.24673              0.72259         1           9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:               0.48864              0.60279         1          23</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:               0.55528              0.52258         2          13</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:               0.49493              0.70898         1          20</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:               0.57069              0.43984         1          12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:               0.48741              0.86255         1          34</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:               0.48769              0.87147         1          35</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:               0.50651              0.88979         1          38</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:               0.46227              0.86525         1          35</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:               0.29662              1.08780         1          47</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Non-C/H Atoms Metal-Atoms Electronegative Atoms Stereo Centers</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:             2           0                     2              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:             2           0                     2              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:             2           0                     2              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:             5           0                     5              4</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:             2           0                     2              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                               </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:             9           0                     9              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:            10           0                    10              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:            11           0                    11              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:             7           0                     7              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:            13           0                    13              9</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Rotatable Bonds Rings Closures Small Rings Aromatic Rings Aromatic Atoms</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:               0              1           1              0              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:              14              1           1              1              6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:               4              1           1              1              6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:               3              2           2              0              0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:               4              1           1              1              6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                         </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:               8              3           3              3             18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:               9              3           3              3             18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:              11              3           3              3             18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:               9              4           4              3             18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:              11              6           6              3             18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        sp3-Atoms Symmetric atoms Amides Amines Alkyl-Amines Aromatic Amines</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:         1               0      0      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:        16               0      0      1            0               1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:         5               3      0      1            1               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:        13               3      1      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:         4               2      0      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:        11               7      1      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:        11               5      1      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:        15               5      1      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:        11               4      0      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:        27               4      0      0            0               0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Aromatic Nitrogens Basic Nitrogens Acidic Oxygens Stereo Configuration</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     1:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     2:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     3:                  0               1              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     4:                  0               0              0      this enantiomer</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     5:                  0               0              1                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ---                                                                       </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21734:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21735:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21736:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21737:                  0               0              0                 &lt;NA&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21738:                  0               0              0      this enantiomer</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

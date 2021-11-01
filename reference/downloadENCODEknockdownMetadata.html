@@ -168,76 +168,77 @@ will be created)</p></td>
 <code><a href='prepareENCODEgeneExpression.html'>prepareENCODEgeneExpression</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>downloadENCODEknockdownMetadata</span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"EIF4G1"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    File accession File format File type File format type          Output type
-#&gt; 1:    ENCFF955TXI         tsv       tsv                  gene quantifications
-#&gt; 2:    ENCFF049UZV         tsv       tsv                  gene quantifications
-#&gt;    File assembly Experiment accession         Assay Biosample term id
-#&gt; 1:          hg19          ENCSR509LIV shRNA RNA-seq       EFO:0001187
-#&gt; 2:          hg19          ENCSR509LIV shRNA RNA-seq       EFO:0001187
-#&gt;    Biosample term name Biosample type Biosample organism Biosample treatments
-#&gt; 1:               HepG2      cell line       Homo sapiens                   NA
-#&gt; 2:               HepG2      cell line       Homo sapiens                   NA
-#&gt;    Biosample treatments amount Biosample treatments duration
-#&gt; 1:                          NA                            NA
-#&gt; 2:                          NA                            NA
-#&gt;    Biosample genetic modifications methods
-#&gt; 1:                                    RNAi
-#&gt; 2:                                    RNAi
-#&gt;    Biosample genetic modifications categories
-#&gt; 1:                               interference
-#&gt; 2:                               interference
-#&gt;    Biosample genetic modifications targets
-#&gt; 1:                  /targets/EIF4G1-human/
-#&gt; 2:                  /targets/EIF4G1-human/
-#&gt;    Biosample genetic modifications gene targets
-#&gt; 1:                                           NA
-#&gt; 2:                                           NA
-#&gt;    Biosample genetic modifications site coordinates
-#&gt; 1:                                               NA
-#&gt; 2:                                               NA
-#&gt;    Biosample genetic modifications zygosity Experiment target
-#&gt; 1:                                       NA            EIF4G1
-#&gt; 2:                                       NA            EIF4G1
-#&gt;      Library made from Library depleted in
-#&gt; 1: polyadenylated mRNA                    
-#&gt; 2: polyadenylated mRNA                    
-#&gt;                                    Library extraction method
-#&gt; 1: Maxwell 16 LEV simpleRNA Cells Kit (Promega cat#: AS1270)
-#&gt; 2: Maxwell 16 LEV simpleRNA Cells Kit (Promega cat#: AS1270)
-#&gt;    Library lysis method Library crosslinking method Library strand specific
-#&gt; 1:                   NA                          NA         strand-specific
-#&gt; 2:                   NA                          NA         strand-specific
-#&gt;    Experiment date released Project RBNS protein concentration
-#&gt; 1:               2015-08-18  ENCODE                         NA
-#&gt; 2:               2015-08-18  ENCODE                         NA
-#&gt;    Library fragmentation method Library size range Biological replicate(s)
-#&gt; 1:   chemical (Illumina TruSeq)               &gt;200                       1
-#&gt; 2:   chemical (Illumina TruSeq)               &gt;200                       2
-#&gt;    Technical replicate(s) Read length Mapped read length Run type Paired end
-#&gt; 1:                    1_1          NA                 NA                  NA
-#&gt; 2:                    2_1          NA                 NA                  NA
-#&gt;    Paired with Index of                             Derived from    Size
-#&gt; 1:                   NA /files/ENCFF995LZN/, /files/ENCFF826ONU/ 9554701
-#&gt; 2:                   NA /files/ENCFF447GOE/, /files/ENCFF826ONU/ 9563218
-#&gt;                           Lab                           md5sum dbxrefs
-#&gt; 1: ENCODE Processing Pipeline f9b46cbff89bfe91bdb0879b81cf41e8        
-#&gt; 2: ENCODE Processing Pipeline 9f77694ffdf48801edb9c39f75f6d3b7        
-#&gt;                                                             File download URL
-#&gt; 1: https://www.encodeproject.org/files/ENCFF955TXI/@@download/ENCFF955TXI.tsv
-#&gt; 2: https://www.encodeproject.org/files/ENCFF049UZV/@@download/ENCFF049UZV.tsv
-#&gt;    Genome annotation Platform Controlled by File Status
-#&gt; 1:               V19                           released
-#&gt; 2:               V19                           released
-#&gt;                                                                                s3_uri
-#&gt; 1: s3://encode-public/2015/08/26/f02dd75d-a0c9-451f-aae8-23eb5e8a5a2f/ENCFF955TXI.tsv
-#&gt; 2: s3://encode-public/2015/08/26/d03e3680-479e-470b-9126-198e6cefe4dc/ENCFF049UZV.tsv
-#&gt;                         Audit WARNING Audit NOT_COMPLIANT Audit ERROR
-#&gt; 1: missing biosample characterization                                
-#&gt; 2: missing biosample characterization                                
-#&gt;        Control      Control Experiments
-#&gt; 1: ENCSR042QTH ENCFF657KMW, ENCFF726AVT
-#&gt; 2: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'>downloadENCODEknockdownMetadata</span><span class='op'>(</span><span class='st'>"HepG2"</span>, <span class='st'>"EIF4G1"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    File accession File format File type File format type          Output type</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:    ENCFF955TXI         tsv       tsv                  gene quantifications</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:    ENCFF049UZV         tsv       tsv                  gene quantifications</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    File assembly Experiment accession         Assay Biosample term id</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:          hg19          ENCSR509LIV shRNA RNA-seq       EFO:0001187</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:          hg19          ENCSR509LIV shRNA RNA-seq       EFO:0001187</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample term name Biosample type Biosample organism Biosample treatments</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:               HepG2      cell line       Homo sapiens                   NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:               HepG2      cell line       Homo sapiens                   NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample treatments amount Biosample treatments duration</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                          NA                            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                          NA                            NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications methods</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                                    RNAi</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                                    RNAi</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications categories</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                               interference</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                               interference</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications targets</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                  /targets/EIF4G1-human/</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                  /targets/EIF4G1-human/</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications gene targets</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                                           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                                           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications site coordinates</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                                               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                                               NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Biosample genetic modifications zygosity Experiment target</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                                       NA            EIF4G1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                                       NA            EIF4G1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      Library made from Library depleted in</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: polyadenylated mRNA                    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: polyadenylated mRNA                    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                    Library extraction method</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: Maxwell 16 LEV simpleRNA Cells Kit (Promega cat#: AS1270)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: Maxwell 16 LEV simpleRNA Cells Kit (Promega cat#: AS1270)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Library lysis method Library crosslinking method Library strand specific</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                   NA                          NA         strand-specific</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                   NA                          NA         strand-specific</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Experiment date released Project RBNS protein concentration</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:               2015-08-18  ENCODE                         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:               2015-08-18  ENCODE                         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Library fragmentation method Library size range Biological replicate(s)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:   chemical (Illumina TruSeq)               &gt;200                       1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:   chemical (Illumina TruSeq)               &gt;200                       2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Technical replicate(s) Read length Mapped read length Run type Paired end</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                    1_1          NA                 NA                  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                    2_1          NA                 NA                  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Paired with Index of                             Derived from    Size</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:                   NA /files/ENCFF995LZN/, /files/ENCFF826ONU/ 9554701</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:                   NA /files/ENCFF447GOE/, /files/ENCFF826ONU/ 9563218</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                           Lab                           md5sum dbxrefs</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: ENCODE Processing Pipeline f9b46cbff89bfe91bdb0879b81cf41e8        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: ENCODE Processing Pipeline 9f77694ffdf48801edb9c39f75f6d3b7        </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                             File download URL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: https://www.encodeproject.org/files/ENCFF955TXI/@@download/ENCFF955TXI.tsv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: https://www.encodeproject.org/files/ENCFF049UZV/@@download/ENCFF049UZV.tsv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Genome annotation Platform Controlled by File Status</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1:               V19                           released</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2:               V19                           released</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                                                                                s3_uri</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: s3://encode-public/2015/08/26/f02dd75d-a0c9-451f-aae8-23eb5e8a5a2f/ENCFF955TXI.tsv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: s3://encode-public/2015/08/26/d03e3680-479e-470b-9126-198e6cefe4dc/ENCFF049UZV.tsv</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                         Audit WARNING Audit NOT_COMPLIANT Audit ERROR</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: missing biosample characterization                                </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: missing biosample characterization                                </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        Control      Control Experiments</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
