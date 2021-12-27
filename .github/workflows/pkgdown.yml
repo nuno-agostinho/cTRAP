@@ -31,6 +31,8 @@ jobs:
           extra-packages: r-lib/pkgdown@v1.6.1
           needs: website
 
+      - uses: r-lib/actions/check-r-package@v2
+
       - name: Deploy package
         run: |
           git config --local user.name "$GITHUB_ACTOR"
