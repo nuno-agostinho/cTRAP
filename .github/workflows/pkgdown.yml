@@ -24,7 +24,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 1
-          extra-packages: rcmdcheck, r-lib/pkgdown@v1.6.1
+          extra-packages: any::rcmdcheck, r-lib/pkgdown@v1.6.1
           needs: website
 
       - uses: r-lib/actions/check-r-package@v2
