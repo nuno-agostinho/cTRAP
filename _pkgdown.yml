@@ -52,3 +52,6 @@ reference:
       - prepareDrugSets
       - analyseDrugSetEnrichment
       - plotDrugSetEnrichment
+  - title: internal
+    contents:
+      - convertGeneIdentifiers
