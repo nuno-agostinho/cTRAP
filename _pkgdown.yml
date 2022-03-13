@@ -11,10 +11,11 @@ reference:
       - launchResultPlotter
       - launchMetadataViewer
       - launchDrugSetEnrichmentAnalyser
+      - cTRAP
   - title: "Prepare ENCODE data"
     contents:
       - matches("ENCODE")
-      - convertGeneIdentifiers
+      - convertENSEMBLtoGeneSymbols
       - performDifferentialExpression
   - title: "Download and manipulate CMap perturbation data"
     contents:
@@ -35,10 +36,12 @@ reference:
       - plot.referenceComparison
       - as.table.referenceComparison
       - plotTargetingDrugsVSsimilarPerturbations
+      - print.similarPerturbations
   - title: "Predict targeting drugs"
     contents:
       - listExpressionDrugSensitivityAssociation
       - loadExpressionDrugSensitivityAssociation
+      - dimnames.expressionDrugSensitivityAssociation
       - predictTargetingDrugs
       - plot.referenceComparison
       - as.table.referenceComparison
@@ -49,3 +52,6 @@ reference:
       - prepareDrugSets
       - analyseDrugSetEnrichment
       - plotDrugSetEnrichment
+  - title: internal
+    contents:
+      
