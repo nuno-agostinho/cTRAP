@@ -1,10 +1,6 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
-  push:
-    branches: [main, master]
-  release:
-    types: [published]
   schedule:
     - cron: "0 7 * * 1" # Run every Monday at 07:00 UTC
   workflow_dispatch:
@@ -28,7 +24,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 1
-          extra-packages: r-lib/pkgdown@v1.6.1
+          extra-packages: rcmdcheck, r-lib/pkgdown@v1.6.1
           needs: website
 
       - uses: r-lib/actions/check-r-package@v2
