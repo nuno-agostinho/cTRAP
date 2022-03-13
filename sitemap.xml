@@ -1,246 +1,267 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//index.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/404.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/ENCODEmetadata.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/CONDUCT.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/GCT-class.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/HTMLfast.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/articles/cTRAP.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/analyseDrugSetEnrichment.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/as.table.referenceComparison.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/authors.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/cTRAP.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/index.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/calculateCellLineMean.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/news/index.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/calculateEvenlyDistributedBins.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/ENCODEmetadata.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/checkColnames.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/GCT-class.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/chunkColumns.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/HTMLfast.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/closeOpenHandles.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/analyseDrugSetEnrichment.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/cmapMetadata.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/as.table.referenceComparison.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/cmapPerturbationsCompounds.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/cTRAP.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/cmapPerturbationsKD.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/calculateCellLineMean.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareQuantile.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/calculateEvenlyDistributedBins.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/compareWithAllMethods.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/checkColnames.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertENSEMBLtoGeneSymbols.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/chunkColumns.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/convertGeneIdentifiers.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/closeOpenHandles.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/counts.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/cmapMetadata.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/diffExprStat.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/cmapPerturbationsCompounds.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dimnames.expressionDrugSensitivityAssociation.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/cmapPerturbationsKD.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-plotBubbles.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/compareQuantile.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-prepareNavPage.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/compareWithAllMethods.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/dot-traceInList.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/convertENSEMBLtoGeneSymbols.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/downloadENCODEknockdownMetadata.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/convertGeneIdentifiers.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/downloadIfNotFound.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/counts.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/filterCMapMetadata.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/diffExprStat.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/findIntersectingCompounds.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/dimnames.expressionDrugSensitivityAssociation.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/fix.datatypes.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/dot-plotBubbles.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/getCMapConditions.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/dot-prepareNavPage.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/getCMapPerturbationTypes.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/dot-traceInList.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/getENCODEcontrols.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/downloadENCODEknockdownMetadata.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchCMapDataLoader.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/downloadIfNotFound.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchDiffExprLoader.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/filterCMapMetadata.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchDrugSetEnrichmentAnalyser.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/findIntersectingCompounds.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchMetadataViewer.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/fix.datatypes.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/launchResultPlotter.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/getCMapConditions.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/listExpressionDrugSensitivityAssociation.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/getCMapPerturbationTypes.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadCMapData.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/getENCODEcontrols.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadCMapZscores.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadCTRPgeneExpression.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/launchCMapDataLoader.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadDrugDescriptors.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/launchDiffExprLoader.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadENCODEsample.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/launchDrugSetEnrichmentAnalyser.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadENCODEsamples.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/launchMetadataViewer.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadExpressionDrugSensitivityAssociation.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/launchResultPlotter.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/loadNCI60drugSensitivity.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/listExpressionDrugSensitivityAssociation.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/matchStatsWithDrugSetsID.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadCMapData.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/parseCMapID.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadCMapZscores.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/performDifferentialExpression.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadCTRPgeneExpression.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/performGSEA.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadDrugDescriptors.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plot.perturbationChanges.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadENCODEsample.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plot.referenceComparison.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadENCODEsamples.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotDrugSetEnrichment.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadExpressionDrugSensitivityAssociation.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotESplot.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/loadNCI60drugSensitivity.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotGSEA.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/matchStatsWithDrugSetsID.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotMetricDistribution.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/parseCMapID.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotSingleCorr.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/performDifferentialExpression.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/plotTargetingDrugsVSsimilarPerturbations.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/performGSEA.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/predictTargetingDrugs.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plot.perturbationChanges.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareCMapPerturbations.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plot.referenceComparison.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareDrugSets.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotDrugSetEnrichment.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareENCODEgeneExpression.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotESplot.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareExpressionDrugSensitivityAssociation.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotGSEA.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareGSEAgenesets.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotMetricDistribution.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareSetsCompoundInfo.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotSingleCorr.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareStatsCompoundInfo.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/plotTargetingDrugsVSsimilarPerturbations.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/prepareWordBreak.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/predictTargetingDrugs.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/print.similarPerturbations.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareCMapPerturbations.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/processByChunks.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareDrugSets.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/processIds.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareENCODEgeneExpression.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/rankAgainstReference.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareExpressionDrugSensitivityAssociation.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/rankColumns.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareGSEAgenesets.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/rankSimilarPerturbations.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareSetsCompoundInfo.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/readGctxIds.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareStatsCompoundInfo.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/readGctxMeta.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/prepareWordBreak.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/stripStr.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/print.similarPerturbations.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetData.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/processByChunks.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetDim.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/processIds.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//reference/subsetToIds.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/rankAgainstReference.html</loc>
   </url>
   <url>
-    <loc>https://nuno-agostinho.github.io/cTRAP//articles/cTRAP.html</loc>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/rankColumns.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/rankSimilarPerturbations.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/readGctxIds.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/readGctxMeta.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/stripStr.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/subsetData.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/subsetDim.html</loc>
+  </url>
+  <url>
+    <loc>https://nuno-agostinho.github.io/cTRAP/reference/subsetToIds.html</loc>
   </url>
 </urlset>

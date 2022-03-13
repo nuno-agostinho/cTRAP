@@ -32,6 +32,8 @@
 </script>
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -44,18 +46,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.12.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.12.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="articles/cTRAP.html">Get started</a>
 </li>
@@ -68,7 +64,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/nuno-agostinho/cTRAP/">
+  <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,46 +81,46 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="ctrap" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#ctrap" class="anchor"></a>cTRAP</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="ctrap">cTRAP<a class="anchor" aria-label="anchor" href="#ctrap"></a>
+</h1></div>
 <!-- badges: start -->
 
-<p><code>cTRAP</code> is an R package designed to compare differential gene expression results with those from known cellular perturbations (such as gene knock-down, overexpression or small molecules) derived from the <a href="https://clue.io/">Connectivity Map</a> <a href="https://doi.org/10.1016/j.cell.2017.10.049">(Subramanian et al., Cell 2017)</a>. Such analyses allow not only to infer the molecular causes of the observed difference in gene expression but also to identify small molecules that could drive or revert specific transcriptomic alterations.</p>
-<div id="installing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installing" class="anchor"></a>Installing</h2>
-<div id="bioconductor" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bioconductor" class="anchor"></a>Bioconductor</h3>
-<p><a href="http://bioconductor.org/packages/cTRAP">cTRAP is available in Bioconductor</a> and can be installed with:</p>
+<p><code>cTRAP</code> is an R package designed to compare differential gene expression results with those from known cellular perturbations (such as gene knock-down, overexpression or small molecules) derived from the <a href="https://clue.io/" class="external-link">Connectivity Map</a> <a href="https://doi.org/10.1016/j.cell.2017.10.049" class="external-link">(Subramanian et al., Cell 2017)</a>. Such analyses allow not only to infer the molecular causes of the observed difference in gene expression but also to identify small molecules that could drive or revert specific transcriptomic alterations.</p>
+<div class="section level2">
+<h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
+</h2>
+<div class="section level3">
+<h3 id="bioconductor">Bioconductor<a class="anchor" aria-label="anchor" href="#bioconductor"></a>
+</h3>
+<p><a href="http://bioconductor.org/packages/cTRAP" class="external-link">cTRAP is available in Bioconductor</a> and can be installed with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"cTRAP"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"cTRAP"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="github" class="section level3">
-<h3 class="hasAnchor">
-<a href="#github" class="anchor"></a>GitHub</h3>
+<div class="section level3">
+<h3 id="github">GitHub<a class="anchor" aria-label="anchor" href="#github"></a>
+</h3>
 <p>cTRAP can also be installed from GitHub instead:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nuno-agostinho/cTRAP"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"nuno-agostinho/cTRAP"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="docker" class="section level3">
-<h3 class="hasAnchor">
-<a href="#docker" class="anchor"></a>Docker</h3>
-<p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker">Bioconductor Docker</a> and contain cTRAP and its dependencies.</p>
-<ol>
+<div class="section level3">
+<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
+</h3>
+<p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker" class="external-link">Bioconductor Docker</a> and contain cTRAP and its dependencies.</p>
+<ol style="list-style-type: decimal">
 <li>Pull the latest Docker image:</li>
 </ol>
 <pre><code>docker pull ghcr.io/nuno-agostinho/ctrap:latest</code></pre>
-<ol>
+<ol start="2" style="list-style-type: decimal">
 <li>Start RStudio Web from the Docker image:</li>
 </ol>
 <pre><code>docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/ctrap:latest</code></pre>
-<ol>
-<li>Go to RStudio Web via your web browser at <a href="https://localhost:8787" class="uri">https://localhost:8787</a>
+<ol start="3" style="list-style-type: decimal">
+<li>Go to RStudio Web via your web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
 </li>
 <li>Login in RStudio Web with user <code>rstudio</code> and password <code>bioc</code>
 </li>
@@ -138,26 +134,33 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from BIOC at <br><a href="https://www.bioconductor.org/packages/cTRAP">https://​www.bioconductor.org/​packages/​cTRAP</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/nuno-agostinho/cTRAP/">https://​github.com/​nuno-agostinho/​cTRAP/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/nuno-agostinho/cTRAP/issues">https://​github.com/​nuno-agostinho/​cTRAP/​issues</a>
-</li>
+<li><a href="https://www.bioconductor.org/packages/cTRAP" class="external-link">View on Bioconductor</a></li>
+<li><a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/nuno-agostinho/cTRAP/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing cTRAP</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Bernardo P. de Almeida <br><small class="roles"> Author </small>  </li>
 <li>Nuno Saraiva-Agostinho <br><small class="roles"> Author, maintainer </small>  </li>
@@ -165,23 +168,26 @@
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/nuno-agostinho/cTRAP/actions"><img src="https://github.com/nuno-agostinho/cTRAP/workflows/R-CMD-check-bioc/badge.svg" alt="GitHub Actions Build status"></a></li>
-<li><a href="https://codecov.io/github/nuno-agostinho/cTRAP?branch=master"><img src="https://img.shields.io/codecov/c/github/nuno-agostinho/cTRAP/master.svg" alt="Coverage status"></a></li>
+<li><a href="https://github.com/nuno-agostinho/cTRAP/actions" class="external-link"><img src="https://github.com/nuno-agostinho/cTRAP/workflows/R-CMD-check-bioc/badge.svg" alt="GitHub Actions Build status"></a></li>
+<li><a href="https://codecov.io/github/nuno-agostinho/cTRAP?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/nuno-agostinho/cTRAP/master.svg" alt="Coverage status"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Bernardo P. de Almeida, Nuno Saraiva-Agostinho, Nuno L. Barbosa-Morais.</p>
+  <p></p>
+<p>Developed by Bernardo P. de Almeida, Nuno Saraiva-Agostinho, Nuno L. Barbosa-Morais.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -189,6 +195,8 @@
 
   
 
+
+  
 
   </body>
 </html>
