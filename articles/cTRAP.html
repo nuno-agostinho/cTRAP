@@ -245,11 +245,15 @@
 <span class="co">## </span>
 <span class="co">## $timepoint</span>
 <span class="co">## [1] "96 h"</span></code></pre>
-<p>Now, we will filter the metadata to CMap gene knockdown perturbations in HepG2 cell line and load associated gene information and differential gene expression data. Data is loaded based on the given filename (if no file with the given filename is available, data will be first downloaded).</p>
-<blockquote>
-<p>Differential gene expression data for each CMap perturbation are available in normalised z-score values (read <a href="https://doi.org/10.1016/j.cell.2017.10.049" class="external-link">Subramanian et al., Cell 2017</a> for more details). As this file’s size is big (around 20GB), a prompt will ask you to confirm whether to start downloading the file.</p>
-<p>Alternatively, download the file from the following link (use the exact same filename for the <code>zscores</code> argument of <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>): <a href="ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz">GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz</a> (<a href="ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_SHA512SUMS.txt.gz">SHA-512 checksum</a>)</p>
-</blockquote>
+<p>Now, we will filter the metadata to CMap gene knockdown perturbations in HepG2 and load associated gene information and differential gene expression data based on the given filename (the file is automatically downloaded if it does not exist).</p>
+<p>Differential gene expression data for each CMap perturbation are available in normalised z-score values (read <a href="https://doi.org/10.1016/j.cell.2017.10.049" class="external-link">Subramanian et al., Cell 2017</a> for more details). As the file is big (around 20GB), a prompt will ask to confirm whether to download the file. If you prefer, you can also download the file yourself:</p>
+<ul>
+<li>Manually download the file from <a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz" class="external-link">GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz</a>
+</li>
+<li>Verify file integrity after download using the <a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_SHA512SUMS.txt.gz" class="external-link">SHA-512 checksum</a>
+</li>
+<li>Use the exact same filename for the <code>zscores</code> argument of <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>)</li>
+</ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Filter CMap gene knockdown HepG2 data to be loaded</span>
 <span class="va">cmapMetadataKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span>
@@ -860,7 +864,7 @@
 <code class="sourceCode R"><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</span></code></pre>
 <pre><code><span class="co">## Comparing against 545 CTRP 2.1 compounds (823 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></code></pre>
-<pre><code><span class="co">## Comparison performed in 9.64 secs</span></code></pre>
+<pre><code><span class="co">## Comparison performed in 9.06 secs</span></code></pre>
 <div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></code></pre></div>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
@@ -917,13 +921,13 @@
 <pre><code><span class="co">## Matching compounds with those available in drug sets...</span></code></pre>
 <pre><code><span class="co">## Columns 'broad id' and 'pert_id' were matched based on 283 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></code></pre>
 <pre><code><span class="co">## Plotting enrichment analysis...</span></code></pre>
-<pre><code><span class="co">## $`Total Surface Area: [293, 307]`</span></code></pre>
+<pre><code><span class="co">## $`Total.Molweight: [391, 411]`</span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
 <pre><code><span class="co">## </span>
-<span class="co">## $`Total.Molweight: [391, 411]`</span></code></pre>
+<span class="co">## $`Total Molweight: [391, 411]`</span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
 <pre><code><span class="co">## </span>
-<span class="co">## $`Total Molweight: [391, 411]`</span></code></pre>
+<span class="co">## $`Total Surface Area: [293, 307]`</span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
 <pre><code><span class="co">## </span>
 <span class="co">## $`Rotatable Bonds: 5`</span></code></pre>
