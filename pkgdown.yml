@@ -3,7 +3,7 @@ pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
   cTRAP: cTRAP.html
-last_built: 2022-05-16T07:16Z
+last_built: 2022-05-19T22:07Z
 urls:
   reference: https://nuno-agostinho.github.io/cTRAP/reference
   article: https://nuno-agostinho.github.io/cTRAP/articles
