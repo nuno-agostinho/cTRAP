@@ -76,15 +76,23 @@
     <h2>Arguments</h2>
     <dl><dt>numbers</dt>
 <dd><p>Numeric</p></dd>
+
+
 <dt>maxBins</dt>
 <dd><p>Numeric: maximum number of bins for numeric columns</p></dd>
+
+
 <dt>k</dt>
 <dd><p>Numeric: constant; the higher the constant, the smaller the bin size
 (check <code>minpts</code>)</p></dd>
+
+
 <dt>minPoints</dt>
 <dd><p>Numeric: minimum number of points in a bin (if <code>NULL</code>,
 the minimum number of points is the number of non-missing values divided by
 <code>maxBins</code> divided by <code>k</code>)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/binr/man/bins.html" class="external-link">binr::bins</a></code></p><dl><dt><code>max.breaks</code></dt>
 <dd><p>Used for initial cut. If <code>exact.groups</code> is <code>FALSE</code>, bins are merged
@@ -103,11 +111,17 @@ if FALSE, the result may contain fewer than target.bins bins</p></dd>
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Factor containing the respective group of each element in
-<code>numbers</code></p>
+    
+
+<p>Factor containing the respective group of each element in</p>
+<p></p>
+<p><code>numbers</code></p>
+
+
     </div>
 
   </div>
@@ -122,7 +136,7 @@ if FALSE, the result may contain fewer than target.bins bins</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

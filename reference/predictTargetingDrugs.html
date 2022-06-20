@@ -87,14 +87,20 @@ represents significance and magnitude of differentially expressed genes
 (e.g. t-statistics); or <code>character</code> of gene symbols composing a gene
 set that is tested for enrichment in reference data (only used if
 <code>method</code> includes <code>gsea</code>)</p></dd>
+
+
 <dt>expressionDrugSensitivityCor</dt>
 <dd><p>Matrix or character: correlation matrix
 of gene expression (rows) and drug sensitivity (columns) across cell lines
 or path to file containing such data; see
 <code><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a>()</code>.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
 or <code>gsea</code>; multiple methods may be selected at once)</p></dd>
+
+
 <dt>geneSize</dt>
 <dd><p>Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
@@ -102,25 +108,36 @@ vector, the first index is the number of top up-regulated genes and the
 second index is the number of down-regulated genes used to create gene
 sets; only used if <code>method</code> includes <code>gsea</code> and if <code>input</code>
 is not a gene set</p></dd>
+
+
 <dt>isDrugActivityDirectlyProportionalToSensitivity</dt>
 <dd><p>Boolean: are the
 values used for drug activity directly proportional to drug sensitivity?
 If <code>NULL</code>, the argument <code>expressionDrugSensitivityCor</code> must have
 a non-<code>NULL</code> value for attribute
 <code>isDrugActivityDirectlyProportionalToSensitivity</code>.</p></dd>
+
+
 <dt>threads</dt>
 <dd><p>Integer: number of parallel threads</p></dd>
+
+
 <dt>chunkGiB</dt>
 <dd><p>Numeric: if second argument is a path to an HDF5 file
 (<code>.h5</code> extension), that file is loaded and processed in chunks of a
 given size in gibibytes (GiB); lower values decrease peak RAM usage (see
 details below)</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>Boolean: print additional details?</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Data table with correlation and/or GSEA score results</p>
+    
+
+<p>Data table with correlation and/or GSEA score results</p>
     </div>
     <div id="process-data-by-chunks">
     <h2>Process data by chunks</h2>
@@ -162,7 +179,7 @@ details below)</p></dd>
 <span class="r-in"><span class="fu">predictTargetingDrugs</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.53 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.58 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      compound spearman_coef spearman_pvalue spearman_qvalue pearson_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:     1047    0.14532331    7.908329e-55    2.103616e-52   0.13098933</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      207    0.10447948    4.950795e-29    2.633823e-27   0.09295384</span>
@@ -213,7 +230,7 @@ details below)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>

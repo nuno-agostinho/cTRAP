@@ -84,12 +84,18 @@ represents significance and magnitude of differentially expressed genes
 (e.g. t-statistics); or <code>character</code> of gene symbols composing a gene
 set that is tested for enrichment in reference data (only used if
 <code>method</code> includes <code>gsea</code>)</p></dd>
+
+
 <dt>perturbations</dt>
 <dd><p><code>perturbationChanges</code> object: CMap perturbations
 (check <code><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a>()</code>)</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
 or <code>gsea</code>; multiple methods may be selected at once)</p></dd>
+
+
 <dt>geneSize</dt>
 <dd><p>Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
@@ -97,28 +103,41 @@ vector, the first index is the number of top up-regulated genes and the
 second index is the number of down-regulated genes used to create gene
 sets; only used if <code>method</code> includes <code>gsea</code> and if <code>input</code>
 is not a gene set</p></dd>
+
+
 <dt>cellLineMean</dt>
 <dd><p>Boolean: add rows with the mean of <code>method</code> across
 cell lines? If <code>cellLineMean = "auto"</code> (default), rows will be added
 when data for more than one cell line is available.</p></dd>
+
+
 <dt>rankPerCellLine</dt>
 <dd><p>Boolean: rank results based on both individual cell
 lines and mean scores across cell lines (<code>TRUE</code>) or based on mean
 scores alone (<code>FALSE</code>)? If <code>cellLineMean = FALSE</code>, individual
 cell line conditions are always ranked.</p></dd>
+
+
 <dt>threads</dt>
 <dd><p>Integer: number of parallel threads</p></dd>
+
+
 <dt>chunkGiB</dt>
 <dd><p>Numeric: if second argument is a path to an HDF5 file
 (<code>.h5</code> extension), that file is loaded and processed in chunks of a
 given size in gibibytes (GiB); lower values decrease peak RAM usage (see
 details below)</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>Boolean: print additional details?</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Data table with correlation and/or GSEA score results</p>
+    
+
+<p>Data table with correlation and/or GSEA score results</p>
     </div>
     <div id="process-data-by-chunks">
     <h2>Process data by chunks</h2>
@@ -178,7 +197,7 @@ details below)</p></dd>
 <span class="r-in"><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 1.08 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 1 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
@@ -289,7 +308,7 @@ details below)</p></dd>
 <span class="r-in"><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.7 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.67 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
@@ -374,7 +393,7 @@ details below)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
