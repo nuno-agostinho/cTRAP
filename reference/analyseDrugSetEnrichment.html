@@ -164,7 +164,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-in"><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.49 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.09 secs</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">analyseDrugSetEnrichment</span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matching compounds with those available in drug sets...</span>
@@ -172,29 +172,29 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Columns 'name' and 'name' were matched based on 56 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Performing enrichment analysis...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          descriptor         pval       padj         ES</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:                 Small Rings: 4 0.0002070393 0.03387405 -0.6915988</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:                   sp3-Atoms: 5 0.0002385496 0.03387405 -0.9037610</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:              Non-C/H Atoms: 11 0.0005456728 0.05165703 -0.7500000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:              H-Donors: [6, 40] 0.0019138756 0.13588517  0.8880866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: Polar Surface Area: [123, 141] 0.0031588923 0.17942508 -0.6509521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:                 Small Rings: 4 0.0001034233 0.01698361 -0.6915988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:                   sp3-Atoms: 5 0.0001196029 0.01698361 -0.9037610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:              Non-C/H Atoms: 11 0.0010858942 0.10279799 -0.7500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:              H-Donors: [6, 40] 0.0019579050 0.11309998  0.8880866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: Polar Surface Area: [123, 141] 0.0019911968 0.11309998 -0.6509521</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 280:               Non-C/H Atoms: 7 0.9311418685 0.93774571 -0.2876703</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 281:       Electronegative Atoms: 7 0.9311418685 0.93774571 -0.2876703</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282:                 Small Rings: 3 0.9277696945 0.93774571 -0.2350154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 283:    Total Molweight: [294, 312] 0.9740995548 0.97409955 -0.5107143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 284:              Stereo Centers: 3 0.9740995548 0.97409955 -0.5107143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 280:               Non-C/H Atoms: 7 0.9259130435 0.93423250 -0.2876703</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 281:       Electronegative Atoms: 7 0.9259130435 0.93423250 -0.2876703</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282:                 Small Rings: 3 0.9276533997 0.93423250 -0.2350154</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 283:    Total Molweight: [294, 312] 0.9807579030 0.98075790 -0.5107143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 284:              Stereo Centers: 3 0.9807579030 0.98075790 -0.5107143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             NES nMoreExtreme size                                   leadingEdge</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1.9325497            1   15   737754,752782,757441,1011,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: -1.9357472            1    5                          174939,737754,752782</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: -1.8758180            4    9 299933,330507,727989,745750,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  1.9509134            3    4                   125066,758612,759155,123127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: -1.7430093           29   12  174939,737754,752782,287459,63878,732517,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1.9350788            0   15   737754,752782,757441,1011,732517,759877,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: -1.9317415            0    5                          174939,737754,752782</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: -1.8861133            9    9 299933,330507,727989,745750,732517,759877,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  1.9688871            3    4                   125066,758612,759155,123127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: -1.7516260           18   12  174939,737754,752782,287459,63878,732517,...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 280: -0.6477443         8072    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 281: -0.6477443         8072    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282: -0.6489467         8926   14 299933,706995,683864,339555,606698,226080,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 283: -0.6850636         4813    1                                        613327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 284: -0.6850636         4813    1                                        613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 280: -0.6487782         7985    6                                        706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 281: -0.6487782         7985    6                                        706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282: -0.6510054         8949   14 299933,706995,683864,339555,606698,226080,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 283: -0.6832155         4994    1                                        613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 284: -0.6832155         4994    1                                        613327</span>
 </code></pre></div>
     </div>
   </div>
@@ -209,7 +209,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
