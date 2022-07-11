@@ -1,3 +1,7 @@
+# cTRAP 1.14.1 (5 July, 2022)
+
+* Fix crash when submitting job to Celery/Flowery
+
 # cTRAP 1.12.0 (27 October, 2021)
 
 ## Web server support (optimised to run in ShinyProxy)

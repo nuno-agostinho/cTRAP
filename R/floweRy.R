@@ -1,6 +1,13 @@
 # Temprarily include floweRy functions until approved in CRAN (?)
 # Source code: https://github.com/nuno-agostinho/floweRy
 
+prepareArgs <- function(...) {
+    args <- list(...)
+    if (is.character(names(args))) stop("Arguments in '...' cannot have names.")
+    if (length(args) == 0) args <- NULL
+    return(args)
+}
+
 getFlowerURL <- function() { getOption("floweRy.url", "http://localhost:5555") }
 
 #' @importFrom httr status_code stop_for_status
