@@ -1,6 +1,7 @@
-# cTRAP 1.14.1 (5 July, 2022)
+# cTRAP 1.14.1 (11 July, 2022)
 
 * Fix crash when submitting job to Celery/Flowery
+* Add cTRAP version to welcome modal
 
 # cTRAP 1.12.0 (27 October, 2021)
 
