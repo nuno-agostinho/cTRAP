@@ -60,7 +60,7 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
         } else if (isBinary(processed)) {
             mode <- "wb"
         } else {
-            mode <- "w"
+            mode <- "wb"
         }
         download.file(link, file, mode=mode)
     }
