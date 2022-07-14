@@ -431,6 +431,7 @@ updateAppData <- function(appData, x) {
 #'
 #' @importFrom shiny tagList showModal modalButton modalDialog removeModal
 #' reactiveValues tagAppendAttributes showNotification
+#' @importFrom utils getFromNamespace assignInNamespace
 #'
 #' @return Launches result viewer and plotter (returns \code{NULL})
 #' @family visual interface functions
