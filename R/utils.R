@@ -60,7 +60,7 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
         } else if (isBinary(processed)) {
             mode <- "wb"
         } else {
-            mode <- "wb"
+            mode <- ifelse(Sys.info()['sysname'] == "Windows", "wb", "w")
         }
         download.file(link, file, mode=mode)
     }
