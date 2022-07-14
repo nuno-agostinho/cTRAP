@@ -63,12 +63,11 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
             mode <- "w"
         }
         
-        # Ensure data is downloaded in Windows by using libcurl
+        # Ensure data is downloaded in Windows
         if ( Sys.info()['sysname'] == "Windows" ) {
-            download.file(link, file, mode=mode, method="libcurl")
-        } else {
-            download.file(link, file, mode=mode)
+            link <- gsub("^https", "http", link)
         }
+        download.file(link, file, mode=mode)
     }
 
     # Extract data if GZ or ZIP
