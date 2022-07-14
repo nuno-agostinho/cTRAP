@@ -1,7 +1,8 @@
-# cTRAP 1.14.1 (11 July, 2022)
+# cTRAP 1.14.1 (14 July, 2022)
 
-* Fix crash when submitting job to Celery/Flowery
 * Add cTRAP version to welcome modal
+* Fix crash when submitting Celery job (included missing floweRy function)
+* Fix large JSON responses from DT blocked by reverse proxy default settings
 
 # cTRAP 1.12.0 (27 October, 2021)
 

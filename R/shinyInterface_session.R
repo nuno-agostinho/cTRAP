@@ -452,6 +452,17 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         flower <- FALSE
     }
     
+    # Avoid large JSON response from DT: github.com/rstudio/DT/issues/504
+    dt_mod <- getFromNamespace("dataTablesFilter", "DT")
+    dt_rows_all_line <- grep("DT_rows_all = iAll", body(dt_mod))
+
+    if (length(dt_rows_all_line) == 1) {
+        mod <- gsub("DT_rows_all = iAll", "DT_rows_all = iCurrent", fixed=TRUE,
+                    body(dt_mod)[dt_rows_all_line])
+        body(dt_mod)[[dt_rows_all_line]] <- parse(text=mod)[[1]]
+        assignInNamespace("dataTablesFilter", dt_mod, "DT")
+    }
+
     idList              <- list()
     idList$diffExpr     <- "diffExprLoader"
     idList$encode       <- "encodeDataLoader"
