@@ -120,7 +120,7 @@
         tags$li(role="presentation",
                 downloadLink("downloadSession", "Download session data")),
         tags$li(role="presentation",
-                actionLink("loadSessionModal", "Load another session")))
+                actionLink("loadSessionModal", "Load another session...")))
     pluck(session, 3, 2) <- tagAppendAttributes(
         pluck(session, 3, 2), class="pull-right")
     
@@ -195,11 +195,13 @@ globalUI <- function(elems, idList, expire) {
 
 #' @importFrom shiny downloadHandler renderText req
 #' @importFrom qs qread
+#' @importFrom utils packageVersion
 .sessionManagementServer <- function(input, output, session, appData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
     observe({
         if (!is.null(appData$token)) return(NULL)
-        showModal(.prepareSessionModal("Welcome to cTRAP!", footer=NULL))
+        title <- sprintf("Welcome to cTRAP %s!", packageVersion("cTRAP"))
+        showModal(.prepareSessionModal(title, footer=NULL))
     })
     
     # Create new session
@@ -259,7 +261,8 @@ globalUI <- function(elems, idList, expire) {
     })
     
     observeEvent(input$loadSessionModal, {
-        modal <- .prepareSessionModal(createSession=TRUE, easyClose=TRUE)
+        title <- sprintf("Welcome to cTRAP %s!", packageVersion("cTRAP"))
+        modal <- .prepareSessionModal(title, createSession=TRUE, easyClose=TRUE)
         showModal(modal)
     })
     
@@ -449,6 +452,17 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
         flower <- FALSE
     }
     
+    # Avoid large JSON response from DT: github.com/rstudio/DT/issues/504
+    dt_mod <- getFromNamespace("dataTablesFilter", "DT")
+    dt_rows_all_line <- grep("DT_rows_all = iAll", body(dt_mod))
+
+    if (length(dt_rows_all_line) == 1) {
+        mod <- gsub("DT_rows_all = iAll", "DT_rows_all = iCurrent", fixed=TRUE,
+                    body(dt_mod)[dt_rows_all_line])
+        body(dt_mod)[[dt_rows_all_line]] <- parse(text=mod)[[1]]
+        assignInNamespace("dataTablesFilter", dt_mod, "DT")
+    }
+
     idList              <- list()
     idList$diffExpr     <- "diffExprLoader"
     idList$encode       <- "encodeDataLoader"
