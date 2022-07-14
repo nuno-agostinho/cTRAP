@@ -60,9 +60,15 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
         } else if (isBinary(processed)) {
             mode <- "wb"
         } else {
-            mode <- ifelse(Sys.info()['sysname'] == "Windows", "wb", "w")
+            mode <- "w"
         }
-        download.file(link, file, mode=mode)
+        
+        # Ensure data is downloaded in Windows by using libcurl
+        if ( Sys.info()['sysname'] == "Windows" ) {
+            download.file(link, file, mode=mode, method="libcurl")
+        } else {
+            download.file(link, file, mode=mode)
+        }
     }
 
     # Extract data if GZ or ZIP

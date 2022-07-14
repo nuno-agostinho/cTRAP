@@ -5,7 +5,7 @@
 floweRy function)
 * Bug fix: avoid large JSON responses from DT blocked by reverse proxy
 default settings
-* Bug fix (Windows): Always download
+* Bug fix (Windows): properly download files on Windows using libcurl
 
 # cTRAP 1.12.0 (27 October, 2021)
 
