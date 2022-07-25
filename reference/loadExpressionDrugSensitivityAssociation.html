@@ -25452,21 +25452,23 @@ chunk, resulting in a lower memory footprint</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> OVISE     1<span style="text-decoration: underline;">240</span>198 ovary                     carcinoma         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> JHOS-3    1<span style="text-decoration: underline;">480</span>358 ovary                     carcinoma         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 958 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"compoundInfo")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 267 × 5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       id name        synonyms                            target `target pathway`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1 Erlotinib   Tarceva, RG-1415, CP-358774, OSI-7… EGFR   EGFR signaling  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     3 Rapamycin   AY-22989, Sirolimus, WY-090217, To… MTORC1 PI3K/MTOR signa…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     5 Sunitinib   Sutent, Sunitinib Malate, SU-11248  PDGFR… RTK signaling   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     6 PHA-665752  PHA665752, PHA 665752               MET    RTK signaling   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     9 MG-132      LLL cpd, MG 132, MG132              Prote… Protein stabili…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>    11 Paclitaxel  BMS-181339-01, Taxol, Onxol, Paxen… Micro… Mitosis         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>    17 Cyclopamine <span style="color: #BB0000;">NA</span>                                  SMO    Other           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>    29 AZ628       AZ-628, AZ 628                      BRAF   ERK MAPK signal…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>    30 Sorafenib   Nexavar, 284461-73-0, BAY 43-9006   PDGFR… RTK signaling   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    32 Tozasertib  MK 0457,MK-0457,MK-045, VX-680 VX … AURKA… Mitosis         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 257 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       id name        synonyms                                     target targe…¹</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1 Erlotinib   Tarceva, RG-1415, CP-358774, OSI-774, Ro-50… EGFR   EGFR s…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     3 Rapamycin   AY-22989, Sirolimus, WY-090217, Torisel, Ra… MTORC1 PI3K/M…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     5 Sunitinib   Sutent, Sunitinib Malate, SU-11248           PDGFR… RTK si…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     6 PHA-665752  PHA665752, PHA 665752                        MET    RTK si…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     9 MG-132      LLL cpd, MG 132, MG132                       Prote… Protei…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>    11 Paclitaxel  BMS-181339-01, Taxol, Onxol, Paxene, Praxel… Micro… Mitosis</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>    17 Cyclopamine <span style="color: #BB0000;">NA</span>                                           SMO    Other  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>    29 AZ628       AZ-628, AZ 628                               BRAF   ERK MA…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>    30 Sorafenib   Nexavar, 284461-73-0, BAY 43-9006            PDGFR… RTK si…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    32 Tozasertib  MK 0457,MK-0457,MK-045, VX-680 VX 680 VX-68  AURKA… Mitosis</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 257 more rows, and abbreviated variable name ¹​`target pathway`</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"source")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GDSC 7"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"drugActivityMetric")</span>
@@ -25474,7 +25476,7 @@ chunk, resulting in a lower memory footprint</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"isDrugActivityDirectlyProportionalToSensitivity")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"filename")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpKhzSmb/file41666d3bc965/reference/expressionDrugSensitivityCorGDSC7.qs"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpivpfAq/file38456333d0a1/reference/expressionDrugSensitivityCorGDSC7.qs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "expressionDrugSensitivityAssociation"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2] "matrix"                              </span>
