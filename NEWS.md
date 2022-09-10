@@ -1,3 +1,7 @@
+# cTRAP 1.14.2 (10 September, 2022)
+
+* Update icon names for FontAwesome 6
+
 # cTRAP 1.14.1 (14 July, 2022)
 
 * Add cTRAP version to welcome modal
