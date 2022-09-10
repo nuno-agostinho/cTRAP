@@ -439,6 +439,9 @@ updateAppData <- function(appData, x) {
 cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
                   flowerURL=NULL, port=getOption("shiny.port"),
                   host=getOption("shiny.host", "127.0.0.1")) {
+    if (!dir.exists(commonPath)) 
+        stop("commonPath directory does not exist:", commonPath)
+    }
     .setFileSizeLimit(fileSizeLimitMiB)
     elems <- .prepareEllipsis(...)
     
