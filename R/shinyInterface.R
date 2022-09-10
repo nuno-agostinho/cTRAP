@@ -109,7 +109,11 @@
 #' @keywords internal
 .prepareNavPage <- function(...) {
     app <- "cTRAP"
-    ui  <- navbarPage(app, ...) %>%
+    # Add JS and CSS in header
+    header <- tagList(
+        includeScript(system.file("shiny", "www", "cTRAP.js", package="cTRAP")),
+        includeCSS(system.file("shiny", "www", "cTRAP.css", package="cTRAP")))
+    ui  <- navbarPage(app, ..., header=header) %>%
         .replaceStrInList("navbar-static-top", "") %>%
         .replaceStrInList("container-fluid", "") %>%
         tags$div(class="container-fluid", style="padding-top: 15px;")

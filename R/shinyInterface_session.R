@@ -178,12 +178,6 @@ globalUI <- function(elems, idList, expire) {
                    icon=icon("compass"), menuName="session"))
     ui <- .modifySessionUI(ui, expire=expire)
     ui <- .addLoadingStatus(ui)
-    
-    # Add JS and CSS in header
-    header <- tags$head(
-        includeScript(system.file("shiny", "www", "cTRAP.js", package="cTRAP")),
-        includeCSS(system.file("shiny", "www", "cTRAP.css", package="cTRAP")))
-    ui <- tagList(header, ui)
     return(ui)
 }
 

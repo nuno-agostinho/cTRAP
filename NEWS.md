@@ -1,6 +1,7 @@
 # cTRAP 1.14.2 (10 September, 2022)
 
 * When running `cTRAP()`, raise error if `commonPath` does not exist
+* Fix modular graphical interface functions not showing dropdown choices
 * Update icon names for FontAwesome 6
 
 # cTRAP 1.14.1 (14 July, 2022)
