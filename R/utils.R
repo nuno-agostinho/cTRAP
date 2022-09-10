@@ -45,7 +45,8 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
         }
 
         isBinary <- function(file) {
-            formats <- c("gz", "bz2", "xz", "tgz", "zip", "rda", "rds", "RData")
+            formats <- c("gz", "bz2", "xz", "tgz", "zip", "rda", "rds", "RData",
+                         "qs")
             return(any(file_ext(file) %in% formats))
         }
 

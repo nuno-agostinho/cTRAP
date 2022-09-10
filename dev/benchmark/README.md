@@ -13,29 +13,33 @@ and drug set enrichment analysis.
 ## cTRAP performance milestones (dev versions)
 
 * 1.8.0: release version for reference
-* 1.8.1 (b13ee45): faster GSEA-based score calculation
-* 1.8.1 (c34566c): avoid redundant loading of chunks from CMap perturbation data
-* 1.8.1 (3e3720d): multi-thread support in systems that support forking (e.g.
+* pre-1.10.0 ([b13ee45][]): faster GSEA-based score calculation
+* pre-1.10.0 ([c34566c][]): avoid redundant loading of chunks from CMap perturbation data
+* pre-1.10.0 ([3e3720d][]): multi-thread support in systems that support forking (e.g.
 Linux and macOS, but not Windows) and print times for measurable actions (to
 directly compare with memory profile)
-* 1.8.1 (9b96229): fix issues with missing values when preparing drug
+* pre-1.10.0 ([9b96229][]): fix issues with missing values when preparing drug
 descriptor sets
-* 1.8.1 (9852a1a): improve drug set enrichment analysis (fix bugs and allow to
+* pre-1.10.0 ([9852a1a][]): improve drug set enrichment analysis (fix bugs and allow to
 match compounds as done by `plotTargetingDrugsVSsimilarPerturbations()`
-* 1.8.1 (296f9b21): minimise RAM usage when predicting targeting drugs while
+* pre-1.10.0 ([296f9b2][]): minimise RAM usage when predicting targeting drugs while
 using NCI60 gene expression and drug sensitivity correlation matrix
+
+[b13ee45]: https://github.com/nuno-agostinho/cTRAP/commit/b13ee45
+[c34566c]: https://github.com/nuno-agostinho/cTRAP/commit/c34566c
+[3e3720d]: https://github.com/nuno-agostinho/cTRAP/commit/3e3720d
+[9b96229]: https://github.com/nuno-agostinho/cTRAP/commit/9b96229
+[9852a1a]: https://github.com/nuno-agostinho/cTRAP/commit/9852a1a
+[296f9b2]: https://github.com/nuno-agostinho/cTRAP/commit/296f9b2
 
 ## General instructions
 
 - Run [runRankCMapPerturbations.sh](scripts/runRankCMapPerturbations.sh)
 to profile time using `Sys.time()` (no debugger attached)
-
 - Run [runRankCMapPerturbations_heaptrack.sh](scripts/runRankCMapPerturbations_heaptrack.sh)
 to profile memory with heaptrack memory profiler (timed with `Sys.time()`)
-
   - Convert heaptrack output to massif version (so we can plot in R) via
   [convertHeaptrackToMassif.sh](scripts/convertHeaptrackToMassif.sh)
-  
   - Plot heap memory profiling with
   [R/memoryConsumptionPlot.R](R/memoryConsumptionPlot.R)
 
@@ -43,9 +47,9 @@ to profile memory with heaptrack memory profiler (timed with `Sys.time()`)
 
 ### Input
 
-- *User-provided data:* named numeric vector containing t-statistics of
+- **User-provided data:** named numeric vector containing t-statistics of
 differential expression (name corresponds to the gene symbol)
-- *CMap perturbations:* publicly available differential expression z-scores;
+- **CMap perturbations:** publicly available differential expression z-scores;
 ~21GB file automatically downloaded
 
 ### CMap perturbation data loading
@@ -55,15 +59,15 @@ lines, timepoints, drug dosage, perturbation types). Only the data matching the
 user criteria is loaded into memory.
 
 CMap perturbation types tested:
-- *knockdown:* consensus signature from shRNAs targeting the same gene
-- *overexpression:* cDNA for overexpression of wild-type gene
-- *compound*
+- **knockdown:** consensus signature from shRNAs targeting the same gene
+- **overexpression:** cDNA for overexpression of wild-type gene
+- **compound**
 
 Given that the CMap perturbation data is too big for usually available RAM,
 there are two options of loading CMap perturbation data:
-- *On-demand (default):* load ~1GB chunks of filtered z-scores while comparing
+- **On-demand (default):** load ~1GB chunks of filtered z-scores while comparing
 data
-- *Pre-load*: load all filtered z-scores into memory before comparing data
+- **Pre-load**: load all filtered z-scores into memory before comparing data
 
 ### Similarity ranking
 

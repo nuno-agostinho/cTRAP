@@ -211,7 +211,7 @@
             cbind("Source", attr(x, "source")),
             cbind("Type", attr(x, "type")),
             cbind("Gene size", length(attr(x, "genes"))),
-            cbind("Perturbation number",
+            cbind("Number of perturbations",
                   length(attr(x, "perturbations"))))
         
         filter <- attr(attr(x, "metadata"), "filter")
