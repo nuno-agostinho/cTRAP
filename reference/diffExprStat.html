@@ -72,14 +72,15 @@ names(diffExprStat) &amp;lt;- diffExpr$Gene_symbol
     <div class="ref-description">
     <p>Differential expression's t-statistics sample obtained by running the
 following code:</p>
-<div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span>
-
-<span class="co"># Perform differential gene expression analysis</span>
-<span class="va">diffExpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performDifferentialExpression.html">performDifferentialExpression</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>
-
-<span class="co"># Get t-statistics of differential expression with respective gene names</span>
-<span class="va">diffExprStat</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">t</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">diffExprStat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">Gene_symbol</span></code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Perform differential gene expression analysis</span></span>
+<span><span class="va">diffExpr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performDifferentialExpression.html">performDifferentialExpression</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get t-statistics of differential expression with respective gene names</span></span>
+<span><span class="va">diffExprStat</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">t</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">diffExprStat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">diffExpr</span><span class="op">$</span><span class="va">Gene_symbol</span></span></code></pre></div>
 
     </div>
 

@@ -66,16 +66,16 @@ correlation matrix of gene expression and drug sensitivity.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">predictTargetingDrugs</span><span class="op">(</span>
-  <span class="va">input</span>,
-  <span class="va">expressionDrugSensitivityCor</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"gsea"</span><span class="op">)</span>,
-  geneSize <span class="op">=</span> <span class="fl">150</span>,
-  isDrugActivityDirectlyProportionalToSensitivity <span class="op">=</span> <span class="cn">NULL</span>,
-  threads <span class="op">=</span> <span class="fl">1</span>,
-  chunkGiB <span class="op">=</span> <span class="fl">1</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">predictTargetingDrugs</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>,</span>
+<span>  <span class="va">expressionDrugSensitivityCor</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"gsea"</span><span class="op">)</span>,</span>
+<span>  geneSize <span class="op">=</span> <span class="fl">150</span>,</span>
+<span>  isDrugActivityDirectlyProportionalToSensitivity <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  threads <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  chunkGiB <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -168,18 +168,18 @@ details below)</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Example of a differential expression profile</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"diffExprStat"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Load expression and drug sensitivity association derived from GDSC data</span></span>
-<span class="r-in"><span class="va">gdsc</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="st">"GDSC 7"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example of a differential expression profile</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"diffExprStat"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Load expression and drug sensitivity association derived from GDSC data</span></span></span>
+<span class="r-in"><span><span class="va">gdsc</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="st">"GDSC 7"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from expressionDrugSensitivityCorGDSC7.qs...</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Predict targeting drugs on a differential expression profile</span></span>
-<span class="r-in"><span class="fu">predictTargetingDrugs</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Predict targeting drugs on a differential expression profile</span></span></span>
+<span class="r-in"><span><span class="fu">predictTargetingDrugs</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.06 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.65 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      compound spearman_coef spearman_pvalue spearman_qvalue pearson_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:     1047    0.14532331    7.908329e-55    2.103616e-52   0.13098933</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      207    0.10447948    4.950795e-29    2.633823e-27   0.09295384</span>

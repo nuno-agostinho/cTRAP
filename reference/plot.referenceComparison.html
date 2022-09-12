@@ -66,20 +66,20 @@ previously given differential expression results.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for referenceComparison</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  element <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"gsea"</span>, <span class="st">"rankProduct"</span><span class="op">)</span>,
-  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>,
-  showMetadata <span class="op">=</span> <span class="cn">TRUE</span>,
-  plotNonRankedPerturbations <span class="op">=</span> <span class="cn">FALSE</span>,
-  alpha <span class="op">=</span> <span class="fl">0.3</span>,
-  genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"top"</span>, <span class="st">"bottom"</span><span class="op">)</span>,
-  <span class="va">...</span>,
-  zscores <span class="op">=</span> <span class="cn">NULL</span>,
-  title <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for referenceComparison</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  element <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"gsea"</span>, <span class="st">"rankProduct"</span><span class="op">)</span>,</span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  showMetadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plotNonRankedPerturbations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"top"</span>, <span class="st">"bottom"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  zscores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -173,73 +173,73 @@ on the context; ignored when plotting multiple perturbations)</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Example of a differential expression profile</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"diffExprStat"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Download and load CMap perturbations to compare with</span></span>
-<span class="r-in"><span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="st">"HepG2"</span></span>
-<span class="r-in"><span class="va">cmapMetadataKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="st">"cmapMetadata.txt"</span>, cellLine<span class="op">=</span><span class="va">cellLine</span>,</span>
-<span class="r-in">  perturbationType<span class="op">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">cmapPerturbationsKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">cmapMetadataKD</span>, <span class="st">"cmapZscores.gctx"</span>, <span class="st">"cmapGeneInfo.txt"</span>, loadZscores<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Rank similar CMap perturbations</span></span>
-<span class="r-in"><span class="va">compareKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="rankSimilarPerturbations.html">rankSimilarPerturbations</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">cmapPerturbationsKD</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example of a differential expression profile</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"diffExprStat"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Download and load CMap perturbations to compare with</span></span></span>
+<span class="r-in"><span><span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="st">"HepG2"</span></span></span>
+<span class="r-in"><span><span class="va">cmapMetadataKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"cmapMetadata.txt"</span>, cellLine<span class="op">=</span><span class="va">cellLine</span>,</span></span>
+<span class="r-in"><span>  perturbationType<span class="op">=</span><span class="st">"Consensus signature from shRNAs targeting the same gene"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cmapPerturbationsKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">cmapMetadataKD</span>, <span class="st">"cmapZscores.gctx"</span>, <span class="st">"cmapGeneInfo.txt"</span>, loadZscores<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Rank similar CMap perturbations</span></span></span>
+<span class="r-in"><span><span class="va">compareKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="rankSimilarPerturbations.html">rankSimilarPerturbations</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">cmapPerturbationsKD</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 26 comparisons (1 cell line) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.71 secs</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot ranked list of CMap perturbations</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.83 secs</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot ranked list of CMap perturbations</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"spearman"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"spearman"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot results for a single perturbation</span></span>
-<span class="r-in"><span class="va">pert</span> <span class="op">&lt;-</span> <span class="va">compareKD</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"spearman"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot results for a single perturbation</span></span></span>
+<span class="r-in"><span><span class="va">pert</span> <span class="op">&lt;-</span> <span class="va">compareKD</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"spearman"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"pearson"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"pearson"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"gsea"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">pert</span>, method<span class="op">=</span><span class="st">"gsea"</span>, zscores<span class="op">=</span><span class="va">cmapPerturbationsKD</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Predict targeting drugs based on a given differential expression profile</span></span>
-<span class="r-in"><span class="va">gdsc</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="st">"GDSC 7"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Predict targeting drugs based on a given differential expression profile</span></span></span>
+<span class="r-in"><span><span class="va">gdsc</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="st">"GDSC 7"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from expressionDrugSensitivityCorGDSC7.qs...</span>
-<span class="r-in"><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3 secs</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot ranked list of targeting drugs</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.57 secs</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot ranked list of targeting drugs</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"spearman"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"spearman"</span>, n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-9.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-10.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.referenceComparison-11.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot results for a single targeting drug</span></span>
-<span class="r-in"><span class="va">drug</span> <span class="op">&lt;-</span> <span class="va">predicted</span><span class="op">$</span><span class="va">compound</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/RtmpsD4Tfy/file366a71d126f5/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot results for a single targeting drug</span></span></span>
+<span class="r-in"><span><span class="va">drug</span> <span class="op">&lt;-</span> <span class="va">predicted</span><span class="op">$</span><span class="va">compound</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/Rtmpfgjr3W/file982059b977a0/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
 <span class="r-plt img"><img src="plot.referenceComparison-12.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/RtmpsD4Tfy/file366a71d126f5/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"pearson"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/Rtmpfgjr3W/file982059b977a0/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
 <span class="r-plt img"><img src="plot.referenceComparison-13.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/RtmpsD4Tfy/file366a71d126f5/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">drug</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from /tmp/Rtmpfgjr3W/file982059b977a0/reference/expressionDrugSensitivityCorGDSC7.qs...</span>
 <span class="r-plt img"><img src="plot.referenceComparison-14.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

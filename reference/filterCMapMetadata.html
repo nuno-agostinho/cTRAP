@@ -62,13 +62,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">filterCMapMetadata</span><span class="op">(</span>
-  <span class="va">metadata</span>,
-  cellLine <span class="op">=</span> <span class="cn">NULL</span>,
-  timepoint <span class="op">=</span> <span class="cn">NULL</span>,
-  dosage <span class="op">=</span> <span class="cn">NULL</span>,
-  perturbationType <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">filterCMapMetadata</span><span class="op">(</span></span>
+<span>  <span class="va">metadata</span>,</span>
+<span>  cellLine <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  timepoint <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dosage <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  perturbationType <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -119,12 +119,12 @@ perturbation types are loaded)</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">cmapMetadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadCMapData.html">loadCMapData</a></span><span class="op">(</span><span class="st">"cmapMetadata.txt"</span>, <span class="st">"metadata"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cmapMetadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadCMapData.html">loadCMapData</a></span><span class="op">(</span><span class="st">"cmapMetadata.txt"</span>, <span class="st">"metadata"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cmapMetadata.txt not found: downloading data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Extracting cmapMetadata.txt.gz...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading CMap metadata from cmapMetadata.txt...</span>
-<span class="r-in"><span class="fu">filterCMapMetadata</span><span class="op">(</span><span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HEPG2"</span>, timepoint<span class="op">=</span><span class="st">"2 h"</span>,</span>
-<span class="r-in">                   dosage<span class="op">=</span><span class="st">"25 ng/mL"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">filterCMapMetadata</span><span class="op">(</span><span class="va">cmapMetadata</span>, cellLine<span class="op">=</span><span class="st">"HEPG2"</span>, timepoint<span class="op">=</span><span class="st">"2 h"</span>,</span></span>
+<span class="r-in"><span>                   dosage<span class="op">=</span><span class="st">"25 ng/mL"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         sig_id pert_id pert_iname pert_type cell_id pert_dose</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:    CYT001_HEPG2_2H:CSH1:25    CSH1       CSH1   trt_lig   HEPG2        25</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:    CYT001_HEPG2_2H:CTF1:25    CTF1       CTF1   trt_lig   HEPG2        25</span>

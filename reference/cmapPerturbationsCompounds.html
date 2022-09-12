@@ -78,20 +78,21 @@ attr(cmapPerturbationsCompounds, "metadata") &amp;lt;- metadata
     <div class="ref-description">
     <p>CMap perturbations sample for small molecules obtained by running the
 following code:</p>
-<div class="sourceCode"><pre><code><span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HepG2"</span>, <span class="st">"HUH7"</span><span class="op">)</span>
-<span class="va">cmapMetadataCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span>
-    <span class="st">"cmapMetadata.txt"</span>, cellLine<span class="op">=</span><span class="va">cellLine</span>, timepoint<span class="op">=</span><span class="st">"24 h"</span>,
-    dosage<span class="op">=</span><span class="st">"5 \u00B5M"</span>, perturbationType<span class="op">=</span><span class="st">"Compound"</span><span class="op">)</span>
-
-<span class="va">cmapPerturbationsCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span>
-    <span class="va">cmapMetadataCompounds</span>, <span class="st">"cmapZscores.gctx"</span>, <span class="st">"cmapGeneInfo.txt"</span>,
-    <span class="st">"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co"># Remove non-ASCII characters for portability reasons</span>
-<span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cmapPerturbationsCompounds</span>, <span class="st">"metadata"</span><span class="op">)</span>
-<span class="va">metadata</span><span class="op">$</span><span class="va">pert_idose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\u00B5"</span>, <span class="st">"micro"</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">pert_idose</span><span class="op">)</span>
-<span class="va">metadata</span><span class="op">$</span><span class="va">pert_dose_unit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\u00B5"</span>, <span class="st">"micro"</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">pert_dose_unit</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cmapPerturbationsCompounds</span>, <span class="st">"metadata"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">metadata</span></code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HepG2"</span>, <span class="st">"HUH7"</span><span class="op">)</span></span>
+<span><span class="va">cmapMetadataCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span></span>
+<span>    <span class="st">"cmapMetadata.txt"</span>, cellLine<span class="op">=</span><span class="va">cellLine</span>, timepoint<span class="op">=</span><span class="st">"24 h"</span>,</span>
+<span>    dosage<span class="op">=</span><span class="st">"5 \u00B5M"</span>, perturbationType<span class="op">=</span><span class="st">"Compound"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cmapPerturbationsCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span></span>
+<span>    <span class="va">cmapMetadataCompounds</span>, <span class="st">"cmapZscores.gctx"</span>, <span class="st">"cmapGeneInfo.txt"</span>,</span>
+<span>    <span class="st">"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove non-ASCII characters for portability reasons</span></span>
+<span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cmapPerturbationsCompounds</span>, <span class="st">"metadata"</span><span class="op">)</span></span>
+<span><span class="va">metadata</span><span class="op">$</span><span class="va">pert_idose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\u00B5"</span>, <span class="st">"micro"</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">pert_idose</span><span class="op">)</span></span>
+<span><span class="va">metadata</span><span class="op">$</span><span class="va">pert_dose_unit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\u00B5"</span>, <span class="st">"micro"</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">pert_dose_unit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cmapPerturbationsCompounds</span>, <span class="st">"metadata"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">metadata</span></span></code></pre></div>
 
     </div>
 

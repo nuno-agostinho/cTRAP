@@ -74,18 +74,19 @@ counts$gene_id &amp;lt;- convertGeneIdentifiers(counts$gene_id)
 
     <div class="ref-description">
     <p>Gene expression data sample obtained by running the following code:</p>
-<div class="sourceCode"><pre><code><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ENCODEmetadata"</span><span class="op">)</span>
-<span class="va">ENCODEsamples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadENCODEsamples.html">loadENCODEsamples</a></span><span class="op">(</span><span class="va">ENCODEmetadata</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareENCODEgeneExpression.html">prepareENCODEgeneExpression</a></span><span class="op">(</span><span class="va">ENCODEsamples</span><span class="op">)</span>
-
-<span class="co"># Remove low coverage (at least 10 counts shared across two samples)</span>
-<span class="va">minReads</span>   <span class="op">&lt;-</span> <span class="fl">10</span>
-<span class="va">minSamples</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">filter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span><span class="op">[</span> , <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="va">minReads</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">minSamples</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">counts</span><span class="op">[</span><span class="va">filter</span>, <span class="op">]</span>
-
-<span class="co"># Convert ENSEMBL identifier to gene symbol</span>
-<span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode"><pre><code><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ENCODEmetadata"</span><span class="op">)</span></span>
+<span><span class="va">ENCODEsamples</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadENCODEsamples.html">loadENCODEsamples</a></span><span class="op">(</span><span class="va">ENCODEmetadata</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareENCODEgeneExpression.html">prepareENCODEgeneExpression</a></span><span class="op">(</span><span class="va">ENCODEsamples</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Remove low coverage (at least 10 counts shared across two samples)</span></span>
+<span><span class="va">minReads</span>   <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">minSamples</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span><span class="va">filter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">counts</span><span class="op">[</span> , <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">]</span> <span class="op">&gt;=</span> <span class="va">minReads</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">minSamples</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">counts</span><span class="op">[</span><span class="va">filter</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Convert ENSEMBL identifier to gene symbol</span></span>
+<span><span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers</a></span><span class="op">(</span><span class="va">counts</span><span class="op">$</span><span class="va">gene_id</span><span class="op">)</span></span></code></pre></div>
 
     </div>
 
