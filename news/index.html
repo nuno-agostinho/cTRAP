@@ -67,28 +67,38 @@
 <div class="section level3">
 <h3 id="web-server-support-optimised-to-run-in-shinyproxy-1-12-0">Web server support (optimised to run in ShinyProxy)<a class="anchor" aria-label="anchor" href="#web-server-support-optimised-to-run-in-shinyproxy-1-12-0"></a></h3>
 <ul><li>
-<code><a href="../reference/cTRAP.html">cTRAP()</a></code>: new global interface with all cTRAP functionality in one place<ul><li>Sessions can be created and loaded via a token or a RDS file</li>
+<code><a href="../reference/cTRAP.html">cTRAP()</a></code>: new global interface with all cTRAP functionality in one place
+<ul><li>Sessions can be created and loaded via a token or a RDS file</li>
 <li>Session data is automatically saved in a RDS file to a folder in the working directory named based on the current session token</li>
 <li>Long-running tasks can be performed in the background using the Celery task manager via Flower’s REST API and their output is automatically loaded in the corresponding session</li>
 <li>Loading icon in navigation menu when Shiny is busy</li>
 </ul></li>
-<li>Use the faster and efficient file format from R package <code>qs</code> instead of <code>RDS</code>:<ul><li>Faster download and loading of pre-processed remote files (compound molecular descriptors and gene expression and drug sensitivity associations)</li></ul></li>
+<li>Use the faster and efficient file format from R package <code>qs</code> instead of <code>RDS</code>:
+<ul><li>Faster download and loading of pre-processed remote files (compound molecular descriptors and gene expression and drug sensitivity associations)</li>
+</ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-and-minor-improvements-1-12-0">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-1-12-0"></a></h3>
 <ul><li>
-<code><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers()</a></code> replaces <code><a href="../reference/convertENSEMBLtoGeneSymbols.html">convertENSEMBLtoGeneSymbols()</a></code>:<ul><li>Use AnnotationHub to convert to gene symbols (instead of biomaRt that has been unstable)</li></ul></li>
+<code><a href="../reference/convertGeneIdentifiers.html">convertGeneIdentifiers()</a></code> replaces <code><a href="../reference/convertENSEMBLtoGeneSymbols.html">convertENSEMBLtoGeneSymbols()</a></code>:
+<ul><li>Use AnnotationHub to convert to gene symbols (instead of biomaRt that has been unstable)</li>
+</ul></li>
 <li>
-<code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>:<ul><li>New argument to select folder where to download data</li></ul></li>
+<code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>:
+<ul><li>New argument to select folder where to download data</li>
+</ul></li>
 <li>
-<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>:<ul><li>Cross-match more compounds between datasets by discarding non-alphanumeric characters and ignoring case</li>
+<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>:
+<ul><li>Cross-match more compounds between datasets by discarding non-alphanumeric characters and ignoring case</li>
 <li>Fix incorrect columns used for each dataset when merging datasets</li>
 </ul></li>
-<li>Visual interface:<ul><li>Fix crash when plotting dataset comparison using values with too many zeroes for density estimation</li>
+<li>Visual interface:
+<ul><li>Fix crash when plotting dataset comparison using values with too many zeroes for density estimation</li>
 <li>Add progress bars for slower tasks</li>
 <li>Fix crash when using shiny 1.7.0 (avoid malformed, custom UI elements)</li>
 </ul></li>
-<li>Drug set enrichment analysis interface:<ul><li>Show all drug sets available to (down)load</li>
+<li>Drug set enrichment analysis interface:
+<ul><li>Show all drug sets available to (down)load</li>
 <li>Show loading indicator when loading different drug sets</li>
 <li>Hide “leading edge” column of the results by default</li>
 </ul></li>
@@ -96,19 +106,22 @@
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.10.1" id="ctrap-1101-4-october-2021">cTRAP 1.10.1 (4 October, 2021)<a class="anchor" aria-label="anchor" href="#ctrap-1101-4-october-2021"></a></h2>
-<ul><li>Fix crash when opening CMap’s visual interface functions with shiny 1.7.0</li></ul></div>
+<ul><li>Fix crash when opening CMap’s visual interface functions with shiny 1.7.0</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.10.0" id="ctrap-1100-18-march-2021">cTRAP 1.10.0 (18 March, 2021)<a class="anchor" aria-label="anchor" href="#ctrap-1100-18-march-2021"></a></h2>
 <div class="section level3">
 <h3 id="improvements-to-graphical-interface-functions-1-10-0">Improvements to graphical interface functions:<a class="anchor" aria-label="anchor" href="#improvements-to-graphical-interface-functions-1-10-0"></a></h3>
 <ul><li>New <code>launchDrugSetEnrichmentAnalysis()</code> function to analyse drug set enrichment and visualize respective results</li>
 <li>
-<code><a href="../reference/launchCMapDataLoader.html">launchCMapDataLoader()</a></code>:<ul><li>Now allows to load multiple CMap perturbation types simultaneously</li>
+<code><a href="../reference/launchCMapDataLoader.html">launchCMapDataLoader()</a></code>:
+<ul><li>Now allows to load multiple CMap perturbation types simultaneously</li>
 <li>Keep selected timepoint, dosage and cell line options when selecting another perturbation type</li>
 <li>Add bubble plot of CMap perturbation types</li>
 </ul></li>
 <li>
-<code><a href="../reference/launchResultPlotter.html">launchResultPlotter()</a></code>:<ul><li>Now allows to view tables below specific plots and drag-and-select those plots to filter data in those same tables</li>
+<code><a href="../reference/launchResultPlotter.html">launchResultPlotter()</a></code>:
+<ul><li>Now allows to view tables below specific plots and drag-and-select those plots to filter data in those same tables</li>
 <li>When plotting targeting drugs and similar perturbations, update available columns and correctly use user-selected column to plot</li>
 </ul></li>
 <li>
@@ -119,7 +132,8 @@
 <ul><li>
 <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>: directly set perturbation type, cell line, timepoint and dosage conditions as arguments</li>
 <li>
-<code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>:<ul><li>Avoid redundant loading of data chunks, slightly decreasing run time</li>
+<code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>:
+<ul><li>Avoid redundant loading of data chunks, slightly decreasing run time</li>
 <li>Lower memory footprint when using NCI60’s gene expression and drug sensitivity association (now available in HDF5 files) by loading and processing data in chunks</li>
 <li>Faster GSEA-based score calculation (up to 4-7 times faster)</li>
 <li>New <code>threads</code> argument allows to set number of parallel threads (not supported on Windows)</li>
@@ -138,11 +152,13 @@
 <li>
 <code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>: fix issues with 3D descriptors containing missing values</li>
 <li>
-<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:<ul><li>Fix wrong labels when plotting <code>targetingDrugs</code> objects</li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:
+<ul><li>Fix wrong labels when plotting <code>targetingDrugs</code> objects</li>
 <li>Avoid printing “NA” in labels identifying metadata for perturbations</li>
 </ul></li>
 <li>
-<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:<ul><li>Fix highlighting of plot points depending whether drug activity is directly proportional to drug sensitivity</li>
+<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:
+<ul><li>Fix highlighting of plot points depending whether drug activity is directly proportional to drug sensitivity</li>
 <li>Include rug plot</li>
 </ul></li>
 <li>When subsetting a <code>perturbationChanges</code> or an <code>expressionDrugSensitivityAssociation</code> object, passing only one argument extracts its columns as in previous versions of cTRAP (similarly to when subsetting a <code>data.frame</code>)</li>
@@ -155,7 +171,8 @@
 <h2 class="page-header" data-toc-text="1.8" id="ctrap-18-23-october-2020">cTRAP 1.8 (23 October, 2020)<a class="anchor" aria-label="anchor" href="#ctrap-18-23-october-2020"></a></h2>
 <div class="section level3">
 <h3 id="interactive-functions-for-loading-data-and-analysing-results-1-8">Interactive functions for loading data and analysing results<a class="anchor" aria-label="anchor" href="#interactive-functions-for-loading-data-and-analysing-results-1-8"></a></h3>
-<ul><li>New Shiny-based graphical interface functions:<ul><li>
+<ul><li>New Shiny-based graphical interface functions:
+<ul><li>
 <code><a href="../reference/launchDiffExprLoader.html">launchDiffExprLoader()</a></code>: load differential expression data</li>
 <li>
 <code><a href="../reference/launchCMapDataLoader.html">launchCMapDataLoader()</a></code>: load CMap data</li>
@@ -163,13 +180,15 @@
 <code><a href="../reference/launchResultPlotter.html">launchResultPlotter()</a></code>: view and plot data results</li>
 <li>
 <code><a href="../reference/launchMetadataViewer.html">launchMetadataViewer()</a></code>: check metadata of a given object</li>
-</ul></li></ul></div>
+</ul></li>
+</ul></div>
 <div class="section level3">
 <h3 id="major-changes-1-8">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-1-8"></a></h3>
 <ul><li>
 <code><a href="../reference/downloadENCODEknockdownMetadata.html">downloadENCODEknockdownMetadata()</a></code>: metadata is automatically saved to a file in order to avoid downloading metadata every time this function is run</li>
 <li>
-<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:<ul><li>automatically look for matching compounds in multiple columns of both datasets</li>
+<code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>:
+<ul><li>automatically look for matching compounds in multiple columns of both datasets</li>
 <li>allow to manually select columns on which to merge datasets</li>
 </ul></li>
 <li>
@@ -181,15 +200,18 @@
 <h2 class="page-header" data-toc-text="1.6.1" id="ctrap-161-17-august-2020">cTRAP 1.6.1 (17 August, 2020)<a class="anchor" aria-label="anchor" href="#ctrap-161-17-august-2020"></a></h2>
 <ul><li>
 <code><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation()</a></code> lists available gene expression and drug sensitivity associations</li>
-<li>First argument of <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> changed name from <code>diffExprGenes</code> to <code>input</code> and now accepts:<ul><li>
+<li>First argument of <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> changed name from <code>diffExprGenes</code> to <code>input</code> and now accepts:
+<ul><li>
 <code>Named numeric vector</code> containing differential gene expression values with gene symbols as names, as before;</li>
 <li>
 <code>Character vector</code> containing a custom gene set to test for enrichment (only to use with GSEA).</li>
 </ul></li>
-<li>In <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>, when performing <code>gsea</code> method, allow to set different gene set size for top up- and down-regulated genes with <code>geneSize</code> argument:<ul><li>e.g. <code>geneSize=c(100, 200)</code> creates gene sets from the top 100 up- and top 200 down-regulated genes</li>
+<li>In <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>, when performing <code>gsea</code> method, allow to set different gene set size for top up- and down-regulated genes with <code>geneSize</code> argument:
+<ul><li>e.g. <code>geneSize=c(100, 200)</code> creates gene sets from the top 100 up- and top 200 down-regulated genes</li>
 <li>using <code>geneSize=c(150, 150)</code> or <code>geneSize=150</code> is equivalent</li>
 </ul></li>
-<li>Plotting:<ul><li>
+<li>Plotting:
+<ul><li>
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> now supports plotting <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> results for a given drug, e.g. <code>plot(targetingDrugs, "1425")</code>
 </li>
 <li>
@@ -204,7 +226,8 @@
 <code><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment()</a></code> now returns a list whose names are drug set names</li>
 </ul></li>
 <li>
-<code><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table()</a></code> improvements:<ul><li>Return cell identifiers and gene information (if available and as needed)</li>
+<code><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table()</a></code> improvements:
+<ul><li>Return cell identifiers and gene information (if available and as needed)</li>
 <li>Support <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code> results</li>
 <li>Return results ordered as found on input</li>
 </ul></li>
@@ -223,12 +246,14 @@
 <h2 class="page-header" data-toc-text="1.4" id="ctrap-14-25-october-2019">cTRAP 1.4 (25 October, 2019)<a class="anchor" aria-label="anchor" href="#ctrap-14-25-october-2019"></a></h2>
 <div class="section level3">
 <h3 id="new-features-1-4">New features<a class="anchor" aria-label="anchor" href="#new-features-1-4"></a></h3>
-<ul><li>Predict targeting drugs (<code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>):<ul><li>Based on expression and drug sensitivity associations derived from NCI60, CTRP and GDSC data (see <code><a href="../reference/loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation()</a></code>)</li>
+<ul><li>Predict targeting drugs (<code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>):
+<ul><li>Based on expression and drug sensitivity associations derived from NCI60, CTRP and GDSC data (see <code><a href="../reference/loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation()</a></code>)</li>
 <li>Compare user-provided differential expression profile with gene expression and drug sensitivity associations to predict targeting drugs and their targeted genes</li>
 <li>Compounds are ranked based on their relative targeting potential</li>
 <li>Plot candidate targeting drugs against ranked compound perturbations using <code><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations()</a></code>, highlighting compounds that selectively select against cells with a similar differential gene expression profile</li>
 </ul></li>
-<li>Analyse drug set enrichment (<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>):<ul><li>Prepare drug sets based on a table with compound identifiers and respective 2D and 3D molecular descriptors using <code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>
+<li>Analyse drug set enrichment (<code><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment()</a></code>):
+<ul><li>Prepare drug sets based on a table with compound identifiers and respective 2D and 3D molecular descriptors using <code><a href="../reference/prepareDrugSets.html">prepareDrugSets()</a></code>
 </li>
 <li>Test drug set enrichment on results from <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> (when ranking against compound perturbations) and <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>
 </li>
@@ -239,7 +264,8 @@
 <div class="section level3">
 <h3 id="major-changes-1-4">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-1-4"></a></h3>
 <ul><li>Update the tutorial and function documentation</li>
-<li>Remove most <code>L1000</code> instances, including in function names:<ul><li>
+<li>Remove most <code>L1000</code> instances, including in function names:
+<ul><li>
 <code>getL1000perturbationTypes()</code> -&gt; <code><a href="../reference/getCMapPerturbationTypes.html">getCMapPerturbationTypes()</a></code>
 </li>
 <li>
@@ -261,26 +287,30 @@
 <code>plotL1000comparison()</code> -&gt; <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
 </li>
 </ul></li>
-<li>Improve loading of ENCODE samples (<code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>):<ul><li>Rename function from <code>downloadENCODEsamples()</code> to <code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>
+<li>Improve loading of ENCODE samples (<code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>):
+<ul><li>Rename function from <code>downloadENCODEsamples()</code> to <code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>
 </li>
 <li>Load ENCODE samples regarding multiple cell lines and experiment targets using <code><a href="../reference/loadENCODEsamples.html">loadENCODEsamples()</a></code>
 </li>
 </ul></li>
-<li>Improve CMap data and metadata retrieval:<ul><li>By default, do not return control perturbation types when using <code><a href="../reference/getCMapPerturbationTypes.html">getCMapPerturbationTypes()</a></code> (unless if using argument <code>control = TRUE</code>)</li>
+<li>Improve CMap data and metadata retrieval:
+<ul><li>By default, do not return control perturbation types when using <code><a href="../reference/getCMapPerturbationTypes.html">getCMapPerturbationTypes()</a></code> (unless if using argument <code>control = TRUE</code>)</li>
 <li>Parse CMap identifiers using <code><a href="../reference/parseCMapID.html">parseCMapID()</a></code>
 </li>
 <li>Load CMap’s compound metadata using <code><a href="../reference/loadCMapData.html">loadCMapData()</a></code>
 </li>
 <li>Ask to download CMap perturbations z-scores file for differential expression if not found (avoiding downloading a huge file without user consent)</li>
 </ul></li>
-<li>Improve preparation of CMap perturbations (<code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>):<ul><li>Allow to load CMap metadata directly from files when using file paths as arguments of <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>
+<li>Improve preparation of CMap perturbations (<code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>):
+<ul><li>Allow to load CMap metadata directly from files when using file paths as arguments of <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>
 </li>
 <li>Significantly decrease memory required to use cTRAP by loading chunks of z-scores from CMap perturbations on-demand (a slight decrease in time performance is expected), unless <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code> is run with argument <code>loadZscores = TRUE</code>
 </li>
 <li>Display summary of loaded perturbations after running <code><a href="../reference/prepareCMapPerturbations.html">prepareCMapPerturbations()</a></code>
 </li>
 </ul></li>
-<li>Improve ranking of similar perturbations (<code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>):<ul><li>Redesigned output: long (instead of wide) table</li>
+<li>Improve ranking of similar perturbations (<code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>):
+<ul><li>Redesigned output: long (instead of wide) table</li>
 <li>By default, calculate mean across cell lines if there is more than one cell line available; disabled if argument <code>cellLineMean = FALSE</code>
 </li>
 <li>Allow to rank (or not) individual cell line perturbations (argument <code>rankIndividualCellLinePerturbations</code>) when the mean is calculated</li>
@@ -290,10 +320,12 @@
 <li>Include information for calculated means across cell lines in metadata</li>
 <li>Include run time as an attribute</li>
 </ul></li>
-<li>Improve metadata display for a <code>similarPerturbations</code> object, obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>:<ul><li>Show further metadata information (including compound data, if available) related with a given perturbation by calling <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> with a <code>similarPerturbations</code> object and a specific perturbation identifier</li>
+<li>Improve metadata display for a <code>similarPerturbations</code> object, obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>:
+<ul><li>Show further metadata information (including compound data, if available) related with a given perturbation by calling <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> with a <code>similarPerturbations</code> object and a specific perturbation identifier</li>
 <li>Show a complete table with metadata (and compound information, if available) when calling <code><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table()</a></code> with a <code>similarPerturbations</code> object</li>
 </ul></li>
-<li>Improve plotting (<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>):<ul><li>Plot comparison results against all compared data by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> with the results obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> or <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>; non-ranked compared data can also be plotted with argument <code>plotNonRankedPerturbations = TRUE</code>
+<li>Improve plotting (<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>):
+<ul><li>Plot comparison results against all compared data by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> with the results obtained after running <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code> or <code><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs()</a></code>; non-ranked compared data can also be plotted with argument <code>plotNonRankedPerturbations = TRUE</code>
 </li>
 <li>Render scatter and Gene Set Enrichment Analysis (GSEA) plots between differential expression results and a single perturbation by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> with a <code>perturbationChanges</code> object (if an identifier regarding the summary of multiple perturbations scores across cell lines is given, the plots are coloured by cell line)</li>
 <li>When displaying GSEA plots, plot results for most up- and down-regulated user-provided differentially expressed genes (by default)</li>
@@ -302,14 +334,17 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-and-minor-changes-1-4">Bug fixes and minor changes<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-changes-1-4"></a></h3>
-<ul><li>CMap metadata minor improvements:<ul><li>Improve list returned by <code><a href="../reference/getCMapConditions.html">getCMapConditions()</a></code>, including sorting of dose and time points</li>
+<ul><li>CMap metadata minor improvements:
+<ul><li>Improve list returned by <code><a href="../reference/getCMapConditions.html">getCMapConditions()</a></code>, including sorting of dose and time points</li>
 <li>Correctly set instances of <code>-666</code> in CMap metadata as missing values and fix specific issues with metadata (such as doses displayed as <code>300 ng|300 ng</code>)</li>
 <li>In compound metadata, fix missing values showing as literal “NA” values</li>
 </ul></li>
-<li>CMap perturbation minor improvements:<ul><li>Fix error when subsetting a <code>perturbationChanges</code> object with only one row</li>
+<li>CMap perturbation minor improvements:
+<ul><li>Fix error when subsetting a <code>perturbationChanges</code> object with only one row</li>
 <li>Improve performance when subsetting <code>perturbationChanges</code> objects</li>
 </ul></li>
-<li>Minor improvements to <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>:<ul><li>Correctly set name of perturbations depending on their type (genes, biological agents or compounds)</li>
+<li>Minor improvements to <code><a href="../reference/rankSimilarPerturbations.html">rankSimilarPerturbations()</a></code>:
+<ul><li>Correctly set name of perturbations depending on their type (genes, biological agents or compounds)</li>
 <li>Improve performance when correlating against multiple cell lines</li>
 <li>Remove <code>cellLine</code> argument (please filter conditions with upstream functions such as <code><a href="../reference/filterCMapMetadata.html">filterCMapMetadata()</a></code>)</li>
 <li>Fix incorrect label of first column identifiers</li>
@@ -318,28 +353,35 @@
 <li>Fix error when trying to calculate the mean for cell lines with no intersecting conditions available</li>
 <li>Clearly state to the user when no intersecting genes were found between input dataset and CMap data</li>
 </ul></li>
-<li>Minor improvements to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:<ul><li>Improve rendering performance of the GSEA plot</li>
+<li>Minor improvements to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:
+<ul><li>Improve rendering performance of the GSEA plot</li>
 <li>Fix disproportionate height between top and bottom enrichment score panels in GSEA plots</li>
 </ul></li>
-<li>Update demo datasets:<ul><li>Update the <code>cmapPerturbationsCompounds</code> and <code>cmapPerturbationsKD</code> datasets according to new internal changes and fix their respective code in the documentation</li></ul></li>
+<li>Update demo datasets:
+<ul><li>Update the <code>cmapPerturbationsCompounds</code> and <code>cmapPerturbationsKD</code> datasets according to new internal changes and fix their respective code in the documentation</li>
+</ul></li>
 <li>Include license and copyright text for <code>cmapR</code> code</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.3" id="ctrap-103-3-december-2018">cTRAP 1.0.3 (3 December, 2018)<a class="anchor" aria-label="anchor" href="#ctrap-103-3-december-2018"></a></h2>
-<ul><li>Add tag ImmunoOncology to BiocViews</li></ul></div>
+<ul><li>Add tag ImmunoOncology to BiocViews</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.2" id="ctrap-102-11-november-2018">cTRAP 1.0.2 (11 November, 2018)<a class="anchor" aria-label="anchor" href="#ctrap-102-11-november-2018"></a></h2>
-<ul><li>Fix comparison against CMap perturbations using gene set enrichment analysis (the resulting score was the additive inverse of the real scores)</li></ul></div>
+<ul><li>Fix comparison against CMap perturbations using gene set enrichment analysis (the resulting score was the additive inverse of the real scores)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.1" id="ctrap-101-2-november-2018">cTRAP 1.0.1 (2 November, 2018)<a class="anchor" aria-label="anchor" href="#ctrap-101-2-november-2018"></a></h2>
 <ul><li>Update title, author names, version and README</li>
 <li>Remove biomaRt dependency</li>
 <li>By default, <code>getL1000conditions()</code> now shows CMap perturbation types except for controls</li>
-<li>Compare against CMap perturbations (<code>compareAgainstL1000()</code>):<ul><li>Remove "_t" from resulting column names (as the t-statistic may or may not be used)</li>
+<li>Compare against CMap perturbations (<code>compareAgainstL1000()</code>):
+<ul><li>Remove “_t” from resulting column names (as the t-statistic may or may not be used)</li>
 <li>Select p-value adjustment method when performing correlation analyses (Benjamini-Hochberg is set by default)</li>
 </ul></li>
-<li>Documentation:<ul><li>Fix obsolete function calls in function documentation</li>
+<li>Documentation:
+<ul><li>Fix obsolete function calls in function documentation</li>
 <li>Hide non-exported functions from reference PDF manual</li>
 </ul></li>
 </ul></div>
@@ -357,7 +399,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

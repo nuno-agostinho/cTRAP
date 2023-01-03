@@ -85,6 +85,7 @@
 <div class="page-header"><h1 id="ctrap">cTRAP<a class="anchor" aria-label="anchor" href="#ctrap"></a>
 </h1></div>
 <!-- badges: start -->
+
 <p><code>cTRAP</code> is an R package designed to compare differential gene expression results with those from known cellular perturbations (such as gene knock-down, overexpression or small molecules) derived from the <a href="https://clue.io/" class="external-link">Connectivity Map</a> <a href="https://doi.org/10.1016/j.cell.2017.10.049" class="external-link">(Subramanian et al., Cell 2017)</a>. Such analyses allow not only to infer the molecular causes of the observed difference in gene expression but also to identify small molecules that could drive or revert specific transcriptomic alterations.</p>
 <div class="section level2">
 <h2 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
@@ -110,9 +111,13 @@
 <h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
 </h3>
 <p>The Docker images are based on <a href="https://github.com/Bioconductor/bioconductor_docker" class="external-link">Bioconductor Docker</a> and contain cTRAP and its dependencies.</p>
-<ol style="list-style-type: decimal"><li>Pull the latest Docker image:</li></ol>
+<ol style="list-style-type: decimal">
+<li>Pull the latest Docker image:</li>
+</ol>
 <pre><code>docker pull ghcr.io/nuno-agostinho/ctrap:latest</code></pre>
-<ol start="2" style="list-style-type: decimal"><li>Start RStudio Web from the Docker image:</li></ol>
+<ol start="2" style="list-style-type: decimal">
+<li>Start RStudio Web from the Docker image:</li>
+</ol>
 <pre><code>docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/ctrap:latest</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Go to RStudio Web via your web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
@@ -182,7 +187,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
