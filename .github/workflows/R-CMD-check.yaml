@@ -140,18 +140,13 @@ jobs:
           pkgs <- installed.packages()[, "Package"]
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
-
-      - name: R CMD Check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-        run: |
-          rcmdcheck::rcmdcheck(
-              args = c("--no-build-vignettes", "--no-manual", "--timings"),
-              build_args = c("--no-manual", "--no-resave-data"),
-              error_on = "warning",
-              check_dir = "check"
-          )
-        shell: Rscript {0}
+        
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--no-build-vignettes", "--no-manual", "--timings")'
+          build_args: 'c("--no-manual", "--no-resave-data")'
+          error-on: '"warning"'
+          check-dir: '"check"'
 
       - name: R CMD BiocCheck
         run: |
