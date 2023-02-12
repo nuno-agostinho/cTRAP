@@ -13,8 +13,6 @@ editor_options:
   chunk_output_type: console
 ---
 
----
-
 # Introduction
 
 `cTRAP` is an R package designed to compare differential gene expression results
