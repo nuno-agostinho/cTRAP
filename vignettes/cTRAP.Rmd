@@ -387,6 +387,12 @@ plotDrugSetEnrichment(drugSets, predicted,
                       selectedSets=head(dsea$descriptor, 6))
 ```
 
+# Session information
+
+```
+sessionInfo()
+```
+
 # Contact information
 
 All feedback on the program, documentation and associated material (including
