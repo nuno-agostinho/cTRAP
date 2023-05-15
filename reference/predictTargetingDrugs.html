@@ -174,11 +174,48 @@ details below)</p></dd>
 <span class="r-in"><span><span class="co"># Load expression and drug sensitivity association derived from GDSC data</span></span></span>
 <span class="r-in"><span><span class="va">gdsc</span> <span class="op">&lt;-</span> <span class="fu"><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="st">"GDSC 7"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading data from expressionDrugSensitivityCorGDSC7.qs...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in qread(file):</span> something went wrong (reading string header)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Predict targeting drugs on a differential expression profile</span></span></span>
 <span class="r-in"><span><span class="fu">predictTargetingDrugs</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'gdsc' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.03 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      compound spearman_coef spearman_pvalue spearman_qvalue pearson_coef</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     1047    0.14532331    7.908329e-55    2.103616e-52   0.13098933</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:      207    0.10447948    4.950795e-29    2.633823e-27   0.09295384</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:      157    0.12935630    1.020442e-43    1.357188e-41   0.11655136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:     1091    0.08481582    1.194387e-19    1.512890e-18   0.08245367</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      110    0.11857369    5.806289e-37    5.148243e-35   0.11346259</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 262:     1133   -0.02817757    2.627306e-03    3.529613e-03  -0.02761751</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 263:     1149   -0.01812593    5.299930e-02    6.210491e-02  -0.02690099</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 264:       35   -0.02099097    2.503708e-02    3.069061e-02  -0.03075034</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 265:     1029   -0.04152497    9.237123e-06    1.565016e-05  -0.04525941</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 266:     1031   -0.08489029    1.109885e-19    1.476147e-18  -0.08808410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      pearson_pvalue pearson_qvalue       GSEA spearman_rank pearson_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:   8.577544e-45   2.281627e-42  0.0000000             1            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:   2.693140e-23   1.023393e-21  0.2769544             5            7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:   9.209531e-36   1.224868e-33  0.0000000             2            2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:   1.184660e-18   2.100798e-17  0.3118949            20           14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:   5.716381e-34   5.068524e-32  0.0000000             3            3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 262:   3.193570e-03   4.591836e-03 -0.2605952           263          261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 263:   4.079592e-03   5.772189e-03 -0.3444514           259          260</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 264:   1.026803e-03   1.587963e-03 -0.3038956           261          263</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 265:   1.341660e-06   2.949435e-06 -0.3298198           264          264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 266:   4.491968e-21   1.194863e-19 -0.3800912           266          266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      GSEA_rank rankProduct_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     130.5                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:       9.0                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:     130.5                3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:       3.0                4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:     130.5                5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 262:     257.0              262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 263:     265.0              263</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 264:     262.0              264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 265:     264.0              265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 266:     266.0              266</span>
 </code></pre></div>
     </div>
   </div>
