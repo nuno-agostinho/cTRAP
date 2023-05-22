@@ -80,7 +80,7 @@ perturbations from differential gene expression data</h1>
                         <h4 data-toc-skip class="author">Bernardo P. de
 Almeida &amp; Nuno Saraiva-Agostinho</h4>
             
-            <h4 data-toc-skip class="date">2023-05-15</h4>
+            <h4 data-toc-skip class="date">2023-05-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/vignettes/cTRAP.Rmd" class="external-link"><code>vignettes/cTRAP.Rmd</code></a></small>
       <div class="hidden name"><code>cTRAP.Rmd</code></div>
@@ -940,7 +940,7 @@ expression profile:</p>
 <code class="sourceCode R"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</span></span></code></pre>
 <pre><code><span><span class="co">## Comparing against 545 CTRP 2.1 compounds (823 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></span></code></pre>
-<pre><code><span><span class="co">## Comparison performed in 6.41 secs</span></span></code></pre>
+<pre><code><span><span class="co">## Comparison performed in 6.63 secs</span></span></code></pre>
 <div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
@@ -1008,19 +1008,19 @@ interest.</p>
 <pre><code><span><span class="co">## Matching compounds with those available in drug sets...</span></span></code></pre>
 <pre><code><span><span class="co">## Columns 'broad id' and 'pert_id' were matched based on 283 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></span></code></pre>
 <pre><code><span><span class="co">## Plotting enrichment analysis...</span></span></code></pre>
-<pre><code><span><span class="co">## $`Total.Molweight: [391, 411]`</span></span></code></pre>
+<pre><code><span><span class="co">## $`Total Surface Area: [293, 307]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Total Molweight: [391, 411]`</span></span></code></pre>
+<span><span class="co">## $`Total.Molweight: [391, 411]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Total Surface Area: [293, 307]`</span></span></code></pre>
+<span><span class="co">## $`Polar.Surface.Area: [138, 1153]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Rotatable Bonds: 5`</span></span></code></pre>
+<span><span class="co">## $`Total Molweight: [391, 411]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-4.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Polar.Surface.Area: [138, 1153]`</span></span></code></pre>
+<span><span class="co">## $`Rotatable Bonds: 5`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-5.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`cLogP: 0`</span></span></code></pre>
