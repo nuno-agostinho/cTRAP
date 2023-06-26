@@ -164,37 +164,37 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-in"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.09 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 3.49 secs</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">analyseDrugSetEnrichment</span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matching compounds with those available in drug sets...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ordering results by column 'rankProduct_rank'; to manually select column to order by, please set argument 'col'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Columns 'name' and 'name' were matched based on 56 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Performing enrichment analysis...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          descriptor         pval       padj         ES</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:                 Small Rings: 4 0.0001032098 0.01696535 -0.6915988</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:                   sp3-Atoms: 5 0.0001194743 0.01696535 -0.9037610</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:              H-Donors: [6, 40] 0.0009960159 0.07071713  0.8880866</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:              Non-C/H Atoms: 11 0.0008692818 0.07071713 -0.7500000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: Polar Surface Area: [123, 141] 0.0030462185 0.16749480 -0.6509521</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 280:               Non-C/H Atoms: 7 0.9309787627 0.93768802 -0.2876703</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 281:       Electronegative Atoms: 7 0.9309787627 0.93768802 -0.2876703</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282:                 Small Rings: 3 0.9310845874 0.93768802 -0.2350154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 283:    Total Molweight: [294, 312] 0.9788495750 0.97884958 -0.5107143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 284:              Stereo Centers: 3 0.9788495750 0.97884958 -0.5107143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             NES nMoreExtreme size                                   leadingEdge</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1.9371480            0   15   737754,752782,757441,1011,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: -1.9348143            0    5                          174939,737754,752782</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  1.9543053            1    4                   125066,758612,759155,123127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: -1.8853020            7    9 299933,330507,727989,745750,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: -1.7432489           28   12  174939,737754,752782,287459,63878,732517,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 280: -0.6495936         8065    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 281: -0.6495936         8065    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282: -0.6495854         8970   14 299933,706995,683864,339555,606698,226080,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 283: -0.6799486         4951    1                                        613327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 284: -0.6799486         4951    1                                        613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        descriptor         pval      padj         ES        NES</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:               Small Rings: 4 0.0001032525 0.0293237 -0.6915988 -1.9398003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:                 sp3-Atoms: 5 0.0003559563 0.0505458 -0.9037610 -1.9351444</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:            Non-C/H Atoms: 11 0.0005395489 0.0510773 -0.7500000 -1.8820539</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4: Reproductive Effective: high 0.0063666775 0.1643760 -0.6642974 -1.6669913</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:            H-Donors: [6, 40] 0.0030410542 0.1643760  0.8880866  1.9591382</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 280:             Non-C/H Atoms: 7 0.9264806769 0.9347319 -0.2876703 -0.6496422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 281:     Electronegative Atoms: 7 0.9264806769 0.9347319 -0.2876703 -0.6496422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282:               Small Rings: 3 0.9281493002 0.9347319 -0.2350154 -0.6501059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 283:  Total Molweight: [294, 312] 0.9810583870 0.9810584 -0.5107143 -0.6821909</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 284:            Stereo Centers: 3 0.9810583870 0.9810584 -0.5107143 -0.6821909</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      nMoreExtreme size                                   leadingEdge</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:            0   15   737754,752782,757441,1011,732517,759877,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:            2    5                          174939,737754,752782</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:            4    9 299933,330507,727989,745750,732517,759877,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:           58    9         174939,287459,63878,732517,759877,185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:            5    4                   125066,758612,759155,123127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 280:         8102    6                                        706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 281:         8102    6                                        706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282:         8951   14 299933,706995,683864,339555,606698,226080,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 283:         5023    1                                        613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 284:         5023    1                                        613327</span>
 </code></pre></div>
     </div>
   </div>
