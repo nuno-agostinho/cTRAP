@@ -197,8 +197,9 @@ details below)</p></dd>
 <span class="r-in"><span><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.88 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.86 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                             &lt;char&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278</span>
@@ -234,6 +235,7 @@ details below)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;num&gt;           &lt;num&gt;        &lt;num&gt;          &lt;num&gt;          &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:              NA              NA  0.226788992             NA             NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:              NA              NA  0.078584431             NA             NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:              NA              NA -0.012120187             NA             NA</span>
@@ -269,6 +271,7 @@ details below)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:    7.129654e-01    7.129654e-01 -0.004450902   6.765050e-01   6.765050e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;         &lt;num&gt;        &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.49159830             1            1         1                1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:  0.10895716             2            2         2                2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:  0.00000000             3            3         4                3</span>
@@ -308,8 +311,9 @@ details below)</p></dd>
 <span class="r-in"><span><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.58 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.54 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                             &lt;char&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:       CVD001_24H:BRD-K84595254-001-03-0:4.9444   0.093416734</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:          CVD001_24H:BRD-K41172353-001-01-4:4.7  -0.007440278</span>
@@ -345,6 +349,7 @@ details below)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:  CVD001_HUH7_24H:BRD-K96188950-001-04-5:4.3967  -0.003924349</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     spearman_pvalue spearman_qvalue spearman_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;num&gt;           &lt;num&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:              NA              NA             1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:              NA              NA             2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:              NA              NA             3</span>

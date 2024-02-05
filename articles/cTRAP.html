@@ -80,7 +80,7 @@ perturbations from differential gene expression data</h1>
                         <h4 data-toc-skip class="author">Bernardo P. de
 Almeida &amp; Nuno Saraiva-Agostinho</h4>
             
-            <h4 data-toc-skip class="date">2024-01-29</h4>
+            <h4 data-toc-skip class="date">2024-02-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/vignettes/cTRAP.Rmd" class="external-link"><code>vignettes/cTRAP.Rmd</code></a></small>
       <div class="hidden name"><code>cTRAP.Rmd</code></div>
@@ -352,6 +352,7 @@ rankings.</p>
 <span><span class="co"># correlation, Pearson's correlation and GSEA, respectively)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span>, n<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                 gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                            &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">##  1:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    1.506067e-74    1.305258e-73</span></span>
 <span><span class="co">##  2: CGS001_HEPG2_96H:KIAA0196:1.5     0.1894301    8.237226e-72    5.354197e-71</span></span>
 <span><span class="co">##  3:    CGS001_HEPG2_96H:SQRDL:1.5     0.1883210    5.589838e-71    2.906716e-70</span></span>
@@ -363,6 +364,7 @@ rankings.</p>
 <span><span class="co">##  9:   CGS001_HEPG2_96H:KIF20A:1.5     0.1665159    1.114839e-55    2.415485e-55</span></span>
 <span><span class="co">## 10:    CGS001_HEPG2_96H:TMEM5:1.5     0.1506335    8.936446e-46    1.452172e-45</span></span>
 <span><span class="co">##     pearson_coef pearson_pvalue pearson_qvalue      GSEA spearman_rank</span></span>
+<span><span class="co">##            &lt;num&gt;          &lt;num&gt;          &lt;num&gt;     &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">##  1:    0.1756788   7.245930e-62   1.883942e-61 0.3903862             1</span></span>
 <span><span class="co">##  2:    0.1847352   2.514633e-68   9.340065e-68 0.3521034             2</span></span>
 <span><span class="co">##  3:    0.1718559   3.046859e-59   6.093718e-59 0.3998024             3</span></span>
@@ -374,6 +376,7 @@ rankings.</p>
 <span><span class="co">##  9:    0.1786967   5.568601e-64   1.608707e-63 0.4566918             9</span></span>
 <span><span class="co">## 10:    0.1670226   5.177976e-56   8.414211e-56 0.4721782            10</span></span>
 <span><span class="co">##     pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##            &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">##  1:            7        12                2</span></span>
 <span><span class="co">##  2:            4        14                4</span></span>
 <span><span class="co">##  3:            9        11                8</span></span>
@@ -387,6 +390,7 @@ rankings.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                           &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62</span></span>
 <span><span class="co">## 2:    CGS001_HEPG2_96H:STAT1:1.5     0.1833382    2.626628e-67    9.756048e-67</span></span>
 <span><span class="co">## 3:     CGS001_HEPG2_96H:MEST:1.5     0.1726479    8.816544e-60    2.292301e-59</span></span>
@@ -394,6 +398,7 @@ rankings.</p>
 <span><span class="co">## 5:    CGS001_HEPG2_96H:COPS5:1.5     0.1775880    3.364592e-63    1.093493e-62</span></span>
 <span><span class="co">## 6:   CGS001_HEPG2_96H:KIF20A:1.5     0.1665159    1.114839e-55    2.415485e-55</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue      GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;     &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:    0.1915142   2.182595e-73   1.418686e-72 0.4861485             7</span></span>
 <span><span class="co">## 2:    0.1894661   7.739198e-72   4.024383e-71 0.3765351             5</span></span>
 <span><span class="co">## 3:    0.1858475   3.830708e-69   1.659973e-68 0.4219693             8</span></span>
@@ -401,6 +406,7 @@ rankings.</p>
 <span><span class="co">## 5:    0.1794790   1.553956e-64   5.050356e-64 0.4222756             6</span></span>
 <span><span class="co">## 6:    0.1786967   5.568601e-64   1.608707e-63 0.4566918             9</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:            1         2                1</span></span>
 <span><span class="co">## 2:            2        13                5</span></span>
 <span><span class="co">## 3:            3        10                6</span></span>
@@ -410,6 +416,7 @@ rankings.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##              gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                         &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1: CGS001_HEPG2_96H:SKIV2L:1.5     0.1423207    5.305914e-41    8.114927e-41</span></span>
 <span><span class="co">## 2: CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62</span></span>
 <span><span class="co">## 3: CGS001_HEPG2_96H:GTPBP8:1.5     0.1190220    4.210973e-29    4.760230e-29</span></span>
@@ -417,6 +424,7 @@ rankings.</p>
 <span><span class="co">## 5: CGS001_HEPG2_96H:UBAP2L:1.5     0.1309546    6.320554e-35    8.216721e-35</span></span>
 <span><span class="co">## 6:  CGS001_HEPG2_96H:TMEM5:1.5     0.1506335    8.936446e-46    1.452172e-45</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue      GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;     &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:    0.1755377   9.078490e-62   2.145825e-61 0.5070024            11</span></span>
 <span><span class="co">## 2:    0.1915142   2.182595e-73   1.418686e-72 0.4861485             7</span></span>
 <span><span class="co">## 3:    0.1390818   3.229116e-39   3.816228e-39 0.4813972            14</span></span>
@@ -424,6 +432,7 @@ rankings.</p>
 <span><span class="co">## 5:    0.1517482   1.948821e-46   2.533468e-46 0.4722054            12</span></span>
 <span><span class="co">## 6:    0.1670226   5.177976e-56   8.414211e-56 0.4721782            10</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:            8         1                3</span></span>
 <span><span class="co">## 2:            1         2                1</span></span>
 <span><span class="co">## 3:           14         3               11</span></span>
@@ -433,6 +442,7 @@ rankings.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                           &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    7.406639e-63    2.139696e-62</span></span>
 <span><span class="co">## 2:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    1.506067e-74    1.305258e-73</span></span>
 <span><span class="co">## 3:   CGS001_HEPG2_96H:SKIV2L:1.5     0.1423207    5.305914e-41    8.114927e-41</span></span>
@@ -440,6 +450,7 @@ rankings.</p>
 <span><span class="co">## 5:    CGS001_HEPG2_96H:STAT1:1.5     0.1833382    2.626628e-67    9.756048e-67</span></span>
 <span><span class="co">## 6:     CGS001_HEPG2_96H:MEST:1.5     0.1726479    8.816544e-60    2.292301e-59</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue      GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;     &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:    0.1915142   2.182595e-73   1.418686e-72 0.4861485             7</span></span>
 <span><span class="co">## 2:    0.1756788   7.245930e-62   1.883942e-61 0.3903862             1</span></span>
 <span><span class="co">## 3:    0.1755377   9.078490e-62   2.145825e-61 0.5070024            11</span></span>
@@ -447,6 +458,7 @@ rankings.</p>
 <span><span class="co">## 5:    0.1894661   7.739198e-72   4.024383e-71 0.3765351             5</span></span>
 <span><span class="co">## 6:    0.1858475   3.830708e-69   1.659973e-68 0.4219693             8</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:            1         2                1</span></span>
 <span><span class="co">## 2:            7        12                2</span></span>
 <span><span class="co">## 3:            8         1                3</span></span>
@@ -457,6 +469,7 @@ rankings.</p>
 <code class="sourceCode R"><span><span class="co"># Most negatively associated perturbations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##              gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                         &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1:   CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78</span></span>
 <span><span class="co">## 2:  CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74</span></span>
 <span><span class="co">## 3: CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56</span></span>
@@ -464,6 +477,7 @@ rankings.</p>
 <span><span class="co">## 5: CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53</span></span>
 <span><span class="co">## 6:    CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;      &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26</span></span>
 <span><span class="co">## 2:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25</span></span>
 <span><span class="co">## 3:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24</span></span>
@@ -471,6 +485,7 @@ rankings.</p>
 <span><span class="co">## 5:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22</span></span>
 <span><span class="co">## 6:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:           26        19               25</span></span>
 <span><span class="co">## 2:           24        26               26</span></span>
 <span><span class="co">## 3:           21        16               20</span></span>
@@ -480,6 +495,7 @@ rankings.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                          &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78</span></span>
 <span><span class="co">## 2:  CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53</span></span>
 <span><span class="co">## 3:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74</span></span>
@@ -487,6 +503,7 @@ rankings.</p>
 <span><span class="co">## 5:     CGS001_HEPG2_96H:MAF:1.5    -0.1581847    2.351511e-50    4.075952e-50</span></span>
 <span><span class="co">## 6:  CGS001_HEPG2_96H:NDUFB6:1.5    -0.1677880    1.618399e-56    3.825307e-56</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;      &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26</span></span>
 <span><span class="co">## 2:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22</span></span>
 <span><span class="co">## 3:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25</span></span>
@@ -494,6 +511,7 @@ rankings.</p>
 <span><span class="co">## 5:   -0.1717844   3.406704e-59   6.326737e-59  0.0000000            21</span></span>
 <span><span class="co">## 6:   -0.1646057   1.964288e-54   3.004205e-54  0.0000000            24</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:           26        19               25</span></span>
 <span><span class="co">## 2:           25        16               22</span></span>
 <span><span class="co">## 3:           24        26               26</span></span>
@@ -503,6 +521,7 @@ rankings.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##             gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                        &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1: CGS001_HEPG2_96H:CDCA8:1.5   -0.19418619    1.951544e-75    2.537007e-74</span></span>
 <span><span class="co">## 2: CGS001_HEPG2_96H:DHX16:1.5   -0.14109904    2.527811e-40    3.459110e-40</span></span>
 <span><span class="co">## 3: CGS001_HEPG2_96H:SIAH2:1.5   -0.07825242    2.030400e-13    2.111616e-13</span></span>
@@ -510,6 +529,7 @@ rankings.</p>
 <span><span class="co">## 5:   CGS001_HEPG2_96H:SHB:1.5   -0.11094246    1.768452e-25    1.915823e-25</span></span>
 <span><span class="co">## 6: CGS001_HEPG2_96H:PLOD2:1.5   -0.12393601    1.970762e-31    2.439991e-31</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;      &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:  -0.19269443   2.740646e-74   2.375227e-73 -0.4739211            25</span></span>
 <span><span class="co">## 2:  -0.15642416   2.883756e-49   3.946193e-49 -0.4379221            19</span></span>
 <span><span class="co">## 3:  -0.11367900   1.119976e-26   1.164775e-26 -0.4224346            16</span></span>
@@ -517,6 +537,7 @@ rankings.</p>
 <span><span class="co">## 5:  -0.12875045   8.300805e-34   8.992538e-34 -0.4131576            17</span></span>
 <span><span class="co">## 6:  -0.13259151   9.070613e-36   1.025374e-35 -0.4130739            18</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:           24        26               26</span></span>
 <span><span class="co">## 2:           19        25               23</span></span>
 <span><span class="co">## 3:           16        24               16</span></span>
@@ -526,6 +547,7 @@ rankings.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               gene_perturbation spearman_coef spearman_pvalue spearman_qvalue</span></span>
+<span><span class="co">##                          &lt;char&gt;         &lt;num&gt;           &lt;num&gt;           &lt;num&gt;</span></span>
 <span><span class="co">## 1:   CGS001_HEPG2_96H:CDCA8:1.5    -0.1941862    1.951544e-75    2.537007e-74</span></span>
 <span><span class="co">## 2:    CGS001_HEPG2_96H:EYA1:1.5    -0.1993531    1.747554e-79    4.543641e-78</span></span>
 <span><span class="co">## 3: CGS001_HEPG2_96H:SULT1A2:1.5    -0.1414914    1.533416e-40    2.214934e-40</span></span>
@@ -533,6 +555,7 @@ rankings.</p>
 <span><span class="co">## 5:  CGS001_HEPG2_96H:ZBTB24:1.5    -0.1632375    1.500986e-53    2.787546e-53</span></span>
 <span><span class="co">## 6:   CGS001_HEPG2_96H:EHMT2:1.5    -0.1640525    4.479303e-54    8.958605e-54</span></span>
 <span><span class="co">##    pearson_coef pearson_pvalue pearson_qvalue       GSEA spearman_rank</span></span>
+<span><span class="co">##           &lt;num&gt;          &lt;num&gt;          &lt;num&gt;      &lt;num&gt;         &lt;num&gt;</span></span>
 <span><span class="co">## 1:   -0.1926944   2.740646e-74   2.375227e-73 -0.4739211            25</span></span>
 <span><span class="co">## 2:   -0.1952303   3.030978e-76   7.880542e-75 -0.3776731            26</span></span>
 <span><span class="co">## 3:   -0.1742848   6.666242e-61   1.444352e-60 -0.4086520            20</span></span>
@@ -540,6 +563,7 @@ rankings.</p>
 <span><span class="co">## 5:   -0.1948077   6.448588e-76   8.383165e-75  0.0000000            22</span></span>
 <span><span class="co">## 6:   -0.1590654   6.637816e-51   9.587957e-51 -0.3716818            23</span></span>
 <span><span class="co">##    pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##           &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">## 1:           24        26               26</span></span>
 <span><span class="co">## 2:           26        19               25</span></span>
 <span><span class="co">## 3:           23        20               24</span></span>
@@ -564,6 +588,7 @@ rankings.</p>
 <code class="sourceCode R"><span><span class="co"># Most positively and negatively associated perturbations</span></span>
 <span><span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                              compound_perturbation spearman_coef</span></span>
+<span><span class="co">##                                             &lt;char&gt;         &lt;num&gt;</span></span>
 <span><span class="co">##  1:    CVD001_HEPG2_24H:BRD-A14014306-001-01-1:4.1   0.225335666</span></span>
 <span><span class="co">##  2: CVD001_HEPG2_24H:BRD-K84595254-001-03-0:4.9444   0.085133810</span></span>
 <span><span class="co">##  3: CVD001_HEPG2_24H:BRD-K62810658-001-05-6:4.6768  -0.050201852</span></span>
@@ -576,6 +601,7 @@ rankings.</p>
 <span><span class="co">## 10:    CVD001_HEPG2_24H:BRD-K94818765-001-01-0:4.8  -0.113418048</span></span>
 <span><span class="co">## 11:   CVD001_HEPG2_24H:BRD-A65142661-034-01-8:5.35  -0.164686339</span></span>
 <span><span class="co">##     spearman_pvalue spearman_qvalue pearson_coef pearson_pvalue pearson_qvalue</span></span>
+<span><span class="co">##               &lt;num&gt;           &lt;num&gt;        &lt;num&gt;          &lt;num&gt;          &lt;num&gt;</span></span>
 <span><span class="co">##  1:   1.361508e-101   1.497659e-100   0.22640668  1.442316e-102  1.586548e-101</span></span>
 <span><span class="co">##  2:    1.294659e-15    2.373541e-15   0.06834399   1.415829e-10   2.224875e-10</span></span>
 <span><span class="co">##  3:    2.489663e-06    3.042921e-06  -0.02551843   1.673267e-02   1.840594e-02</span></span>
@@ -588,6 +614,7 @@ rankings.</p>
 <span><span class="co">## 10:    1.461350e-26    4.018714e-26  -0.11053910   2.640853e-25   7.262345e-25</span></span>
 <span><span class="co">## 11:    1.741438e-54    9.577908e-54  -0.14797060   3.242185e-44   1.783202e-43</span></span>
 <span><span class="co">##           GSEA spearman_rank pearson_rank GSEA_rank rankProduct_rank</span></span>
+<span><span class="co">##          &lt;num&gt;         &lt;num&gt;        &lt;num&gt;     &lt;num&gt;            &lt;num&gt;</span></span>
 <span><span class="co">##  1:  0.4932836             1            1       1.0                1</span></span>
 <span><span class="co">##  2:  0.2179143             2            2       3.0                2</span></span>
 <span><span class="co">##  3:  0.2304579             5            4       2.0                3</span></span>
@@ -631,18 +658,24 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="va">EIF4G1knockdown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"EIF4G1"</span>, <span class="va">compareKD</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, value<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $metadata</span></span>
+<span><span class="co">## Key: &lt;sig_id, pert_id, pert_iname, pert_type, cell_id, pert_dose, pert_dose_unit, pert_idose, pert_time, pert_time_unit, pert_itime, distil_id&gt;</span></span>
 <span><span class="co">##                         sig_id     pert_id pert_iname  pert_type cell_id</span></span>
+<span><span class="co">##                         &lt;char&gt;      &lt;char&gt;     &lt;char&gt;     &lt;char&gt;  &lt;char&gt;</span></span>
 <span><span class="co">## 1: CGS001_HEPG2_96H:EIF4G1:1.5 CGS001-1981     EIF4G1 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##    pert_dose pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span></span>
+<span><span class="co">##        &lt;num&gt;         &lt;char&gt;     &lt;char&gt;     &lt;int&gt;         &lt;char&gt;     &lt;char&gt;</span></span>
 <span><span class="co">## 1:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##                                                                                                         distil_id</span></span>
+<span><span class="co">##                                                                                                            &lt;char&gt;</span></span>
 <span><span class="co">## 1: KDA004_HEPG2_96H:TRCN0000061769:-666|KDA004_HEPG2_96H:TRCN0000061770:-666|KDA004_HEPG2_96H:TRCN0000061772:-666</span></span></code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Information on the top 10 most similar compound perturbations (based on</span></span>
 <span><span class="co"># Spearman's correlation)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">rankProduct_rank</span><span class="op">)</span><span class="op">]</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## $metadata</span></span>
+<span><span class="co">## Key: &lt;sig_id, pert_id, pert_iname, pert_type, cell_id, pert_dose, pert_dose_unit, pert_idose, pert_time, pert_time_unit, pert_itime, distil_id&gt;</span></span>
 <span><span class="co">##                            sig_id      pert_id pert_iname  pert_type cell_id</span></span>
+<span><span class="co">##                            &lt;char&gt;       &lt;char&gt;     &lt;char&gt;     &lt;char&gt;  &lt;char&gt;</span></span>
 <span><span class="co">##  1:    CGS001_HEPG2_96H:COPS5:1.5 CGS001-10987      COPS5 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##  2:   CGS001_HEPG2_96H:EIF4G1:1.5  CGS001-1981     EIF4G1 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##  3: CGS001_HEPG2_96H:KIAA0196:1.5  CGS001-9897   KIAA0196 trt_sh.cgs   HEPG2</span></span>
@@ -654,6 +687,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">##  9:    CGS001_HEPG2_96H:SQRDL:1.5 CGS001-58472      SQRDL trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">## 10:    CGS001_HEPG2_96H:STAT1:1.5  CGS001-6772      STAT1 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##     pert_dose pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span></span>
+<span><span class="co">##         &lt;num&gt;         &lt;char&gt;     &lt;char&gt;     &lt;int&gt;         &lt;char&gt;     &lt;char&gt;</span></span>
 <span><span class="co">##  1:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##  2:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##  3:       1.5         microL 1.5 microL        96              h       96 h</span></span>
@@ -665,6 +699,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">##  9:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">## 10:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##                                                                                                                                                                                                                                                                                                   distil_id</span></span>
+<span><span class="co">##                                                                                                                                                                                                                                                                                                      &lt;char&gt;</span></span>
 <span><span class="co">##  1:                                                                                                                                                                                          KDB009_HEPG2_96H:TRCN0000019200:-666|KDB009_HEPG2_96H:TRCN0000019201:-666|KDB009_HEPG2_96H:TRCN0000019202:-666</span></span>
 <span><span class="co">##  2:                                                                                                                                                                                          KDA004_HEPG2_96H:TRCN0000061769:-666|KDA004_HEPG2_96H:TRCN0000061770:-666|KDA004_HEPG2_96H:TRCN0000061772:-666</span></span>
 <span><span class="co">##  3:                                                                                                                                                                                          KDB010_HEPG2_96H:TRCN0000128018:-666|KDB010_HEPG2_96H:TRCN0000129686:-666|KDB010_HEPG2_96H:TRCN0000131227:-666</span></span>
@@ -681,6 +716,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">as.table</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                gene_perturbation spearman_coef pearson_coef      GSEA</span></span>
+<span><span class="co">##                           &lt;char&gt;         &lt;num&gt;        &lt;num&gt;     &lt;num&gt;</span></span>
 <span><span class="co">## 1:   CGS001_HEPG2_96H:EIF4G1:1.5     0.1770993    0.1915142 0.4861485</span></span>
 <span><span class="co">## 2:    CGS001_HEPG2_96H:MECP2:1.5     0.1930335    0.1756788 0.3903862</span></span>
 <span><span class="co">## 3:   CGS001_HEPG2_96H:SKIV2L:1.5     0.1423207    0.1755377 0.5070024</span></span>
@@ -688,6 +724,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 5:    CGS001_HEPG2_96H:STAT1:1.5     0.1833382    0.1894661 0.3765351</span></span>
 <span><span class="co">## 6:     CGS001_HEPG2_96H:MEST:1.5     0.1726479    0.1858475 0.4219693</span></span>
 <span><span class="co">##    spearman_rank pearson_rank GSEA_rank rankProduct_rank     pert_id pert_iname</span></span>
+<span><span class="co">##            &lt;num&gt;        &lt;num&gt;     &lt;num&gt;            &lt;num&gt;      &lt;char&gt;     &lt;char&gt;</span></span>
 <span><span class="co">## 1:             7            1         2                1 CGS001-1981     EIF4G1</span></span>
 <span><span class="co">## 2:             1            7        12                2 CGS001-4204      MECP2</span></span>
 <span><span class="co">## 3:            11            8         1                3 CGS001-6499     SKIV2L</span></span>
@@ -695,6 +732,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 5:             5            2        13                5 CGS001-6772      STAT1</span></span>
 <span><span class="co">## 6:             8            3        10                6 CGS001-4232       MEST</span></span>
 <span><span class="co">##     pert_type cell_id pert_idose pert_itime pr_gene_id</span></span>
+<span><span class="co">##        &lt;char&gt;  &lt;char&gt;     &lt;char&gt;     &lt;char&gt;      &lt;int&gt;</span></span>
 <span><span class="co">## 1: trt_sh.cgs   HEPG2 1.5 microL       96 h       1981</span></span>
 <span><span class="co">## 2: trt_sh.cgs   HEPG2 1.5 microL       96 h       4204</span></span>
 <span><span class="co">## 3: trt_sh.cgs   HEPG2 1.5 microL       96 h       6499</span></span>
@@ -702,6 +740,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 5: trt_sh.cgs   HEPG2 1.5 microL       96 h       6772</span></span>
 <span><span class="co">## 6: trt_sh.cgs   HEPG2 1.5 microL       96 h       4232</span></span>
 <span><span class="co">##                                          pr_gene_title pr_is_lm pr_is_bing</span></span>
+<span><span class="co">##                                                 &lt;char&gt;    &lt;int&gt;      &lt;int&gt;</span></span>
 <span><span class="co">## 1: eukaryotic translation initiation factor 4 gamma, 1        1          1</span></span>
 <span><span class="co">## 2:                        methyl-CpG binding protein 2        0          1</span></span>
 <span><span class="co">## 3:                              Ski2 like RNA helicase        1          1</span></span>
@@ -717,7 +756,9 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## [10] "runtime"</span></span></code></pre>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"metadata"</span><span class="op">)</span>  <span class="co"># Perturbation metadata</span></span></code></pre></div>
-<pre><code><span><span class="co">##                            sig_id      pert_id pert_iname  pert_type cell_id</span></span>
+<pre><code><span><span class="co">## Key: &lt;sig_id, pert_id, pert_iname, pert_type, cell_id, pert_dose, pert_dose_unit, pert_idose, pert_time, pert_time_unit, pert_itime, distil_id&gt;</span></span>
+<span><span class="co">##                            sig_id      pert_id pert_iname  pert_type cell_id</span></span>
+<span><span class="co">##                            &lt;char&gt;       &lt;char&gt;     &lt;char&gt;     &lt;char&gt;  &lt;char&gt;</span></span>
 <span><span class="co">##  1:    CGS001_HEPG2_96H:CDCA8:1.5 CGS001-55143      CDCA8 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##  2:    CGS001_HEPG2_96H:COPS5:1.5 CGS001-10987      COPS5 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##  3:    CGS001_HEPG2_96H:DHX16:1.5  CGS001-8449      DHX16 trt_sh.cgs   HEPG2</span></span>
@@ -746,6 +787,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 26:   CGS001_HEPG2_96H:ZBTB24:1.5  CGS001-9841     ZBTB24 trt_sh.cgs   HEPG2</span></span>
 <span><span class="co">##                            sig_id      pert_id pert_iname  pert_type cell_id</span></span>
 <span><span class="co">##     pert_dose pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span></span>
+<span><span class="co">##         &lt;num&gt;         &lt;char&gt;     &lt;char&gt;     &lt;int&gt;         &lt;char&gt;     &lt;char&gt;</span></span>
 <span><span class="co">##  1:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##  2:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##  3:       1.5         microL 1.5 microL        96              h       96 h</span></span>
@@ -774,6 +816,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 26:       1.5         microL 1.5 microL        96              h       96 h</span></span>
 <span><span class="co">##     pert_dose pert_dose_unit pert_idose pert_time pert_time_unit pert_itime</span></span>
 <span><span class="co">##                                                                                                                                                                                                                                                                                                   distil_id</span></span>
+<span><span class="co">##                                                                                                                                                                                                                                                                                                      &lt;char&gt;</span></span>
 <span><span class="co">##  1:                                                                                                                                                                                          KDA003_HEPG2_96H:TRCN0000007898:-666|KDA003_HEPG2_96H:TRCN0000007899:-666|KDA003_HEPG2_96H:TRCN0000007900:-666</span></span>
 <span><span class="co">##  2:                                                                                                                                                                                          KDB009_HEPG2_96H:TRCN0000019200:-666|KDB009_HEPG2_96H:TRCN0000019201:-666|KDB009_HEPG2_96H:TRCN0000019202:-666</span></span>
 <span><span class="co">##  3:                                                                                                                                                                                          KDB010_HEPG2_96H:TRCN0000001123:-666|KDB010_HEPG2_96H:TRCN0000001124:-666|KDB010_HEPG2_96H:TRCN0000001125:-666</span></span>
@@ -804,6 +847,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"geneInfo"</span><span class="op">)</span>  <span class="co"># Gene information</span></span></code></pre></div>
 <pre><code><span><span class="co">##        pr_gene_id pr_gene_symbol</span></span>
+<span><span class="co">##             &lt;int&gt;         &lt;char&gt;</span></span>
 <span><span class="co">##     1:        780           DDR1</span></span>
 <span><span class="co">##     2:       7849           PAX8</span></span>
 <span><span class="co">##     3:       2978         GUCA1A</span></span>
@@ -816,6 +860,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 12327:      90379         DCAF15</span></span>
 <span><span class="co">## 12328:         60           ACTB</span></span>
 <span><span class="co">##                                                              pr_gene_title</span></span>
+<span><span class="co">##                                                                     &lt;char&gt;</span></span>
 <span><span class="co">##     1:                         discoidin domain receptor tyrosine kinase 1</span></span>
 <span><span class="co">##     2:                                                        paired box 8</span></span>
 <span><span class="co">##     3:                                      guanylate cyclase activator 1A</span></span>
@@ -828,6 +873,7 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <span><span class="co">## 12327:                                  DDB1 and CUL4 associated factor 15</span></span>
 <span><span class="co">## 12328:                                                         actin, beta</span></span>
 <span><span class="co">##        pr_is_lm pr_is_bing</span></span>
+<span><span class="co">##           &lt;int&gt;      &lt;int&gt;</span></span>
 <span><span class="co">##     1:        1          1</span></span>
 <span><span class="co">##     2:        1          1</span></span>
 <span><span class="co">##     3:        0          0</span></span>
@@ -940,7 +986,7 @@ expression profile:</p>
 <code class="sourceCode R"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</span></span></code></pre>
 <pre><code><span><span class="co">## Comparing against 545 CTRP 2.1 compounds (823 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></span></code></pre>
-<pre><code><span><span class="co">## Comparison performed in 5.52 secs</span></span></code></pre>
+<pre><code><span><span class="co">## Comparison performed in 5.44 secs</span></span></code></pre>
 <div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
@@ -1011,19 +1057,19 @@ interest.</p>
 <pre><code><span><span class="co">## $`Total Surface Area: [293, 307]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Total.Molweight: [391, 411]`</span></span></code></pre>
+<span><span class="co">## $`Rotatable Bonds: 5`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Total Molweight: [391, 411]`</span></span></code></pre>
+<span><span class="co">## $`Total.Molweight: [391, 411]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Rotatable Bonds: 5`</span></span></code></pre>
+<span><span class="co">## $`Total Molweight: [391, 411]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-4.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`Polar.Surface.Area: [138, 1153]`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-5.png" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## $`Total.Molweight: [431, 449]`</span></span></code></pre>
+<span><span class="co">## $`cLogP: 0`</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-6.png" width="480"></p>
 </div>
 <div class="section level2">

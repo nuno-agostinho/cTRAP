@@ -109,6 +109,7 @@ contain the full filepath if preferred)</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">loadDrugDescriptors</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        compound FDA_status Mechanism_of_action Total Molweight</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;     &lt;char&gt;              &lt;char&gt;           &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:        1       &lt;NA&gt;                &lt;NA&gt;         122.123</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:       17       &lt;NA&gt;                &lt;NA&gt;         319.531</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:       89       &lt;NA&gt;                &lt;NA&gt;         212.699</span>
@@ -121,6 +122,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:   780198       &lt;NA&gt;                &lt;NA&gt;         474.507</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:   783538       &lt;NA&gt;                &lt;NA&gt;         654.663</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Monoisotopic Mass  cLogP  cLogS H-Acceptors H-Donors Total Surface Area</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;num&gt;  &lt;num&gt;  &lt;num&gt;       &lt;int&gt;    &lt;int&gt;              &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:          122.0368 0.5246 -1.122           2        0              98.97</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:          319.2875 7.3033 -5.409           2        2             293.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:          177.1154 1.2787 -1.693           2        0             153.35</span>
@@ -133,6 +135,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:          474.1679 4.3868 -6.633           7        0             369.08</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:          654.2312 2.2501 -4.057          13        4             460.31</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Polar Surface Area Druglikeness Mutagenic Tumorigenic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;num&gt;        &lt;num&gt;    &lt;char&gt;      &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:              34.14     -0.69205      high        none</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:              46.25    -19.80400       low         low</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:              20.31      3.55190      none        none</span>
@@ -145,6 +148,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:              72.45     -2.40640      high        none</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:             171.83     -4.11790      none        none</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Reproductive Effective Irritant Nasty Functions Shape Index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        &lt;char&gt;   &lt;char&gt;          &lt;char&gt;       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:                   none     none            &lt;NA&gt;     0.66667</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:                   none     none            &lt;NA&gt;     0.82609</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:                   none     none            &lt;NA&gt;     0.69231</span>
@@ -157,6 +161,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:                   high     none            &lt;NA&gt;     0.51429</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:                   high     none            &lt;NA&gt;     0.38298</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Molecular Flexibility Molecular Complexity Fragments Non-H Atoms</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        &lt;num&gt;                &lt;num&gt;     &lt;int&gt;       &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:               0.24673              0.72259         1           9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:               0.48864              0.60279         1          23</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:               0.55528              0.52258         2          13</span>
@@ -169,6 +174,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:               0.46227              0.86525         1          35</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:               0.29662              1.08780         1          47</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Non-C/H Atoms Metal-Atoms Electronegative Atoms Stereo Centers</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;int&gt;       &lt;int&gt;                 &lt;int&gt;          &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:             2           0                     2              0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:             2           0                     2              0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:             2           0                     2              0</span>
@@ -181,6 +187,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:             7           0                     7              0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:            13           0                    13              9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Rotatable Bonds Rings Closures Small Rings Aromatic Rings Aromatic Atoms</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;int&gt;          &lt;int&gt;       &lt;int&gt;          &lt;int&gt;          &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:               0              1           1              0              0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:              14              1           1              1              6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:               4              1           1              1              6</span>
@@ -193,6 +200,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:               9              4           4              3             18</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:              11              6           6              3             18</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        sp3-Atoms Symmetric atoms Amides Amines Alkyl-Amines Aromatic Amines</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;int&gt;           &lt;int&gt;  &lt;int&gt;  &lt;int&gt;        &lt;int&gt;           &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:         1               0      0      0            0               0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:        16               0      0      1            0               1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:         5               3      0      1            1               0</span>
@@ -205,6 +213,7 @@ contain the full filepath if preferred)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21737:        11               4      0      0            0               0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21738:        27               4      0      0            0               0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Aromatic Nitrogens Basic Nitrogens Acidic Oxygens Stereo Configuration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;int&gt;           &lt;int&gt;          &lt;int&gt;               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:                  0               0              0                 &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:                  0               0              0                 &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:                  0               1              0                 &lt;NA&gt;</span>

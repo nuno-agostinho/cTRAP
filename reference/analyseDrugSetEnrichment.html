@@ -164,7 +164,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-in"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 2.75 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 2.43 secs</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">analyseDrugSetEnrichment</span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matching compounds with those available in drug sets...</span>
@@ -172,6 +172,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Columns 'name' and 'name' were matched based on 56 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Performing enrichment analysis...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          descriptor         pval       padj         ES</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;char&gt;        &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:              Non-C/H Atoms: 11 0.0003260515 0.03086621 -0.7500000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:                 Small Rings: 4 0.0003088326 0.03086621 -0.6915988</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:                   sp3-Atoms: 5 0.0001186521 0.03086621 -0.9037610</span>
@@ -183,18 +184,19 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 282:                 Small Rings: 3 0.9277195893 0.93525635 -0.2350154</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 283:    Total Molweight: [294, 312] 0.9807118711 0.98071187 -0.5107143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 284:              Stereo Centers: 3 0.9807118711 0.98071187 -0.5107143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             NES nMoreExtreme size                                   leadingEdge</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1.8826139            2    9 299933,330507,727989,745750,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: -1.9394290            2   15   737754,752782,757441,1011,732517,759877,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: -1.9382045            0    5                          174939,737754,752782</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  1.9393394            4    4                   125066,758612,759155,123127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: -1.7364593           20   12  174939,737754,752782,287459,63878,732517,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 280: -0.6501376         8071    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 281: -0.6501376         8071    6                                        706995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282: -0.6497893         8945   14 299933,706995,683864,339555,606698,226080,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 283: -0.6853264         4931    1                                        613327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 284: -0.6853264         4931    1                                        613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             NES nMoreExtreme  size  leadingEdge</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;        &lt;num&gt; &lt;int&gt;       &lt;list&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1.8826139            2     9 299933, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: -1.9394290            2    15 737754, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: -1.9382045            0     5 174939, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  1.9393394            4     4 125066, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: -1.7364593           20    12 174939, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 280: -0.6501376         8071     6       706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 281: -0.6501376         8071     6       706995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282: -0.6497893         8945    14 299933, ....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 283: -0.6853264         4931     1       613327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 284: -0.6853264         4931     1       613327</span>
 </code></pre></div>
     </div>
   </div>
