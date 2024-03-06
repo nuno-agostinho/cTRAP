@@ -94,7 +94,7 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
     if (compact) {
-        aes        <- aes(.data[["sort"]], .data[[0]], fill="stat")
+        aes        <- aes(.data[["sort"]], 0, fill="stat")
         metricPlot <- ggplot(rankedMetric, aes) +
             geom_raster()
     } else {
@@ -379,7 +379,7 @@ plotComparison <- function(x, method, n, showMetadata,
     }
 
     # Correlation coefficient with labels for top and bottom perturbations
-    vars <- aes(x=.data[[1]], y=.data[[stat]], label="label", colour="ranked")
+    vars <- aes(x=1, y=.data[[stat]], label="label", colour="ranked")
     rug  <- geom_rug(alpha=alpha, sides="l")
 
     plot <- ggplot(x, vars) +
