@@ -1,4 +1,4 @@
-# cTRAP 1.14.2 (10 September, 2022)
+# cTRAP 1.20.1 (6 March, 2024)
 
 * When running `cTRAP()`, raise error if `commonPath` does not exist
 * Fix modular graphical interface functions not showing dropdown choices
