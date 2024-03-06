@@ -734,7 +734,7 @@ plotTargetingDrug <- function(x, drug, method=c("spearman", "pearson", "gsea"),
         }
         df <- data.frame(input=input[intersecting], cor=val)
 
-        plot <- ggplot(df, aes_string("input", "cor")) +
+        plot <- ggplot(df, aes(.data[["input"]], .data[["cor"]])) +
             geom_point(alpha=0.1, na.rm=TRUE) +
             geom_rug(alpha=0.1) +
             geom_density_2d(na.rm=TRUE) +

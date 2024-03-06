@@ -78,8 +78,8 @@ addNAsBetweenCategories <- function(snap) {
 
 library(ggplot2)
 plotMemConsumption <- function(data) {
-  ggplot(data, aes_string("time / 60", "memory", ymax="memory",
-                          colour="category", fill="category")) +
+  ggplot(data, aes(.data[["time / 60"]], .data[["memory"]], ymax="memory",
+                   colour="category", fill="category")) +
     xlab("Time (minutes)") +
     ylab("Memory (GB)") +
     geom_ribbon(alpha=0.8, ymin=0) +

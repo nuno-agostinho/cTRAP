@@ -94,13 +94,13 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
     if (compact) {
-        aes        <- aes_string("sort", 0, fill="stat")
+        aes        <- aes(.data[["sort"]], .data[[0]], fill="stat")
         metricPlot <- ggplot(rankedMetric, aes) +
             geom_raster()
     } else {
-        aes        <- aes_string("sort", "stat")
+        aes        <- aes(.data[["sort"]], .data[["stat"]])
         metricPlot <- ggplot(rankedMetric, aes) +
-            geom_area(aes_string(group="quantile", fill="quantile"), na.rm=TRUE,
+            geom_area(aes(group="quantile", fill="quantile"), na.rm=TRUE,
                       position="identity")
     }
     xBreaks <- c(min(rankedMetric$sort),
@@ -233,10 +233,11 @@ plotSingleCorr <- function(perturbation, ylabel, diffExprGenes, title=NULL) {
 
     multipleCellLines <- length(perturbation) > 1
     if (multipleCellLines) {
-        aesMap <- aes_string("diffExprGenes", "zscores", colour="perturbation")
+        aesMap <- aes(.data[["diffExprGenes"]], .data[["zscores"]],
+                      colour="perturbation")
         guide  <- guides(colour=guide_legend(title="Cell line"))
     } else {
-        aesMap <- aes_string("diffExprGenes", "zscores")
+        aesMap <- aes(.data[["diffExprGenes"]], .data[["zscores"]])
         guide  <- NULL
     }
 
@@ -378,7 +379,7 @@ plotComparison <- function(x, method, n, showMetadata,
     }
 
     # Correlation coefficient with labels for top and bottom perturbations
-    vars <- aes_string(x=1, y=stat, label="label", colour="ranked")
+    vars <- aes(x=.data[[1]], y=.data[[stat]], label="label", colour="ranked")
     rug  <- geom_rug(alpha=alpha, sides="l")
 
     plot <- ggplot(x, vars) +
@@ -440,8 +441,8 @@ plotComparison <- function(x, method, n, showMetadata,
 #'
 #' @importFrom graphics plot
 #' @importFrom R.utils capitalize
-#' @importFrom ggplot2 ggplot aes_string geom_point geom_hline ylab theme
-#'   element_blank scale_colour_manual xlim theme_classic guides scale_y_reverse
+#' @importFrom ggplot2 ggplot aes geom_point geom_hline ylab theme element_blank
+#'   scale_colour_manual xlim theme_classic guides scale_y_reverse
 #' @importFrom ggrepel geom_text_repel
 #'
 #' @family functions related with the ranking of CMap perturbations
@@ -675,7 +676,7 @@ plotTargetingDrugsVSsimilarPerturbations <- function(
     ylabel <- paste("CMap comparison:", column)
     df$highlight <- highlight
 
-    plot <- ggplot(df, aes_string(cols[[1]], cols[[2]], colour=highlight)) +
+    plot <- ggplot(df, aes(.data[[ cols[[1]] ]], .data[[ cols[[2]] ]], colour=highlight)) +
         geom_point(alpha=0.7, show.legend=FALSE) +
         geom_rug(alpha=0.3, show.legend=FALSE) +
         xlab(xlabel) +
