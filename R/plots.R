@@ -99,9 +99,9 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
             geom_raster()
     } else {
         aes        <- aes(.data[["sort"]], .data[["stat"]])
-        metricPlot <- ggplot(rankedMetric, aes) +
-            geom_area(aes(group="quantile", fill="quantile"), na.rm=TRUE,
-                      position="identity")
+        metricPlot <- ggplot(rankedMetric, aes) #+
+            #geom_area(aes(group="quantile", fill="quantile"), na.rm=TRUE,
+            #          position="identity")
     }
     xBreaks <- c(min(rankedMetric$sort),
                  extended_breaks()(rankedMetric$sort),
