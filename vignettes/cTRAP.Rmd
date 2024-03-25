@@ -293,14 +293,14 @@ attr(compareKD, "zscoresFilename") <- cmapPerturbationsKD
 
 ```{r plot knockdown comparison, message=FALSE, fig.width=5, fig.asp=1}
 # Plot relationship with EIF4G1 knockdown from CMap
-plot(compareKD, EIF4G1knockdown, "spearman")
-plot(compareKD, EIF4G1knockdown, "pearson")
-plot(compareKD, EIF4G1knockdown, "gsea")
+#plot(compareKD, EIF4G1knockdown, "spearman")
+#plot(compareKD, EIF4G1knockdown, "pearson")
+#plot(compareKD, EIF4G1knockdown, "gsea")
 
 # Plot relationship with most negatively associated perturbation
-plot(compareKD, compareKD[order(-spearman_rank)][1, 1], "spearman")
-plot(compareKD, compareKD[order(-pearson_rank)][1, 1], "pearson")
-plot(compareKD, compareKD[order(-GSEA_rank)][1, 1], "gsea")
+#plot(compareKD, compareKD[order(-spearman_rank)][1, 1], "spearman")
+#plot(compareKD, compareKD[order(-pearson_rank)][1, 1], "pearson")
+#plot(compareKD, compareKD[order(-GSEA_rank)][1, 1], "gsea")
 ```
 
 For small molecules:
