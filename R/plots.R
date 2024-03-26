@@ -94,7 +94,7 @@ plotMetricDistribution <- function(stat, compact=FALSE) {
     rankedMetric <- data.frame(sort=seq(stat), stat=stat, quantile=quantile)
 
     if (compact) {
-        aes        <- aes(.data[["sort"]], 0, fill="stat")
+        aes        <- aes(.data[["sort"]], 0, fill=.data[["stat"]])
         metricPlot <- ggplot(rankedMetric, aes) +
             geom_raster()
     } else {
