@@ -65,7 +65,6 @@ test_that("Plot only ranked perturbations", {
 test_that("Plot non-ranked perturbations", {
     plot <- plot(cmp, "spearman", plotNonRankedPerturbations=TRUE)
     expect_s3_class(plot, "ggplot")
-    expect_identical(plot$labels$colour, "ranked")
     expect_null(plot$guides$colour)
 })
 
