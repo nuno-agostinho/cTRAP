@@ -37,7 +37,7 @@
 #' based on the associated statistical values and respective p-values.
 #'
 #' @name cTRAP
-#' @docType _PACKAGE
+#' @docType package
 NULL
 
 #' ENCODE metadata sample
