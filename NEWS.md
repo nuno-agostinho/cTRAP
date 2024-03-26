@@ -151,7 +151,7 @@ down-regulated genes with `geneSize` argument:
 * Plotting:
     - `plot()` now supports plotting `predictTargetingDrugs()` results for a
     given drug, e.g. `plot(targetingDrugs, "1425")`
-    - `plot()` nows allows to set plot title with argument `title`
+    - `plot()` now allows to set plot title with argument `title`
     - `plot()` now plots results based on available methods instead of trying
     to plot based on results from `spearman` method only
     - GSEA plots now support two or less gene hits

@@ -1715,7 +1715,7 @@ launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
 #'
 #' @importFrom shiny runApp shinyApp
 #'
-#' @return Metadata viewer (retunrs \code{NULL})
+#' @return Metadata viewer (returns \code{NULL})
 #' @family visual interface functions
 #' @export
 launchMetadataViewer <- function(...) {
