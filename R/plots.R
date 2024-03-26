@@ -41,7 +41,7 @@ plotESplot <- function(enrichmentScore, gseaStat, compact=FALSE) {
         geom_hline(yintercept=0, colour="darkgrey", linetype="longdash") +
         geom_hline(yintercept=ES, colour="#3895D3") +
         geom_rug(alpha=rugAlpha, sides="b", length=unit(rugLength, "npc")) +
-        geom_line(colour="orange", na.rm=TRUE, size=0.7) +
+        geom_line(colour="orange", na.rm=TRUE, linewidth=0.7) +
         scale_x_continuous(expand=c(0,0)) +
         labs(y="Enrichment score") +
         theme_bw() +
