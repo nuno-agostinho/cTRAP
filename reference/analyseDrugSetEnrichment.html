@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.14.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.20.1</span>
       </span>
     </div>
 
@@ -107,7 +107,11 @@ if class of <code>stats</code> is either <code>similarPerturbations</code> or
 <dd><p>Minimal size of a gene set to test. All pathways below the threshold are excluded.</p></dd>
 
     <dt><code>scoreType</code></dt>
-<dd><p>This parameter defines the GSEA score type. Possible options are ("std", "pos", "neg")</p></dd>
+<dd><p>This parameter defines the GSEA score type.
+Possible options are ("std", "pos", "neg").
+By default ("std") the enrichment score is computed as in the original GSEA.
+The "pos" and "neg" score types are intended to be used for one-tailed tests
+(i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).</p></dd>
 
     <dt><code>nproc</code></dt>
 <dd><p>If not equal to zero sets BPPARAM to use nproc workers (default = 0).</p></dd>
@@ -164,7 +168,7 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 <span class="r-in"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">gdsc</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 11396 intersecting genes (85% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 266 GDSC 7 compounds (983 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 2.84 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 2.42 secs</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">analyseDrugSetEnrichment</span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matching compounds with those available in drug sets...</span>
