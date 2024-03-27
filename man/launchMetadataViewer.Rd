@@ -10,7 +10,7 @@ launchMetadataViewer(...)
 \item{...}{Objects}
 }
 \value{
-Metadata viewer (retunrs \code{NULL})
+Metadata viewer (returns \code{NULL})
 }
 \description{
 View metadata via a visual interface

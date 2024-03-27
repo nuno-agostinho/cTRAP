@@ -63,12 +63,12 @@
     loadTokenUI <- tagList(
         textInput("token", "Insert token of a previous session:"),
         actionButton("loadToken", "Load session with token",
-                     width="100%", icon=icon("history"), class="btn-info"))
+                     width="100%", icon=icon("clock-rotate-left"), class="btn-info"))
     loadDataUI <- tagList(
         fileInput("sessionFile", width="100%", multiple=TRUE, accept=".rds",
                   "Upload RDS file of a previous session:"),
         actionButton("loadData", "Load session from RDS file", width="100%",
-                     icon=icon("history"), class="btn-info"))
+                     icon=icon("clock-rotate-left"), class="btn-info"))
     pills <- tabsetPanel(
         type="pills",
         tabPanel("Session token", loadTokenUI),
@@ -164,7 +164,7 @@ globalUI <- function(elems, idList, expire) {
                    .diffExprENCODEloaderUI(idList$encode),
                    "----",
                    .cmapDataLoaderUI(idList$cmap, globalUI=TRUE)),
-        navbarMenu("Analyse", icon=icon("cogs"),
+        navbarMenu("Analyse", icon=icon("gears"),
                    .rankSimilarPerturbationsUI(idList$rankPerts),
                    .predictTargetingDrugsUI(idList$predictDrugs)),
         navbarMenu("Visualise", icon=icon("chart-bar"),
@@ -178,12 +178,6 @@ globalUI <- function(elems, idList, expire) {
                    icon=icon("compass"), menuName="session"))
     ui <- .modifySessionUI(ui, expire=expire)
     ui <- .addLoadingStatus(ui)
-    
-    # Add JS and CSS in header
-    header <- tags$head(
-        includeScript(system.file("shiny", "www", "cTRAP.js", package="cTRAP")),
-        includeCSS(system.file("shiny", "www", "cTRAP.css", package="cTRAP")))
-    ui <- tagList(header, ui)
     return(ui)
 }
 
@@ -439,6 +433,9 @@ updateAppData <- function(appData, x) {
 cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
                   flowerURL=NULL, port=getOption("shiny.port"),
                   host=getOption("shiny.host", "127.0.0.1")) {
+    if (!dir.exists(commonPath)) {
+        stop("commonPath directory does not exist:", commonPath)
+    }
     .setFileSizeLimit(fileSizeLimitMiB)
     elems <- .prepareEllipsis(...)
     

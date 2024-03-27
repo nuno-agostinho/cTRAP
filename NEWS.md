@@ -1,3 +1,9 @@
+# cTRAP 1.20.1 (6 March, 2024)
+
+* When running `cTRAP()`, raise error if `commonPath` does not exist
+* Fix modular graphical interface functions not showing dropdown choices
+* Update icon names for FontAwesome 6
+
 # cTRAP 1.14.1 (14 July, 2022)
 
 * Add cTRAP version to welcome modal
@@ -145,7 +151,7 @@ down-regulated genes with `geneSize` argument:
 * Plotting:
     - `plot()` now supports plotting `predictTargetingDrugs()` results for a
     given drug, e.g. `plot(targetingDrugs, "1425")`
-    - `plot()` nows allows to set plot title with argument `title`
+    - `plot()` now allows to set plot title with argument `title`
     - `plot()` now plots results based on available methods instead of trying
     to plot based on results from `spearman` method only
     - GSEA plots now support two or less gene hits

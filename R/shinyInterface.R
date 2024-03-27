@@ -109,7 +109,11 @@
 #' @keywords internal
 .prepareNavPage <- function(...) {
     app <- "cTRAP"
-    ui  <- navbarPage(app, ...) %>%
+    # Add JS and CSS in header
+    header <- tagList(
+        includeScript(system.file("shiny", "www", "cTRAP.js", package="cTRAP")),
+        includeCSS(system.file("shiny", "www", "cTRAP.css", package="cTRAP")))
+    ui  <- navbarPage(app, ..., header=header) %>%
         .replaceStrInList("navbar-static-top", "") %>%
         .replaceStrInList("container-fluid", "") %>%
         tags$div(class="container-fluid", style="padding-top: 15px;")
@@ -321,7 +325,7 @@
     diffExpr <- tags$span(
         "data-toggle"="tooltip", "data-placement"="right",
         title="Gene symbols and respective differential expression values (e.g. t-statistics)",
-        "Differential gene expression", icon("question-circle"))
+        "Differential gene expression", icon("circle-question"))
     
     sidebar <- sidebarPanel(
         textAreaInput(ns("diffExpr"), diffExpr, height="300px"),
@@ -1148,17 +1152,17 @@ convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
     state <- tolower(state)
     if (state %in% c("failure", "revoked")) {
         colour <- "red"
-        icon   <- icon("times-circle")
+        icon   <- icon("circle-xmark")
         state  <- "Error"
         class  <- "danger"
     } else if (state %in% c("not found")) {
         colour <- "red"
-        icon   <- icon("question-circle")
+        icon   <- icon("circle-question")
         state  <- "Not Found"
         class  <- "danger"
     } else if (state %in% c("received", "pending", "retry")) {
         colour <- "grey"
-        icon   <- icon("pause-circle")
+        icon   <- icon("circle-pause")
         state  <- "Waiting"
         class  <- "default"
     } else if (state %in% c("started")) {
@@ -1168,7 +1172,7 @@ convertTaskState2HTML <- function(state, toStr=TRUE, ..., label=FALSE) {
         class  <- "warning"
     } else if (state %in% c("success", "loaded")) {
         colour <- "green"
-        icon   <- icon("check-circle")
+        icon   <- icon("circle-check")
         state  <- "Loaded"
         class  <- "success"
     } else {
@@ -1711,7 +1715,7 @@ launchCMapDataLoader <- function(metadata="cmapMetadata.txt",
 #'
 #' @importFrom shiny runApp shinyApp
 #'
-#' @return Metadata viewer (retunrs \code{NULL})
+#' @return Metadata viewer (returns \code{NULL})
 #' @family visual interface functions
 #' @export
 launchMetadataViewer <- function(...) {
