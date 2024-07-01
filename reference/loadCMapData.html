@@ -124,47 +124,8 @@ about drugs and perturbations. The files will be named <code>file</code> with
 <span class="r-in"><span><span class="co"># Load CMap gene info</span></span></span>
 <span class="r-in"><span><span class="fu">loadCMapData</span><span class="op">(</span><span class="st">"cmapGeneInfo.txt"</span>, <span class="st">"geneInfo"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> cmapGeneInfo.txt not found: downloading data...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Extracting cmapGeneInfo.txt.gz...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading CMap gene information from cmapGeneInfo.txt...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        pr_gene_id pr_gene_symbol</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;int&gt;         &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:        780           DDR1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:       7849           PAX8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:       2978         GUCA1A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:       2049          EPHB3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:       2101          ESRRA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12324:       4034          LRCH4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12325:     399664          MEX3D</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12326:      54869         EPS8L1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12327:      90379         DCAF15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12328:         60           ACTB</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                              pr_gene_title</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:                         discoidin domain receptor tyrosine kinase 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:                                                        paired box 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:                                      guanylate cyclase activator 1A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:                                                     EPH receptor B3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:                                     estrogen related receptor alpha</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12324: leucine-rich repeats and calponin homology (CH) domain containing 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12325:                                   mex-3 RNA binding family member D</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12326:                                                         EPS8 like 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12327:                                  DDB1 and CUL4 associated factor 15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12328:                                                         actin, beta</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        pr_is_lm pr_is_bing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;int&gt;      &lt;int&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:        1          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:        1          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:        0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12324:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12325:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12326:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12327:        0          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12328:        0          1</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>URL 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&amp;format=file&amp;file=GSE92742_Broad_LINCS_gene_info.txt.gz': status was 'SSL connect error'</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in download.file(link, file, mode = mode):</span> cannot open URL 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE92742&amp;format=file&amp;file=GSE92742_Broad_LINCS_gene_info.txt.gz'</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Load CMap zscores based on filtered metadata</span></span></span>
 <span class="r-in"><span><span class="va">cmapMetadataKnockdown</span> <span class="op">&lt;-</span> <span class="fu"><a href="filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span></span></span>
