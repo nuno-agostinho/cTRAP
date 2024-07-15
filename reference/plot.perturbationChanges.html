@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,20 +40,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Operations on a <code>perturbationChanges</code> object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/CMap.R" class="external-link"><code>R/CMap.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/CMap.R" class="external-link"><code>R/CMap.R</code></a></small>
     <div class="hidden name"><code>plot.perturbationChanges.Rd</code></div>
     </div>
 
@@ -62,41 +62,43 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre><code># S3 method for perturbationChanges
-plot(
-  x,
-  perturbation,
-  input,
-  method = c("spearman", "pearson", "gsea"),
-  geneSize = 150,
-  genes = c("both", "top", "bottom"),
-  ...,
-  title = NULL
-)
-
-# S3 method for perturbationChanges
-[(x, i, j, drop = FALSE, ...)
-
-# S3 method for perturbationChanges
-dim(x)
-
-# S3 method for perturbationChanges
-dimnames(x)</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'perturbationChanges'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">perturbation</span>,</span>
+<span>  <span class="va">input</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spearman"</span>, <span class="st">"pearson"</span>, <span class="st">"gsea"</span><span class="op">)</span>,</span>
+<span>  geneSize <span class="op">=</span> <span class="fl">150</span>,</span>
+<span>  genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"top"</span>, <span class="st">"bottom"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'perturbationChanges'</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span>, drop <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'perturbationChanges'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'perturbationChanges'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p><code>perturbationChanges</code> object</p></dd>
 
 
-<dt>perturbation</dt>
+<dt id="arg-perturbation">perturbation<a class="anchor" aria-label="anchor" href="#arg-perturbation"></a></dt>
 <dd><p>Character (perturbation identifier) or a
 <code>similarPerturbations</code> table (from which the respective perturbation
 identifiers are retrieved)</p></dd>
 
 
-<dt>input</dt>
+<dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
 <dd><p><code>Named numeric vector</code> of differentially expressed genes
 whose names are gene identifiers and respective values are a statistic that
 represents significance and magnitude of differentially expressed genes
@@ -105,12 +107,12 @@ set that is tested for enrichment in reference data (only used if
 <code>method</code> includes <code>gsea</code>)</p></dd>
 
 
-<dt>method</dt>
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
 or <code>gsea</code>; multiple methods may be selected at once)</p></dd>
 
 
-<dt>geneSize</dt>
+<dt id="arg-genesize">geneSize<a class="anchor" aria-label="anchor" href="#arg-genesize"></a></dt>
 <dd><p>Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
 vector, the first index is the number of top up-regulated genes and the
@@ -119,41 +121,38 @@ sets; only used if <code>method</code> includes <code>gsea</code> and if <code>i
 is not a gene set</p></dd>
 
 
-<dt>genes</dt>
+<dt id="arg-genes">genes<a class="anchor" aria-label="anchor" href="#arg-genes"></a></dt>
 <dd><p>Character: when plotting gene set enrichment analysis (GSEA),
 plot most up-regulated genes (<code>genes = "top"</code>), most down-regulated
 genes (<code>genes = "bottom"</code>) or both (<code>genes = "both"</code>); only used
 if <code>method = "gsea"</code> and <code>geneset = NULL</code></p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Extra arguments</p></dd>
 
 
-<dt>title</dt>
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
 <dd><p>Character: plot title (if <code>NULL</code>, the default title depends
 on the context; ignored when plotting multiple perturbations)</p></dd>
 
 
-<dt>i, j</dt>
+<dt id="arg-i-j">i, j<a class="anchor" aria-label="anchor" href="#arg-i-j"></a></dt>
 <dd><p>Character or numeric indexes specifying elements to extract</p></dd>
 
 
-<dt>drop</dt>
+<dt id="arg-drop">drop<a class="anchor" aria-label="anchor" href="#arg-drop"></a></dt>
 <dd><p>Boolean: coerce result to the lowest possible dimension?</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Subset, plot or return dimensions or names of a</p>
-<p></p>
-<p><code>perturbationChanges</code> object</p>
+    <p>Subset, plot or return dimensions or names of a
+  <code>perturbationChanges</code> object</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other functions related with the ranking of CMap perturbations: 
+    <div class="dont-index"><p>Other functions related with the ranking of CMap perturbations:
 <code><a href="as.table.referenceComparison.html">as.table.referenceComparison</a>()</code>,
 <code><a href="filterCMapMetadata.html">filterCMapMetadata</a>()</code>,
 <code><a href="getCMapConditions.html">getCMapConditions</a>()</code>,
@@ -176,7 +175,7 @@ on the context; ignored when plotting multiple perturbations)</p></dd>
 <span class="r-in"><span><span class="va">compareKD</span> <span class="op">&lt;-</span> <span class="fu"><a href="rankSimilarPerturbations.html">rankSimilarPerturbations</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">cmapPerturbationsKD</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 26 comparisons (1 cell line) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.7 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.6 secs</span>
 <span class="r-in"><span><span class="va">EIF4G1knockdown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"EIF4G1"</span>, <span class="va">compareKD</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, value<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cmapPerturbationsKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="va">diffExprStat</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.perturbationChanges-1.png" alt="" width="700" height="433"></span>
@@ -216,15 +215,15 @@ on the context; ignored when plotting multiple perturbations)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

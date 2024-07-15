@@ -13,7 +13,7 @@ shinyproxy = TRUE."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -44,20 +44,20 @@ shinyproxy = TRUE."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>cTRAP package</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/cTRAP-package.r" class="external-link"><code>R/cTRAP-package.r</code></a>, <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/shinyInterface_session.R" class="external-link"><code>R/shinyInterface_session.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/cTRAP-package.r" class="external-link"><code>R/cTRAP-package.r</code></a>, <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/shinyInterface_session.R" class="external-link"><code>R/shinyInterface_session.R</code></a></small>
     <div class="hidden name"><code>cTRAP.Rd</code></div>
     </div>
 
@@ -83,28 +83,30 @@ observed difference in gene expression.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>...</dt>
+
+
+<dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Objects</p></dd>
 
 
-<dt>commonPath</dt>
+<dt id="arg-commonpath">commonPath<a class="anchor" aria-label="anchor" href="#arg-commonpath"></a></dt>
 <dd><p>Character: path where to store data common to all sessions</p></dd>
 
 
-<dt>expire</dt>
+<dt id="arg-expire">expire<a class="anchor" aria-label="anchor" href="#arg-expire"></a></dt>
 <dd><p>Character: days until a session expires (message purposes only)</p></dd>
 
 
-<dt>fileSizeLimitMiB</dt>
+<dt id="arg-filesizelimitmib">fileSizeLimitMiB<a class="anchor" aria-label="anchor" href="#arg-filesizelimitmib"></a></dt>
 <dd><p>Numeric: file size limit in MiB</p></dd>
 
 
-<dt>flowerURL</dt>
+<dt id="arg-flowerurl">flowerURL<a class="anchor" aria-label="anchor" href="#arg-flowerurl"></a></dt>
 <dd><p>Character: Flower REST API's URL (<code>NULL</code> to avoid using
 Celery/Flower backend)</p></dd>
 
 
-<dt>port</dt>
+<dt id="arg-port">port<a class="anchor" aria-label="anchor" href="#arg-port"></a></dt>
 <dd><p>The TCP port that the application should listen on. If the
 <code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
 <code>options(shiny.port = XX)</code>), then that port will be used. Otherwise,
@@ -114,7 +116,7 @@ by Google Chrome for being considered unsafe: 3659, 4045, 5060,
 ports will be tried.</p></dd>
 
 
-<dt>host</dt>
+<dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
 <dd><p>The IPv4 address that the application should listen on. Defaults
 to the <code>shiny.host</code> option, if set, or <code>"127.0.0.1"</code> if not. See
 Details.</p></dd>
@@ -122,9 +124,7 @@ Details.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Launches result viewer and plotter (returns <code>NULL</code>)</p>
+    <p>Launches result viewer and plotter (returns <code>NULL</code>)</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -155,7 +155,7 @@ based on the associated statistical values and respective p-values.</p>
     <div class="dont-index"><p>Useful links:</p><ul><li><p><a href="https://nuno-agostinho.github.io/cTRAP">https://nuno-agostinho.github.io/cTRAP</a></p></li>
 <li><p><a href="https://github.com/nuno-agostinho/cTRAP" class="external-link">https://github.com/nuno-agostinho/cTRAP</a></p></li>
 <li><p>Report bugs at <a href="https://github.com/nuno-agostinho/cTRAP/issues" class="external-link">https://github.com/nuno-agostinho/cTRAP/issues</a></p></li>
-</ul><p>Other visual interface functions: 
+</ul><p>Other visual interface functions:
 <code><a href="launchCMapDataLoader.html">launchCMapDataLoader</a>()</code>,
 <code><a href="launchDiffExprLoader.html">launchDiffExprLoader</a>()</code>,
 <code><a href="launchDrugSetEnrichmentAnalyser.html">launchDrugSetEnrichmentAnalyser</a>()</code>,
@@ -181,15 +181,15 @@ based on the associated statistical values and respective p-values.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,20 +40,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Rank differential expression profile against CMap perturbations by similarity</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/CMap.R" class="external-link"><code>R/CMap.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/CMap.R" class="external-link"><code>R/CMap.R</code></a></small>
     <div class="hidden name"><code>rankSimilarPerturbations.Rd</code></div>
     </div>
 
@@ -77,7 +77,9 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>input</dt>
+
+
+<dl><dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
 <dd><p><code>Named numeric vector</code> of differentially expressed genes
 whose names are gene identifiers and respective values are a statistic that
 represents significance and magnitude of differentially expressed genes
@@ -86,17 +88,17 @@ set that is tested for enrichment in reference data (only used if
 <code>method</code> includes <code>gsea</code>)</p></dd>
 
 
-<dt>perturbations</dt>
+<dt id="arg-perturbations">perturbations<a class="anchor" aria-label="anchor" href="#arg-perturbations"></a></dt>
 <dd><p><code>perturbationChanges</code> object: CMap perturbations
 (check <code><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a>()</code>)</p></dd>
 
 
-<dt>method</dt>
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
 or <code>gsea</code>; multiple methods may be selected at once)</p></dd>
 
 
-<dt>geneSize</dt>
+<dt id="arg-genesize">geneSize<a class="anchor" aria-label="anchor" href="#arg-genesize"></a></dt>
 <dd><p>Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
 vector, the first index is the number of top up-regulated genes and the
@@ -105,43 +107,41 @@ sets; only used if <code>method</code> includes <code>gsea</code> and if <code>i
 is not a gene set</p></dd>
 
 
-<dt>cellLineMean</dt>
+<dt id="arg-celllinemean">cellLineMean<a class="anchor" aria-label="anchor" href="#arg-celllinemean"></a></dt>
 <dd><p>Boolean: add rows with the mean of <code>method</code> across
 cell lines? If <code>cellLineMean = "auto"</code> (default), rows will be added
 when data for more than one cell line is available.</p></dd>
 
 
-<dt>rankPerCellLine</dt>
+<dt id="arg-rankpercellline">rankPerCellLine<a class="anchor" aria-label="anchor" href="#arg-rankpercellline"></a></dt>
 <dd><p>Boolean: rank results based on both individual cell
 lines and mean scores across cell lines (<code>TRUE</code>) or based on mean
 scores alone (<code>FALSE</code>)? If <code>cellLineMean = FALSE</code>, individual
 cell line conditions are always ranked.</p></dd>
 
 
-<dt>threads</dt>
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>Integer: number of parallel threads</p></dd>
 
 
-<dt>chunkGiB</dt>
+<dt id="arg-chunkgib">chunkGiB<a class="anchor" aria-label="anchor" href="#arg-chunkgib"></a></dt>
 <dd><p>Numeric: if second argument is a path to an HDF5 file
 (<code>.h5</code> extension), that file is loaded and processed in chunks of a
 given size in gibibytes (GiB); lower values decrease peak RAM usage (see
 details below)</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean: print additional details?</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Data table with correlation and/or GSEA score results</p>
+    <p>Data table with correlation and/or GSEA score results</p>
     </div>
     <div id="process-data-by-chunks">
     <h2>Process data by chunks</h2>
-    
+
 
 <p>If a file path to a valid HDF5 (<code>.h5</code>) file is provided instead of a
   data matrix, that file can be loaded and processed in chunks of size
@@ -151,14 +151,14 @@ details below)</p></dd>
     </div>
     <div id="gsea-score">
     <h2>GSEA score</h2>
-    
+
 
 <p>When <code>method = "gsea"</code>, weighted connectivity scores (WTCS) are
   calculated (<a href="https://clue.io/connectopedia/cmap_algorithms" class="external-link">https://clue.io/connectopedia/cmap_algorithms</a>).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other functions related with the ranking of CMap perturbations: 
+    <div class="dont-index"><p>Other functions related with the ranking of CMap perturbations:
 <code><a href="as.table.referenceComparison.html">as.table.referenceComparison</a>()</code>,
 <code><a href="filterCMapMetadata.html">filterCMapMetadata</a>()</code>,
 <code><a href="getCMapConditions.html">getCMapConditions</a>()</code>,
@@ -178,7 +178,7 @@ details below)</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example of a differential expression profile</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"diffExprStat"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Download and load CMap perturbations to compare with</span></span></span>
 <span class="r-in"><span><span class="va">cellLine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HepG2"</span>, <span class="st">"HUH7"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cmapMetadataCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="filterCMapMetadata.html">filterCMapMetadata</a></span><span class="op">(</span></span></span>
@@ -188,7 +188,7 @@ details below)</p></dd>
 <span class="r-in"><span><span class="va">cmapPerturbationsCompounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">cmapMetadataCompounds</span>, <span class="st">"cmapZscores.gctx"</span>, <span class="st">"cmapGeneInfo.txt"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"cmapCompoundInfo_drugs.txt"</span>, loadZscores<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span><span class="va">perturbations</span> <span class="op">&lt;-</span> <span class="va">cmapPerturbationsCompounds</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rank similar CMap perturbations (by default, Spearman's and Pearson's</span></span></span>
@@ -197,7 +197,7 @@ details below)</p></dd>
 <span class="r-in"><span><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.85 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.82 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                             &lt;char&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
@@ -311,7 +311,7 @@ details below)</p></dd>
 <span class="r-in"><span><span class="fu">rankSimilarPerturbations</span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">perturbations</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Subsetting data based on 8790 intersecting genes (65% of the 13451 input genes)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Comparing against 22 CMap perturbations (2 cell lines) using 'spearman'...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.52 secs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Comparison performed in 0.53 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              compound_perturbation spearman_coef</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                             &lt;char&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          CVD001_24H:BRD-A14014306-001-01-1:4.1   0.224252829</span>
@@ -398,15 +398,15 @@ details below)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

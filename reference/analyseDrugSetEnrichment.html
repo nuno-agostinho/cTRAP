@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,20 +40,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Analyse drug set enrichment</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/drugSetEnrichment.R" class="external-link"><code>R/drugSetEnrichment.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/drugSetEnrichment.R" class="external-link"><code>R/drugSetEnrichment.R</code></a></small>
     <div class="hidden name"><code>analyseDrugSetEnrichment.Rd</code></div>
     </div>
 
@@ -76,33 +76,35 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>sets</dt>
+
+
+<dl><dt id="arg-sets">sets<a class="anchor" aria-label="anchor" href="#arg-sets"></a></dt>
 <dd><p>Named list of characters: named sets containing compound
 identifiers (obtain drug sets by running <code><a href="prepareDrugSets.html">prepareDrugSets()</a></code>)</p></dd>
 
 
-<dt>stats</dt>
+<dt id="arg-stats">stats<a class="anchor" aria-label="anchor" href="#arg-stats"></a></dt>
 <dd><p>Named numeric vector or either a <code>similarPerturbations</code> or
 a <code>targetingDrugs</code> object (obtained after running
 <code><a href="rankSimilarPerturbations.html">rankSimilarPerturbations</a></code> or
 <code><a href="predictTargetingDrugs.html">predictTargetingDrugs</a></code>, respectively)</p></dd>
 
 
-<dt>col</dt>
+<dt id="arg-col">col<a class="anchor" aria-label="anchor" href="#arg-col"></a></dt>
 <dd><p>Character: name of the column to use for statistics (only required
 if class of <code>stats</code> is either <code>similarPerturbations</code> or
 <code>targetingDrugs</code>)</p></dd>
 
 
-<dt>nperm</dt>
+<dt id="arg-nperm">nperm<a class="anchor" aria-label="anchor" href="#arg-nperm"></a></dt>
 <dd><p>Number of permutations to do. Minimial possible nominal p-value is about 1/nperm</p></dd>
 
 
-<dt>maxSize</dt>
+<dt id="arg-maxsize">maxSize<a class="anchor" aria-label="anchor" href="#arg-maxsize"></a></dt>
 <dd><p>Maximal size of a gene set to test. All pathways above the threshold are excluded.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/fgsea/man/fgseaSimple.html" class="external-link">fgsea::fgseaSimple</a></code></p><dl><dt><code>minSize</code></dt>
 <dd><p>Minimal size of a gene set to test. All pathways below the threshold are excluded.</p></dd>
 
@@ -125,29 +127,27 @@ before calculation of GSEA enrichment scores.</p></dd>
 Can be used to specify cluster to run. If not initialized explicitly or
 by setting `nproc` default value `bpparam()` is used.</p></dd>
 
-  
+
 </dl></dd>
 
 
-<dt>keyColSets</dt>
+<dt id="arg-keycolsets">keyColSets<a class="anchor" aria-label="anchor" href="#arg-keycolsets"></a></dt>
 <dd><p>Character: column from <code>sets</code> to compare with column
 <code>keyColStats</code> from <code>stats</code>; automatically selected if <code>NULL</code></p></dd>
 
 
-<dt>keyColStats</dt>
+<dt id="arg-keycolstats">keyColStats<a class="anchor" aria-label="anchor" href="#arg-keycolstats"></a></dt>
 <dd><p>Character: column from <code>stats</code> to compare with column
 <code>keyColSets</code> from <code>sets</code>; automatically selected if <code>NULL</code></p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Enrichment analysis based on GSEA</p>
+    <p>Enrichment analysis based on GSEA</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other functions for drug set enrichment analysis: 
+    <div class="dont-index"><p>Other functions for drug set enrichment analysis:
 <code><a href="loadDrugDescriptors.html">loadDrugDescriptors</a>()</code>,
 <code><a href="plotDrugSetEnrichment.html">plotDrugSetEnrichment</a>()</code>,
 <code><a href="prepareDrugSets.html">prepareDrugSets</a>()</code></p></div>
@@ -215,15 +215,15 @@ by setting `nproc` default value `bpparam()` is used.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

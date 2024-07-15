@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,20 +40,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Compare reference using all methods</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/compare.R" class="external-link"><code>R/compare.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/compare.R" class="external-link"><code>R/compare.R</code></a></small>
     <div class="hidden name"><code>compareWithAllMethods.Rd</code></div>
     </div>
 
@@ -78,12 +78,14 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>method</dt>
+
+
+<dl><dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>Character: comparison method (<code>spearman</code>, <code>pearson</code>
 or <code>gsea</code>; multiple methods may be selected at once)</p></dd>
 
 
-<dt>input</dt>
+<dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
 <dd><p><code>Named numeric vector</code> of differentially expressed genes
 whose names are gene identifiers and respective values are a statistic that
 represents significance and magnitude of differentially expressed genes
@@ -92,14 +94,14 @@ set that is tested for enrichment in reference data (only used if
 <code>method</code> includes <code>gsea</code>)</p></dd>
 
 
-<dt>reference</dt>
+<dt id="arg-reference">reference<a class="anchor" aria-label="anchor" href="#arg-reference"></a></dt>
 <dd><p>Data matrix or <code>character</code> object with file path to
 CMap perturbations (see <code><a href="prepareCMapPerturbations.html">prepareCMapPerturbations</a>()</code>) or gene
 expression and drug sensitivity association (see
 <code><a href="loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a>()</code>)</p></dd>
 
 
-<dt>geneSize</dt>
+<dt id="arg-genesize">geneSize<a class="anchor" aria-label="anchor" href="#arg-genesize"></a></dt>
 <dd><p>Numeric: number of top up-/down-regulated genes to use as
 gene sets to test for enrichment in reference data; if a 2-length numeric
 vector, the first index is the number of top up-regulated genes and the
@@ -108,50 +110,48 @@ sets; only used if <code>method</code> includes <code>gsea</code> and if <code>i
 is not a gene set</p></dd>
 
 
-<dt>cellLines</dt>
+<dt id="arg-celllines">cellLines<a class="anchor" aria-label="anchor" href="#arg-celllines"></a></dt>
 <dd><p>Integer: number of unique cell lines</p></dd>
 
 
-<dt>cellLineMean</dt>
+<dt id="arg-celllinemean">cellLineMean<a class="anchor" aria-label="anchor" href="#arg-celllinemean"></a></dt>
 <dd><p>Boolean: add rows with the mean of <code>method</code> across
 cell lines? If <code>cellLineMean = "auto"</code> (default), rows will be added
 when data for more than one cell line is available.</p></dd>
 
 
-<dt>rankPerCellLine</dt>
+<dt id="arg-rankpercellline">rankPerCellLine<a class="anchor" aria-label="anchor" href="#arg-rankpercellline"></a></dt>
 <dd><p>Boolean: rank results based on both individual cell
 lines and mean scores across cell lines (<code>TRUE</code>) or based on mean
 scores alone (<code>FALSE</code>)? If <code>cellLineMean = FALSE</code>, individual
 cell line conditions are always ranked.</p></dd>
 
 
-<dt>threads</dt>
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>Integer: number of parallel threads</p></dd>
 
 
-<dt>chunkGiB</dt>
+<dt id="arg-chunkgib">chunkGiB<a class="anchor" aria-label="anchor" href="#arg-chunkgib"></a></dt>
 <dd><p>Numeric: size (in gibibytes) of chunks to load
 <code>reference</code> file; only if argument <code>reference</code> is a file path</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean: print additional details?</p></dd>
 
 
-<dt>rankByAscending</dt>
+<dt id="arg-rankbyascending">rankByAscending<a class="anchor" aria-label="anchor" href="#arg-rankbyascending"></a></dt>
 <dd><p>Boolean: rank values based on their ascending
 (<code>TRUE</code>) or descending (<code>FALSE</code>) order?</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>List of data tables with correlation and/or GSEA score results</p>
+    <p>List of data tables with correlation and/or GSEA score results</p>
     </div>
     <div id="gsea-score">
     <h2>GSEA score</h2>
-    
+
 
 <p>When <code>method = "gsea"</code>, weighted connectivity scores (WTCS) are
   calculated (<a href="https://clue.io/connectopedia/cmap_algorithms" class="external-link">https://clue.io/connectopedia/cmap_algorithms</a>).</p>
@@ -169,15 +169,15 @@ cell line conditions are always ranked.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

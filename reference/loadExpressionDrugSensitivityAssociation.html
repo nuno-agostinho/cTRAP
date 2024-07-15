@@ -9,7 +9,7 @@
 
   gtag('config', 'UA-156449666-2');
 </script></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,20 +40,20 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/nuno-agostinho/cTRAP/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Load gene expression and drug sensitivity correlation matrix</h1>
-    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/HEAD/R/drugSensitivity.R" class="external-link"><code>R/drugSensitivity.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/R/drugSensitivity.R" class="external-link"><code>R/drugSensitivity.R</code></a></small>
     <div class="hidden name"><code>loadExpressionDrugSensitivityAssociation.Rd</code></div>
     </div>
 
@@ -74,30 +74,32 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>source</dt>
+
+
+<dl><dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
 <dd><p>Character: source of matrix to load; see
 <code><a href="listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></code></p></dd>
 
 
-<dt>file</dt>
+<dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>Character: filepath to gene expression and drug sensitivity
 association dataset (automatically downloaded if file does not exist)</p></dd>
 
 
-<dt>path</dt>
+<dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
 <dd><p>Character: folder where to find files (optional; <code>file</code> may
 contain the full filepath if preferred)</p></dd>
 
 
-<dt>rows</dt>
+<dt id="arg-rows">rows<a class="anchor" aria-label="anchor" href="#arg-rows"></a></dt>
 <dd><p>Character or integer: rows</p></dd>
 
 
-<dt>cols</dt>
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Character or integer: columns</p></dd>
 
 
-<dt>loadValues</dt>
+<dt id="arg-loadvalues">loadValues<a class="anchor" aria-label="anchor" href="#arg-loadvalues"></a></dt>
 <dd><p>Boolean: load data values (if available)? If <code>FALSE</code>,
 downstream functions will load and process directly from the file chunk by
 chunk, resulting in a lower memory footprint</p></dd>
@@ -105,14 +107,12 @@ chunk, resulting in a lower memory footprint</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Correlation matrix between gene expression (rows) and drug
+    <p>Correlation matrix between gene expression (rows) and drug
   sensitivity (columns)</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other functions related with the prediction of targeting drugs: 
+    <div class="dont-index"><p>Other functions related with the prediction of targeting drugs:
 <code><a href="as.table.referenceComparison.html">as.table.referenceComparison</a>()</code>,
 <code><a href="listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a>()</code>,
 <code><a href="plot.referenceComparison.html">plot.referenceComparison</a>()</code>,
@@ -25474,7 +25474,7 @@ chunk, resulting in a lower memory footprint</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"isDrugActivityDirectlyProportionalToSensitivity")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"filename")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpqgFShl/file178f783e70f8/reference/expressionDrugSensitivityCorGDSC7.qs"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp5Y9uDS/file18db4417317c/reference/expressionDrugSensitivityCorGDSC7.qs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "expressionDrugSensitivityAssociation"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2] "matrix"                              </span>
@@ -25493,15 +25493,15 @@ chunk, resulting in a lower memory footprint</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
