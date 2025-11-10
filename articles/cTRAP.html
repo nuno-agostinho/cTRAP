@@ -79,7 +79,7 @@ perturbations from differential gene expression data</h1>
                         <h4 data-toc-skip class="author">Bernardo P. de
 Almeida &amp; Nuno Saraiva-Agostinho</h4>
             
-            <h4 data-toc-skip class="date">2025-11-03</h4>
+            <h4 data-toc-skip class="date">2025-11-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/vignettes/cTRAP.Rmd" class="external-link"><code>vignettes/cTRAP.Rmd</code></a></small>
       <div class="hidden name"><code>cTRAP.Rmd</code></div>
@@ -576,28 +576,28 @@ rankings.</p>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-1.png" width="576"></p>
+<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-1.png" class="r-plt" width="576"></p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"pearson"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-2.png" width="576"></p>
+<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-2.png" class="r-plt" width="576"></p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-3.png" width="576"></p>
+<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-3.png" class="r-plt" width="576"></p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"rankProduct"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-4.png" width="576"></p>
+<p><img src="cTRAP_files/figure-html/order%20knockdown%20perturbation%20comparison-4.png" class="r-plt" width="576"></p>
 <p>For small molecules:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Most positively and negatively associated perturbations</span></span>
@@ -647,7 +647,7 @@ rankings.</p>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/order%20small%20molecule%20perturbation%20comparison-1.png" width="576"></p>
+<p><img src="cTRAP_files/figure-html/order%20small%20molecule%20perturbation%20comparison-1.png" class="r-plt" width="576"></p>
 <blockquote>
 <p>The Gene Set Enrichment Analysis (GSEA) score is based on the
 Weighted Connectivity Score (WTCS), a composite and bi-directional
@@ -917,44 +917,44 @@ knockdown from ENCODE with the CMap knockdown perturbations:</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot relationship with EIF4G1 knockdown from CMap</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-1.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-1.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"pearson"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-2.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-2.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">EIF4G1knockdown</span>, <span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-3.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot relationship with most negatively associated perturbation</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-4.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-4.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-5.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-5.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="va">compareKD</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-6.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20knockdown%20comparison-6.png" class="r-plt" width="480"></p>
 <p>For small molecules:</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot relationship with most positively associated perturbation</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-1.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-1.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-2.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-2.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-3.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot relationship with most negatively associated perturbation</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">spearman_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, <span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-4.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-4.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">pearson_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"pearson"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-5.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-5.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">compareCompounds</span>, <span class="va">compareCompounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">GSEA_rank</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-6.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/plot%20small%20molecule%20comparison-6.png" class="r-plt" width="480"></p>
 </div>
 <div class="section level2">
 <h2 id="predict-targeting-drugs">Predict targeting drugs<a class="anchor" aria-label="anchor" href="#predict-targeting-drugs"></a>
@@ -1005,7 +1005,7 @@ expression profile:</p>
 <code class="sourceCode R"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</span></span></code></pre>
 <pre><code><span><span class="co">## Comparing against 545 CTRP 2.1 compounds (823 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></span></code></pre>
-<pre><code><span><span class="co">## Comparison performed in 5.46 secs</span></span></code></pre>
+<pre><code><span><span class="co">## Comparison performed in 5.65 secs</span></span></code></pre>
 <div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
@@ -1014,16 +1014,16 @@ expression profile:</p>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
 <pre><code><span><span class="co">## Warning: ggrepel: 535 unlabeled data points (too many overlaps). Consider</span></span>
 <span><span class="co">## increasing max.overlaps</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot results for a given drug</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs...</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-2.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs...</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-4-3.png" class="r-plt" width="480"></p>
 <blockquote>
 <p>Compounds are ranked by their relative targeting potential based on
 the input differential expression profile (i.e. the 1st-ranked compound
@@ -1043,7 +1043,7 @@ and mechanism of action (MOA), respectively.</p>
 <span><span class="co">## Ignoring empty aesthetic: `label`.</span></span></code></pre>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Label by compound's gene target</span></span>
 <span><span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span></span>
@@ -1051,7 +1051,7 @@ and mechanism of action (MOA), respectively.</p>
 <pre><code><span><span class="co">## Columns 'broad id' and 'pubchem_cid' were matched based on 0 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></span></code></pre>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-2.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" width="480"></p>
 <div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Label by compound's mechanism of action (MOA)</span></span>
 <span><span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span></span>
@@ -1060,7 +1060,7 @@ and mechanism of action (MOA), respectively.</p>
 <pre><code><span><span class="co">## Warning in geom_text_repel(label = label, color = "black", alpha = 0.7, : Ignoring empty aesthetic: `label`.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/unnamed-chunk-5-3.png" class="r-plt" width="480"></p>
 </div>
 <div class="section level2">
 <h2 id="molecular-descriptor-enrichment-analysis">Molecular descriptor enrichment analysis<a class="anchor" aria-label="anchor" href="#molecular-descriptor-enrichment-analysis"></a>
@@ -1089,22 +1089,22 @@ interest.</p>
 <pre><code><span><span class="co">## Columns 'broad id' and 'pert_id' were matched based on 283 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></span></code></pre>
 <pre><code><span><span class="co">## Plotting enrichment analysis...</span></span></code></pre>
 <pre><code><span><span class="co">## $`Total Surface Area: [293, 307]`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-1.png" class="r-plt" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`Total.Molweight: [391, 411]`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-2.png" class="r-plt" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`Total Molweight: [391, 411]`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-3.png" class="r-plt" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`Rotatable Bonds: 5`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-4.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-4.png" class="r-plt" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`Polar.Surface.Area: [138, 1153]`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-5.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-5.png" class="r-plt" width="480"></p>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## $`cLogP: 0`</span></span></code></pre>
-<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-6.png" width="480"></p>
+<p><img src="cTRAP_files/figure-html/drug%20set%20enrichment%20analysis-6.png" class="r-plt" width="480"></p>
 </div>
 <div class="section level2">
 <h2 id="contact-information">Contact information<a class="anchor" aria-label="anchor" href="#contact-information"></a>
@@ -1136,7 +1136,7 @@ Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)</a></p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
