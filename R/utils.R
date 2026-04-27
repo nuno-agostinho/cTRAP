@@ -46,7 +46,7 @@ downloadIfNotFound <- function(link, file, ask=FALSE, toExtract=NULL) {
 
         isBinary <- function(file) {
             formats <- c("gz", "bz2", "xz", "tgz", "zip", "rda", "rds", "RData",
-                         "qs")
+                         "qs", "qs2")
             return(any(file_ext(file) %in% formats))
         }
 
@@ -130,7 +130,7 @@ convertENSEMBLtoGeneSymbols <- function(genes, dataset="hsapiens_gene_ensembl",
 #'            "ENSG00000051180")
 #' convertGeneIdentifiers(genes)
 #' convertGeneIdentifiers(genes, key="ENSEMBL", target="UNIPROT")
-#' 
+#'
 #' # Explicit species name to automatically look for its OrgDb database
 #' sp <- "Homo sapiens"
 #' genes <- c("ENSG00000012048", "ENSG00000083093", "ENSG00000141510",
