@@ -1,11 +1,11 @@
-#' @importFrom qs qread
+#' @importFrom qs2 qs_read
 loadRemotePreProcessedData <- function(default, file=NULL, path=NULL) {
     link <- file.path("https://compbio.imm.medicina.ulisboa.pt/public/cTRAP",
                       default)
     if (is.null(file)) file <- default
     if (!is.null(path)) file <- file.path(path, file)
     file  <- downloadIfNotFound(link, file)
-    table <- qread(file)
+    table <- qs_read(file)
     return(table)
 }
 
@@ -28,9 +28,9 @@ loadDrugDescriptors <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
                                 file=NULL, path=NULL) {
     source  <- match.arg(source)
     type    <- match.arg(type)
-    default <- "compound_descriptors_%s_%s.qs"
+    default <- "compound_descriptors_%s_%s.qs2"
     default <- sprintf(default, source, type)
-    
+
     loadRemotePreProcessedData(default, file, path)
 }
 
@@ -39,9 +39,9 @@ loadDrugSet <- function(source=c("NCI60", "CMap"), type=c("2D", "3D"),
                         file=NULL, path=NULL) {
     source  <- match.arg(source)
     type    <- match.arg(type)
-    default <- "drug_set_%s_%s.qs"
+    default <- "drug_set_%s_%s.qs2"
     default <- sprintf(default, source, type)
-    
+
     loadRemotePreProcessedData(default, file, path)
 }
 
@@ -223,7 +223,7 @@ matchStatsWithDrugSetsID <- function(sets, stats, col="values",
 
     if (!setsIDcol %in% colnames(df))  setsIDcol <- paste0(setsIDcol, ".1")
     res <- setNames(df[[col]], df[[setsIDcol]])
-    
+
     if (!statsIDcol %in% colnames(df)) statsIDcol <- paste0(statsIDcol, ".2")
     statsIDcol <- checkIfIDwasReplacedAfterMerging(statsIDcol, df)
     names(res)[is.na(names(res))] <- df[[statsIDcol]][is.na(names(res))]

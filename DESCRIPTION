@@ -1,17 +1,17 @@
 Package: cTRAP
-Title: Identification of candidate causal perturbations from differential gene 
+Title: Identification of candidate causal perturbations from differential gene
     expression data
-Version: 1.20.1
+Version: 1.28.1
 Authors@R: c(
         person(c("Bernardo", "P."), "de Almeida", role="aut"),
         person("Nuno", "Saraiva-Agostinho",
             email="nunodanielagostinho@gmail.com", role=c("aut", "cre")),
         person(c("Nuno", "L."), "Barbosa-Morais", role=c("aut", "led")))
 Description: Compare differential gene expression results with those from known
-    cellular perturbations (such as gene knock-down, overexpression or small 
-    molecules) derived from the Connectivity Map. Such analyses allow not only 
-    to infer the molecular causes of the observed difference in gene expression 
-    but also to identify small molecules that could drive or revert specific 
+    cellular perturbations (such as gene knock-down, overexpression or small
+    molecules) derived from the Connectivity Map. Such analyses allow not only
+    to infer the molecular causes of the observed difference in gene expression
+    but also to identify small molecules that could drive or revert specific
     transcriptomic alterations.
 Depends: R (>= 4.0)
 License: MIT + file LICENSE
@@ -22,7 +22,7 @@ biocViews: DifferentialExpression, GeneExpression, RNASeq, Transcriptomics,
 URL: https://nuno-agostinho.github.io/cTRAP,
     https://github.com/nuno-agostinho/cTRAP
 BugReports: https://github.com/nuno-agostinho/cTRAP/issues
-Suggests: 
+Suggests:
     testthat,
     knitr,
     covr,
@@ -30,7 +30,7 @@ Suggests:
     spelling,
     biomaRt,
     remotes
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports: AnnotationDbi,
     AnnotationHub,
     binr,
@@ -51,7 +51,7 @@ Imports: AnnotationDbi,
     parallel,
     pbapply,
     purrr,
-    qs,
+    qs2,
     R.utils,
     readxl,
     reshape2,
@@ -66,7 +66,7 @@ Imports: AnnotationDbi,
     utils
 VignetteBuilder: knitr
 Language: en-GB
-Collate: 
+Collate:
     'utils.R'
     'CMap.R'
     'ENCODE.R'

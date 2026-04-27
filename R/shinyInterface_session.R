@@ -10,7 +10,7 @@
     size <- sapply(pool, length)
     prob <- rep(1/size, size)
     pool <- unlist(pool)
-    
+
     rand <- sample(pool, len, replace=TRUE, prob=prob)
     str  <- paste(rand, collapse="")
     return(str)
@@ -32,22 +32,22 @@
 .addToList <- function(x, data, name=NULL) {
     if (is.null(name)) name <- attr(data, "name")
     if (is.null(name) || name == "") name <- "Dataset"
-    
+
     # Unique names for each data element
     uniqName <- make.unique(c(names(x), name))
     name <- uniqName[[length(uniqName)]]
-    
+
     x[[name]] <- data
     return(x)
 }
 
 # Save session data in token-named directory
-#' @importFrom qs qsave
+#' @importFrom qs2 qs_save
 .saveSession <- function(data, token) {
     if (is.null(token) || is.null(data)) return(NULL)
     if (!dir.exists(token)) dir.create(token)
-    sessionQS <- file.path(token, "session.qs")
-    qsave(data, sessionQS)
+    sessionQS <- file.path(token, "session.qs2")
+    qs_save(data, sessionQS)
     message("     Session saved to ", sessionQS)
 }
 
@@ -59,7 +59,7 @@
         actionButton("createSession", "Create new session",
                      width="100%", icon=icon("plus"), class="btn-info"),
         tags$hr())
-    
+
     loadTokenUI <- tagList(
         textInput("token", "Insert token of a previous session:"),
         actionButton("loadToken", "Load session with token",
@@ -104,14 +104,14 @@
     pos     <- head(pos, -4)
     session <- pluck(ui, !!!pos)
     pluck(ui, !!!pos) <- NULL
-    
+
     # Add session buttons
     expireTxt <- NULL
     if (!is.null(expire)) {
         expireTxt <- helpText(style="margin: 0px; padding: 3px 0px;",
                               paste("Session expires in", expire, "days"))
     }
-    
+
     copyTokenButton <- actionLink("copyToken", onclick="copyToken()", tagList(
         "Copy session token to clipboard", expireTxt))
     pluck(session, 3, 2, 3) <- tagList(
@@ -123,7 +123,7 @@
                 actionLink("loadSessionModal", "Load another session...")))
     pluck(session, 3, 2) <- tagAppendAttributes(
         pluck(session, 3, 2), class="pull-right")
-    
+
     # Place session in the right side of the navigation bar
     pos <- head(pos, -3)
     pluck(ui, !!!pos)[[3]] <- tags$ul(
@@ -138,7 +138,7 @@
                                 icon("circle-notch", "fa-spin"))
     loading$name <- "a"
     loading <- tags$li(loading)
-    
+
     pos <- .traceInList(ui, "session")
     pluck(ui, !!!head(pos, -5)) <- tagList(
         loading, pluck(ui, !!!head(pos, -5), 1))
@@ -152,7 +152,7 @@ globalUI <- function(elems, idList, expire) {
     hasSimilarPerts   <- "similarPerturbations" %in% elemClasses
     hasTargetingDrugs <- "targetingDrugs" %in% elemClasses
     showTwoKindPlot   <- hasSimilarPerts && hasTargetingDrugs
-    
+
     ui <- .prepareNavPage(
         id="tab",
         # a non-dropdown tab needs to be selected (bug)
@@ -188,7 +188,7 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' @importFrom shiny downloadHandler renderText req
-#' @importFrom qs qread
+#' @importFrom qs2 qs_read
 #' @importFrom utils packageVersion
 .sessionManagementServer <- function(input, output, session, appData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
@@ -197,21 +197,21 @@ globalUI <- function(elems, idList, expire) {
         title <- sprintf("Welcome to cTRAP %s!", packageVersion("cTRAP"))
         showModal(.prepareSessionModal(title, footer=NULL))
     })
-    
+
     # Create new session
     observeEvent(input$createSession, {
         .setAppData(appData, NULL)
         appData$token <- .createToken()
         removeModal()
     })
-    
+
     # Update token badge
     output$token <- renderText({
         token <- appData$token
         if (is.null(token)) token <- "?"
         return(token)
     })
-    
+
     # Load session based on a token
     observeEvent(input$loadToken, {
         token <- isolate(input$token)
@@ -219,8 +219,9 @@ globalUI <- function(elems, idList, expire) {
             file <- file.path(token, "session")
             rds  <- paste0(file, ".rds")
             qs   <- paste0(file, ".qs")
-            if (file.exists(qs)) {
-                .setAppData(appData, qread(qs))
+            qs2  <- paste0(file, ".qs2")
+            if (file.exists(qs2)) {
+                .setAppData(appData, qs_read(qs2))
             } else if (file.exists(rds)) {
                 .setAppData(appData, readRDS(rds))
             }
@@ -232,16 +233,16 @@ globalUI <- function(elems, idList, expire) {
             showNotification(type="error", msg)
         }
     })
-    
+
     # Load session based on a RDS file
     observeEvent(input$loadData, {
         file <- input$sessionFile
-        
+
         if (is.null(file)) {
             showNotification("File input cannot be empty", type="error")
         }
         req(file)
-        
+
         data <- tryCatch(readRDS(file$datapath), error=function(e) e)
         if (is(data, "error")) {
             showNotification(paste("Error loading data:", data),
@@ -253,20 +254,20 @@ globalUI <- function(elems, idList, expire) {
             .saveSession(data, token)
         }
     })
-    
+
     observeEvent(input$loadSessionModal, {
         title <- sprintf("Welcome to cTRAP %s!", packageVersion("cTRAP"))
         modal <- .prepareSessionModal(title, createSession=TRUE, easyClose=TRUE)
         showModal(modal)
     })
-    
+
     # Notify when copying token
     observeEvent(input$copyToken, {
         msg <- tagList("Token", span(class="badge", appData$token),
                        "copied to your clipboard!")
         showNotification(msg, duration=3, closeButton=FALSE, type="message")
     })
-    
+
     # Download objects in current session in a single RDS file
     output$downloadSession <- downloadHandler(
         filename=function() paste0("cTRAP-", appData$token, ".rds"),
@@ -283,13 +284,13 @@ globalUI <- function(elems, idList, expire) {
     message(sprintf("  -> %s (%s)",
                     paste(paste(names, collapse=" + "), "loaded"),
                     tolower(totalTxt)))
-    
+
     len <- length(names)
     auto <- ifelse(auto, "automatically ", "")
     head <- "New %sloaded dataset:"
     if (len != 1) head <- paste(length(names), "new %sloaded datasets:")
     head <- sprintf(head, auto)
-    
+
     names <- do.call(tags$ul, lapply(names, tags$li))
     showNotification(tagList(tags$b(head), names, totalTxt), type=type, ...)
 }
@@ -302,31 +303,31 @@ globalUI <- function(elems, idList, expire) {
         expected <- .filterDatasetsByClass(elems, "expected")
         return(expected)
     }
-    
+
     checkExpectedCeleryTasks <- function(elems) {
         expectedAppTasks <- getExpectedAppDataTasks(elems)
         if (is.null(expectedAppTasks)) return(NULL)
-         
+
         expectedTaskID <- sapply(expectedAppTasks, "[[", "task-id")
         if (length(expectedTaskID) == 0) return(NULL)
-        
+
         tasks <- taskList()
         tasks <- tasks[tasks$uuid %in% expectedTaskID, ]
         if (is.null(tasks)) return(NULL)
         return(tasks)
     }
-    
+
     getExpectedCeleryTasks <- reactivePoll(
         5000, session,
         checkFunc=function() checkExpectedCeleryTasks(appData$elems),
         valueFunc=function() checkExpectedCeleryTasks(appData$elems))
-    
+
     observe({
         tasks    <- req(getExpectedCeleryTasks())
-        
+
         elems    <- isolate(appData$elems)
         token    <- isolate(appData$token)
-        
+
         added <- character(0)
         updatedState <- FALSE
         for (id in names( getExpectedAppDataTasks(elems) )) {
@@ -340,18 +341,18 @@ globalUI <- function(elems, idList, expire) {
                     warning(obj)
                     return(NULL)
                 }
-                
+
                 # Replace data accordingly
                 attr(obj, "formInput") <- attr(elems[[id]], "formInput")
                 elems[[id]] <- obj
                 added <- c(added, id)
-                
+
                 # Remove output file
                 unlink(outputFile)
             } else {
                 # Skip if task state is not found
                 if (!"state" %in% colnames(tasks)) next
-                
+
                 # Update state of tasks if needed
                 taskID   <- elems[[id]][["task-id"]]
                 matched  <- tasks$uuid == taskID
@@ -363,7 +364,7 @@ globalUI <- function(elems, idList, expire) {
                 }
                 newState <- tolower(newState)
                 oldState <- tolower(elems[[id]]$state)
-                
+
                 if (newState != oldState) {
                     message(sprintf("Updating %s from '%s' to '%s'...",
                                     id, oldState, newState))
@@ -392,7 +393,7 @@ updateAppData <- function(appData, x) {
         elems <- .addToList(isolate(appData$elems), obj)
         .setAppData(appData, elems)
         token <- isolate(appData$token)
-        
+
         dataset <- tail(names(elems), 1)
         if (is(obj, "expected")) {
             msg <- tagList(
@@ -411,7 +412,7 @@ updateAppData <- function(appData, x) {
 }
 
 #' Complete visual interface with support for sessions
-#' 
+#'
 #' Optimised to run in ShinyProxy with Celery/Flower backend with argument
 #' \code{shinyproxy = TRUE}.
 #'
@@ -438,7 +439,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     }
     .setFileSizeLimit(fileSizeLimitMiB)
     elems <- .prepareEllipsis(...)
-    
+
     # if in ShinyProxy, use Celery/Flower backend via floweRy
     if (!is.null(flowerURL)) {
         # if (!requireNamespace("floweRy")) {
@@ -449,7 +450,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     } else {
         flower <- FALSE
     }
-    
+
     # Avoid large JSON response from DT: github.com/rstudio/DT/issues/504
     dt_mod <- getFromNamespace("dataTablesFilter", "DT")
     dt_rows_all_line <- grep("DT_rows_all = iAll", body(dt_mod))
@@ -473,15 +474,15 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
     idList$predictDrugs <- "predictDrugs"
     idList$drugSet      <- "drugSetAnalyser"
     ui <- globalUI(elems, idList, expire)
-    
+
     # Get common data from specific folder
     loadCommonData <- function(x, path=commonPath) file.path(path, x)
-    
+
     server <- function(input, output, session) {
         appData       <- reactiveValues()
         .setAppData(appData, elems)
         elems <- reactive(appData$elems)
-        
+
         # load data
         diffExpr <- .diffExprLoadServer(idList$diffExpr, elems)
         updateAppData(appData, diffExpr)
@@ -505,7 +506,7 @@ cTRAP <- function(..., commonPath="data", expire=14, fileSizeLimitMiB=50,
             idList$rankPerts, elems, globalUI=TRUE, flower=flower,
             token=reactive(appData$token))
         updateAppData(appData, ranking)
-        
+
         predicted <- .predictTargetingDrugsServer(
             idList$predictDrugs, elems, globalUI=TRUE, flower=flower,
             path=commonPath, token=reactive(appData$token))

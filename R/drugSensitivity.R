@@ -445,8 +445,8 @@ writeExpressionDrugSensitivityCorHDF5 <- function(
 #' @examples
 #' listExpressionDrugSensitivityAssociation()
 listExpressionDrugSensitivityAssociation <- function(url=FALSE) {
-    options <- c("GDSC 7"="expressionDrugSensitivityCorGDSC7.qs",
-                 "CTRP 2.1"="expressionDrugSensitivityCorCTRP2.1.qs",
+    options <- c("GDSC 7"="expressionDrugSensitivityCorGDSC7.qs2",
+                 "CTRP 2.1"="expressionDrugSensitivityCorCTRP2.1.qs2",
                  "NCI60"="expressionDrugSensitivityCorNCI60.h5")
     link <- file.path("https://compbio.imm.medicina.ulisboa.pt/public/cTRAP",
                       options)
@@ -601,14 +601,14 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #' @export
 #'
 #' @importFrom tools file_ext
-#' @importFrom qs qread
+#' @importFrom qs2 qs_read
 #'
 #' @examples
 #' gdsc <- listExpressionDrugSensitivityAssociation()[[1]]
 #' loadExpressionDrugSensitivityAssociation(gdsc)
 loadExpressionDrugSensitivityAssociation <- function(
     source, file=NULL, path=NULL, rows=NULL, cols=NULL, loadValues=FALSE) {
-    
+
     available <- listExpressionDrugSensitivityAssociation(url=TRUE)
     source    <- match.arg(source, names(available))
     link      <- available[source]
@@ -623,12 +623,12 @@ loadExpressionDrugSensitivityAssociation <- function(
     } else {
         if (is.null(cols)) cols <- TRUE
         if (is.null(rows)) rows <- TRUE
-        
+
         if (file_ext(file) == "rds") {
             res <- readRDS(file)
-        } else if (file_ext(file) == "qs") {
-            res <- qread(file)
-        } 
+        } else if (file_ext(file) == "qs2") {
+            res <- qs_read(file)
+        }
         cor <- res[rows, cols, drop=FALSE]
         attrs <- attributes(res)
         attrs <- attrs[!names(attrs) %in% names(attributes(cor))]
