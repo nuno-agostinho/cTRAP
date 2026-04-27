@@ -601,7 +601,6 @@ dim.expressionDrugSensitivityAssociation <- function(x) {
 #' @export
 #'
 #' @importFrom tools file_ext
-#' @importFrom qs qread
 #' @importFrom qs2 qs_read
 #'
 #' @examples
@@ -627,8 +626,6 @@ loadExpressionDrugSensitivityAssociation <- function(
 
         if (file_ext(file) == "rds") {
             res <- readRDS(file)
-        } else if (file_ext(file) == "qs") {
-            res <- qread(file)
         } else if (file_ext(file) == "qs2") {
             res <- qs_read(file)
         }
