@@ -188,6 +188,7 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' @importFrom shiny downloadHandler renderText req
+#' @importFrom qs qread
 #' @importFrom qs2 qs_read
 #' @importFrom utils packageVersion
 .sessionManagementServer <- function(input, output, session, appData) {
@@ -223,7 +224,7 @@ globalUI <- function(elems, idList, expire) {
             if (file.exists(qs2)) {
                 .setAppData(appData, qs_read(qs2))
             } else if (file.exists(qs)) {
-                .setAppData(appData, qs::qread(qs))
+                .setAppData(appData, qread(qs))
             } else if (file.exists(rds)) {
                 .setAppData(appData, readRDS(rds))
             }
