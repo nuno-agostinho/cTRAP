@@ -30,7 +30,7 @@ Suggests:
     spelling,
     biomaRt,
     remotes
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports: AnnotationDbi,
     AnnotationHub,
     binr,
