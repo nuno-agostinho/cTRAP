@@ -42,12 +42,12 @@
 }
 
 # Save session data in token-named directory
-#' @importFrom qs2 qsave
+#' @importFrom qs2 qs_save
 .saveSession <- function(data, token) {
     if (is.null(token) || is.null(data)) return(NULL)
     if (!dir.exists(token)) dir.create(token)
     sessionQS <- file.path(token, "session.qs2")
-    qsave(data, sessionQS)
+    qs_save(data, sessionQS)
     message("     Session saved to ", sessionQS)
 }
 
@@ -188,7 +188,7 @@ globalUI <- function(elems, idList, expire) {
 }
 
 #' @importFrom shiny downloadHandler renderText req
-#' @importFrom qs2 qread
+#' @importFrom qs2 qs_read
 #' @importFrom utils packageVersion
 .sessionManagementServer <- function(input, output, session, appData) {
     # Show welcome screen when no token is set (e.g. new cTRAP sessions)
@@ -221,7 +221,7 @@ globalUI <- function(elems, idList, expire) {
             qs   <- paste0(file, ".qs")
             qs2  <- paste0(file, ".qs2")
             if (file.exists(qs2)) {
-                .setAppData(appData, qread(qs2))
+                .setAppData(appData, qs_read(qs2))
             } else if (file.exists(qs)) {
                 .setAppData(appData, qs::qread(qs))
             } else if (file.exists(rds)) {

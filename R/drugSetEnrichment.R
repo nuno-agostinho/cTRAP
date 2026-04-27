@@ -1,11 +1,11 @@
-#' @importFrom qs2 qread
+#' @importFrom qs2 qs_read
 loadRemotePreProcessedData <- function(default, file=NULL, path=NULL) {
     link <- file.path("https://compbio.imm.medicina.ulisboa.pt/public/cTRAP",
                       default)
     if (is.null(file)) file <- default
     if (!is.null(path)) file <- file.path(path, file)
     file  <- downloadIfNotFound(link, file)
-    table <- qread(file)
+    table <- qs_read(file)
     return(table)
 }
 
