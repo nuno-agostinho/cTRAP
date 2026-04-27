@@ -29,8 +29,7 @@ Suggests:
     rmarkdown,
     spelling,
     biomaRt,
-    remotes,
-    qs
+    remotes
 RoxygenNote: 7.3.3
 Imports: AnnotationDbi,
     AnnotationHub,
