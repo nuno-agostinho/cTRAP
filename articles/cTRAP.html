@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cTRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.20.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.28.1</span>
       </span>
     </div>
 
@@ -79,9 +79,9 @@ perturbations from differential gene expression data</h1>
                         <h4 data-toc-skip class="author">Bernardo P. de
 Almeida &amp; Nuno Saraiva-Agostinho</h4>
             
-            <h4 data-toc-skip class="date">2026-01-12</h4>
+            <h4 data-toc-skip class="date">2026-04-27</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/devel/vignettes/cTRAP.Rmd" class="external-link"><code>vignettes/cTRAP.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/cTRAP/blob/1.28.1/vignettes/cTRAP.Rmd" class="external-link"><code>vignettes/cTRAP.Rmd</code></a></small>
       <div class="hidden name"><code>cTRAP.Rmd</code></div>
 
     </div>
@@ -770,9 +770,9 @@ our data (higher GSEA score), we expect to see the most up-regulated
 <code class="sourceCode R"><span><span class="co"># Obtain available raw information from compared perturbations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">compareKD</span><span class="op">)</span><span class="op">)</span> <span class="co"># Data available in compared perturbations</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "class"             "row.names"         ".internal.selfref"</span></span>
-<span><span class="co">##  [4] "names"             "metadata"          "geneInfo"         </span></span>
-<span><span class="co">##  [7] "input"             "rankingInfo"       "geneset"          </span></span>
-<span><span class="co">## [10] "runtime"</span></span></code></pre>
+<span><span class="co">##  [4] "metadata"          "geneInfo"          "input"            </span></span>
+<span><span class="co">##  [7] "rankingInfo"       "geneset"           "runtime"          </span></span>
+<span><span class="co">## [10] "names"</span></span></code></pre>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">compareKD</span>, <span class="st">"metadata"</span><span class="op">)</span>  <span class="co"># Perturbation metadata</span></span></code></pre></div>
 <pre><code><span><span class="co">## Key: &lt;sig_id, pert_id, pert_iname, pert_type, cell_id, pert_dose, pert_dose_unit, pert_idose, pert_time, pert_time_unit, pert_itime, distil_id&gt;</span></span>
@@ -1002,30 +1002,28 @@ expression profile:</p>
 <div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ctrp</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/listExpressionDrugSensitivityAssociation.html">listExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="op">)</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">assoc</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadExpressionDrugSensitivityAssociation.html">loadExpressionDrugSensitivityAssociation</a></span><span class="op">(</span><span class="va">ctrp</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## expressionDrugSensitivityCorCTRP2.1.qs not found: downloading data...</span></span></code></pre>
-<pre><code><span><span class="co">## Loading data from expressionDrugSensitivityCorCTRP2.1.qs...</span></span></code></pre>
+<pre><code><span><span class="co">## expressionDrugSensitivityCorCTRP2.1.qs2 not found: downloading data...</span></span></code></pre>
+<pre><code><span><span class="co">## Loading data from expressionDrugSensitivityCorCTRP2.1.qs2...</span></span></code></pre>
 <div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">predicted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictTargetingDrugs.html">predictTargetingDrugs</a></span><span class="op">(</span><span class="va">diffExprStat</span>, <span class="va">assoc</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Subsetting data based on 11227 intersecting genes (83% of the 13451 input genes)...</span></span></code></pre>
 <pre><code><span><span class="co">## Comparing against 545 CTRP 2.1 compounds (823 cell lines) using 'spearman, pearson, gsea' (gene size of 150)...</span></span></code></pre>
-<pre><code><span><span class="co">## Comparison performed in 6.21 secs</span></span></code></pre>
+<pre><code><span><span class="co">## Comparison performed in 5.27 secs</span></span></code></pre>
 <div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, method<span class="op">=</span><span class="st">"rankProduct"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="co">## No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: ggrepel: 535 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">## increasing max.overlaps</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot results for a given drug</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"spearman"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs...</span></span></code></pre>
+<pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs2...</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">predicted</span>, <span class="va">predicted</span><span class="op">[[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, method<span class="op">=</span><span class="st">"gsea"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs...</span></span></code></pre>
+<pre><code><span><span class="co">## Loading data from /home/runner/work/cTRAP/cTRAP/vignettes/expressionDrugSensitivityCorCTRP2.1.qs2...</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-4-3.png" class="r-plt" alt="" width="480"></p>
 <blockquote>
 <p>Compounds are ranked by their relative targeting potential based on
@@ -1037,7 +1035,7 @@ ranking of their perturbations towards the user’s differential
 expression profile. Note that the highlighted values are the same
 compounds for the following plots annotated with their name, gene target
 and mechanism of action (MOA), respectively.</p>
-<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Label by compound name</span></span>
 <span><span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span></span>
 <span>  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span><span class="op">)</span></span></code></pre></div>
@@ -1045,7 +1043,7 @@ and mechanism of action (MOA), respectively.</p>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Label by compound's gene target</span></span>
 <span><span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span></span>
 <span>  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span>, labelBy<span class="op">=</span><span class="st">"target"</span><span class="op">)</span></span></code></pre></div>
@@ -1053,7 +1051,7 @@ and mechanism of action (MOA), respectively.</p>
 <pre><code><span><span class="co">## Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">## data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre>
 <p><img src="cTRAP_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" alt="" width="480"></p>
-<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Label by compound's mechanism of action (MOA)</span></span>
 <span><span class="fu"><a href="../reference/plotTargetingDrugsVSsimilarPerturbations.html">plotTargetingDrugsVSsimilarPerturbations</a></span><span class="op">(</span></span>
 <span>  <span class="va">predicted</span>, <span class="va">compareCompounds</span>, column<span class="op">=</span><span class="st">"spearman_rank"</span>, labelBy<span class="op">=</span><span class="st">"moa"</span><span class="op">)</span></span></code></pre></div>
@@ -1071,17 +1069,17 @@ compounds. This allows to check if targeting drugs are particularly
 enriched in specific drug descriptors and may be useful to think about
 the relevance of these descriptors for targeting a phenotype of
 interest.</p>
-<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">descriptors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadDrugDescriptors.html">loadDrugDescriptors</a></span><span class="op">(</span><span class="st">"CMap"</span>, <span class="st">"2D"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## compound_descriptors_CMap_2D.qs not found: downloading data...</span></span></code></pre>
-<div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## compound_descriptors_CMap_2D.qs2 not found: downloading data...</span></span></code></pre>
+<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drugSets</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepareDrugSets.html">prepareDrugSets</a></span><span class="op">(</span><span class="va">descriptors</span><span class="op">)</span></span>
 <span><span class="va">dsea</span>        <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analyseDrugSetEnrichment.html">analyseDrugSetEnrichment</a></span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Matching compounds with those available in drug sets...</span></span></code></pre>
 <pre><code><span><span class="co">## Ordering results by column 'rankProduct_rank'; to manually select column to order by, please set argument 'col'</span></span></code></pre>
 <pre><code><span><span class="co">## Columns 'broad id' and 'pert_id' were matched based on 283 common values; to manually select columns to compare, please set arguments starting with 'keyCol'</span></span></code></pre>
 <pre><code><span><span class="co">## Performing enrichment analysis...</span></span></code></pre>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the 6 most significant drug set enrichment results</span></span>
 <span><span class="fu"><a href="../reference/plotDrugSetEnrichment.html">plotDrugSetEnrichment</a></span><span class="op">(</span><span class="va">drugSets</span>, <span class="va">predicted</span>,</span>
 <span>                      selectedSets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dsea</span><span class="op">$</span><span class="va">descriptor</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
