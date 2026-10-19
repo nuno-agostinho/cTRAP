@@ -102,6 +102,7 @@ will be created)</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">downloadENCODEknockdownMetadata</span><span class="op">(</span><span class="st">"HepG2"</span>, <span class="st">"EIF4G1"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Downloading metadata for ENCODE knockdown experiments...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> No encoding supplied: defaulting to UTF-8.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    File accession File format File type File format type          Output type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;char&gt;      &lt;char&gt;    &lt;char&gt;           &lt;char&gt;               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:    ENCFF955TXI         tsv       tsv                  gene quantifications</span>
@@ -194,14 +195,14 @@ will be created)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                      &lt;char&gt;               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Mixed pipelines hg19 V19             released</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Mixed pipelines hg19 V19             released</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                         Audit WARNING Audit NOT_COMPLIANT Audit ERROR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                &lt;char&gt;              &lt;char&gt;      &lt;lgcl&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: missing biosample characterization                              NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: missing biosample characterization                              NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        Control      Control Experiments</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;char&gt;                   &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: ENCSR042QTH ENCFF657KMW, ENCFF726AVT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         Audit WARNING Audit NOT_COMPLIANT Audit ERROR Control</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                &lt;char&gt;              &lt;char&gt;      &lt;lgcl&gt;  &lt;list&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: missing biosample characterization                              NA  [NULL]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: missing biosample characterization                              NA  [NULL]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Control Experiments</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                NULL</span>
 </code></pre></div>
     </div>
   </div>
